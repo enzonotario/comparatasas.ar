@@ -1,22 +1,24 @@
-# build output
-dist/
-.vercel/
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
 
-# generated types
-.astro/
+# Node dependencies
+node_modules
 
-# dependencies
-node_modules/
+# Logs
+logs
+*.log
 
-# logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# environment variables
-.env
-.env.production
-
-# macOS-specific files
+# Misc
 .DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example

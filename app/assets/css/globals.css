@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+.text-muted {
+  @apply text-gray-600 dark:text-gray-400;
+}
