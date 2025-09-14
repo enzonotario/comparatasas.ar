@@ -1,62 +1,36 @@
 {
-  "name": "compara-tasas",
+  "name": "nuxt-app",
   "type": "module",
-  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "lint": "prettier --write  \"**/*.{md,mdx,astro}\" && eslint --fix \"src/**/*.{astro,}\" && biome check --apply-unsafe --no-errors-on-unmatched --files-ignore-unknown=true ./",
-    "astro": "astro",
-    "prepare": "husky"
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write ."
   },
   "dependencies": {
-    "@astrojs/partytown": "2.1.0",
-    "@astrojs/react": "^3.1.1",
-    "@astrojs/sitemap": "3.1.2",
-    "@astrojs/tailwind": "5.1.0",
-    "@astrojs/vercel": "7.5.4",
-    "@fontsource/inter": "^5.1.0",
-    "@radix-ui/react-dialog": "^1.1.1",
-    "@radix-ui/react-label": "^2.0.2",
-    "@radix-ui/react-select": "^2.0.0",
-    "@radix-ui/react-slot": "^1.0.2",
-    "@types/react": "^18.3.5",
-    "@types/react-dom": "^18.3.0",
-    "@vercel/speed-insights": "1.0.10",
-    "astro": "4.7.1",
-    "bunx": "^0.1.0",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.0",
-    "lucide-react": "^0.365.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-number-format": "^5.3.4",
-    "tailwind-merge": "^2.2.2",
-    "tailwindcss": "3.4.3",
-    "tailwindcss-animate": "^1.0.7",
-    "vaul": "^1.0.0"
+    "@nuxt/eslint": "1.9.0",
+    "@nuxt/ui": "3.3.3",
+    "@nuxtjs/tailwindcss": "6.14.0",
+    "@vite-pwa/nuxt": "1.0.4",
+    "@vueuse/nuxt": "13.9.0",
+    "eslint": "^9.34.0",
+    "nuxt": "4.1.0",
+    "nuxt-gtag": "4.0.0",
+    "typescript": "^5.9.2",
+    "vue": "^3.5.20",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.8.3",
-    "@typescript-eslint/parser": "8.3.0",
-    "eslint": "8.57.0",
-    "eslint-plugin-astro": "0.33.1",
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.9",
-    "prettier": "^3.2.5",
-    "prettier-config-standard": "7.0.0",
-    "prettier-plugin-astro": "0.13.0",
-    "prettier-plugin-tailwindcss": "0.5.14",
-    "typescript": "5.4.3"
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4.1.13"
   },
-  "lint-staged": {
-    "*.astro": "eslint --fix",
-    "*.{astro,md}": "prettier --write",
-    "*": [
-      "biome check --apply-unsafe --no-errors-on-unmatched --files-ignore-unknown=true"
-    ]
-  }
+  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"
 }

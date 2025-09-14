@@ -10,16 +10,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v1
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
 
       - name: Install packages
-        run: bun install
-
-      - name: Check Prettier formatting
-        run: bunx prettier --check "**/*.{md,mdx,astro}"
+        run: pnpm install
 
       - name: Run ESLint
-        run: bunx eslint "src/**/*.{astro,}"
-
-      - name: Check Biome configuration
-        run: bunx biome check --no-errors-on-unmatched --files-ignore-unknown=true ./
+        run: pnpm run lint

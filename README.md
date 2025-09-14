@@ -1,9 +1,9 @@
-# Comparatasas
+# comparatasas.ar
 
-Este supo ser el repositorio de comparatasas. A fines de 2025 reescribi el proyecto en nuevas tecnologias y deje de mantenerlo como proyecto open source. Siempre se estara agradecido con quienes colaboraron en la primer version:
+[ComparaTasas](https://comparatasas.ar/) es una plataforma que permite a los usuarios comparar tasas de interés de diferentes instituciones financieras en Argentina. El objetivo es proporcionar una herramienta clara y robusta para ayudar a los Argentinos a mejorar su salud financiera.
 
-## ¿Quienes ya contribuyen?
+## Contribuidores
 
-<a href="https://github.com/ferminrp/compara-tasas/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=ferminrp/compara-tasas" />
+<a href="https://github.com/enzonotario/comparatasas.ar/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=enzonotario/comparatasas.ar" />
 </a>
