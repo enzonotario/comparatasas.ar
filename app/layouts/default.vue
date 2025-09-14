@@ -2,6 +2,7 @@
 const { fetch: fetchFunds } = useFunds()
 const { fetch: fetchAccounts } = useAccounts()
 const { fetch: fetchCrypto } = useCrypto()
+const { fetch: fetchPlazosFijos } = usePlazosFijos()
 
 const route = useRoute()
 
@@ -89,6 +90,7 @@ onMounted(() => {
   fetchAccounts()
   fetchFunds()
   fetchCrypto()
+  fetchPlazosFijos()
 })
 </script>
 
