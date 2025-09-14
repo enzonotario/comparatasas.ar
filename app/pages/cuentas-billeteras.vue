@@ -1,6 +1,6 @@
 <script setup lang="ts">
-const { allFundsCache, loading, error, fetch } = useFunds()
-const { accounts, loading: loadingAccounts, fetch: fetchAccounts } = useAccounts()
+const { allFundsCache, loading, error } = useFunds()
+const { accounts, loading: loadingAccounts } = useAccounts()
 
 const resolvedAccounts = computed(() => {
   return accounts.value.filter((i) => i?.fondo !== 'Fiwind')
@@ -17,11 +17,6 @@ const resolvedFundsAccounts = computed(() => {
         typeLabel: null,
       })),
   ].sort((a, b) => b.tna - a.tna)
-})
-
-onMounted(() => {
-  fetchAccounts()
-  fetch()
 })
 </script>
 
@@ -48,9 +43,16 @@ onMounted(() => {
 
       <UAlert v-if="error" color="red" variant="soft" title="Error cargando fondos" />
 
-      <FundsLoading v-if="loading && !resolvedFundsAccounts.length" />
+      <div class="space-y-3">
+        <FundsList
+          v-if="resolvedFundsAccounts.length"
+          :items="resolvedFundsAccounts"
+          key-prop="fondo"
+          mode="detailed"
+        />
 
-      <FundsList v-else :items="resolvedFundsAccounts" key-prop="fondo" mode="detailed" />
+        <FundsLoading v-if="loading || loadingAccounts" />
+      </div>
     </div>
   </div>
 </template>

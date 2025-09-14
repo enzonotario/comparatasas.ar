@@ -6,11 +6,7 @@ import {
 } from '~/lib/mappings/institutions'
 import { getCryptoLogo, getCryptoName } from '~/lib/crypto-utils'
 
-const { dataProcessed: cryptoYields, loading, error, fetch, cryptosByMaxYield } = useCrypto()
-
-onMounted(() => {
-  fetch()
-})
+const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCrypto()
 </script>
 
 <template>

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+const { fetch: fetchFunds } = useFunds()
+const { fetch: fetchAccounts } = useAccounts()
+const { fetch: fetchCrypto } = useCrypto()
+
 const route = useRoute()
 
 useHead({
@@ -80,6 +84,12 @@ const pages = [
     image: 'https://api.argentinadatos.com/static/comparatasas/icons/bitcoin.png',
   },
 ]
+
+onMounted(() => {
+  fetchAccounts()
+  fetchFunds()
+  fetchCrypto()
+})
 </script>
 
 <template>

@@ -1,15 +1,11 @@
 <script setup lang="ts">
-const { data, fetch, loading, error } = useFunds()
+const { data, loading, error } = useFunds()
 
 const allItems = computed(() => {
   return [
     ...data.value.rentaFija.filter((i) => i?.meta?.showInUsdMoneyMarket),
     ...data.value.mercadoDinero.filter((i) => i?.meta?.showInUsdMoneyMarket),
   ]
-})
-
-onMounted(() => {
-  fetch()
 })
 </script>
 

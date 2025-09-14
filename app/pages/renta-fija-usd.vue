@@ -1,12 +1,8 @@
 <script setup lang="ts">
-const { data, fetch, loading, error } = useFunds()
+const { data, loading, error } = useFunds()
 
 const funds = computed(() => {
   return data.value.rentaFija.filter((i) => i?.meta?.showInUsdFunds)
-})
-
-onMounted(() => {
-  fetch()
 })
 </script>
 
@@ -29,9 +25,7 @@ onMounted(() => {
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
         No se encontraron fondos
       </h3>
-      <p class="text-muted">
-        No hay fondos de renta fija en USD disponibles en este momento.
-      </p>
+      <p class="text-muted">No hay fondos de renta fija en USD disponibles en este momento.</p>
     </div>
   </div>
 </template>

@@ -1,9 +1,5 @@
 <script setup lang="ts">
-const { plazosFijosItems, loading, error, fetch } = usePlazosFijos()
-
-onMounted(() => {
-  fetch()
-})
+const { plazosFijosItems, loading, error } = usePlazosFijos()
 </script>
 
 <template>
@@ -23,9 +19,7 @@ onMounted(() => {
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
         No se encontraron plazos fijos
       </h3>
-      <p class="text-muted">
-        No hay plazos fijos disponibles en este momento.
-      </p>
+      <p class="text-muted">No hay plazos fijos disponibles en este momento.</p>
     </div>
   </div>
 </template>
