@@ -6,6 +6,15 @@ import {
 } from '~/lib/mappings/institutions'
 import { getCryptoLogo, getCryptoName } from '~/lib/crypto-utils'
 
+useSeoMeta({
+  title: 'Rendimientos Criptomonedas - Mejores Tasas Crypto Argentina',
+  description:
+    'Compará los mejores rendimientos de criptomonedas en Argentina. Encontrá las tasas más altas para Bitcoin, Ethereum, USDT y otras cryptos en exchanges locales.',
+  ogTitle: 'Rendimientos Criptomonedas - Mejores Tasas Crypto Argentina',
+  ogDescription:
+    'Compará los mejores rendimientos de criptomonedas en Argentina. Encontrá las tasas más altas para Bitcoin, Ethereum, USDT y otras cryptos en exchanges locales.',
+})
+
 const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCrypto()
 </script>
 

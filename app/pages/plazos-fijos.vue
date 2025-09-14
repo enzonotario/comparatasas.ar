@@ -1,4 +1,13 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Plazos Fijos - Mejores Tasas Argentina 2025',
+  description:
+    'Compará las mejores tasas de plazos fijos en Argentina. Encontrá los bancos con mayor rendimiento para tus plazos fijos tradicionales y UVA actualizados diariamente.',
+  ogTitle: 'Plazos Fijos - Mejores Tasas Argentina 2025',
+  ogDescription:
+    'Compará las mejores tasas de plazos fijos en Argentina. Encontrá los bancos con mayor rendimiento para tus plazos fijos tradicionales y UVA actualizados diariamente.',
+})
+
 const { plazosFijosItems, loading, error } = usePlazosFijos()
 </script>
 

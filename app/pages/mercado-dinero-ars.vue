@@ -1,4 +1,13 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Fondos Mercado de Dinero ARS - Mejores Tasas Argentina',
+  description:
+    'Compará los mejores fondos de mercado de dinero en pesos argentinos. Encontrá las tasas más altas en fondos money market con liquidez diaria y bajo riesgo.',
+  ogTitle: 'Fondos Mercado de Dinero ARS - Mejores Tasas Argentina',
+  ogDescription:
+    'Compará los mejores fondos de mercado de dinero en pesos argentinos. Encontrá las tasas más altas en fondos money market con liquidez diaria y bajo riesgo.',
+})
+
 const { data, loading, error } = useFunds()
 
 const funds = computed(() => {

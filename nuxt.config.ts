@@ -7,6 +7,11 @@ export default defineNuxtConfig({
   // Set baseURL for GitHub Pages when deploying under a subpath
   app: {
     baseURL: process.env.NUXT_APP_BASE_URL || '/',
+    head: {
+      titleTemplate: '%s | comparatasas.ar',
+      charset: 'utf-8',
+      viewport: 'width=device-width, initial-scale=1',
+    },
   },
 
   css: ['@/assets/css/globals.css'],

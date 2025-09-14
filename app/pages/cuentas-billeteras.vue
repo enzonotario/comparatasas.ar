@@ -1,4 +1,13 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Cuentas Remuneradas y Billeteras - comparatasas.ar',
+  description:
+    'Compará las mejores tasas de cuentas remuneradas y billeteras digitales en Argentina. Encontrá rendimientos competitivos para tu dinero con condiciones especiales.',
+  ogTitle: 'Cuentas Remuneradas y Billeteras - comparatasas.ar',
+  ogDescription:
+    'Compará las mejores tasas de cuentas remuneradas y billeteras digitales en Argentina. Encontrá rendimientos competitivos para tu dinero con condiciones especiales.',
+})
+
 const { allFundsCache, loading, error } = useFunds()
 const { accounts, loading: loadingAccounts } = useAccounts()
 

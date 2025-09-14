@@ -1,4 +1,13 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Fondos Renta Fija USD - Mejores Tasas Argentina',
+  description:
+    'Compará los mejores fondos de renta fija en dólares estadounidenses. Encontrá rendimientos estables en USD con fondos de bonos dolarizados de Argentina.',
+  ogTitle: 'Fondos Renta Fija USD - Mejores Tasas Argentina',
+  ogDescription:
+    'Compará los mejores fondos de renta fija en dólares estadounidenses. Encontrá rendimientos estables en USD con fondos de bonos dolarizados de Argentina.',
+})
+
 const { data, loading, error } = useFunds()
 
 const funds = computed(() => {

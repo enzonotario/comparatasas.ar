@@ -1,4 +1,13 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Fondos Mercado de Dinero USD - Mejores Tasas Argentina',
+  description:
+    'Compará los mejores fondos de mercado de dinero en dólares estadounidenses. Encontrá rendimientos en USD con fondos money market dolarizados de Argentina.',
+  ogTitle: 'Fondos Mercado de Dinero USD - Mejores Tasas Argentina',
+  ogDescription:
+    'Compará los mejores fondos de mercado de dinero en dólares estadounidenses. Encontrá rendimientos en USD con fondos money market dolarizados de Argentina.',
+})
+
 const { data, loading, error } = useFunds()
 
 const allItems = computed(() => {
