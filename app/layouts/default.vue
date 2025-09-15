@@ -160,6 +160,8 @@ onMounted(() => {
         <UContainer class="w-full max-w-3xl mx-auto space-y-6">
           <span class="flex-1" />
 
+          <PageNavigation :pages="pages" :current-route="`/${route.name}`" />
+
           <FinancialAdviceCard />
 
           <DisclaimerSection :page="route.name" />
