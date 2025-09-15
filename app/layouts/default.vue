@@ -101,7 +101,7 @@ onMounted(() => {
 <template>
   <UApp>
     <div class="bg-neutral-50 dark:bg-neutral-950">
-      <Background />
+      <LayoutBackground />
 
       <header
         class="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md"
@@ -129,7 +129,7 @@ onMounted(() => {
             </p>
           </div>
 
-          <Ads />
+          <AdBanner />
 
           <nav class="flex justify-center">
             <div class="flex flex-wrap md:flex-nowrap justify-center">
