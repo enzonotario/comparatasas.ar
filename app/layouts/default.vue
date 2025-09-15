@@ -43,8 +43,12 @@ useSeoMeta({
     'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encuentra la mejor inversión para tu dinero.',
   ogDescription:
     'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encuentra la mejor inversión para tu dinero.',
-  ogImage: 'https://comparatasas-nuxt.vercel.app/meta-imagen.png',
+  ogImage: 'https://comparatasas.ar/meta-imagen.png',
+  ogUrl: 'https://comparatasas.ar',
+  ogType: 'website',
+  ogLocale: 'es_AR',
   twitterCard: 'summary_large_image',
+  robots: 'index, follow',
 })
 
 const pages = [
