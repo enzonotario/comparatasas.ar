@@ -30,8 +30,9 @@ const nextPage = computed(() => {
 
 <template>
   <div v-if="previousPage || nextPage" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div v-if="previousPage" class="w-full flex md:justify-start">
+    <div class="w-full flex md:justify-start" :class="{ hidden: !previousPage }">
       <NuxtLink
+        v-if="previousPage"
         :to="previousPage.to"
         class="w-full group flex flex-col gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-primary-300 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200"
       >
@@ -53,8 +54,9 @@ const nextPage = computed(() => {
       </NuxtLink>
     </div>
 
-    <div v-if="nextPage" class="w-full flex md:justify-end">
+    <div class="w-full flex md:justify-end" :class="{ hidden: !nextPage }">
       <NuxtLink
+        v-if="nextPage"
         :to="nextPage.to"
         class="w-full group flex flex-col gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-primary-300 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200"
       >
