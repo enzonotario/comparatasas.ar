@@ -30,7 +30,7 @@ const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCr
 
     <div v-else>
       <!-- Desktop table view -->
-      <div class="hidden lg:block">
+      <div class="hidden sm:block">
         <UCard>
           <div class="overflow-x-auto">
             <table class="w-full">
@@ -99,7 +99,7 @@ const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCr
       </div>
 
       <!-- Mobile and tablet card view -->
-      <div class="lg:hidden flex flex-col space-y-3">
+      <div class="sm:hidden flex flex-col space-y-3">
         <UCard
           v-for="entity in cryptoYields"
           :key="entity.entidad"
