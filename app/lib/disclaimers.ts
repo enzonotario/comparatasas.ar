@@ -33,7 +33,7 @@ export const disclaimerMappings: DisclaimerMapping = {
       text: 'El rendimiento de los fondos en USD es calculado con los valores cuotaparte de los ultimos 30 dias segun la camara argentina de fondos comunes de inversion (CAFCI)',
     },
     {
-      text: 'Algunos de los fondos aqui representados suelen tener rendimientos diarios negativos. Investiga por tu cuenta antes de mandarte. No todos tienen el mismo riesgo.',
+      text: 'Algunos de los fondos aqui representados suelen tener rendimientos diarios negativos. Investiga por tu cuenta antes de invertir. No todos tienen el mismo riesgo.',
     },
     {
       text: 'La información representada proviene de la camara argentina de fondos comunes de inversion (CAFCI) y de las propias plataformas. Puede llegar a estar desactualizada y no garantizamos que estos sean los ultimos rendimientos vigentes.',
@@ -52,7 +52,7 @@ export const disclaimerMappings: DisclaimerMapping = {
       text: 'El rendimiento de los fondos de acciones es calculado YTD con la variación en el valor de las cuotapartes desde el 30 de Diciembre a hoy.',
     },
     {
-      text: 'Los fondos de acciones suelen tener rendimientos diarios negativos. Investiga por tu cuenta antes de mandarte. Son fondos de alto riesgo.',
+      text: 'Los fondos de acciones suelen tener rendimientos diarios negativos. Investiga por tu cuenta antes de invertir. Son fondos de alto riesgo.',
     },
     {
       text: 'La información representada proviene de la camara argentina de fondos comunes de inversion (CAFCI) y de las propias plataformas. Puede llegar a estar desactualizada y no garantizamos que estos sean los ultimos rendimientos vigentes.',
