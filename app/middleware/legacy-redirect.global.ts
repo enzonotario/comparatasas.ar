@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware((to) => {
       funds: '/mercado-dinero-ars',
       usd: '/mercado-dinero-usd',
       'usd-funds': '/renta-fija-usd',
-      'usd-money': '/mercado-dinero-usd',
+      'usd-money-market': '/mercado-dinero-usd',
       fixed: '/plazos-fijos',
       crypto: '/criptomonedas',
     }
