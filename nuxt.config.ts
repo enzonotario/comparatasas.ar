@@ -1,10 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint', '@nuxt/ui', '@vueuse/nuxt', 'nuxt-gtag', '@vite-pwa/nuxt'],
+  modules: [
+    '@nuxt/eslint',
+    '@nuxt/ui',
+    '@vueuse/nuxt',
+    'nuxt-gtag',
+    '@vite-pwa/nuxt',
+    '@nuxtjs/sitemap',
+  ],
   ssr: false,
   devtools: { enabled: true },
 
-  // Set baseURL for GitHub Pages when deploying under a subpath
   app: {
     baseURL: process.env.NUXT_APP_BASE_URL || '/',
     head: {
@@ -20,6 +26,11 @@ export default defineNuxtConfig({
     options: {
       scrollBehaviorType: 'smooth',
     },
+  },
+
+  site: {
+    url: 'https://comparatasas.ar',
+    name: 'comparatasas.ar',
   },
 
   compatibilityDate: '2025-07-15',
@@ -40,5 +51,11 @@ export default defineNuxtConfig({
 
   pwa: {
     selfDestroying: true,
+  },
+
+  sitemap: {
+    urls: () => {
+      return ['https://comparatasas.ar/']
+    },
   },
 })
