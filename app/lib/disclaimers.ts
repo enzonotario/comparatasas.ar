@@ -60,7 +60,7 @@ export const disclaimerMappings: DisclaimerMapping = {
   ],
   'plazos-fijos': [
     {
-      text: 'Las tasas de plazos fijos corresponden a la TNA para plazos fijos a 30 días para clientes. La información puede estar desactualizada y no garantizamos que estas sean las últimas tasas vigentes.',
+      text: 'Las tasas de plazos fijos corresponden a la TNA para plazos fijos a 30 días para clientes informados al BCRA. La información puede estar desactualizada y/o no reflejar la realidad. Verificá siempre las condiciones actuales directamente con cada institución antes de invertir.',
     },
   ],
   criptomonedas: [
