@@ -10,7 +10,7 @@ defineProps<{
   <div class="flex flex-col gap-3">
     <a
       v-for="(item, index) in items"
-      :key="keyProp ? item[keyProp] : `item-${index}`"
+      :key="keyProp ? `${item[keyProp]}-${index}` : `item-${index}`"
       :href="item.url ? item.url : undefined"
       :target="item.url ? '_blank' : undefined"
       :rel="item.url ? 'noopener noreferrer' : undefined"
