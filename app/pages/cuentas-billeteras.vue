@@ -11,21 +11,8 @@ useSeoMeta({
 const { allFundsCache, loading, error } = useFunds()
 const { accounts, loading: loadingAccounts } = useAccounts()
 
-const resolvedAccounts = computed(() => {
-  return accounts.value.filter((i) => i?.fondo !== 'Fiwind')
-})
-
 const resolvedFundsAccounts = computed(() => {
-  return [
-    ...allFundsCache.value.filter((i) => i?.meta?.showInAccounts),
-    ...accounts.value
-      .filter((i) => i?.fondo === 'Fiwind')
-      .map((i) => ({
-        ...i,
-        type: null,
-        typeLabel: null,
-      })),
-  ].sort((a, b) => b.tna - a.tna)
+  return allFundsCache.value.filter((i) => i?.meta?.showInAccounts).sort((a, b) => b.tna - a.tna)
 })
 </script>
 
@@ -40,9 +27,9 @@ const resolvedFundsAccounts = computed(() => {
 
       <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
 
-      <FundsLoading v-if="loadingAccounts && !resolvedAccounts.length" />
+      <FundsLoading v-if="loadingAccounts && !accounts.length" />
 
-      <FundsList v-else :items="resolvedAccounts" key-prop="fondo" mode="detailed"> </FundsList>
+      <FundsList v-else :items="accounts" key-prop="fondo" mode="detailed"> </FundsList>
     </div>
 
     <div class="mt-6">

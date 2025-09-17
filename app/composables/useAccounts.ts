@@ -55,8 +55,8 @@ export function useAccounts() {
             tope: a.tope,
             fecha: a.fecha || today,
             logo: getInstitutionLogo(a.fondo),
-            type: 'cuentaRemunerada',
-            typeLabel: 'Cuenta Remunerada',
+            type: a.fondo === 'FIWIND' ? 'billetera' : 'cuentaRemunerada',
+            typeLabel: a.fondo === 'FIWIND' ? 'Billetera' : 'Cuenta Remunerada',
           }) as AccountItem,
       )
       .sort((a, b) => b.tna - a.tna)
