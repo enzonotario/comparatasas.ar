@@ -1,5 +1,4 @@
 import { getInstitutionLogo, getInstitutionShortName } from '~/lib/mappings/institutions'
-import { getFundMapping } from '~/lib/mappings/funds'
 
 export interface ApiAccount {
   fondo: string
@@ -19,6 +18,8 @@ export interface AccountItem {
   logo?: string
   condiciones?: string
   condicionesCorto?: string
+  type?: string
+  typeLabel?: string
 }
 
 const data = ref<ApiAccount[] | null>(null)
@@ -46,46 +47,35 @@ export function useAccounts() {
     }
   }
 
-  const accounts = computed<AccountItem[]>((): AccountItem[] => {
+  function mapApiAccountToAccountItem(a: ApiAccount): AccountItem {
     const today = new Date().toISOString().split('T')[0]
-    const apiItems = data.value ?? []
-    return apiItems
-      .filter((a) => ['FIWIND', 'NARANJA X', 'UALA'].includes(a.fondo))
-      .map((a) => {
-        return {
-          fondo: getInstitutionShortName(a.fondo) || a.fondo,
-          tna: a.tna,
-          tea: 0,
-          tope: a.tope,
-          fecha: a.fecha || today,
-          logo: getInstitutionLogo(a.fondo),
-          type: a.fondo === 'FIWIND' ? 'billetera' : 'cuentaRemunerada',
-          typeLabel: a.fondo === 'FIWIND' ? 'Billetera' : 'Cuenta Remunerada',
-        } as AccountItem
-      })
+    return {
+      fondo: getInstitutionShortName(a.fondo) || a.fondo,
+      tna: a.tna,
+      tea: 0,
+      tope: a.tope,
+      fecha: a.fecha || today,
+      logo: getInstitutionLogo(a.fondo) ?? undefined,
+      type: a.fondo === 'FIWIND' ? 'billetera' : 'cuentaRemunerada',
+      typeLabel: a.fondo === 'FIWIND' ? 'Billetera' : 'Cuenta Remunerada',
+      condiciones: a.condiciones,
+      condicionesCorto: a.condicionesCorto,
+    }
+  }
+
+  function filterAndMapAccounts(fundNames: string[]): AccountItem[] {
+    return (data.value ?? [])
+      .filter((a) => fundNames.includes(a.fondo))
+      .map((a) => mapApiAccountToAccountItem(a))
       .sort((a, b) => b.tna - a.tna)
+  }
+
+  const accounts = computed<AccountItem[]>((): AccountItem[] => {
+    return filterAndMapAccounts(['FIWIND', 'NARANJA X', 'UALA'])
   })
 
   const specialAccounts = computed<AccountItem[]>((): AccountItem[] => {
-    const today = new Date().toISOString().split('T')[0]
-    return (data.value ?? [])
-      .filter((a) => ['CRESIUM', 'SUPERVIELLE', 'UALA PLUS'].includes(a.fondo))
-      .map(
-        (a) =>
-          ({
-            fondo: getInstitutionShortName(a.fondo) || a.fondo,
-            tna: a.tna,
-            tea: 0,
-            tope: a.tope,
-            fecha: a.fecha || today,
-            logo: getInstitutionLogo(a.fondo),
-            type: 'cuentaRemunerada',
-            typeLabel: 'Cuenta Remunerada',
-            condiciones: a.condiciones,
-            condicionesCorto: a.condicionesCorto,
-          }) as AccountItem,
-      )
-      .sort((a, b) => b.tna - a.tna)
+    return filterAndMapAccounts(['CRESIUM', 'SUPERVIELLE', 'UALA PLUS'])
   })
 
   return { accounts, specialAccounts, loading, error, fetch }
