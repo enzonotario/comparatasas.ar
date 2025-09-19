@@ -55,7 +55,7 @@ export function useAccounts() {
       tea: 0,
       tope: a.tope,
       fecha: a.fecha || today,
-      logo: getInstitutionLogo(a.fondo) ?? undefined,
+      logo: getInstitutionLogo(a.fondo),
       type: a.fondo === 'FIWIND' ? 'billetera' : 'cuentaRemunerada',
       typeLabel: a.fondo === 'FIWIND' ? 'Billetera' : 'Cuenta Remunerada',
       condiciones: a.condiciones,

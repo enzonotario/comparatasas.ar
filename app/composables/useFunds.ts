@@ -203,7 +203,7 @@ async function getRentaFija() {
     }))
 }
 
-async function getRentaFijaPreviousData(targetDate: Date) {
+async function getRentaFijaPreviousData(targetDate: Date): Promise<FundRaw[]> {
   const targetDateString = targetDate.toISOString().split('T')[0].replace(/-/g, '/')
 
   try {
@@ -211,7 +211,7 @@ async function getRentaFijaPreviousData(targetDate: Date) {
       `https://api.argentinadatos.com/v1/finanzas/fci/rentaFija/${targetDateString}`,
     )
 
-    if (response.length === 0) {
+    if (!response || response.length === 0) {
       throw new Error(`No data for date ${targetDateString}`)
     }
 
@@ -254,11 +254,11 @@ async function getLatestAndPreviousRentaFija() {
       }
     }
 
-    if (fundPrevious) {
+    if (fundPrevious && fundPrevious.length > 0) {
       // find the closest date before or equal to target date
       const sortedPrevious = fundPrevious
-        .filter((f) => f.fondo === fundName && new Date(f.fecha) <= targetDate)
-        .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+        .filter((f) => f.fondo === fundName && f.fecha && new Date(f.fecha) <= targetDate)
+        .sort((a, b) => new Date(b.fecha!).getTime() - new Date(a.fecha!).getTime())
 
       if (sortedPrevious.length > 0) {
         previous.push(sortedPrevious[0])

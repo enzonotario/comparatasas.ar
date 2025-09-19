@@ -7,6 +7,9 @@ export interface ProcessedFund {
   fecha: string
   patrimonio?: number
   logo?: string
+  type?: string
+  typeLabel?: string
+  url?: string
   meta?: {
     showInFunds?: boolean
     showInAccounts?: boolean
