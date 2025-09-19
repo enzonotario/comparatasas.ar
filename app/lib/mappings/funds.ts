@@ -362,6 +362,20 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
+    fundName: 'SBS Ahorro Pesos - Clase A',
+    institutions: [
+      {
+        institution: 'CLARO PAY',
+        displayName: 'Claro Pay',
+        showInAccounts: true,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+      },
+    ],
+  },
+  {
     fundName: 'Balanz Acciones - Clase A',
     institutions: [
       {

@@ -404,6 +404,12 @@ export const institutions: Array<{
     shortName: 'KuCoin',
     url: 'https://www.kucoin.com/',
   },
+  {
+    names: ['Claro Pay'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/claropay.svg',
+    shortName: 'Claro Pay',
+    url: 'https://claropay.com.ar/',
+  },
 ]
 
 export function getInstitutionLogo(name: string): string | undefined {
