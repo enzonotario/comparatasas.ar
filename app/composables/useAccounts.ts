@@ -1,10 +1,13 @@
 import { getInstitutionLogo, getInstitutionShortName } from '~/lib/mappings/institutions'
+import { getFundMapping } from '~/lib/mappings/funds'
 
 export interface ApiAccount {
   fondo: string
   tna: number
   tope: number | null
   fecha?: string
+  condiciones?: string
+  condicionesCorto?: string
 }
 
 export interface AccountItem {
@@ -14,6 +17,8 @@ export interface AccountItem {
   tope: number | null
   fecha: string
   logo?: string
+  condiciones?: string
+  condicionesCorto?: string
 }
 
 const data = ref<ApiAccount[] | null>(null)
@@ -45,7 +50,26 @@ export function useAccounts() {
     const today = new Date().toISOString().split('T')[0]
     const apiItems = data.value ?? []
     return apiItems
-      .filter((a) => a.fondo !== 'SUPERVIELLE') // TODO: Ver este filtro.
+      .filter((a) => ['FIWIND', 'NARANJA X', 'UALA'].includes(a.fondo))
+      .map((a) => {
+        return {
+          fondo: getInstitutionShortName(a.fondo) || a.fondo,
+          tna: a.tna,
+          tea: 0,
+          tope: a.tope,
+          fecha: a.fecha || today,
+          logo: getInstitutionLogo(a.fondo),
+          type: a.fondo === 'FIWIND' ? 'billetera' : 'cuentaRemunerada',
+          typeLabel: a.fondo === 'FIWIND' ? 'Billetera' : 'Cuenta Remunerada',
+        } as AccountItem
+      })
+      .sort((a, b) => b.tna - a.tna)
+  })
+
+  const specialAccounts = computed<AccountItem[]>((): AccountItem[] => {
+    const today = new Date().toISOString().split('T')[0]
+    return (data.value ?? [])
+      .filter((a) => ['UALA PLUS', 'SUPERVIELLE'].includes(a.fondo))
       .map(
         (a) =>
           ({
@@ -55,12 +79,14 @@ export function useAccounts() {
             tope: a.tope,
             fecha: a.fecha || today,
             logo: getInstitutionLogo(a.fondo),
-            type: a.fondo === 'FIWIND' ? 'billetera' : 'cuentaRemunerada',
-            typeLabel: a.fondo === 'FIWIND' ? 'Billetera' : 'Cuenta Remunerada',
+            type: 'cuentaRemunerada',
+            typeLabel: 'Cuenta Remunerada',
+            condiciones: a.condiciones,
+            condicionesCorto: a.condicionesCorto,
           }) as AccountItem,
       )
       .sort((a, b) => b.tna - a.tna)
   })
 
-  return { accounts, loading, error, fetch }
+  return { accounts, specialAccounts, loading, error, fetch }
 }

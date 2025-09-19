@@ -38,6 +38,10 @@ defineProps<{
                   {{ item.displayName }}
                 </span>
 
+                <div v-if="item.condicionesCorto" class="text-sm text-neutral">
+                  {{ item.condicionesCorto }}
+                </div>
+
                 <div class="flex items-center gap-1 flex-wrap">
                   <slot name="badges-start" :item="item" />
                   <UBadge

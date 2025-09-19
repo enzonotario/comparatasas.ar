@@ -81,6 +81,12 @@ export const institutions: Array<{
     url: 'https://dub.link/xxanS0I',
   },
   {
+    names: ['UALA PLUS'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/uala.png',
+    shortName: 'Ualá Plus',
+    url: 'https://dub.link/xxanS0I',
+  },
+  {
     names: ['Naranja X', 'NARANJA X'],
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/naranja.png',
     shortName: 'Naranja X',

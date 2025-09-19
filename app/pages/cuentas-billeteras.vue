@@ -9,7 +9,7 @@ useSeoMeta({
 })
 
 const { allFundsCache, loading, error } = useFunds()
-const { accounts, loading: loadingAccounts } = useAccounts()
+const { accounts, loading: loadingAccounts, specialAccounts } = useAccounts()
 
 const resolvedFundsAccounts = computed(() => {
   return allFundsCache.value.filter((i) => i?.meta?.showInAccounts).sort((a, b) => b.tna - a.tna)
@@ -17,7 +17,7 @@ const resolvedFundsAccounts = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div class="space-y-6">
     <div>
       <div class="flex items-center justify-between mb-2">
         <h2 id="cuentas-remuneradas" class="text-lg font-medium scroll-mt-16">
@@ -32,7 +32,21 @@ const resolvedFundsAccounts = computed(() => {
       <FundsList v-else :items="accounts" key-prop="fondo" mode="detailed"> </FundsList>
     </div>
 
-    <div class="mt-6">
+    <div>
+      <div class="flex items-center justify-between mb-2">
+        <h2 id="cuentas-remuneradas" class="text-lg font-medium scroll-mt-16">
+          Con condiciones especiales
+        </h2>
+      </div>
+
+      <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
+
+      <FundsLoading v-if="loadingAccounts && !accounts.length" />
+
+      <FundsList v-else :items="specialAccounts" key-prop="fondo" mode="detailed"> </FundsList>
+    </div>
+
+    <div>
       <div class="flex items-center justify-between mb-2">
         <h2 id="fondos-comunes" class="text-lg font-medium scroll-mt-16">Fondos Comunes</h2>
       </div>
