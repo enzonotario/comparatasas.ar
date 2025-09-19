@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     'nuxt-gtag',
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
+    'nuxt-module-hotjar',
   ],
   ssr: false,
   devtools: { enabled: true },
@@ -47,6 +48,11 @@ export default defineNuxtConfig({
 
   gtag: {
     id: 'G-MVDC98G0E2',
+  },
+
+  hotjar: {
+    hotjarId: 6522567,
+    scriptVersion: 6,
   },
 
   pwa: {
