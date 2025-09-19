@@ -69,7 +69,7 @@ export function useAccounts() {
   const specialAccounts = computed<AccountItem[]>((): AccountItem[] => {
     const today = new Date().toISOString().split('T')[0]
     return (data.value ?? [])
-      .filter((a) => ['UALA PLUS', 'SUPERVIELLE'].includes(a.fondo))
+      .filter((a) => ['CRESIUM', 'SUPERVIELLE', 'UALA PLUS'].includes(a.fondo))
       .map(
         (a) =>
           ({
