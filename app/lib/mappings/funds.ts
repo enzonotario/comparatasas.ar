@@ -170,7 +170,7 @@ const fundMappings: FundMapping[] = [
       },
       {
         institution: 'Astropay',
-        displayName: 'Astropay',
+        displayName: 'AstroPay',
         showInAccounts: true,
         showInFunds: true,
         showInUsdFunds: false,
