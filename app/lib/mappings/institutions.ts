@@ -413,7 +413,7 @@ export const institutions: Array<{
   {
     names: ['CARREFOUR BANCO'],
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/carrefour-banco.png',
-    shortName: 'Carrefour',
+    shortName: 'Carrefour Banco',
     url: 'https://www.bancodeserviciosfinancieros.com.ar/?ref=comparatasas.ar',
   },
 ]
