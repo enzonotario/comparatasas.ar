@@ -1,4 +1,8 @@
-import { getInstitutionLogo, getInstitutionShortName } from '~/lib/mappings/institutions'
+import {
+  getInstitutionLogo,
+  getInstitutionShortName,
+  getInstitutionUrl,
+} from '~/lib/mappings/institutions'
 
 export interface ApiAccount {
   fondo: string
@@ -60,6 +64,7 @@ export function useAccounts() {
       typeLabel: a.fondo === 'FIWIND' ? 'Billetera' : 'Cuenta Remunerada',
       condiciones: a.condiciones,
       condicionesCorto: a.condicionesCorto,
+      url: getInstitutionUrl(a.fondo),
     }
   }
 
@@ -71,7 +76,7 @@ export function useAccounts() {
   }
 
   const accounts = computed<AccountItem[]>((): AccountItem[] => {
-    return filterAndMapAccounts(['FIWIND', 'NARANJA X', 'UALA'])
+    return filterAndMapAccounts(['CARREFOUR', 'FIWIND', 'NARANJA X', 'UALA'])
   })
 
   const specialAccounts = computed<AccountItem[]>((): AccountItem[] => {

@@ -410,6 +410,12 @@ export const institutions: Array<{
     shortName: 'Claro Pay',
     url: 'https://claropay.com.ar/',
   },
+  {
+    names: ['CARREFOUR'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/carrefour.svg',
+    shortName: 'Carrefour',
+    url: 'https://www.micarrefour.com.ar/?ref=comparatasas.ar',
+  },
 ]
 
 export function getInstitutionLogo(name: string): string | undefined {
