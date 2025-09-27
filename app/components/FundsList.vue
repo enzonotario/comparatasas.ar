@@ -38,7 +38,7 @@ defineProps<{
                   {{ item.displayName }}
                 </span>
 
-                <div v-if="item.condicionesCorto" class="text-sm text-neutral">
+                <div v-if="item.condicionesCorto" class="text-sm text-neutral max-w-sm">
                   {{ item.condicionesCorto }}
                 </div>
 
