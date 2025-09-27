@@ -411,8 +411,8 @@ export const institutions: Array<{
     url: 'https://claropay.com.ar/',
   },
   {
-    names: ['CARREFOUR'],
-    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/carrefour.svg',
+    names: ['CARREFOUR BANCO'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/carrefour-banco.png',
     shortName: 'Carrefour',
     url: 'https://www.micarrefour.com.ar/?ref=comparatasas.ar',
   },
