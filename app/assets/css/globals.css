@@ -4,3 +4,7 @@
 .text-muted {
   @apply text-gray-600 dark:text-gray-400;
 }
+
+:root {
+  --ui-header-height: --spacing(13);
+}

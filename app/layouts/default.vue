@@ -105,10 +105,10 @@ onMounted(() => {
     <div class="bg-neutral-50 dark:bg-neutral-950">
       <LayoutBackground />
 
-      <header
+      <UHeader
         class="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md"
       >
-        <UContainer class="flex items-center justify-between h-12">
+        <template #title>
           <NuxtLink to="/" class="flex items-center gap-2">
             <span
               class="font-bold text-neutral-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400"
@@ -116,11 +116,14 @@ onMounted(() => {
               comparatasas.ar
             </span>
           </NuxtLink>
-          <ColorModeSwitch />
-        </UContainer>
-      </header>
+        </template>
 
-      <main class="min-h-screen flex flex-col space-y-6 pt-16">
+        <template #right>
+          <UColorModeSwitch />
+        </template>
+      </UHeader>
+
+      <UMain class="flex flex-col space-y-6 pt-16">
         <UContainer class="space-y-6">
           <div class="flex flex-col items-center text-center space-y-2">
             <h1 class="font-bold text-4xl sm:text-5xl text-neutral-900 dark:text-white">
@@ -168,35 +171,37 @@ onMounted(() => {
 
           <DisclaimerSection :page="route.name" />
         </UContainer>
-      </main>
+      </UMain>
 
       <USeparator type="dashed" class="h-px mt-6" />
 
-      <footer class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl mx-auto">
-        <div class="flex flex-col items-start gap-2">
-          <p class="text-sm text-muted font-semibold">Open Source</p>
-          <p class="text-sm text-muted">
-            Este proyecto es de código abierto. Contribuciones y sugerencias son bienvenidas.
-          </p>
-          <UButton
-            href="https://github.com/enzonotario/comparatasas.ar"
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="outline"
-            color="neutral"
-            class="space-x-2"
-          >
-            <UIcon name="i-lucide-github" class="size-4" />
-            GitHub
-          </UButton>
-        </div>
-
-        <div class="flex flex-col gap-2"></div>
-
-        <div class="flex flex-col md:items-end gap-2">
-          <FriendlyPages />
-        </div>
-      </footer>
+      <UFooter>
+        <template #left>
+          <div class="flex flex-col items-start gap-2">
+            <p class="text-sm text-muted font-semibold">Open Source</p>
+            <p class="text-sm text-muted">
+              Este proyecto es de código abierto. Contribuciones y sugerencias son bienvenidas.
+            </p>
+            <UButton
+              href="https://github.com/enzonotario/comparatasas.ar"
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outline"
+              color="neutral"
+              class="space-x-2"
+            >
+              <UIcon name="i-lucide-github" class="size-4" />
+              GitHub
+            </UButton>
+          </div>
+        </template>
+        <template #default> </template>
+        <template #right>
+          <div class="flex flex-col md:items-end gap-2">
+            <FriendlyPages />
+          </div>
+        </template>
+      </UFooter>
     </div>
   </UApp>
 </template>
