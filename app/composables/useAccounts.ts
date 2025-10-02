@@ -80,7 +80,13 @@ export function useAccounts() {
   })
 
   const specialAccounts = computed<AccountItem[]>((): AccountItem[] => {
-    return filterAndMapAccounts(['CRESIUM', 'SUPERVIELLE', 'UALA PLUS'])
+    return filterAndMapAccounts([
+      'CRESIUM',
+      'SUPERVIELLE',
+      'UALA PLUS',
+      'UALA PLUS 1',
+      'UALA PLUS 2',
+    ])
   })
 
   return { accounts, specialAccounts, loading, error, fetch }
