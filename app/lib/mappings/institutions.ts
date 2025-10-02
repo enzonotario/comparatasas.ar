@@ -81,9 +81,21 @@ export const institutions: Array<{
     url: 'https://dub.link/xxanS0I',
   },
   {
-    names: ['UALA PLUS', 'UALA PLUS 1', 'UALA PLUS 2'],
+    names: ['UALA PLUS'],
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/uala.png',
     shortName: 'Ualá Plus',
+    url: 'https://dub.link/xxanS0I',
+  },
+  {
+    names: ['UALA PLUS 1'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/uala.png',
+    shortName: 'Ualá Plus 1',
+    url: 'https://dub.link/xxanS0I',
+  },
+  {
+    names: ['UALA PLUS 2'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/uala.png',
+    shortName: 'Ualá Plus 2',
     url: 'https://dub.link/xxanS0I',
   },
   {
