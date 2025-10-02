@@ -76,11 +76,11 @@ export function useAccounts() {
   }
 
   const accounts = computed<AccountItem[]>((): AccountItem[] => {
-    return filterAndMapAccounts(['CARREFOUR BANCO', 'FIWIND', 'NARANJA X'])
+    return filterAndMapAccounts(['CARREFOUR BANCO', 'FIWIND', 'NARANJA X', 'UALA'])
   })
 
   const specialAccounts = computed<AccountItem[]>((): AccountItem[] => {
-    return filterAndMapAccounts(['CRESIUM', 'SUPERVIELLE'])
+    return filterAndMapAccounts(['CRESIUM', 'SUPERVIELLE', 'UALA PLUS'])
   })
 
   return { accounts, specialAccounts, loading, error, fetch }
