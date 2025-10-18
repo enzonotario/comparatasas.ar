@@ -1,32 +1,57 @@
 <script setup lang="ts">
-const links = [
-  { name: 'comparapix.ar', url: 'https://comparapix.ar' },
-  { name: 'comparadolar.ar', url: 'https://comparadolar.ar' },
-  { name: 'cedears.ar', url: 'https://cedears.ar' },
-  { name: 'enqueinvierto.ar', url: 'https://enqueinvierto.ar' },
-  { name: 'icons.com.ar', url: 'https://icons.com.ar' },
-  { name: 'dolarya.info', url: 'https://dolarya.info' },
-  { name: 'argentinadatos.com', url: 'https://argentinadatos.com' },
-  { name: 'dolarito.ar', url: 'https://dolarito.ar' },
-  { name: 'impuestito.org', url: 'https://www.impuestito.org' },
-  { name: 'betece.app', url: 'https://betece.app' },
+const friendlyPages = [
+  {
+    label: 'comparatasas.ar',
+    to: 'https://comparatasas.ar',
+  },
+  {
+    label: 'comparapix.ar',
+    to: 'https://comparapix.ar',
+  },
+  {
+    label: 'icons.com.ar',
+    to: 'https://icons.com.ar',
+  },
+  {
+    label: 'dolarya.info',
+    to: 'https://dub.link/asxwg8M',
+  },
+  {
+    label: 'argentinadatos.com',
+    to: 'https://dub.link/l58DNjJ',
+  },
+  {
+    label: 'dolarito.ar',
+    to: 'https://dub.link/cCOI35S',
+  },
+  {
+    label: 'impuestito.org',
+    to: 'https://dub.link/dh8pB0R',
+  },
+  {
+    label: 'enqueinvierto.ar',
+    to: 'https://enqueinvierto.ar',
+  },
+  {
+    label: 'betece.app',
+    to: 'https://betece.app',
+  },
 ]
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
-    <p class="text-sm text-muted font-semibold">Páginas Amigas</p>
-    <div class="flex flex-col gap-2">
+  <div class="space-y-4">
+    <h3 class="text-xl font-bold">Páginas amigas</h3>
+    <div class="flex flex-wrap gap-4">
       <a
-        v-for="link in links"
-        :key="link.url"
-        :href="link.url"
+        v-for="page in friendlyPages"
+        :key="page.label"
+        :href="page.to"
+        class="block text-sm text-zinc-600 dark:text-white/60 hover:underline"
         target="_blank"
         rel="noopener noreferrer"
-        class="flex items-center gap-2 text-sm text-muted"
       >
-        <UIcon name="i-lucide-heart-handshake" class="size-4 text-blue-500" />
-        {{ link.name }}
+        {{ page.label }}
       </a>
     </div>
   </div>

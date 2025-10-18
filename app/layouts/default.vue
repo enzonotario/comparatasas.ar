@@ -175,31 +175,48 @@ onMounted(() => {
 
       <USeparator type="dashed" class="h-px mt-6" />
 
-      <UFooter>
-        <template #left>
-          <div class="flex flex-col items-start gap-2">
-            <p class="text-sm text-muted font-semibold">Open Source</p>
-            <p class="text-sm text-muted">
-              Este proyecto es de código abierto. Contribuciones y sugerencias son bienvenidas.
-            </p>
-            <UButton
-              href="https://github.com/enzonotario/comparatasas.ar"
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="outline"
-              color="neutral"
-              class="space-x-2"
-            >
-              <UIcon name="i-lucide-github" class="size-4" />
-              GitHub
-            </UButton>
-          </div>
-        </template>
-        <template #default> </template>
-        <template #right>
-          <div class="flex flex-col md:items-end gap-2">
+      <UFooter :ui="{ top: '!py-6' }">
+        <template #top>
+          <UContainer class="w-full max-w-3xl mx-auto space-y-12 !py-0">
+            <div class="flex flex-col items-start gap-2">
+              <h3 class="text-xl font-bold">Apoyá el proyecto</h3>
+              <p class="text-sm text-muted">
+                Ayudame a mantener y mejorar este proyecto con una donación.
+              </p>
+              <UButton
+                to="https://cafecito.app/enzonotario"
+                external
+                target="_blank"
+                rel="noopener noreferrer"
+                color="neutral"
+                variant="outline"
+                size="lg"
+              >
+                <UIcon name="i-heroicons-heart" />
+                Invitame un café
+              </UButton>
+            </div>
+
+            <div class="flex flex-col items-start gap-2">
+              <h3 class="text-xl font-bold">Open Source</h3>
+              <p class="text-sm text-muted">
+                Este proyecto es de código abierto. Contribuciones y sugerencias son bienvenidas.
+              </p>
+              <UButton
+                href="https://github.com/enzonotario/comparatasas.ar"
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="outline"
+                color="neutral"
+                class="space-x-2"
+              >
+                <UIcon name="i-lucide-github" class="size-4" />
+                GitHub
+              </UButton>
+            </div>
+
             <FriendlyPages />
-          </div>
+          </UContainer>
         </template>
       </UFooter>
     </div>
