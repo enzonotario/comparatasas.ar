@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const friendlyPages = [
   {
-    label: 'comparatasas.ar',
-    to: 'https://comparatasas.ar',
+    label: 'comparadolar.ar',
+    to: 'https://comparadolar.ar',
   },
   {
     label: 'comparapix.ar',
