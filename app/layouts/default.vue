@@ -175,7 +175,12 @@ onMounted(() => {
 
       <USeparator type="dashed" class="h-px mt-6" />
 
-      <UFooter :ui="{ top: '!py-6' }">
+      <UFooter
+        :ui="{
+          top: '!py-6',
+          container: '!p-0',
+        }"
+      >
         <template #top>
           <UContainer class="w-full max-w-3xl mx-auto space-y-12 !py-0">
             <div class="flex flex-col items-start gap-2">
