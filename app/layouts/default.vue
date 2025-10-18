@@ -113,7 +113,7 @@ onMounted(() => {
             <span
               class="font-bold text-neutral-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400"
             >
-              comparatasas.ar
+              ComparaTasas.ar
             </span>
           </NuxtLink>
         </template>
