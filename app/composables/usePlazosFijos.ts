@@ -35,6 +35,7 @@ export function usePlazosFijos() {
       .map((plazoFijo) => ({
         ...plazoFijo,
         tna: plazoFijo.tnaClientes || plazoFijo.tnaNoClientes || 0,
+        fecha: plazoFijo.fecha,
       }))
       .sort((a, b) => b.tna - a.tna)
       .map((plazoFijo) => ({
@@ -42,6 +43,8 @@ export function usePlazosFijos() {
         institution: getPlazoFijoShortName(plazoFijo.entidad),
         tna: plazoFijo.tna * 100,
         url: getPlazoFijoUrl(plazoFijo.entidad) || plazoFijo.enlace || '#',
+        fecha: plazoFijo.fecha,
+        fechaAnterior: plazoFijo.fechaAnterior,
         type: 'plazoFijo30d',
         typeLabel: 'Plazo Fijo 30 días',
       }))
