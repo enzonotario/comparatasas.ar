@@ -18,7 +18,7 @@ export interface AccountItem {
   tna: number
   tea: number
   tope: number | null
-  fecha: string
+  fecha?: string
   fechaAnterior?: string
   logo?: string
   condiciones?: string
@@ -54,13 +54,12 @@ export function useAccounts() {
   }
 
   function mapApiAccountToAccountItem(a: ApiAccount): AccountItem {
-    const today = new Date().toISOString().split('T')[0]
     return {
       fondo: getInstitutionShortName(a.fondo) || a.fondo,
       tna: a.tna,
       tea: 0,
       tope: a.tope,
-      fecha: a.fecha || today,
+      fecha: a.fecha,
       logo: getInstitutionLogo(a.fondo),
       type: a.fondo === 'FIWIND' ? 'billetera' : 'cuentaRemunerada',
       typeLabel: a.fondo === 'FIWIND' ? 'Billetera' : 'Cuenta Remunerada',
