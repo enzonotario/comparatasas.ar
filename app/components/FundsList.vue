@@ -104,6 +104,10 @@ function formatDate(dateString: string): string {
 
                   <span>{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span>
                 </div>
+                <div v-else-if="item.fecha">
+                  <span>Actualizado el </span>
+                  <span>{{ formatDate(item.fecha) }}</span>
+                </div>
               </div>
             </div>
           </div>

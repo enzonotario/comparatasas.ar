@@ -19,11 +19,13 @@ export interface AccountItem {
   tea: number
   tope: number | null
   fecha: string
+  fechaAnterior?: string
   logo?: string
   condiciones?: string
   condicionesCorto?: string
   type?: string
   typeLabel?: string
+  url?: string
 }
 
 const data = ref<ApiAccount[] | null>(null)

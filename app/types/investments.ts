@@ -27,6 +27,8 @@ export interface PlazoFijo {
   tnaClientes: number
   tnaNoClientes: number | null
   enlace: string | null
+  fecha?: string
+  fechaAnterior?: string
   type: 'plazoFijo30d'
   typeLabel: string
 }
