@@ -4,6 +4,14 @@ defineProps<{
   keyProp?: string
   mode?: 'simple' | 'detailed'
 }>()
+
+function formatDate(dateString: string): string {
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${day}/${month}/${year}`
+}
 </script>
 
 <template>
@@ -85,11 +93,18 @@ defineProps<{
               </div>
             </div>
 
-            <div class="text-right">
+            <div class="text-right space-y-1">
               <div class="text-primary-600 dark:text-primary-400 font-semibold">
                 {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
               </div>
-              <div class="text-xs text-neutral">TNA</div>
+              <div class="text-xs text-neutral">
+                TNA
+                <div v-if="item.fechaAnterior && item.fecha">
+                  <span>Entre </span>
+
+                  <span>{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span>
+                </div>
+              </div>
             </div>
           </div>
           <slot name="details" :item="item" />

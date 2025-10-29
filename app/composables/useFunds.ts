@@ -51,6 +51,7 @@ function getFundsMap(latest: FundRaw[], previous: FundRaw[]) {
     if (!p) return []
 
     const newerDate = new Date(l.fecha) > new Date(p.fecha) ? l.fecha : p.fecha
+    const olderDate = new Date(l.fecha) > new Date(p.fecha) ? p.fecha : l.fecha
     const newerVCP = new Date(l.fecha) > new Date(p.fecha) ? l.vcp : p.vcp
     const olderVCP = new Date(l.fecha) > new Date(p.fecha) ? p.vcp : l.vcp
     const d = daysBetween(l.fecha, p.fecha)
@@ -66,6 +67,8 @@ function getFundsMap(latest: FundRaw[], previous: FundRaw[]) {
       tna,
       tea,
       fecha: newerDate,
+      fechaAnterior: olderDate,
+      dias: d,
       patrimonio: l.patrimonio,
       logo: getInstitutionLogo(inst.institution),
       url: getInstitutionUrl(inst.institution),

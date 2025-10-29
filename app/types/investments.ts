@@ -5,6 +5,8 @@ export interface ProcessedFund {
   tna: number
   tea: number
   fecha: string
+  fechaAnterior?: string
+  dias?: number
   patrimonio?: number
   logo?: string
   type?: string
