@@ -101,11 +101,11 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'Cocos Daruma Renta Mixta - Clase A',
+    fundName: 'Cocos Rendimiento - Clase A',
     institutions: [
       {
         institution: 'Cocos',
-        displayName: 'Cocos Daruma',
+        displayName: 'Cocos Rendimiento FCI',
         showInAccounts: true,
         showInFunds: true,
         showInUsdFunds: false,

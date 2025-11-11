@@ -14,7 +14,7 @@ export const disclaimerMappings: DisclaimerMapping = {
   ],
   'cuentas-billeteras': [
     {
-      text: 'Solo Uala (UILO), Brubank y Naranja X son cuentas remuneradas, el resto son fondos comunes de inversion. La tasa que se muestra en cocos corresponde al fondo cocos daruma renta mixta (COCORMA), este fondo podría llegar a tener un rendimiento negativo.',
+      text: 'Solo Uala (UILO), Brubank y Naranja X son cuentas remuneradas, el resto son fondos comunes de inversion. La tasa que se muestra en cocos corresponde al fondo cocos rendimiento renta mixta (COCORMA), este fondo podría llegar a tener un rendimiento negativo.',
     },
     {
       text: 'La información representada proviene de la camara argentina de fondos comunes de inversion (CAFCI) y de las propias plataformas. Puede llegar a estar desactualizada y no garantizamos que estos sean los ultimos rendimientos vigentes.',
