@@ -1,10 +1,5 @@
 <script setup lang="ts">
-interface NavigationPage {
-  to: string
-  label: string
-  icon: string
-  image: string
-}
+import type { NavigationPage } from '~/composables/useNavigationPages'
 
 interface Props {
   pages: NavigationPage[]
@@ -12,20 +7,10 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { getPreviousPage, getNextPage } = useNavigationPages()
 
-const currentIndex = computed(() => {
-  return props.pages.findIndex((page) => page.to.split('#')[0] === props.currentRoute)
-})
-
-const previousPage = computed(() => {
-  const prevIndex = currentIndex.value - 1
-  return prevIndex >= 0 ? props.pages[prevIndex] : null
-})
-
-const nextPage = computed(() => {
-  const nextIndex = currentIndex.value > 0 ? currentIndex.value + 1 : 1
-  return nextIndex < props.pages.length ? props.pages[nextIndex] : null
-})
+const previousPage = computed(() => getPreviousPage(props.currentRoute))
+const nextPage = computed(() => getNextPage(props.currentRoute))
 </script>
 
 <template>

@@ -6,6 +6,7 @@ const { fetch: fetchPlazosFijos } = usePlazosFijos()
 const { initialize } = useHotjar()
 
 const route = useRoute()
+const { pages } = useNavigationPages()
 
 useHead({
   htmlAttrs: { lang: 'es' },
@@ -52,45 +53,6 @@ useSeoMeta({
   robots: 'index, follow',
 })
 
-const pages = [
-  {
-    to: '/cuentas-billeteras#cuentas-remuneradas',
-    label: 'Cuentas y Billeteras',
-    icon: 'i-lucide-wallet',
-    image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
-  },
-  {
-    to: '/mercado-dinero-ars#mercado-dinero-ars',
-    label: 'Mercado Dinero ARS',
-    icon: 'i-lucide-pie-chart',
-    image: 'https://api.argentinadatos.com/static/comparatasas/icons/piggy-bank.png',
-  },
-  {
-    to: '/renta-fija-usd#renta-fija-usd',
-    label: 'Renta Fija USD',
-    icon: 'i-lucide-pie-chart',
-    image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
-  },
-  {
-    to: '/mercado-dinero-usd#mercado-dinero-usd',
-    label: 'Mercado Dinero USD',
-    icon: 'i-lucide-pie-chart',
-    image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-bill.png',
-  },
-  {
-    to: '/plazos-fijos#plazos-fijos',
-    label: 'Plazos Fijos',
-    icon: 'i-lucide-clock',
-    image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
-  },
-  {
-    to: '/criptomonedas#rendimientos-crypto',
-    label: 'Criptomonedas',
-    icon: 'i-lucide-bitcoin',
-    image: 'https://api.argentinadatos.com/static/comparatasas/icons/bitcoin.png',
-  },
-]
-
 onMounted(() => {
   fetchAccounts()
   fetchFunds()
@@ -120,6 +82,10 @@ onMounted(() => {
 
         <template #right>
           <UColorModeSwitch />
+        </template>
+
+        <template #body>
+          <PageNavigationMobile :pages="pages" :current-route="`/${route.name}`" />
         </template>
       </UHeader>
 
