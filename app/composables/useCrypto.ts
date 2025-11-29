@@ -45,15 +45,31 @@ export function useCrypto() {
 
       data.value = responseArray
 
-      // Filter cryptocurrencies that shouldn't be shown and those with APY of 0
+      // Filtra criptomonedas válidas y consolida tokens duplicados por entidad (toma el máximo APY)
       dataProcessed.value = responseArray
-        .map((entity) => ({
-          entidad: entity.entidad,
-          rendimientos: entity.rendimientos.filter(
+        .map((entity) => {
+          const validRendimientos = entity.rendimientos.filter(
             (rendimiento) => shouldShowCrypto(rendimiento.moneda) && rendimiento.apy > 0,
-          ),
-        }))
-        // Filter entities that have no yields after filtering
+          )
+
+          // Consolida tokens duplicados tomando el máximo APY
+          const consolidatedRendimientos = new Map<string, number>()
+          validRendimientos.forEach((rendimiento) => {
+            const currentMax = consolidatedRendimientos.get(rendimiento.moneda) || 0
+            if (rendimiento.apy > currentMax) {
+              consolidatedRendimientos.set(rendimiento.moneda, rendimiento.apy)
+            }
+          })
+
+          const consolidated = Array.from(consolidatedRendimientos.entries()).map(
+            ([moneda, apy]) => ({ moneda, apy }),
+          )
+
+          return {
+            entidad: entity.entidad,
+            rendimientos: consolidated,
+          }
+        })
         .filter((entity) => entity.rendimientos.length > 0)
     } catch (err) {
       error.value = err

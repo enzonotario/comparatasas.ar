@@ -127,14 +127,21 @@ export function shouldShowCrypto(symbol: string): boolean {
   return !BLACKLISTED_SYMBOLS.some((blacklisted) => normalizedSymbol === blacklisted.toLowerCase())
 }
 
-// Función para ordenar criptomonedas por APY máximo
+// Calcula el máximo APY para una criptomoneda entre todos los proveedores
+// Toma el máximo por proveedor (puede haber múltiples opciones/protocolos) y luego el máximo global
 export function getCryptoMaxYield(
   crypto: string,
   cryptoEntities: { entidad: string; rendimientos: { moneda: string; apy: number }[] }[],
 ): number {
-  const allYields = cryptoEntities.flatMap((entity) =>
-    entity.rendimientos.filter((r) => r.moneda === crypto).map((r) => r.apy),
-  )
+  const maxYieldsPerEntity = cryptoEntities
+    .map((entity) => {
+      const yieldsForCrypto = entity.rendimientos
+        .filter((r) => r.moneda === crypto)
+        .map((r) => r.apy)
 
-  return allYields.length > 0 ? Math.max(...allYields) : 0
+      return yieldsForCrypto.length > 0 ? Math.max(...yieldsForCrypto) : 0
+    })
+    .filter((maxYield) => maxYield > 0)
+
+  return maxYieldsPerEntity.length > 0 ? Math.max(...maxYieldsPerEntity) : 0
 }
