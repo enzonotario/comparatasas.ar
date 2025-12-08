@@ -9,50 +9,6 @@ const { initialize } = useHotjar()
 const route = useRoute()
 const { pages } = useNavigationPages()
 
-useHead({
-  htmlAttrs: { lang: 'es' },
-  title: 'Compara Tasas - Encuentra las mejores inversiones en Argentina',
-  meta: [
-    {
-      name: 'description',
-      content:
-        'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encuentra la mejor inversión para tu dinero.',
-    },
-    { name: 'application-name', content: 'Compara Tasas' },
-    { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' },
-    { name: 'theme-color', content: '#111827', media: '(prefers-color-scheme: dark)' },
-    // {
-    //   name: 'viewport',
-    //   content:
-    //     'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover',
-    // },
-  ],
-  link: [
-    { rel: 'icon', href: '/favicon.ico' },
-    { rel: 'apple-touch-icon', href: '/icons/icon-192x192.png' },
-    { rel: 'manifest', href: '/manifest.json' },
-    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-    { rel: 'preconnect', href: 'https://api.argentinadatos.com' },
-    { rel: 'preconnect', href: 'https://api.iconify.design' },
-    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
-    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap' },
-  ],
-})
-
-useSeoMeta({
-  title: 'Compara Tasas - Encuentra las mejores inversiones en Argentina',
-  ogTitle: 'Compara Tasas - Encuentra las mejores inversiones en Argentina',
-  description:
-    'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encuentra la mejor inversión para tu dinero.',
-  ogDescription:
-    'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encuentra la mejor inversión para tu dinero.',
-  ogImage: 'https://comparatasas.ar/meta-imagen.png',
-  ogUrl: 'https://comparatasas.ar',
-  ogType: 'website',
-  ogLocale: 'es_AR',
-  twitterCard: 'summary_large_image',
-  robots: 'index, follow',
-})
 
 onMounted(() => {
   fetchAccounts()
