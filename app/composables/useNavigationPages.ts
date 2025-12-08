@@ -41,7 +41,7 @@ export const useNavigationPages = () => {
       to: '/criptopesos#criptopesos',
       label: 'Criptopesos',
       icon: 'i-lucide-coins',
-      image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
+      image: 'https://api.argentinadatos.com/static/comparatasas/icons/criptopesos.png',
     },
   ]
 
