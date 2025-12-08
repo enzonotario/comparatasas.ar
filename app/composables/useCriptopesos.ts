@@ -55,7 +55,7 @@ export function useCriptopesos() {
       tope: null,
       logo: getInstitutionLogo(a.entidad),
       type: 'criptopeso',
-      typeLabel: 'Criptopeso',
+      typeLabel: a.token,
       url: getInstitutionUrl(a.entidad),
     }
   }
