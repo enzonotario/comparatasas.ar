@@ -8,7 +8,7 @@ export interface NavigationPage {
 export const useNavigationPages = () => {
   const pages: NavigationPage[] = [
     {
-      to: '/cuentas-billeteras#cuentas-remuneradas',
+      to: '/cuentas-billeteras#rendimiento-garantizado',
       label: 'Cuentas y Billeteras',
       icon: 'i-lucide-wallet',
       image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
