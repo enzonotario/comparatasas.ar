@@ -74,6 +74,13 @@ onMounted(() => {
       >
         <template #title>
           <NuxtLink to="/" class="flex items-center gap-2">
+            <img
+              src="/assets/logo.png"
+              alt="ComparaTasas.ar"
+              class="w-12 h-12 rounded-full object-cover"
+              loading="eager"
+              fetchpriority="high"
+            />
             <span
               class="font-bold text-neutral-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400"
             >
