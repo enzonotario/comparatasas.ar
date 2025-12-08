@@ -14,12 +14,6 @@ export const useNavigationPages = () => {
       image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
     },
     {
-      to: '/mercado-dinero-ars#mercado-dinero-ars',
-      label: 'Mercado Dinero ARS',
-      icon: 'i-lucide-pie-chart',
-      image: 'https://api.argentinadatos.com/static/comparatasas/icons/piggy-bank.png',
-    },
-    {
       to: '/renta-fija-usd#renta-fija-usd',
       label: 'Renta Fija USD',
       icon: 'i-lucide-pie-chart',

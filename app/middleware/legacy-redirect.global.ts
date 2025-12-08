@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
     const tabToRouteMapping: Record<string, string> = {
       accounts: '/cuentas-billeteras',
-      funds: '/mercado-dinero-ars',
+      funds: '/cuentas-billeteras#rendimiento-variable',
       usd: '/mercado-dinero-usd',
       'usd-funds': '/renta-fija-usd',
       'usd-money-market': '/mercado-dinero-usd',
