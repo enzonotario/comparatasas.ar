@@ -43,6 +43,12 @@ export const useNavigationPages = () => {
       icon: 'i-lucide-bitcoin',
       image: 'https://api.argentinadatos.com/static/comparatasas/icons/bitcoin.png',
     },
+    {
+      to: '/criptopesos#criptopesos',
+      label: 'Criptopesos',
+      icon: 'i-lucide-coins',
+      image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
+    },
   ]
 
   const getCurrentIndex = (currentRoute: string) => {
