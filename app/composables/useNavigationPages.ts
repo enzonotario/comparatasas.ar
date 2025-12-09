@@ -5,71 +5,179 @@ export interface NavigationPage {
   image: string
 }
 
+export interface NavigationCategory {
+  id: string
+  label: string
+  icon: string | 'flag-ars' | 'flag-usd' | 'bitcoin'
+  pages: NavigationPage[]
+}
+
 export const useNavigationPages = () => {
-  const pages: NavigationPage[] = [
+  const route = useRoute()
+
+  // Normaliza la ruta: convierte '/' a '/cuentas-billeteras'
+  const normalizeRoute = (routePath: string): string => {
+    return routePath === '/' ? '/cuentas-billeteras' : routePath
+  }
+
+  const categories: NavigationCategory[] = [
     {
-      to: '/cuentas-billeteras#rendimiento-garantizado',
-      label: 'Cuentas y Billeteras',
-      icon: 'i-lucide-wallet',
-      image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
+      id: 'ars',
+      label: 'ARS',
+      icon: 'flag-ars',
+      pages: [
+        {
+          to: '/cuentas-billeteras',
+          label: 'Cuentas y Billeteras',
+          icon: 'i-lucide-wallet',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
+        },
+        {
+          to: '/plazos-fijos',
+          label: 'Plazo Fijo',
+          icon: 'i-lucide-clock',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
+        },
+        {
+          to: '/criptopesos',
+          label: 'Criptopesos',
+          icon: 'i-lucide-coins',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/criptopesos.png',
+        },
+      ],
     },
     {
-      to: '/renta-fija-usd#renta-fija-usd',
-      label: 'Renta Fija USD',
-      icon: 'i-lucide-pie-chart',
-      image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
+      id: 'usd',
+      label: 'USD',
+      icon: 'flag-usd',
+      pages: [
+        {
+          to: '/renta-fija-usd',
+          label: 'Renta Fija',
+          icon: 'i-lucide-pie-chart',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
+        },
+        {
+          to: '/mercado-dinero-usd',
+          label: 'Mercado de Dinero',
+          icon: 'i-lucide-pie-chart',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-bill.png',
+        },
+      ],
     },
     {
-      to: '/mercado-dinero-usd#mercado-dinero-usd',
-      label: 'Mercado Dinero USD',
-      icon: 'i-lucide-pie-chart',
-      image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-bill.png',
-    },
-    {
-      to: '/plazos-fijos#plazos-fijos',
-      label: 'Plazos Fijos',
-      icon: 'i-lucide-clock',
-      image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
-    },
-    {
-      to: '/criptomonedas#rendimientos-crypto',
+      id: 'crypto',
       label: 'Criptomonedas',
-      icon: 'i-lucide-bitcoin',
-      image: 'https://api.argentinadatos.com/static/comparatasas/icons/bitcoin.png',
-    },
-    {
-      to: '/criptopesos#criptopesos',
-      label: 'Criptopesos',
-      icon: 'i-lucide-coins',
-      image: 'https://api.argentinadatos.com/static/comparatasas/icons/criptopesos.png',
+      icon: 'bitcoin',
+      pages: [
+        {
+          to: '/criptomonedas',
+          label: 'Criptomonedas',
+          icon: 'i-lucide-bitcoin',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/bitcoin.png',
+        },
+      ],
     },
   ]
 
+  // Páginas planas para compatibilidad con código existente
+  const pages: NavigationPage[] = categories.flatMap((category) => category.pages)
+
+  const getCurrentCategory = (): NavigationCategory | null => {
+    const currentPath = normalizeRoute(route.path)
+    return (
+      categories.find((category) => category.pages.some((page) => page.to === currentPath)) ?? null
+    )
+  }
+
+  const getCurrentPage = (): NavigationPage | null => {
+    const currentPath = normalizeRoute(route.path)
+    return pages.find((page) => page.to === currentPath) ?? null
+  }
+
+  const getCategoryByRoute = (routePath: string): NavigationCategory | null => {
+    const normalizedPath = normalizeRoute(routePath)
+    return (
+      categories.find((category) => category.pages.some((page) => page.to === normalizedPath)) ??
+      null
+    )
+  }
+
   const getCurrentIndex = (currentRoute: string) => {
-    return pages.findIndex((page) => page.to.split('#')[0] === currentRoute)
+    const normalizedRoute = normalizeRoute(currentRoute)
+    return pages.findIndex((page) => page.to === normalizedRoute)
   }
 
   const getPreviousPage = (currentRoute: string): NavigationPage | null => {
-    const currentIndex = getCurrentIndex(currentRoute)
+    const normalizedRoute = normalizeRoute(currentRoute)
+    const currentCategory = getCategoryByRoute(normalizedRoute)
+    if (!currentCategory) return null
+
+    const categoryPages = currentCategory.pages
+    const currentIndex = categoryPages.findIndex((page) => page.to === normalizedRoute)
     const prevIndex = currentIndex - 1
-    return prevIndex >= 0 ? (pages[prevIndex] ?? null) : null
+
+    if (prevIndex >= 0) {
+      return categoryPages[prevIndex] ?? null
+    }
+
+    // Si no hay página anterior en la categoría, buscar en la categoría anterior
+    const currentCategoryIndex = categories.findIndex((cat) => cat.id === currentCategory.id)
+    if (currentCategoryIndex > 0) {
+      const prevCategory = categories[currentCategoryIndex - 1]
+      if (prevCategory && prevCategory.pages.length > 0) {
+        return prevCategory.pages[prevCategory.pages.length - 1] ?? null
+      }
+    }
+
+    return null
   }
 
   const getNextPage = (currentRoute: string): NavigationPage | null => {
-    const currentIndex = getCurrentIndex(currentRoute)
-    const nextIndex = currentIndex > 0 ? currentIndex + 1 : 1
-    return nextIndex < pages.length ? (pages[nextIndex] ?? null) : null
+    const normalizedRoute = normalizeRoute(currentRoute)
+    const currentCategory = getCategoryByRoute(normalizedRoute)
+    if (!currentCategory) return null
+
+    const categoryPages = currentCategory.pages
+    const currentIndex = categoryPages.findIndex((page) => page.to === normalizedRoute)
+    const nextIndex = currentIndex + 1
+
+    if (nextIndex < categoryPages.length) {
+      return categoryPages[nextIndex] ?? null
+    }
+
+    // Si no hay página siguiente en la categoría, buscar en la siguiente categoría
+    const currentCategoryIndex = categories.findIndex((cat) => cat.id === currentCategory.id)
+    if (currentCategoryIndex < categories.length - 1) {
+      const nextCategory = categories[currentCategoryIndex + 1]
+      if (nextCategory && nextCategory.pages.length > 0) {
+        return nextCategory.pages[0] ?? null
+      }
+    }
+
+    return null
   }
 
   const isActive = (page: NavigationPage, currentRoute: string): boolean => {
-    return page.to.split('#')[0] === currentRoute
+    const normalizedRoute = normalizeRoute(currentRoute)
+    return page.to === normalizedRoute
+  }
+
+  const isCategoryActive = (category: NavigationCategory, currentRoute: string): boolean => {
+    const normalizedRoute = normalizeRoute(currentRoute)
+    return category.pages.some((page) => page.to === normalizedRoute)
   }
 
   return {
+    categories,
     pages,
+    getCurrentCategory,
+    getCurrentPage,
+    getCategoryByRoute,
     getCurrentIndex,
     getPreviousPage,
     getNextPage,
     isActive,
+    isCategoryActive,
   }
 }

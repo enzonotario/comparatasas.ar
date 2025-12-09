@@ -9,7 +9,6 @@ const { initialize } = useHotjar()
 const route = useRoute()
 const { pages } = useNavigationPages()
 
-
 onMounted(() => {
   fetchAccounts()
   fetchFunds()
@@ -27,22 +26,30 @@ onMounted(() => {
 
       <UHeader
         class="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md"
+        :ui="{
+          center: '!flex',
+          toggle: '!hidden',
+        }"
       >
         <template #title>
           <NuxtLink to="/" class="flex items-center gap-2">
             <img
               src="/assets/logo.png"
               alt="ComparaTasas.ar"
-              class="w-12 h-12 rounded-full object-cover"
+              class="w-9 h-9 rounded-full object-cover"
               loading="eager"
               fetchpriority="high"
             />
             <span
-              class="font-bold text-neutral-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400"
+              class="text-lg sm:text-xl font-bold text-zinc-900 dark:text-white hidden lg:block"
             >
               ComparaTasas.ar
             </span>
           </NuxtLink>
+        </template>
+
+        <template #default>
+          <CategorySelector />
         </template>
 
         <template #right>
@@ -50,11 +57,13 @@ onMounted(() => {
         </template>
 
         <template #body>
-          <PageNavigationMobile :pages="pages" :current-route="`/${route.name}`" />
+          <CategorySelectorMobile />
         </template>
       </UHeader>
 
-      <UMain class="flex flex-col space-y-6 pt-16">
+      <SubcategorySelector />
+
+      <UMain class="flex flex-col space-y-6 pt-16 md:pt-24">
         <UContainer class="space-y-6">
           <div class="flex flex-col items-center text-center space-y-2">
             <h1 class="font-bold text-4xl sm:text-5xl text-neutral-900 dark:text-white">
@@ -66,21 +75,6 @@ onMounted(() => {
           </div>
 
           <AdBanner />
-
-          <nav class="flex justify-center">
-            <div class="flex flex-wrap md:flex-nowrap justify-center">
-              <div v-for="page in pages" :key="page.to" class="w-1/2 sm:w-1/3 md:w-1/5 p-1">
-                <NuxtLink
-                  :to="page.to"
-                  class="h-full flex flex-col items-center gap-2 p-2 text-center text-xs md:text-base rounded border hover:bg-neutral-100 dark:hover:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
-                  active-class="bg-primary-100 hover:bg-primary-200 dark:bg-primary-900 dark:hover:bg-primary-800 text-primary-800 dark:text-primary-200 border-primary-300 dark:border-primary-700"
-                >
-                  <img :src="page.image" alt="Ícono" class="size-7 md:size-10" />
-                  {{ page.label }}
-                </NuxtLink>
-              </div>
-            </div>
-          </nav>
         </UContainer>
 
         <UContainer
@@ -98,7 +92,7 @@ onMounted(() => {
 
           <FinancialAdviceCard />
 
-          <PageNavigation :pages="pages" :current-route="`/${route.name}`" />
+          <PageNavigation :pages="pages" :current-route="route.path" />
 
           <DisclaimerSection :page="route.name" />
         </UContainer>
