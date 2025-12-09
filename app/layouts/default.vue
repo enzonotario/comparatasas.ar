@@ -63,7 +63,7 @@ onMounted(() => {
 
       <SubcategorySelector />
 
-      <UMain class="flex flex-col space-y-6 pt-16 md:pt-24">
+      <UMain class="flex flex-col space-y-6 pt-16">
         <UContainer class="space-y-6">
           <div class="flex flex-col items-center text-center space-y-2">
             <h1 class="font-bold text-4xl sm:text-5xl text-neutral-900 dark:text-white">
