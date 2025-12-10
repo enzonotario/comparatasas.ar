@@ -67,7 +67,7 @@ export const useNavigationPages = () => {
     },
     {
       id: 'crypto',
-      label: 'Criptomonedas',
+      label: 'Criptos',
       icon: 'bitcoin',
       pages: [
         {
