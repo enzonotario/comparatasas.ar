@@ -428,6 +428,12 @@ export const institutions: Array<{
     shortName: 'Carrefour Banco',
     url: 'https://www.bancodeserviciosfinancieros.com.ar/?ref=comparatasas.ar',
   },
+  {
+    names: ['lucamoney', 'LucaMoney', 'LUCA MONEY'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/lucamoney.png',
+    shortName: 'LucaMoney',
+    url: 'https://www.lucamoney.com/?utm_source=comparatasas.ar',
+  },
 ]
 
 export function getInstitutionLogo(name: string): string | undefined {
