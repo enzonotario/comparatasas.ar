@@ -80,8 +80,10 @@ onMounted(() => {
         <UContainer
           class="w-full mx-auto space-y-6"
           :class="{
-            'max-w-3xl': route.name !== 'criptomonedas',
-            'max-w-5xl': route.name === 'criptomonedas',
+            'max-w-3xl':
+              route.name !== 'criptomonedas' && route.name !== 'creditos-hipotecarios-uva',
+            'max-w-8xl':
+              route.name === 'criptomonedas' || route.name === 'creditos-hipotecarios-uva',
           }"
         >
           <slot />

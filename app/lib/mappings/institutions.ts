@@ -15,6 +15,7 @@ export const institutions: Array<{
       'Banco de la Nación Argentina',
       'banco de la nacion argentina',
       'BANCO DE LA NACION ARGENTINA',
+      'BANCO NACIÓN ARGENTINA',
     ],
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/banco-nacion.png',
     shortName: 'Banco Nación',
@@ -159,7 +160,7 @@ export const institutions: Array<{
     url: 'https://dub.link/sSXjtaY',
   },
   {
-    names: ['Supervielle'],
+    names: ['Supervielle', 'BANCO SUPERVIELLE'],
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/banco-supervielle.png',
     shortName: 'Supervielle',
     url: 'https://dub.link/vIFomxq',
@@ -433,6 +434,12 @@ export const institutions: Array<{
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/lucamoney.png',
     shortName: 'LucaMoney',
     url: 'https://www.lucamoney.com/?utm_source=comparatasas.ar',
+  },
+  {
+    names: ['BANCO PATAGONIA S.A.', 'Banco Patagonia', 'Patagonia'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/banco-patagonia.png',
+    shortName: 'Banco Patagonia',
+    url: 'https://www.bancopatagonia.com.ar/?ref=comparatasas.ar',
   },
 ]
 
