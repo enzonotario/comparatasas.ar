@@ -3,6 +3,7 @@ import { toValue } from 'vue'
 import type { HipotecarioUVA } from '../composables/useHipotecariosUVA'
 import type { InflacionData } from '../composables/useInflacion'
 import type { InflacionREMData } from '../composables/useInflacionREM'
+import { getInstitutionLogo } from '../lib/mappings/institutions'
 
 const props = defineProps<{
   hipotecarios: HipotecarioUVA[]
@@ -65,7 +66,7 @@ const generarProyeccion = () => {
   // Acceder al valor del prop - usar toValue para desenrollar cualquier ref/computed/getter
   const inflacionREMValue = toValue(props.inflacionREM)
   const inflacionREMArray = Array.isArray(inflacionREMValue) ? inflacionREMValue : []
-  
+
   if (inflacionREMArray && inflacionREMArray.length > 0) {
     inflacionREMArray.forEach((inf) => {
       if (inf && inf.fecha && inf.valor !== undefined && inf.tipo) {
@@ -97,7 +98,7 @@ const generarProyeccion = () => {
     // Prioridad: REM > Histórica > Extender última disponible
     let inflacionMensual = ultimaInflacion
     let tipoInflacion: string | null = ultimoTipoInflacion
-    
+
     if (remMap.has(fechaKey)) {
       inflacionMensual = remMap.get(fechaKey) || ultimaInflacion
       tipoInflacion = remTipoMap.get(fechaKey) || null
@@ -181,7 +182,7 @@ const generarProyeccion = () => {
 
   for (let i = 0; i < meses.length; i++) {
     const tipoActual = meses[i].tipoInflacion || 'Estimada'
-    
+
     if (tipoActual !== grupoActual) {
       // Si hay un grupo previo, asignar rowspan a la primera celda del grupo
       if (grupoActual !== null && contadorGrupo > 0) {
@@ -192,7 +193,7 @@ const generarProyeccion = () => {
           meses[j].rowspanTipo = 0
         }
       }
-      
+
       // Iniciar nuevo grupo
       grupoActual = tipoActual
       inicioGrupo = i
@@ -329,8 +330,17 @@ const handleColumnHover = (columnIndex: number | null) => {
               @mouseenter="handleColumnHover(bancoIndex + 3)"
               @mouseleave="handleColumnHover(null)"
             >
-              <div>{{ banco.nombreComercial }}</div>
-              <div class="text-xs font-normal">{{ banco.tna.toFixed(1) }}%</div>
+              <div class="flex flex-col items-center gap-1">
+                <img
+                  v-if="getInstitutionLogo(banco.entidad) || getInstitutionLogo(banco.nombreComercial)"
+                  :src="getInstitutionLogo(banco.entidad) || getInstitutionLogo(banco.nombreComercial)"
+                  :alt="banco.nombreComercial"
+                  referrerpolicy="no-referrer"
+                  class="size-8 rounded-full object-cover"
+                />
+                <div class="text-xs font-medium">{{ banco.nombreComercial }}</div>
+                <div class="text-sm text-bold">{{ banco.tna.toFixed(1) }}%</div>
+              </div>
             </th>
             <th
               :data-column-index="hipotecariosOrdenados.length + 3"
@@ -340,7 +350,7 @@ const handleColumnHover = (columnIndex: number | null) => {
               @mouseleave="handleColumnHover(null)"
             >
               <div>Promedio</div>
-              <div class="text-xs font-normal">{{ tnaPromedio.toFixed(1) }}%</div>
+              <div class="text-sm text-bold">{{ tnaPromedio.toFixed(1) }}%</div>
             </th>
           </tr>
         </thead>
