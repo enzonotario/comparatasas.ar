@@ -437,7 +437,7 @@ export const institutions: Array<{
   },
   {
     names: ['BANCO PATAGONIA S.A.', 'Banco Patagonia', 'Patagonia'],
-    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/banco-patagonia.png',
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/banco-patagonia.svg',
     shortName: 'Banco Patagonia',
     url: 'https://www.bancopatagonia.com.ar/?ref=comparatasas.ar',
   },
