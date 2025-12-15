@@ -34,7 +34,6 @@ export function useHipotecariosUVA() {
         nombreComercial: item.nombreComercial,
         tna: item.tna * 100,
       }))
-
     } catch (err) {
       error.value = err
     } finally {

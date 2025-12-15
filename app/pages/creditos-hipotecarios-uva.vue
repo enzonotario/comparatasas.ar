@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 
+import type { InflacionREMData } from '~/composables/useInflacionREM'
+
 useSeoMeta({
   title: 'Créditos Hipotecarios UVA - Compara Tasas Argentina',
   description:
@@ -28,8 +30,6 @@ const {
   error: errorInflacionREM,
   fetch: fetchInflacionREM,
 } = useInflacionREM()
-
-import type { InflacionREMData } from '~/composables/useInflacionREM'
 const { ultimoUVA, uvaHistorica, loading: loadingUVA, error: errorUVA, fetch: fetchUVA } = useUVA()
 const {
   tipoCambioVenta,
@@ -66,7 +66,6 @@ const inflacionOrdenada = computed(() => {
     return new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
   })
 })
-
 </script>
 
 <template>
@@ -79,7 +78,13 @@ const inflacionOrdenada = computed(() => {
     />
 
     <div
-      v-if="loadingHipotecarios || loadingInflacion || loadingInflacionREM || loadingUVA || loadingTipoCambio"
+      v-if="
+        loadingHipotecarios ||
+        loadingInflacion ||
+        loadingInflacionREM ||
+        loadingUVA ||
+        loadingTipoCambio
+      "
       class="py-8"
     >
       <FundsLoading />
@@ -107,7 +112,7 @@ const inflacionOrdenada = computed(() => {
       <HipotecariosUVATable
         :hipotecarios="hipotecariosUVA"
         :inflacion-historica="inflacionOrdenada"
-        :inflacionREM="inflacionREM"
+        :inflacion-r-e-m="inflacionREM"
         :inflacion-futura="inflacionFutura"
         :monto-propiedad="montoPropiedad"
         :porcentaje-financiacion="porcentajeFinanciacion"

@@ -42,4 +42,3 @@ const getIconComponent = (icon: string) => {
     </NuxtLink>
   </div>
 </template>
-

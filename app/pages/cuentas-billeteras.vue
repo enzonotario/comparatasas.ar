@@ -93,10 +93,7 @@ const resolvedFundsAccounts = computed(() => {
     <div>
       <div class="mb-2">
         <div class="group relative">
-          <NuxtLink
-            to="#rendimiento-variable"
-            class="-ml-4.5 flex items-center gap-2 no-underline"
-          >
+          <NuxtLink to="#rendimiento-variable" class="-ml-4.5 flex items-center gap-2 no-underline">
             <span
               class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
             >

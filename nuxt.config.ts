@@ -36,20 +36,29 @@ export default defineNuxtConfig({
         { property: 'og:site_name', content: 'comparatasas.ar' },
         { property: 'og:locale', content: 'es_AR' },
         { property: 'og:url', content: 'https://comparatasas.ar' },
-        { property: 'og:title', content: 'Compara Tasas - Encuentra las mejores inversiones en Argentina' },
+        {
+          property: 'og:title',
+          content: 'Compara Tasas - Encuentra las mejores inversiones en Argentina',
+        },
         {
           property: 'og:description',
           content:
             'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encuentra la mejor inversión para tu dinero.',
         },
         { property: 'og:image', content: 'https://comparatasas.ar/meta-imagen.png' },
-        { property: 'og:image:alt', content: 'Compara Tasas - Encuentra las mejores inversiones en Argentina' },
+        {
+          property: 'og:image:alt',
+          content: 'Compara Tasas - Encuentra las mejores inversiones en Argentina',
+        },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
         { property: 'og:image:type', content: 'image/png' },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:image', content: 'https://comparatasas.ar/meta-imagen.png' },
-        { name: 'twitter:image:alt', content: 'Compara Tasas - Encuentra las mejores inversiones en Argentina' },
+        {
+          name: 'twitter:image:alt',
+          content: 'Compara Tasas - Encuentra las mejores inversiones en Argentina',
+        },
         { name: 'twitter:site', content: '@comparatasas' },
       ],
       link: [
@@ -60,7 +69,10 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://api.argentinadatos.com' },
         { rel: 'preconnect', href: 'https://api.iconify.design' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap',
+        },
       ],
     },
   },

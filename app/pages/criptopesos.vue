@@ -26,4 +26,3 @@ const { criptopesos, loading, error } = useCriptopesos()
     </div>
   </div>
 </template>
-

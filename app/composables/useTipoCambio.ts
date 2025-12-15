@@ -21,9 +21,7 @@ export function useTipoCambio() {
     error.value = null
 
     try {
-      const response = await $fetch<TipoCambioOficial>(
-        'https://dolarapi.com/v1/dolares/oficial',
-      )
+      const response = await $fetch<TipoCambioOficial>('https://dolarapi.com/v1/dolares/oficial')
       data.value = response
     } catch (err) {
       error.value = err
@@ -44,4 +42,3 @@ export function useTipoCambio() {
     fetch,
   }
 }
-

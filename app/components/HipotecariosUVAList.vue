@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { HipotecarioUVA } from '../composables/useHipotecariosUVA'
-import { getInstitutionLogo, getInstitutionShortName, getInstitutionUrl } from '../lib/mappings/institutions'
+import {
+  getInstitutionLogo,
+  getInstitutionShortName,
+  getInstitutionUrl,
+} from '../lib/mappings/institutions'
 
 const props = defineProps<{
   hipotecarios: HipotecarioUVA[]
@@ -8,9 +12,13 @@ const props = defineProps<{
 
 const items = computed(() => {
   return props.hipotecarios.map((hipotecario) => {
-    const logo = getInstitutionLogo(hipotecario.entidad) || getInstitutionLogo(hipotecario.nombreComercial)
+    const logo =
+      getInstitutionLogo(hipotecario.entidad) || getInstitutionLogo(hipotecario.nombreComercial)
     const institution = getInstitutionShortName(hipotecario.entidad) || hipotecario.nombreComercial
-    const url = getInstitutionUrl(hipotecario.entidad) || getInstitutionUrl(hipotecario.nombreComercial) || '#'
+    const url =
+      getInstitutionUrl(hipotecario.entidad) ||
+      getInstitutionUrl(hipotecario.nombreComercial) ||
+      '#'
 
     return {
       ...hipotecario,
@@ -68,9 +76,7 @@ const items = computed(() => {
               <div class="text-primary-600 dark:text-primary-400 font-semibold">
                 {{ item.tna.toFixed(1) }}%
               </div>
-              <div class="text-xs text-neutral">
-                TNA
-              </div>
+              <div class="text-xs text-neutral">TNA</div>
             </div>
           </div>
         </div>
@@ -78,4 +84,3 @@ const items = computed(() => {
     </a>
   </div>
 </template>
-

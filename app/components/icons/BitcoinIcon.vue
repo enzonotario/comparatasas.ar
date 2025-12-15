@@ -1,7 +1,7 @@
 <template>
   <svg
-    version="1.1"
     id="Bitcoin_Logo"
+    version="1.1"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     x="0px"
@@ -31,6 +31,4 @@
   </svg>
 </template>
 
-<script setup lang="ts">
-</script>
-
+<script setup lang="ts"></script>
