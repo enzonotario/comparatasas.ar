@@ -311,13 +311,17 @@ const handleColumnHover = (columnIndex: number | null) => {
         <thead>
           <tr class="border-b">
             <th
-              colspan="2"
-              class="text-left p-2 font-medium sticky left-0 bg-white dark:bg-neutral-950 z-30 border-r min-w-[130px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+              class="text-left p-2 font-medium sticky left-0 bg-white dark:bg-neutral-950 z-30 border-r min-w-[80px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+            >
+              Tipo
+            </th>
+            <th
+              class="text-left p-2 font-medium sticky left-[80px] bg-white dark:bg-neutral-950 z-30 border-r min-w-[80px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
             >
               Inflación
             </th>
             <th
-              class="text-left p-2 font-medium sticky left-[130px] bg-white dark:bg-neutral-950 z-30 border-r min-w-[80px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+              class="text-left p-2 font-medium sticky left-[160px] bg-white dark:bg-neutral-950 z-30 border-r min-w-[80px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
             >
               Mes
             </th>
@@ -373,14 +377,14 @@ const handleColumnHover = (columnIndex: number | null) => {
               <span v-else class="text-xs text-muted">Estimada</span>
             </td>
             <td
-              class="p-2 font-medium sticky left-[50px] bg-white dark:bg-neutral-950 z-30 border-r row-hover-cell shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+              class="p-2 font-medium sticky left-[80px] bg-white dark:bg-neutral-950 z-30 border-r row-hover-cell shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
             >
               <div class="flex items-center gap-1">
                 <span>{{ item.inflacion.toFixed(1) }}%</span>
               </div>
             </td>
             <td
-              class="p-2 font-medium sticky left-[130px] bg-white dark:bg-neutral-950 z-30 border-r row-hover-cell shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+              class="p-2 font-medium sticky left-[160px] bg-white dark:bg-neutral-950 z-30 border-r row-hover-cell shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
             >
               {{ item.mes }}
             </td>
@@ -412,7 +416,7 @@ const handleColumnHover = (columnIndex: number | null) => {
 <style scoped>
 /* Asegurar que las celdas sticky mantengan el z-index correcto */
 .sticky {
-  position: sticky;
+  position: sticky !important;
 }
 
 /* Fondo base de las columnas sticky (sin hover) */
