@@ -44,12 +44,12 @@ export const useNavigationPages = () => {
           icon: 'i-lucide-coins',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/criptopesos.png',
         },
-        // {
-        //   to: '/creditos-hipotecarios-uva',
-        //   label: 'Créditos Hipotecarios UVA',
-        //   icon: 'i-lucide-home',
-        //   image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-hipotecario.png',
-        // },
+        {
+          to: '/creditos-hipotecarios-uva',
+          label: 'Créditos Hipotecarios UVA',
+          icon: 'i-lucide-home',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-hipotecario.png',
+        },
       ],
     },
     {
