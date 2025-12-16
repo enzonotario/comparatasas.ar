@@ -220,11 +220,76 @@ const generarProyeccion = () => {
 }
 
 // Hacer que el computed sea reactivo a los cambios en props.inflacionREM
-const proyeccion = computed(() => {
+const proyeccionBase = computed(() => {
   // Acceder a props.inflacionREM para que Vue rastree la dependencia
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const _ = toValue(props.inflacionREM)
   return generarProyeccion()
+})
+
+// Estado para almacenar los valores de inflación editables
+const inflacionEditada = ref<Map<number, number>>(new Map())
+
+// Sincronizar valores editables con la proyección base cuando cambie
+watch(
+  proyeccionBase,
+  (nuevaProyeccion) => {
+    nuevaProyeccion.forEach((item, index) => {
+      if (!inflacionEditada.value.has(index)) {
+        inflacionEditada.value.set(index, item.inflacion)
+      }
+    })
+  },
+  { immediate: true },
+)
+
+// Proyección final que usa los valores editados
+const proyeccion = computed(() => {
+  const montoPrestamo =
+    ((montoPropiedadConfig.value * porcentajeFinanciacionConfig.value) / 100) *
+    tipoCambioConfig.value
+  const plazoMeses = plazoAnosConfig.value * 12
+
+  // Calcular UVA acumulado para cada mes usando las inflaciones editadas
+  let uvaAcumulado = uvaInicialConfig.value
+
+  return proyeccionBase.value.map((item, index) => {
+    // Obtener la inflación editada o usar la original
+    const inflacionParaMes = inflacionEditada.value.get(index) ?? item.inflacion
+
+    // Calcular UVA acumulado
+    if (index === 0) {
+      // Primer mes: aplicar la inflación del mes 0
+      uvaAcumulado = uvaInicialConfig.value * (1 + inflacionParaMes / 100)
+    } else {
+      // Meses siguientes: aplicar la inflación del mes actual
+      uvaAcumulado = uvaAcumulado * (1 + inflacionParaMes / 100)
+    }
+
+    const mesesTranscurridos = index >= 0 ? index : 0
+    const cuotasPorBanco: Record<string, number> = {}
+    props.hipotecarios.forEach((banco) => {
+      cuotasPorBanco[banco.nombreComercial] = calcularCuota(
+        banco.tna,
+        montoPrestamo,
+        plazoMeses,
+        mesesTranscurridos,
+        uvaAcumulado,
+      )
+    })
+
+    const promedio =
+      Object.values(cuotasPorBanco).reduce((a, b) => a + b, 0) /
+      Object.values(cuotasPorBanco).length
+
+    return {
+      ...item,
+      inflacion: inflacionParaMes,
+      cuotasPorBanco,
+      promedio,
+      uva: uvaAcumulado,
+    }
+  })
 })
 
 const hipotecariosOrdenados = computed(() => {
@@ -242,6 +307,11 @@ const hoveredColumn = ref<number | null>(null)
 
 const handleColumnHover = (columnIndex: number | null) => {
   hoveredColumn.value = columnIndex
+}
+
+// Función para actualizar la inflación editada
+const actualizarInflacion = (index: number, valor: number) => {
+  inflacionEditada.value.set(index, valor)
 }
 </script>
 
@@ -289,11 +359,6 @@ const handleColumnHover = (columnIndex: number | null) => {
           <template #trailing>años</template>
         </UInput>
       </UFormField>
-      <UFormField label="Inflación futura mensual" class="max-w-40">
-        <UInput v-model.number="inflacionFuturaConfig" type="number" step="0.1" min="0" max="10">
-          <template #trailing>%</template>
-        </UInput>
-      </UFormField>
       <UFormField label="Dólar Oficial" class="max-w-40">
         <UInput v-model.number="tipoCambioConfig" type="number" step="0.01" min="0">
           <template #trailing>ARS</template>
@@ -311,17 +376,17 @@ const handleColumnHover = (columnIndex: number | null) => {
         <thead>
           <tr class="border-b">
             <th
-              class="text-left p-2 font-medium sticky left-0 bg-white dark:bg-neutral-950 z-30 border-r min-w-[80px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+              class="text-left p-2 font-medium sticky left-0 bg-white dark:bg-neutral-950 z-40 border-r border-gray-200 dark:border-gray-800 min-w-[80px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
             >
               Tipo
             </th>
             <th
-              class="text-left p-2 font-medium sticky left-[80px] bg-white dark:bg-neutral-950 z-30 border-r min-w-[80px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+              class="text-left p-2 font-medium sticky left-[80px] bg-white dark:bg-neutral-950 z-40 border-r border-gray-200 dark:border-gray-800 min-w-[120px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
             >
               Inflación
             </th>
             <th
-              class="text-left p-2 font-medium sticky left-[160px] bg-white dark:bg-neutral-950 z-30 border-r min-w-[80px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+              class="text-left p-2 font-medium sticky left-[200px] bg-white dark:bg-neutral-950 z-40 border-r border-gray-200 dark:border-gray-800 min-w-[80px] shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
             >
               Mes
             </th>
@@ -336,8 +401,12 @@ const handleColumnHover = (columnIndex: number | null) => {
             >
               <div class="flex flex-col items-center gap-1">
                 <img
-                  v-if="getInstitutionLogo(banco.entidad) || getInstitutionLogo(banco.nombreComercial)"
-                  :src="getInstitutionLogo(banco.entidad) || getInstitutionLogo(banco.nombreComercial)"
+                  v-if="
+                    getInstitutionLogo(banco.entidad) || getInstitutionLogo(banco.nombreComercial)
+                  "
+                  :src="
+                    getInstitutionLogo(banco.entidad) || getInstitutionLogo(banco.nombreComercial)
+                  "
                   :alt="banco.nombreComercial"
                   referrerpolicy="no-referrer"
                   class="size-8 rounded-full object-cover"
@@ -368,7 +437,7 @@ const handleColumnHover = (columnIndex: number | null) => {
             <td
               v-if="item.rowspanTipo > 0"
               :rowspan="item.rowspanTipo"
-              class="p-2 font-medium sticky left-0 bg-white dark:bg-neutral-950 z-30 border-r row-hover-cell shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+              class="p-2 font-medium sticky left-0 bg-white dark:bg-neutral-950 z-40 border-r border-gray-200 dark:border-gray-800 row-hover-cell shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
               :class="{ 'vertical-text': item.rowspanTipo >= 2 }"
             >
               <span v-if="item.tipoInflacion" class="text-xs">
@@ -377,14 +446,24 @@ const handleColumnHover = (columnIndex: number | null) => {
               <span v-else class="text-xs text-muted">Estimada</span>
             </td>
             <td
-              class="p-2 font-medium sticky left-[80px] bg-white dark:bg-neutral-950 z-30 border-r row-hover-cell shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+              class="p-2 font-medium sticky left-[80px] bg-white dark:bg-neutral-950 z-40 border-r border-gray-200 dark:border-gray-800 row-hover-cell shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
             >
-              <div class="flex items-center gap-1">
-                <span>{{ item.inflacion.toFixed(1) }}%</span>
-              </div>
+              <UInput
+                :model-value="item.inflacion.toFixed(1)"
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                class="w-20 h-6 text-xs"
+                @update:model-value="
+                  (val) => actualizarInflacion(index, parseFloat(val as string) || 0)
+                "
+              >
+                <template #trailing>%</template>
+              </UInput>
             </td>
             <td
-              class="p-2 font-medium sticky left-[160px] bg-white dark:bg-neutral-950 z-30 border-r row-hover-cell shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
+              class="p-2 font-medium sticky left-[200px] bg-white dark:bg-neutral-950 z-40 border-r border-gray-200 dark:border-gray-800 row-hover-cell shadow-[2px_0_4px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_4px_rgba(0,0,0,0.3)]"
             >
               {{ item.mes }}
             </td>
@@ -422,30 +501,42 @@ const handleColumnHover = (columnIndex: number | null) => {
 /* Fondo base de las columnas sticky (sin hover) */
 th.sticky,
 td.sticky {
-  background-color: rgb(255 255 255 / 1);
+  background-color: rgb(255 255 255 / 1) !important;
+  background: rgb(255 255 255 / 1) !important;
+  border-right: 1px solid rgb(229 231 235 / 1) !important;
+  isolation: isolate;
+  position: relative;
 }
 
 .dark th.sticky,
 .dark td.sticky {
-  background-color: rgb(10 10 10 / 1);
+  background-color: rgb(10 10 10 / 1) !important;
+  background: rgb(10 10 10 / 1) !important;
+  border-right: 1px solid rgb(31 41 55 / 1) !important;
+  isolation: isolate;
+  position: relative;
 }
 
 /* Hover de fila - incluye las celdas sticky */
 .row-hover:hover .row-hover-cell {
   background-color: rgb(249 250 251 / 1) !important;
+  background: rgb(249 250 251 / 1) !important;
 }
 
 .dark .row-hover:hover .row-hover-cell {
-  background-color: rgb(31 41 55 / 0.5) !important;
+  background-color: rgb(31 41 55 / 1) !important;
+  background: rgb(31 41 55 / 1) !important;
 }
 
 /* Hover de fila en celdas sticky */
 .row-hover:hover td.sticky.row-hover-cell {
   background-color: rgb(249 250 251 / 1) !important;
+  background: rgb(249 250 251 / 1) !important;
 }
 
 .dark .row-hover:hover td.sticky.row-hover-cell {
-  background-color: rgb(31 41 55 / 0.5) !important;
+  background-color: rgb(31 41 55 / 1) !important;
+  background: rgb(31 41 55 / 1) !important;
 }
 
 /* Hover de columna completa - para celdas normales */
@@ -511,5 +602,45 @@ input[type='number']::-webkit-outer-spin-button {
   white-space: nowrap;
   transform: rotate(180deg);
   line-height: 1.2;
+}
+
+/* Asegurar que los inputs dentro de las celdas sticky tengan fondo sólido */
+td.sticky .ui-input,
+td.sticky input {
+  background-color: rgb(255 255 255 / 1) !important;
+  background: rgb(255 255 255 / 1) !important;
+}
+
+.dark td.sticky .ui-input,
+.dark td.sticky input {
+  background-color: rgb(10 10 10 / 1) !important;
+  background: rgb(10 10 10 / 1) !important;
+}
+
+.row-hover:hover td.sticky .ui-input,
+.row-hover:hover td.sticky input {
+  background-color: rgb(249 250 251 / 1) !important;
+  background: rgb(249 250 251 / 1) !important;
+}
+
+.dark .row-hover:hover td.sticky .ui-input,
+.dark .row-hover:hover td.sticky input {
+  background-color: rgb(31 41 55 / 1) !important;
+  background: rgb(31 41 55 / 1) !important;
+}
+
+/* Asegurar que las celdas sticky tengan un contenedor con backdrop para ocultar elementos de fondo */
+th.sticky::before,
+td.sticky::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -1px;
+  right: -1px;
+  bottom: 0;
+  background-color: inherit;
+  z-index: -1;
+  pointer-events: none;
+  border-right: inherit;
 }
 </style>
