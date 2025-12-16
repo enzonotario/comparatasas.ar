@@ -441,6 +441,12 @@ export const institutions: Array<{
     shortName: 'Banco Patagonia',
     url: 'https://www.bancopatagonia.com.ar/?ref=comparatasas.ar',
   },
+  {
+    names: ['decrypto', 'Decrypto', 'DECRYPTO'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/decrypto.svg',
+    shortName: 'Decrypto',
+    url: 'https://www.decrypto.la/?utm_source=comparatasas.ar',
+  },
 ]
 
 export function getInstitutionLogo(name: string): string | undefined {
