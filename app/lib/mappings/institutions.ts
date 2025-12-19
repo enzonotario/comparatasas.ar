@@ -447,6 +447,12 @@ export const institutions: Array<{
     shortName: 'Decrypto',
     url: 'https://www.decrypto.la/?utm_source=comparatasas.ar',
   },
+  {
+    names: ['vesseo', 'Vesseo', 'VESSEO'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/vesseo.svg',
+    shortName: 'Vesseo',
+    url: 'https://vesseoapp.com/?ref=comparatasas.ar',
+  }
 ]
 
 export function getInstitutionLogo(name: string): string | undefined {
