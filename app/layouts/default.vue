@@ -9,6 +9,12 @@ const { initialize } = useHotjar()
 const route = useRoute()
 const { pages } = useNavigationPages()
 
+const useSponsorBanner = computed(() => {
+  const cutoffDate = new Date('2026-01-01')
+  const today = new Date()
+  return today >= cutoffDate
+})
+
 onMounted(() => {
   fetchAccounts()
   fetchFunds()
@@ -74,7 +80,8 @@ onMounted(() => {
             </p>
           </div>
 
-          <AdBanner />
+          <SponsorBanner v-if="useSponsorBanner" />
+          <AdBanner v-else />
         </UContainer>
 
         <UContainer
