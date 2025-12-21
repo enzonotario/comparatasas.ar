@@ -67,7 +67,7 @@ onMounted(() => {
         </template>
       </UHeader>
 
-      <SubcategorySelector />
+      <SubcategorySelector class="z-50" />
 
       <UMain class="flex flex-col space-y-6 pt-16">
         <UContainer class="space-y-6">
