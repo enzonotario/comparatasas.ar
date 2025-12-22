@@ -6,6 +6,16 @@ defineProps<{
 }>()
 
 function formatDate(dateString: string): string {
+  if (!dateString) return ''
+
+  const parts = dateString.split('-')
+  if (parts.length === 3) {
+    const year = parts[0]
+    const month = parts[1]
+    const day = parts[2]
+    return `${day}/${month}/${year}`
+  }
+
   const date = new Date(dateString)
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
