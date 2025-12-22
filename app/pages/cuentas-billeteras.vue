@@ -28,6 +28,32 @@ const resolvedFundsAccounts = computed(() => {
 
   return unique.sort((a, b) => b.tna - a.tna)
 })
+
+const fundsByRisk = computed(() => {
+  const grouped: Record<string, typeof resolvedFundsAccounts.value> = {
+    'Riesgo muy bajo': [],
+    'Riesgo moderado': [],
+  }
+
+  resolvedFundsAccounts.value.forEach((fund) => {
+    if (
+      fund.type === 'mercadoDinero' ||
+      ['Money Market', 'Renta Mixta'].includes(fund.typeLabel || '')
+    ) {
+      grouped['Riesgo muy bajo'].push(fund)
+    } else if (fund.type === 'rentaFija' || ['Renta Fija'].includes(fund.typeLabel || '')) {
+      grouped['Riesgo moderado'].push(fund)
+    } else {
+      grouped['Riesgo muy bajo'].push(fund)
+    }
+  })
+
+  Object.keys(grouped).forEach((key) => {
+    grouped[key].sort((a, b) => b.tna - a.tna)
+  })
+
+  return grouped
+})
 </script>
 
 <template>
@@ -44,7 +70,7 @@ const resolvedFundsAccounts = computed(() => {
             >
               #
             </span>
-            <h2 id="rendimiento-garantizado" class="text-lg font-medium scroll-mt-16">
+            <h2 id="rendimiento-garantizado" class="text-lg font-medium scroll-mt-22">
               Rendimiento garantizado
             </h2>
           </NuxtLink>
@@ -73,7 +99,7 @@ const resolvedFundsAccounts = computed(() => {
             >
               #
             </span>
-            <h2 id="condiciones-especiales" class="text-lg font-medium scroll-mt-16">
+            <h2 id="condiciones-especiales" class="text-lg font-medium scroll-mt-22">
               Con condiciones especiales
             </h2>
           </NuxtLink>
@@ -99,7 +125,7 @@ const resolvedFundsAccounts = computed(() => {
             >
               #
             </span>
-            <h2 id="rendimiento-variable" class="text-lg font-medium scroll-mt-16">
+            <h2 id="rendimiento-variable" class="text-lg font-medium scroll-mt-22">
               Rendimiento variable
             </h2>
           </NuxtLink>
@@ -111,13 +137,15 @@ const resolvedFundsAccounts = computed(() => {
 
       <UAlert v-if="error" color="red" variant="soft" title="Error cargando fondos" />
 
-      <div class="space-y-3">
-        <FundsList
-          v-if="resolvedFundsAccounts.length"
-          :items="resolvedFundsAccounts"
-          key-prop="fondo"
-          mode="detailed"
-        />
+      <div class="space-y-6">
+        <div v-for="(funds, riskKey) in fundsByRisk" :key="riskKey">
+          <div v-if="funds.length > 0" class="space-y-3">
+            <h3 class="text-base font-medium text-neutral-700 dark:text-neutral-300">
+              {{ riskKey }}
+            </h3>
+            <FundsList :items="funds" key-prop="fondo" mode="detailed" />
+          </div>
+        </div>
 
         <FundsLoading v-if="loading || loadingAccounts" />
       </div>
