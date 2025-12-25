@@ -5,10 +5,10 @@ import type { TableColumn } from '@nuxt/ui'
 const UButton = resolveComponent('UButton')
 
 useSeoMeta({
-  title: 'Fondos de Inversión - Compara Tasas',
+  title: 'Fondos Comunes de Inversión - Compara Tasas',
   description:
     'Consultá y compará todos los fondos comunes de inversión (FCI) disponibles en Argentina. Información actualizada diariamente con datos de rendimiento, patrimonio y características.',
-  ogTitle: 'Fondos de Inversión - Compara Tasas',
+  ogTitle: 'Fondos Comunes de Inversión - Compara Tasas',
   ogDescription:
     'Consultá y compará todos los fondos comunes de inversión (FCI) disponibles en Argentina. Información actualizada diariamente con datos de rendimiento, patrimonio y características.',
 })
