@@ -521,12 +521,24 @@ const sorting = ref([
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-3">
     <div>
       <h1 class="text-2xl font-bold mb-2">Fondos Comunes de Inversión</h1>
       <p class="text-muted">
         Consultá y compará todos los FCI disponibles en Argentina. Información actualizada
         diariamente con datos de rendimiento, patrimonio y características de cada fondo.
+      </p>
+      <p class="text-xs text-muted mt-1">
+        Fuente de datos:
+        <NuxtLink
+          to="https://www.cafci.org.ar/index.html"
+          external
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-primary-600 dark:text-primary-400 hover:underline"
+        >
+          CAFCI - Cámara Argentina de Fondos Comunes de Inversión
+        </NuxtLink>
       </p>
     </div>
 
@@ -601,6 +613,23 @@ const sorting = ref([
           </div>
         </template>
       </UTable>
+    </div>
+
+    <div class="text-center text-xs text-muted pt-4 border-t border-default">
+      <p>
+        Los datos provienen de la
+        <NuxtLink
+          to="https://www.cafci.org.ar/index.html"
+          external
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-primary-600 dark:text-primary-400 hover:underline"
+        >
+          Cámara Argentina de Fondos Comunes de Inversión (CAFCI)
+        </NuxtLink>
+        . La información puede estar desactualizada y no garantizamos que estos sean los últimos
+        rendimientos vigentes.
+      </p>
     </div>
   </div>
 </template>
