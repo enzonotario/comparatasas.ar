@@ -41,6 +41,26 @@ function daysBetween(a: string, b: string) {
   return Math.abs(Math.round((+d1 - +d2) / (1000 * 60 * 60 * 24)))
 }
 
+// Función para calcular rendimiento efectivo (sin anualizar)
+function calculateRendimientoEfectivo(newerVCP: number, olderVCP: number): number | null {
+  if (olderVCP <= 0 || Number.isNaN(newerVCP) || Number.isNaN(olderVCP)) {
+    return null
+  }
+  const rendimiento = (newerVCP - olderVCP) / olderVCP
+  return rendimiento
+}
+
+// Función para calcular TNA (anualizado)
+function calculateTNA(newerVCP: number, olderVCP: number, daysBetween: number): number | null {
+  if (daysBetween <= 0 || olderVCP <= 0 || Number.isNaN(newerVCP) || Number.isNaN(olderVCP)) {
+    return null
+  }
+  const totalReturn = (newerVCP - olderVCP) / olderVCP
+  const dailyReturn = totalReturn / daysBetween
+  const tna = dailyReturn * 365
+  return tna
+}
+
 // Obtener datos anteriores de RentaFija para una fecha específica
 async function getRentaFijaPreviousData(targetDate: Date): Promise<FundRaw[]> {
   const dateCopy = new Date(targetDate)
@@ -391,6 +411,15 @@ const columns: TableColumn<FundWithPrevious>[] = [
   },
   {
     id: 'dias',
+    accessorFn: (row: FundWithPrevious) => {
+      const fecha = row.fecha
+      const fechaAnterior = row.fechaAnterior
+      if (!fecha || !fechaAnterior) return null
+      const date1 = new Date(fecha)
+      const date2 = new Date(fechaAnterior)
+      const diffTime = Math.abs(date1.getTime() - date2.getTime())
+      return Math.round(diffTime / (1000 * 60 * 60 * 24))
+    },
     header: getSortableHeader('Días', 'center'),
     cell: ({ row }) => {
       const fecha = row.original.fecha
@@ -423,6 +452,172 @@ const columns: TableColumn<FundWithPrevious>[] = [
       const diffDaysB = Math.round(diffTimeB / (1000 * 60 * 60 * 24))
 
       return diffDaysA - diffDaysB
+    },
+  },
+  {
+    id: 'rendimientoEfectivo',
+    accessorFn: (row: FundWithPrevious) => {
+      const vcp = Number.parseFloat(String(row.vcp))
+      const vcpAnterior = row.vcpAnterior
+      if (vcpAnterior === undefined || Number.isNaN(vcp) || Number.isNaN(vcpAnterior)) {
+        return null
+      }
+      const rendimiento = calculateRendimientoEfectivo(vcp, vcpAnterior)
+      return rendimiento ?? null
+    },
+    header: getSortableHeader('Variación VCP', 'right'),
+    cell: ({ row }) => {
+      const vcp = Number.parseFloat(String(row.original.vcp))
+      const vcpAnterior = row.original.vcpAnterior
+
+      if (vcpAnterior === undefined || Number.isNaN(vcp) || Number.isNaN(vcpAnterior)) {
+        return h('span', { class: 'text-muted' }, '-')
+      }
+
+      const rendimiento = calculateRendimientoEfectivo(vcp, vcpAnterior)
+
+      if (rendimiento === null) {
+        return h('span', { class: 'text-muted' }, '-')
+      }
+
+      const formatted = new Intl.NumberFormat('es-AR', {
+        style: 'percent',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(rendimiento)
+
+      const colorClass =
+        rendimiento > 0
+          ? 'text-green-600 dark:text-green-400'
+          : rendimiento < 0
+            ? 'text-red-600 dark:text-red-400'
+            : ''
+
+      return h('div', { class: `text-right font-medium text-sm ${colorClass}` }, formatted)
+    },
+    sortingFn: (rowA: { original: FundWithPrevious }, rowB: { original: FundWithPrevious }) => {
+      const vcpA = Number.parseFloat(String(rowA.original.vcp))
+      const vcpAnteriorA = rowA.original.vcpAnterior
+      const vcpB = Number.parseFloat(String(rowB.original.vcp))
+      const vcpAnteriorB = rowB.original.vcpAnterior
+
+      if (vcpAnteriorA === undefined || Number.isNaN(vcpA) || Number.isNaN(vcpAnteriorA)) {
+        return 1
+      }
+      if (vcpAnteriorB === undefined || Number.isNaN(vcpB) || Number.isNaN(vcpAnteriorB)) {
+        return -1
+      }
+
+      const rendimientoA = calculateRendimientoEfectivo(vcpA, vcpAnteriorA)
+      const rendimientoB = calculateRendimientoEfectivo(vcpB, vcpAnteriorB)
+
+      if (rendimientoA === null) return 1
+      if (rendimientoB === null) return -1
+
+      return (rendimientoA || 0) - (rendimientoB || 0)
+    },
+  },
+  {
+    id: 'tna',
+    accessorFn: (row: FundWithPrevious) => {
+      const fecha = row.fecha
+      const fechaAnterior = row.fechaAnterior
+      const vcp = Number.parseFloat(String(row.vcp))
+      const vcpAnterior = row.vcpAnterior
+
+      if (
+        !fecha ||
+        !fechaAnterior ||
+        vcpAnterior === undefined ||
+        Number.isNaN(vcp) ||
+        Number.isNaN(vcpAnterior)
+      ) {
+        return null
+      }
+
+      const days = daysBetween(fecha, fechaAnterior)
+      const tna = calculateTNA(vcp, vcpAnterior, days)
+      return tna ?? null
+    },
+    header: getSortableHeader('TNA Estimada', 'right'),
+    cell: ({ row }) => {
+      const fecha = row.original.fecha
+      const fechaAnterior = row.original.fechaAnterior
+      const vcp = Number.parseFloat(String(row.original.vcp))
+      const vcpAnterior = row.original.vcpAnterior
+
+      if (
+        !fecha ||
+        !fechaAnterior ||
+        vcpAnterior === undefined ||
+        Number.isNaN(vcp) ||
+        Number.isNaN(vcpAnterior)
+      ) {
+        return h('span', { class: 'text-muted' }, '-')
+      }
+
+      const days = daysBetween(fecha, fechaAnterior)
+      const tna = calculateTNA(vcp, vcpAnterior, days)
+
+      if (tna === null) {
+        return h('span', { class: 'text-muted' }, '-')
+      }
+
+      const formatted = new Intl.NumberFormat('es-AR', {
+        style: 'percent',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(tna)
+
+      const colorClass =
+        tna > 0
+          ? 'text-green-600 dark:text-green-400'
+          : tna < 0
+            ? 'text-red-600 dark:text-red-400'
+            : ''
+
+      return h('div', { class: `text-right font-medium text-sm ${colorClass}` }, formatted)
+    },
+    sortingFn: (rowA: { original: FundWithPrevious }, rowB: { original: FundWithPrevious }) => {
+      const fechaA = rowA.original.fecha
+      const fechaAnteriorA = rowA.original.fechaAnterior
+      const vcpA = Number.parseFloat(String(rowA.original.vcp))
+      const vcpAnteriorA = rowA.original.vcpAnterior
+
+      const fechaB = rowB.original.fecha
+      const fechaAnteriorB = rowB.original.fechaAnterior
+      const vcpB = Number.parseFloat(String(rowB.original.vcp))
+      const vcpAnteriorB = rowB.original.vcpAnterior
+
+      if (
+        !fechaA ||
+        !fechaAnteriorA ||
+        vcpAnteriorA === undefined ||
+        Number.isNaN(vcpA) ||
+        Number.isNaN(vcpAnteriorA)
+      ) {
+        return 1
+      }
+      if (
+        !fechaB ||
+        !fechaAnteriorB ||
+        vcpAnteriorB === undefined ||
+        Number.isNaN(vcpB) ||
+        Number.isNaN(vcpAnteriorB)
+      ) {
+        return -1
+      }
+
+      const daysA = daysBetween(fechaA, fechaAnteriorA)
+      const tnaA = calculateTNA(vcpA, vcpAnteriorA, daysA)
+
+      const daysB = daysBetween(fechaB, fechaAnteriorB)
+      const tnaB = calculateTNA(vcpB, vcpAnteriorB, daysB)
+
+      if (tnaA === null) return 1
+      if (tnaB === null) return -1
+
+      return (tnaA || 0) - (tnaB || 0)
     },
   },
   {
