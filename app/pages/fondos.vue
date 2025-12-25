@@ -531,7 +531,7 @@ const sorting = ref([
       <p class="text-xs text-muted mt-1">
         Fuente de datos:
         <NuxtLink
-          to="https://www.cafci.org.ar/index.html"
+          to="https://www.cafci.org.ar/"
           external
           target="_blank"
           rel="noopener noreferrer"
@@ -619,7 +619,7 @@ const sorting = ref([
       <p>
         Los datos provienen de la
         <NuxtLink
-          to="https://www.cafci.org.ar/index.html"
+          to="https://www.cafci.org.ar/"
           external
           target="_blank"
           rel="noopener noreferrer"
