@@ -25,7 +25,7 @@ const getIconComponent = (icon: string) => {
 </script>
 
 <template>
-  <div class="flex flex-row justify-center h-[var(--ui-header-height)]">
+  <div v-if="getCurrentCategory" class="flex flex-row justify-center h-[var(--ui-header-height)]">
     <NuxtLink
       v-for="category in categories"
       :key="category.id"
