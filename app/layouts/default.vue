@@ -23,6 +23,10 @@ onMounted(() => {
   fetchCriptopesos()
   initialize()
 })
+
+const isWideLayout = computed(() => {
+  return ['criptomonedas', 'creditos-hipotecarios-uva', 'fondos'].includes(route.name as string)
+})
 </script>
 
 <template>
@@ -87,10 +91,8 @@ onMounted(() => {
         <UContainer
           class="w-full mx-auto space-y-6"
           :class="{
-            'max-w-3xl':
-              route.name !== 'criptomonedas' && route.name !== 'creditos-hipotecarios-uva',
-            'max-w-8xl':
-              route.name === 'criptomonedas' || route.name === 'creditos-hipotecarios-uva',
+            'max-w-3xl': !isWideLayout,
+            'max-w-8xl': isWideLayout,
           }"
         >
           <slot />
