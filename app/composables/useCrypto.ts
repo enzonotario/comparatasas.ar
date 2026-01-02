@@ -103,9 +103,7 @@ export function useCrypto() {
       // y consolida tokens duplicados por entidad (toma el máximo APY)
       const processed = responseArray
         .map((entity) => {
-          const validRendimientos = entity.rendimientos.filter(
-            (rendimiento) => rendimiento.apy > 0,
-          )
+          const validRendimientos = entity.rendimientos.filter((rendimiento) => rendimiento.apy > 0)
 
           // Consolida tokens duplicados tomando el máximo APY
           const consolidatedRendimientos = new Map<string, number>()

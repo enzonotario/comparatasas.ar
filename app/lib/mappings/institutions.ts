@@ -452,7 +452,7 @@ export const institutions: Array<{
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/vesseo.svg',
     shortName: 'Vesseo',
     url: 'https://vesseoapp.com/?ref=comparatasas.ar',
-  }
+  },
 ]
 
 export function getInstitutionLogo(name: string): string | undefined {

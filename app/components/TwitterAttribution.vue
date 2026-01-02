@@ -10,9 +10,7 @@ const props = defineProps<Props>()
 </script>
 
 <template>
-  <div
-    class="flex flex-col items-end gap-1 p-1"
-  >
+  <div class="flex flex-col items-end gap-1 p-1">
     <div class="flex items-center gap-3">
       <img
         :src="props.avatar"

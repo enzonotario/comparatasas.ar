@@ -132,9 +132,7 @@ export function isCrypto(symbol: string): boolean {
   if (!symbol) return false
 
   const normalizedSymbol = symbol.toLowerCase().trim()
-  return cryptoLogoMappings.some((m) =>
-    m.symbols.some((s) => normalizedSymbol === s.toLowerCase()),
-  )
+  return cryptoLogoMappings.some((m) => m.symbols.some((s) => normalizedSymbol === s.toLowerCase()))
 }
 
 // Calcula el máximo APY para una criptomoneda entre todos los proveedores

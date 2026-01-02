@@ -37,4 +37,3 @@ const getSubcategoryRoute = (page: NavigationPage): string => {
     </div>
   </div>
 </template>
-
