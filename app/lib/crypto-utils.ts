@@ -127,6 +127,16 @@ export function shouldShowCrypto(symbol: string): boolean {
   return !BLACKLISTED_SYMBOLS.some((blacklisted) => normalizedSymbol === blacklisted.toLowerCase())
 }
 
+// Determina si una moneda es una criptomoneda (está en el mapeo de criptos)
+export function isCrypto(symbol: string): boolean {
+  if (!symbol) return false
+
+  const normalizedSymbol = symbol.toLowerCase().trim()
+  return cryptoLogoMappings.some((m) =>
+    m.symbols.some((s) => normalizedSymbol === s.toLowerCase()),
+  )
+}
+
 // Calcula el máximo APY para una criptomoneda entre todos los proveedores
 // Toma el máximo por proveedor (puede haber múltiples opciones/protocolos) y luego el máximo global
 export function getCryptoMaxYield(

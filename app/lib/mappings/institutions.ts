@@ -304,7 +304,7 @@ export const institutions: Array<{
     url: 'https://dub.link/VhlkWOd',
   },
   {
-    names: ['astropay', 'Astropay'],
+    names: ['astropay', 'Astropay', 'AstroPay'],
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/astropay.png',
     shortName: 'Astropay',
     url: 'https://dub.link/BgFIde3',

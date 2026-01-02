@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { fetch: fetchFunds } = useFunds()
 const { fetch: fetchAccounts } = useAccounts()
-const { fetch: fetchCrypto } = useCrypto()
+const { fetchCriptos: fetchCrypto } = useCrypto()
 const { fetch: fetchPlazosFijos } = usePlazosFijos()
 const { fetch: fetchCriptopesos } = useCriptopesos()
 const { initialize } = useHotjar()
