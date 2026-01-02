@@ -23,20 +23,15 @@ export const disclaimerMappings: DisclaimerMapping = {
       text: 'La información representada proviene de la camara argentina de fondos comunes de inversion (CAFCI) y de las propias plataformas. Puede llegar a estar desactualizada y no garantizamos que estos sean los ultimos rendimientos vigentes.',
     },
   ],
-  'renta-fija-usd': [
+  usd: [
     {
       text: 'El rendimiento de los fondos en USD se calcula comparando los valores cuotaparte de hace 30 dias con el ultimo valor disponible segun la camara argentina de fondos comunes de inversion (CAFCI). La TNA se obtiene anualizando el rendimiento del periodo de 30 dias.',
     },
     {
+      text: 'Los rendimientos de billeteras en USD representan el APY (Annual Percentage Yield) ofrecido por cada plataforma para depósitos en dólares.',
+    },
+    {
       text: 'Algunos de los fondos aqui representados suelen tener rendimientos diarios negativos. Investiga por tu cuenta antes de invertir. No todos tienen el mismo riesgo.',
-    },
-    {
-      text: 'La información representada proviene de la camara argentina de fondos comunes de inversion (CAFCI) y de las propias plataformas. Puede llegar a estar desactualizada y no garantizamos que estos sean los ultimos rendimientos vigentes.',
-    },
-  ],
-  'mercado-dinero-usd': [
-    {
-      text: 'El rendimiento de los fondos money market en USD se calcula comparando los ultimos dos valores cuotaparte reportados por la camara argentina de fondos comunes de inversion (CAFCI). La TNA se obtiene anualizando el rendimiento diario entre ambas fechas.',
     },
     {
       text: 'La información representada proviene de la camara argentina de fondos comunes de inversion (CAFCI) y de las propias plataformas. Puede llegar a estar desactualizada y no garantizamos que estos sean los ultimos rendimientos vigentes.',

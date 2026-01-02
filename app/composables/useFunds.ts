@@ -78,9 +78,9 @@ function getFundsMap(latest: FundRaw[], previous: FundRaw[]) {
           ? 'rentaFijaUsd'
           : undefined,
       typeLabel: inst.showInUsdMoneyMarket
-        ? 'Money Market USD'
+        ? 'Money Market'
         : inst.showInUsdFunds
-          ? 'Renta Fija USD'
+          ? 'Renta Fija'
           : undefined,
       meta: {
         showInFunds: inst.showInFunds || false,

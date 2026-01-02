@@ -58,16 +58,10 @@ export const useNavigationPages = () => {
       icon: 'flag-usd',
       pages: [
         {
-          to: '/renta-fija-usd',
-          label: 'Renta Fija',
-          icon: 'i-lucide-pie-chart',
+          to: '/usd',
+          label: 'Inversiones en USD',
+          icon: 'i-lucide-dollar-sign',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
-        },
-        {
-          to: '/mercado-dinero-usd',
-          label: 'Mercado de Dinero',
-          icon: 'i-lucide-pie-chart',
-          image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-bill.png',
         },
       ],
     },
