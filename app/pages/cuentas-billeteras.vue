@@ -11,6 +11,8 @@ useSeoMeta({
 const { allFundsCache, data, loading, error } = useFunds()
 const { accounts, loading: loadingAccounts, specialAccounts } = useAccounts()
 
+const { calculateResults, isSimulating } = useInvestmentSimulator()
+
 const resolvedFundsAccounts = computed(() => {
   const accountsFunds = allFundsCache.value.filter((i) => i?.meta?.showInAccounts)
   const mercadoDineroFunds = data.value.mercadoDinero.filter((i) => i?.meta?.showInFunds)
@@ -28,6 +30,9 @@ const resolvedFundsAccounts = computed(() => {
 
   return unique.sort((a, b) => b.tna - a.tna)
 })
+
+const accountsWithSimulation = calculateResults(accounts)
+const specialAccountsWithSimulation = calculateResults(specialAccounts)
 
 const fundsByRisk = computed(() => {
   const grouped: Record<string, typeof resolvedFundsAccounts.value> = {
@@ -51,130 +56,166 @@ const fundsByRisk = computed(() => {
 
   return grouped
 })
+
+const fundsByRiskWithSimulation = computed(() => {
+  const result: Record<string, any> = {}
+
+  Object.entries(fundsByRisk.value).forEach(([key, funds]) => {
+    const fundsRef = computed(() => funds)
+    const calculatedFunds = calculateResults(fundsRef)
+    result[key] = calculatedFunds.value
+  })
+
+  return result
+})
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div>
-      <div class="mb-2">
-        <div class="group relative">
-          <NuxtLink
-            to="#rendimiento-garantizado"
-            class="-ml-4.5 flex items-center gap-2 no-underline"
-          >
-            <span
-              class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
+  <div>
+    <InvestmentSimulator />
+
+    <div class="space-y-6">
+      <div>
+        <div class="mb-2">
+          <div class="group relative">
+            <NuxtLink
+              to="#rendimiento-garantizado"
+              class="-ml-4.5 flex items-center gap-2 no-underline"
             >
-              #
-            </span>
-            <h2 id="rendimiento-garantizado" class="text-lg font-medium scroll-mt-22">
-              Rendimiento garantizado
-            </h2>
-          </NuxtLink>
-        </div>
-        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-          Cuentas remuneradas y billeteras con tasa fija garantizada
-        </p>
-      </div>
-
-      <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
-
-      <FundsLoading v-if="loadingAccounts && !accounts.length" />
-
-      <FundsList v-else :items="accounts" key-prop="fondo" mode="detailed"> </FundsList>
-    </div>
-
-    <div>
-      <div class="mb-2">
-        <div class="group relative">
-          <NuxtLink
-            to="#condiciones-especiales"
-            class="-ml-4.5 flex items-center gap-2 no-underline"
-          >
-            <span
-              class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
-            >
-              #
-            </span>
-            <h2 id="condiciones-especiales" class="text-lg font-medium scroll-mt-22">
-              Con condiciones especiales
-            </h2>
-          </NuxtLink>
-        </div>
-        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-          Productos con requisitos o condiciones particulares para acceder
-        </p>
-      </div>
-
-      <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
-
-      <FundsLoading v-if="loadingAccounts && !accounts.length" />
-
-      <FundsList v-else :items="specialAccounts" key-prop="fondo" mode="detailed"> </FundsList>
-    </div>
-
-    <div>
-      <div class="mb-2">
-        <div class="group relative">
-          <NuxtLink to="#rendimiento-variable" class="-ml-4.5 flex items-center gap-2 no-underline">
-            <span
-              class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
-            >
-              #
-            </span>
-            <h2 id="rendimiento-variable" class="text-lg font-medium scroll-mt-22">
-              Rendimiento variable
-            </h2>
-          </NuxtLink>
-        </div>
-        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-          Fondos comunes de inversión con rendimiento que puede variar según el mercado
-        </p>
-      </div>
-
-      <UAlert v-if="error" color="red" variant="soft" title="Error cargando fondos" />
-
-      <div class="space-y-6">
-        <div v-for="(funds, riskKey) in fundsByRisk" :key="riskKey">
-          <div v-if="funds.length > 0" class="space-y-3">
-            <h3 class="text-base font-medium text-neutral-700 dark:text-neutral-300">
-              {{ riskKey }}
-            </h3>
-            <FundsList :items="funds" key-prop="fondo" mode="detailed" />
-          </div>
-        </div>
-
-        <div class="space-y-3">
-          <h3 class="text-base font-medium text-neutral-700 dark:text-neutral-300">
-            Análisis completo de FCI
-          </h3>
-          <NuxtLink
-            to="/fondos"
-            class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-primary-300 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200 group"
-          >
-            <UIcon
-              name="i-lucide-bar-chart-3"
-              class="size-6 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400"
-            />
-            <div class="flex-1">
-              <div
-                class="font-medium text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400"
+              <span
+                class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
               >
-                Explorar todos los FCI
-              </div>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Consultá y compará todos los fondos disponibles con datos detallados de rendimiento,
-                patrimonio y características
-              </p>
-            </div>
-            <UIcon
-              name="i-lucide-arrow-right"
-              class="size-5 text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400"
-            />
-          </NuxtLink>
+                #
+              </span>
+              <h2 id="rendimiento-garantizado" class="text-lg font-medium scroll-mt-22">
+                Rendimiento garantizado
+              </h2>
+            </NuxtLink>
+          </div>
+          <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+            Cuentas remuneradas y billeteras con tasa fija garantizada
+          </p>
         </div>
 
-        <FundsLoading v-if="loading || loadingAccounts" />
+        <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
+
+        <FundsLoading v-if="loadingAccounts && !accounts.length" />
+
+        <FundsList
+          v-else
+          :items="accountsWithSimulation"
+          key-prop="fondo"
+          mode="detailed"
+          :show-simulation="isSimulating"
+        />
+      </div>
+
+      <div>
+        <div class="mb-2">
+          <div class="group relative">
+            <NuxtLink
+              to="#condiciones-especiales"
+              class="-ml-4.5 flex items-center gap-2 no-underline"
+            >
+              <span
+                class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
+              >
+                #
+              </span>
+              <h2 id="condiciones-especiales" class="text-lg font-medium scroll-mt-22">
+                Con condiciones especiales
+              </h2>
+            </NuxtLink>
+          </div>
+          <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+            Productos con requisitos o condiciones particulares para acceder
+          </p>
+        </div>
+
+        <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
+
+        <FundsLoading v-if="loadingAccounts && !accounts.length" />
+
+        <FundsList
+          v-else
+          :items="specialAccountsWithSimulation"
+          key-prop="fondo"
+          mode="detailed"
+          :show-simulation="isSimulating"
+        />
+      </div>
+
+      <div>
+        <div class="mb-2">
+          <div class="group relative">
+            <NuxtLink
+              to="#rendimiento-variable"
+              class="-ml-4.5 flex items-center gap-2 no-underline"
+            >
+              <span
+                class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
+              >
+                #
+              </span>
+              <h2 id="rendimiento-variable" class="text-lg font-medium scroll-mt-22">
+                Rendimiento variable
+              </h2>
+            </NuxtLink>
+          </div>
+          <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+            Fondos comunes de inversión con rendimiento que puede variar según el mercado
+          </p>
+        </div>
+
+        <UAlert v-if="error" color="red" variant="soft" title="Error cargando fondos" />
+
+        <div class="space-y-6">
+          <div v-for="(funds, riskKey) in fundsByRiskWithSimulation" :key="riskKey">
+            <div v-if="funds.length > 0" class="space-y-3">
+              <h3 class="text-base font-medium text-neutral-700 dark:text-neutral-300">
+                {{ riskKey }}
+              </h3>
+              <FundsList
+                :items="funds"
+                key-prop="fondo"
+                mode="detailed"
+                :show-simulation="isSimulating"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <h3 class="text-base font-medium text-neutral-700 dark:text-neutral-300">
+              Análisis completo de FCI
+            </h3>
+            <NuxtLink
+              to="/fondos"
+              class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-primary-300 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200 group"
+            >
+              <UIcon
+                name="i-lucide-bar-chart-3"
+                class="size-6 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400"
+              />
+              <div class="flex-1">
+                <div
+                  class="font-medium text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400"
+                >
+                  Explorar todos los FCI
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Consultá y compará todos los fondos disponibles con datos detallados de
+                  rendimiento, patrimonio y características
+                </p>
+              </div>
+              <UIcon
+                name="i-lucide-arrow-right"
+                class="size-5 text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400"
+              />
+            </NuxtLink>
+          </div>
+
+          <FundsLoading v-if="loading || loadingAccounts" />
+        </div>
       </div>
     </div>
   </div>

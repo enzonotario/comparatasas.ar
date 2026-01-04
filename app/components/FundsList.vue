@@ -3,6 +3,7 @@ defineProps<{
   items: any[]
   keyProp?: string
   mode?: 'simple' | 'detailed'
+  showSimulation?: boolean
 }>()
 
 function formatDate(dateString: string): string {
@@ -21,6 +22,15 @@ function formatDate(dateString: string): string {
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
   return `${day}/${month}/${year}`
+}
+
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value)
 }
 </script>
 
@@ -104,19 +114,40 @@ function formatDate(dateString: string): string {
             </div>
 
             <div class="text-right space-y-1">
-              <div class="text-primary-600 dark:text-primary-400 font-semibold">
-                {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
-              </div>
-              <div class="text-xs text-neutral">
-                TNA
-                <div v-if="item.fechaAnterior && item.fecha">
-                  <span>Entre </span>
-
-                  <span>{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span>
+              <div v-if="showSimulation && item.simulation" class="space-y-1">
+                <div class="text-primary-600 dark:text-primary-400 font-semibold text-lg">
+                  {{ formatCurrency(item.simulation.earned) }}
                 </div>
-                <div v-else-if="item.fecha">
-                  <span>Actualizado el </span>
-                  <span>{{ formatDate(item.fecha) }}</span>
+                <div class="text-xs text-neutral">
+                  Ganancia en {{ item.simulation.days }} días
+                  <span v-if="item.simulation.isPlazoFijo" class="text-neutral-500">(plazo fijo)</span>
+                </div>
+                <div
+                  v-if="item.simulation.exceedsLimit"
+                  class="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1"
+                >
+                  <UIcon name="i-lucide-alert-triangle" class="size-3" />
+                  <span>Tope: {{ formatCurrency(item.simulation.limit) }}</span>
+                </div>
+                <div class="text-xs text-neutral-500 dark:text-neutral-600">
+                  TNA: {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
+                </div>
+              </div>
+              <div v-else>
+                <div class="text-primary-600 dark:text-primary-400 font-semibold">
+                  {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
+                </div>
+                <div class="text-xs text-neutral">
+                  TNA
+                  <div v-if="item.fechaAnterior && item.fecha">
+                    <span>Entre </span>
+
+                    <span>{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span>
+                  </div>
+                  <div v-else-if="item.fecha">
+                    <span>Actualizado el </span>
+                    <span>{{ formatDate(item.fecha) }}</span>
+                  </div>
                 </div>
               </div>
             </div>

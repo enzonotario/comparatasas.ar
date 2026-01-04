@@ -9,10 +9,15 @@ useSeoMeta({
 })
 
 const { plazosFijosItems, loading, error } = usePlazosFijos()
+
+const { calculateResults, isSimulating } = useInvestmentSimulator()
+const plazosFijosWithSimulation = calculateResults(plazosFijosItems)
 </script>
 
 <template>
   <div>
+    <InvestmentSimulator :fixed-days="30" />
+
     <div class="flex items-center justify-between mb-2">
       <h2 id="plazos-fijos" class="text-lg font-medium scroll-mt-16">Plazos Fijos</h2>
     </div>
@@ -21,7 +26,12 @@ const { plazosFijosItems, loading, error } = usePlazosFijos()
 
     <FundsLoading v-if="loading && !plazosFijosItems.length" />
 
-    <FundsList v-else :items="plazosFijosItems" mode="simple" />
+    <FundsList
+      v-else
+      :items="plazosFijosWithSimulation"
+      mode="simple"
+      :show-simulation="isSimulating"
+    />
 
     <div v-if="!loading && !plazosFijosItems.length" class="text-center py-8">
       <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 text-muted mx-auto mb-4" />
