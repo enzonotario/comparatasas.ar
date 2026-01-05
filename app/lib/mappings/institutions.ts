@@ -11,6 +11,7 @@ export const institutions: Array<{
 }> = [
   {
     names: [
+      'bna',
       'banco nacion',
       'Banco de la Nación Argentina',
       'banco de la nacion argentina',
@@ -22,13 +23,13 @@ export const institutions: Array<{
     url: 'https://dub.link/06hKI5u',
   },
   {
-    names: ['BANCO SANTANDER ARGENTINA S.A.', 'Banco Santander', 'Santander'],
+    names: ['BANCO SANTANDER ARGENTINA S.A.', 'Banco Santander', 'Santander', 'santander'],
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/banco-santander.png',
     shortName: 'Banco Santander',
     url: 'https://dub.link/O84uvr0',
   },
   {
-    names: ['BANCO DE GALICIA Y BUENOS AIRES S.A.U.', 'Banco Galicia', 'Galicia'],
+    names: ['BANCO DE GALICIA Y BUENOS AIRES S.A.U.', 'Banco Galicia', 'Galicia', 'galicia'],
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/banco-galicia.png',
     shortName: 'Banco Galicia',
     url: 'https://dub.link/MJadlcT',
@@ -160,7 +161,7 @@ export const institutions: Array<{
     url: 'https://dub.link/sSXjtaY',
   },
   {
-    names: ['Supervielle', 'BANCO SUPERVIELLE'],
+    names: ['Supervielle', 'BANCO SUPERVIELLE', 'supervielle'],
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/banco-supervielle.png',
     shortName: 'Supervielle',
     url: 'https://dub.link/vIFomxq',
@@ -306,7 +307,7 @@ export const institutions: Array<{
   {
     names: ['astropay', 'Astropay', 'AstroPay'],
     logo: 'https://api.argentinadatos.com/static/comparatasas/logos/astropay.png',
-    shortName: 'Astropay',
+    shortName: 'AstroPay',
     url: 'https://dub.link/BgFIde3',
   },
   {
