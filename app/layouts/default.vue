@@ -71,7 +71,7 @@ const isWideLayout = computed(() => {
         </template>
       </UHeader>
 
-      <SubcategorySelector class="z-50" />
+      <SubcategorySelector />
 
       <UMain class="flex flex-col space-y-6 pt-16">
         <UContainer class="space-y-6">
