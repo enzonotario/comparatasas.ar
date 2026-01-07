@@ -1,9 +1,24 @@
 <script setup lang="ts">
 import { useMediaQuery } from '@vueuse/core'
 
-const props = defineProps<{
-  fixedDays?: number
-}>()
+interface PresetAmount {
+  value: number
+  label: string
+}
+
+const props = withDefaults(
+  defineProps<{
+    fixedDays?: number
+    presetAmounts?: PresetAmount[]
+  }>(),
+  {
+    presetAmounts: () => [
+      { value: 100000, label: '$100k' },
+      { value: 500000, label: '$500k' },
+      { value: 1000000, label: '$1M' },
+    ],
+  },
+)
 
 const { amount, days, isOpen, isSimulating } = useInvestmentSimulator()
 
@@ -94,25 +109,13 @@ const closeSimulator = () => {
             <template #hint>
               <div class="flex gap-1 mt-1.5">
                 <UButton
+                  v-for="preset in presetAmounts"
+                  :key="preset.value"
                   size="xs"
                   color="neutral"
                   variant="outline"
-                  label="$100k"
-                  @click="amount = 100000"
-                />
-                <UButton
-                  size="xs"
-                  color="neutral"
-                  variant="outline"
-                  label="$500k"
-                  @click="amount = 500000"
-                />
-                <UButton
-                  size="xs"
-                  color="neutral"
-                  variant="outline"
-                  label="$1M"
-                  @click="amount = 1000000"
+                  :label="preset.label"
+                  @click="amount = preset.value"
                 />
               </div>
             </template>
@@ -190,25 +193,13 @@ const closeSimulator = () => {
             <template #hint>
               <div class="flex gap-1 mt-1.5">
                 <UButton
+                  v-for="preset in presetAmounts"
+                  :key="preset.value"
                   size="xs"
                   color="neutral"
                   variant="outline"
-                  label="$100k"
-                  @click="amount = 100000"
-                />
-                <UButton
-                  size="xs"
-                  color="neutral"
-                  variant="outline"
-                  label="$500k"
-                  @click="amount = 500000"
-                />
-                <UButton
-                  size="xs"
-                  color="neutral"
-                  variant="outline"
-                  label="$1M"
-                  @click="amount = 1000000"
+                  :label="preset.label"
+                  @click="amount = preset.value"
                 />
               </div>
             </template>

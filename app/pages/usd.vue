@@ -21,6 +21,8 @@ const { fetchAll, loading: cryptoLoading, error: cryptoError } = useCrypto()
 const loading = computed(() => fundsLoading.value || cryptoLoading.value)
 const error = computed(() => fundsError.value || cryptoError.value)
 
+const { calculateResults, isSimulating } = useInvestmentSimulator()
+
 // Cuentas remuneradas en USD desde la API
 interface UsdAccount {
   entidad: string
@@ -95,6 +97,8 @@ const accountsAndWallets = computed(() => {
   )
 })
 
+const accountsAndWalletsWithSimulation = calculateResults(accountsAndWallets)
+
 // Subdividir por nivel de riesgo
 const fundsByRisk = computed(() => {
   const grouped: Record<string, any[]> = {
@@ -120,6 +124,18 @@ const fundsByRisk = computed(() => {
   })
 
   return grouped
+})
+
+const fundsByRiskWithSimulation = computed(() => {
+  const result: Record<string, any> = {}
+
+  Object.entries(fundsByRisk.value).forEach(([key, funds]) => {
+    const fundsRef = computed(() => funds)
+    const calculatedFunds = calculateResults(fundsRef)
+    result[key] = calculatedFunds.value
+  })
+
+  return result
 })
 
 // Cargar cuentas remuneradas en USD
@@ -165,6 +181,14 @@ onMounted(async () => {
 
 <template>
   <div>
+    <InvestmentSimulator
+      :preset-amounts="[
+        { value: 1000, label: '$1k' },
+        { value: 5000, label: '$5k' },
+        { value: 10000, label: '$10k' },
+      ]"
+    />
+
     <div class="space-y-6">
       <!-- Cuentas y Billeteras USD -->
       <div>
@@ -199,10 +223,11 @@ onMounted(async () => {
         <FundsLoading v-if="loadingAccounts && accountsAndWallets.length === 0" />
 
         <FundsList
-          v-else-if="accountsAndWallets.length > 0"
-          :items="accountsAndWallets"
+          v-else-if="accountsAndWalletsWithSimulation.length > 0"
+          :items="accountsAndWalletsWithSimulation"
           key-prop="institution"
           mode="detailed"
+          :show-simulation="isSimulating"
         />
 
         <div
@@ -247,12 +272,12 @@ onMounted(async () => {
         />
 
         <div v-else class="space-y-6">
-          <div v-for="(funds, riskKey) in fundsByRisk" :key="riskKey">
+          <div v-for="(funds, riskKey) in fundsByRiskWithSimulation" :key="riskKey">
             <div v-if="funds.length > 0" class="space-y-3">
               <h3 class="text-base font-medium text-neutral-700 dark:text-neutral-300">
                 {{ riskKey }}
               </h3>
-              <FundsList :items="funds" key-prop="fondo" mode="detailed" />
+              <FundsList :items="funds" key-prop="fondo" mode="detailed" :show-simulation="isSimulating" />
             </div>
           </div>
         </div>

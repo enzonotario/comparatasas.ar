@@ -9,10 +9,15 @@ useSeoMeta({
 })
 
 const { criptopesos, loading, error } = useCriptopesos()
+
+const { calculateResults, isSimulating } = useInvestmentSimulator()
+const criptopesosWithSimulation = calculateResults(criptopesos)
 </script>
 
 <template>
   <div class="space-y-6">
+    <InvestmentSimulator />
+
     <div>
       <div class="flex items-center justify-between mb-2">
         <h2 id="criptopesos" class="text-lg font-medium scroll-mt-16">Criptopesos</h2>
@@ -22,7 +27,7 @@ const { criptopesos, loading, error } = useCriptopesos()
 
       <FundsLoading v-if="loading && !criptopesos.length" />
 
-      <FundsList v-else :items="criptopesos" key-prop="fondo" mode="detailed" />
+      <FundsList v-else :items="criptopesosWithSimulation" key-prop="fondo" mode="detailed" :show-simulation="isSimulating" />
     </div>
   </div>
 </template>
