@@ -280,6 +280,8 @@ onMounted(async () => {
               <FundsList :items="funds" key-prop="fondo" mode="detailed" :show-simulation="isSimulating" />
             </div>
           </div>
+
+          <ExploreFundsLink />
         </div>
 
         <div
