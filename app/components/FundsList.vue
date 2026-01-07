@@ -96,6 +96,14 @@ function formatCurrency(value: number): string {
                     }}
                   </UBadge>
                   <UBadge
+                    v-if="item.tope === null"
+                    color="neutral"
+                    variant="outline"
+                    class="text-neutral-800 dark:text-neutral-100 bg-neutral-50 dark:bg-neutral-950/30"
+                  >
+                    Sin Límites
+                  </UBadge>
+                  <UBadge
                     v-if="item.patrimonio"
                     color="neutral"
                     variant="outline"
