@@ -186,6 +186,39 @@ const fundsByRiskWithSimulation = computed(() => {
 
           <ExploreFundsLink />
 
+          <UCard class="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+            <template #header>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-info" class="size-5 text-blue-600 dark:text-blue-400" />
+                <h3 class="text-base font-semibold text-blue-900 dark:text-blue-100">
+                  ¿Por qué pueden diferir los rendimientos a los mostrados en cada App?
+                </h3>
+              </div>
+            </template>
+
+            <div class="space-y-3 text-sm text-blue-800 dark:text-blue-200">
+              <p>
+                Los rendimientos mostrados en comparatasas.ar se calculan comparando los últimos dos
+                valores cuotaparte reportados por la Cámara Argentina de Fondos Comunes de Inversión
+                (CAFCI), y luego se anualiza el rendimiento diario entre ambas fechas.
+              </p>
+              <p>
+                Las diferencias con otras aplicaciones (como Mercado Pago, Personal Pay, etc.)
+                pueden deberse a:
+              </p>
+              <ul class="list-disc list-inside space-y-1 ml-2">
+                <li>Muestran rendimientos estimados/esperados</li>
+                <li>Diferentes períodos de cálculo (últimos 7 días, 30 días, etc.)</li>
+                <li>Distintas fechas de referencia para los valores cuotaparte</li>
+                <li>Valores cuotaparte distintos a los reportados en CAFCI</li>
+              </ul>
+              <p class="text-xs text-blue-700 dark:text-blue-300 italic">
+                Siempre verificá los rendimientos actuales directamente con cada plataforma antes de
+                invertir.
+              </p>
+            </div>
+          </UCard>
+
           <FundsLoading v-if="loading || loadingAccounts" />
         </div>
       </div>
