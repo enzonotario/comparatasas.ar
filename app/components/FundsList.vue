@@ -128,7 +128,9 @@ function formatCurrency(value: number): string {
                 </div>
                 <div class="text-xs text-neutral">
                   Ganancia en {{ item.simulation.days }} días
-                  <span v-if="item.simulation.isPlazoFijo" class="text-neutral-500">(plazo fijo)</span>
+                  <span v-if="item.simulation.isPlazoFijo" class="text-neutral-500"
+                    >(plazo fijo)</span
+                  >
                 </div>
                 <div
                   v-if="item.simulation.exceedsLimit"

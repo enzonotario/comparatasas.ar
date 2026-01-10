@@ -30,9 +30,7 @@ const defaultIcon = 'i-lucide-bar-chart-3'
         <div
           class="font-medium text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400"
         >
-          <slot name="link-text">
-            Explorar todos los FCI
-          </slot>
+          <slot name="link-text"> Explorar todos los FCI </slot>
         </div>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
           <slot name="description">
@@ -47,4 +45,3 @@ const defaultIcon = 'i-lucide-bar-chart-3'
     </NuxtLink>
   </div>
 </template>
-

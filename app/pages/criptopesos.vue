@@ -27,7 +27,13 @@ const criptopesosWithSimulation = calculateResults(criptopesos)
 
       <FundsLoading v-if="loading && !criptopesos.length" />
 
-      <FundsList v-else :items="criptopesosWithSimulation" key-prop="fondo" mode="detailed" :show-simulation="isSimulating" />
+      <FundsList
+        v-else
+        :items="criptopesosWithSimulation"
+        key-prop="fondo"
+        mode="detailed"
+        :show-simulation="isSimulating"
+      />
     </div>
   </div>
 </template>
