@@ -683,6 +683,20 @@ const fundMappings: FundMapping[] = [
       },
     ],
   },
+  {
+    fundName: 'Delta Pesos - Clase A',
+    institutions: [
+      {
+        institution: 'Fiwind',
+        displayName: 'Fiwind',
+        showInAccounts: true,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+      },
+    ],
+  },
 ]
 
 export function getFundMapping(fundName: string): FundMapping | undefined {
