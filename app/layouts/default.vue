@@ -9,6 +9,8 @@ const { initialize } = useHotjar()
 const route = useRoute()
 const { pages } = useNavigationPages()
 
+const isSumarsePage = computed(() => route.path === '/sumarse')
+
 const useSponsorBanner = computed(() => {
   const cutoffDate = new Date('2026-01-01')
   const today = new Date()
@@ -59,7 +61,7 @@ const isWideLayout = computed(() => {
         </template>
 
         <template #default>
-          <CategorySelector />
+          <CategorySelector v-if="!isSumarsePage" />
         </template>
 
         <template #right>
@@ -67,11 +69,11 @@ const isWideLayout = computed(() => {
         </template>
 
         <template #body>
-          <CategorySelectorMobile />
+          <CategorySelectorMobile v-if="!isSumarsePage" />
         </template>
       </UHeader>
 
-      <SubcategorySelector />
+      <SubcategorySelector v-if="!isSumarsePage" />
 
       <UMain class="flex flex-col space-y-6 pt-16">
         <UContainer class="space-y-6">
@@ -101,11 +103,11 @@ const isWideLayout = computed(() => {
         <UContainer class="w-full max-w-3xl mx-auto space-y-6">
           <span class="flex-1" />
 
-          <FinancialAdviceCard />
+          <FinancialAdviceCard v-if="!isSumarsePage" />
 
           <PageNavigation :pages="pages" :current-route="route.path" />
 
-          <DisclaimerSection :page="route.name" />
+          <DisclaimerSection v-if="!isSumarsePage" :page="route.name" />
         </UContainer>
       </UMain>
 
@@ -119,23 +121,49 @@ const isWideLayout = computed(() => {
       >
         <template #top>
           <UContainer class="w-full max-w-3xl mx-auto space-y-12 !py-0">
-            <div class="flex flex-col items-start gap-2">
-              <h3 class="text-xl font-bold">Apoyá el proyecto</h3>
-              <p class="text-sm text-muted">
-                Ayudame a mantener y mejorar este proyecto con una donación.
-              </p>
-              <UButton
-                to="https://cafecito.app/enzonotario"
-                external
-                target="_blank"
-                rel="noopener noreferrer"
-                color="neutral"
-                variant="outline"
-                size="lg"
-              >
-                <UIcon name="i-heroicons-heart" />
-                Invitame un café
-              </UButton>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-8">
+              <div class="flex flex-col items-start gap-2">
+                <h3 class="text-xl font-bold">Apoyá el proyecto</h3>
+                <p class="text-sm text-muted">
+                  Ayudame a mantener y mejorar este proyecto con una donación.
+                </p>
+                <UButton
+                  to="https://cafecito.app/enzonotario"
+                  external
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  color="neutral"
+                  variant="outline"
+                  size="lg"
+                >
+                  <UIcon name="i-heroicons-heart" />
+                  Invitame un café
+                </UButton>
+              </div>
+
+              <div class="space-y-4">
+                <h3 class="text-xl font-bold">Mapa del Sitio</h3>
+                <div class="flex flex-col gap-2">
+                  <NuxtLink
+                    to="/plazos-fijos"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    Plazos Fijos
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/fondos"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    Fondos
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/sumarse"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    Sumarse
+                  </NuxtLink>
+                </div>
+              </div>
             </div>
 
             <div class="flex flex-col items-start gap-2">
