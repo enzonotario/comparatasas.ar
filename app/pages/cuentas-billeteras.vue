@@ -31,8 +31,8 @@ const resolvedFundsAccounts = computed(() => {
   return unique.sort((a, b) => b.tna - a.tna)
 })
 
-const accountsWithSimulation = calculateResults(accounts)
-const specialAccountsWithSimulation = calculateResults(specialAccounts)
+const accountsWithSimulation = calculateResults(accounts, allFundsCache)
+const specialAccountsWithSimulation = calculateResults(specialAccounts, allFundsCache)
 
 const fundsByRisk = computed(() => {
   const grouped: Record<string, typeof resolvedFundsAccounts.value> = {
@@ -62,7 +62,7 @@ const fundsByRiskWithSimulation = computed(() => {
 
   Object.entries(fundsByRisk.value).forEach(([key, funds]) => {
     const fundsRef = computed(() => funds)
-    const calculatedFunds = calculateResults(fundsRef)
+    const calculatedFunds = calculateResults(fundsRef, allFundsCache)
     result[key] = calculatedFunds.value
   })
 

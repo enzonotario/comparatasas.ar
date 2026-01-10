@@ -33,44 +33,69 @@ export function useInvestmentSimulator() {
     }
   }
 
-  const calculateResults = <T extends { tna: number; tope?: number | null; type?: string }>(
+  const calculateResults = <T extends { tna: number; tope?: number | null; type?: string; fondo?: string }>(
     itemsRef: Ref<T[]> | ComputedRef<T[]>,
+    allFundsCache?: Ref<any[]>,
   ) => {
-    return computed(() =>
-      unref(itemsRef).map((item) => {
+    return computed(() => {
+      const funds = allFundsCache?.value || []
+      const deltaPesosFund = funds.find(
+        (f: any) => f.fondo === 'Delta Pesos - Clase A' && f.institution === 'Fiwind',
+      )
+
+      return unref(itemsRef).map((item) => {
         const hasLimit = item.tope !== null && item.tope !== undefined
         const exceedsLimit = hasLimit && amount.value > item.tope!
+        const isFiwind = item.fondo === 'Fiwind' && hasLimit && exceedsLimit && deltaPesosFund
 
-        // Plazos fijos usan 30 días fijos e interés simple
         const isPlazoFijo = item.type === 'plazoFijo30d'
         const effectiveDays = isPlazoFijo ? 30 : days.value
 
-        // Si excede el límite, calculamos solo hasta el tope
-        const effectiveAmount = exceedsLimit ? item.tope! : amount.value
+        let result: { finalAmount: number; earned: number }
+        let effectiveAmount = amount.value
 
-        // Normalizar TNA: plazos fijos vienen en porcentaje (40), cuentas en decimal (0.40)
-        const tnaValue = isPlazoFijo ? item.tna / 100 : item.tna
+        if (isFiwind) {
+          const topeAmount = item.tope!
+          const excedenteAmount = amount.value - topeAmount
+          const tnaValue = item.tna
 
-        // Plazos fijos usan interés simple, el resto usa interés compuesto
-        const result = isPlazoFijo
-          ? calculateSimpleInterest(effectiveAmount, tnaValue, effectiveDays)
-          : calculateCompoundInterest(effectiveAmount, tnaValue, effectiveDays)
+          const topeResult = calculateCompoundInterest(topeAmount, tnaValue, effectiveDays)
+          const excedenteResult = calculateCompoundInterest(
+            excedenteAmount,
+            deltaPesosFund.tna,
+            effectiveDays,
+          )
+
+          result = {
+            finalAmount: topeResult.finalAmount + excedenteResult.finalAmount,
+            earned: topeResult.earned + excedenteResult.earned,
+          }
+        } else {
+          effectiveAmount = exceedsLimit ? item.tope! : amount.value
+          const tnaValue = isPlazoFijo ? item.tna / 100 : item.tna
+
+          result = isPlazoFijo
+            ? calculateSimpleInterest(effectiveAmount, tnaValue, effectiveDays)
+            : calculateCompoundInterest(effectiveAmount, tnaValue, effectiveDays)
+        }
 
         return {
           ...item,
           simulation: {
             initialAmount: amount.value,
-            effectiveAmount,
+            effectiveAmount: isFiwind ? amount.value : effectiveAmount,
             finalAmount: result.finalAmount,
             earned: result.earned,
             days: effectiveDays,
-            exceedsLimit,
+            exceedsLimit: isFiwind ? false : exceedsLimit,
             limit: item.tope,
             isPlazoFijo,
+            isFiwind,
+            deltaPesosTna: isFiwind ? deltaPesosFund.tna : undefined,
           },
         }
-      }),
-    )
+      })
+    })
   }
 
   return {

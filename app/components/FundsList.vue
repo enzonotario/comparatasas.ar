@@ -139,6 +139,16 @@ function formatCurrency(value: number): string {
                   <UIcon name="i-lucide-alert-triangle" class="size-3" />
                   <span>Tope: {{ formatCurrency(item.simulation.limit) }}</span>
                 </div>
+                <div
+                  v-if="item.simulation.isFiwind"
+                  class="text-xs text-blue-600 dark:text-blue-400 flex items-start gap-1"
+                >
+                  <UIcon name="i-lucide-info" class="size-3 mt-0.5 shrink-0" />
+                  <span>
+                    Hasta {{ formatCurrency(item.simulation.limit) }}: {{ (item.tna * 100).toFixed(2) }}% TNA.
+                    Excedente: {{ (item.simulation.deltaPesosTna * 100).toFixed(2) }}% TNA (Delta Pesos - Clase A).
+                  </span>
+                </div>
                 <div class="text-xs text-neutral-500 dark:text-neutral-600">
                   TNA: {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
                 </div>
