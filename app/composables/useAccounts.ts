@@ -87,6 +87,7 @@ export function useAccounts() {
       'UALA PLUS',
       'UALA PLUS 1',
       'UALA PLUS 2',
+      'BNA',
     ])
   })
 
