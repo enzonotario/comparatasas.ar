@@ -165,7 +165,7 @@ function formatCurrency(value: number): string {
                     <span>{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span>
                   </div>
                   <div v-else-if="item.fecha">
-                    <span>Actualizado el </span>
+                    <span>TNA vigente desde el </span>
                     <span>{{ formatDate(item.fecha) }}</span>
                   </div>
                 </div>
