@@ -151,10 +151,8 @@ function formatCurrency(value: number): string {
                 >
                   <UIcon name="i-lucide-info" class="size-3 mt-0.5 shrink-0" />
                   <span>
-                    Hasta {{ formatCurrency(item.simulation.limit) }}:
-                    {{ (item.tna * 100).toFixed(2) }}% TNA. Excedente:
-                    {{ (item.simulation.deltaPesosTna * 100).toFixed(2) }}% TNA (Delta Pesos - Clase
-                    A).
+                    Hasta {{ formatCurrency(item.simulation.limit) }}: {{ (item.tna * 100).toFixed(2) }}% TNA.
+                    Excedente: {{ (item.simulation.deltaPesosTna * 100).toFixed(2) }}% TNA (Delta Pesos - Clase A).
                   </span>
                 </div>
                 <div class="text-xs text-neutral-500 dark:text-neutral-600">
@@ -173,7 +171,7 @@ function formatCurrency(value: number): string {
                     <span>{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span>
                   </div>
                   <div v-else-if="item.fecha">
-                    <span class="mr-1">{{ dateLabel }}</span>
+                    <span>{{ dateLabel }} </span>
                     <span>{{ formatDate(item.fecha) }}</span>
                   </div>
                 </div>
