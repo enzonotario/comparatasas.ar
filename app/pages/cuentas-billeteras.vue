@@ -107,6 +107,7 @@ const fundsByRiskWithSimulation = computed(() => {
           key-prop="fondo"
           mode="detailed"
           :show-simulation="isSimulating"
+          date-label="TNA vigente desde el"
         />
       </div>
 

@@ -1,10 +1,16 @@
 <script setup lang="ts">
-defineProps<{
-  items: any[]
-  keyProp?: string
-  mode?: 'simple' | 'detailed'
-  showSimulation?: boolean
-}>()
+withDefaults(
+  defineProps<{
+    items: any[]
+    keyProp?: string
+    mode?: 'simple' | 'detailed'
+    showSimulation?: boolean
+    dateLabel?: string
+  }>(),
+  {
+    dateLabel: 'Actualizado el',
+  },
+)
 
 function formatDate(dateString: string): string {
   if (!dateString) return ''
@@ -165,7 +171,7 @@ function formatCurrency(value: number): string {
                     <span>{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span>
                   </div>
                   <div v-else-if="item.fecha">
-                    <span>Actualizado el </span>
+                    <span>{{ dateLabel }} </span>
                     <span>{{ formatDate(item.fecha) }}</span>
                   </div>
                 </div>
