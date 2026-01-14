@@ -91,7 +91,15 @@ onMounted(() => {
       </h1>
     </div>
 
-    <UTabs :items="tabsItems" variant="link" default-value="accounts" class="w-full">
+    <UTabs
+      :items="tabsItems"
+      variant="link"
+      default-value="accounts"
+      class="w-full"
+      :ui="{
+        list: 'sticky z-30 top-[var(--ui-header-height)] bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700',
+      }"
+    >
       <template #accounts>
         <div class="space-y-6 mt-6">
           <UAlert v-if="accountsError" color="red" variant="soft" title="Error cargando datos" />
