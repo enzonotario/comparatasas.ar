@@ -27,7 +27,12 @@ onMounted(() => {
 })
 
 const isWideLayout = computed(() => {
-  return ['criptomonedas', 'creditos-hipotecarios-uva', 'fondos'].includes(route.name as string)
+  return [
+    'criptomonedas',
+    'creditos-hipotecarios-uva',
+    'fondos',
+    'cuentas-billeteras-graficos',
+  ].includes(route.name as string)
 })
 </script>
 
