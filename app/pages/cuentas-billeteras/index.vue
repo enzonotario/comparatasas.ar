@@ -107,6 +107,7 @@ const fundsByRiskWithSimulation = computed(() => {
           key-prop="fondo"
           mode="detailed"
           :show-simulation="isSimulating"
+          :show-history-link="true"
         />
       </div>
 
@@ -142,6 +143,7 @@ const fundsByRiskWithSimulation = computed(() => {
           key-prop="fondo"
           mode="detailed"
           :show-simulation="isSimulating"
+          :show-history-link="true"
         />
       </div>
 
@@ -189,7 +191,7 @@ const fundsByRiskWithSimulation = computed(() => {
           <ExploreFundsLink
             title="Análisis visual de cuentas y billeteras"
             description="Visualizaciones interactivas para comparar tasas, topes y características de las cuentas remuneradas y billeteras digitales"
-            to="/cuentas-billeteras-graficos"
+            to="/cuentas-billeteras/graficos"
             icon="i-lucide-line-chart"
           >
             <template #link-text> Ver gráficos y análisis </template>
