@@ -287,7 +287,13 @@ onMounted(async () => {
             </div>
           </div>
 
-          <ExploreFundsLink />
+          <LinkCard
+            title="Análisis completo de FCI"
+            description="Consultá y compará todos los fondos disponibles con datos detallados de rendimiento, patrimonio y características"
+            to="/fondos"
+            icon="i-lucide-bar-chart-3"
+            link-text="Explorar todos los FCI"
+          />
         </div>
 
         <div
