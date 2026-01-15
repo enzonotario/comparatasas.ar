@@ -186,15 +186,6 @@ const fundsByRiskWithSimulation = computed(() => {
 
           <ExploreFundsLink />
 
-          <ExploreFundsLink
-            title="Análisis visual de cuentas y billeteras"
-            description="Visualizaciones interactivas para comparar tasas, topes y características de las cuentas remuneradas y billeteras digitales"
-            to="/cuentas-billeteras-graficos"
-            icon="i-lucide-line-chart"
-          >
-            <template #link-text> Ver gráficos y análisis </template>
-          </ExploreFundsLink>
-
           <UCard class="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
             <template #header>
               <div class="flex items-center gap-2">
