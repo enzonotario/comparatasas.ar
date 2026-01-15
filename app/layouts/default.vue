@@ -34,6 +34,10 @@ const isWideLayout = computed(() => {
     'cuentas-billeteras-graficos',
   ].includes(route.name as string)
 })
+
+const isProviderHistoryPage = computed(() => {
+  return route.path.startsWith('/cuentas-billeteras/') && route.params.provider
+})
 </script>
 
 <template>
@@ -81,7 +85,7 @@ const isWideLayout = computed(() => {
       <SubcategorySelector v-if="!isSumarsePage" />
 
       <UMain class="flex flex-col space-y-6 pt-16">
-        <UContainer class="space-y-6">
+        <UContainer v-if="!isProviderHistoryPage" class="space-y-6">
           <div class="flex flex-col items-center text-center space-y-2">
             <h1 class="font-bold text-4xl sm:text-5xl text-neutral-900 dark:text-white">
               ¡Encontra <span class="text-primary-600">las mejores inversiones</span> para vos!
@@ -105,7 +109,7 @@ const isWideLayout = computed(() => {
           <slot />
         </UContainer>
 
-        <UContainer class="w-full max-w-3xl mx-auto space-y-6">
+        <UContainer v-if="!isProviderHistoryPage" class="w-full max-w-3xl mx-auto space-y-6">
           <span class="flex-1" />
 
           <FinancialAdviceCard v-if="!isSumarsePage" />
