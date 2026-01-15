@@ -107,7 +107,6 @@ const fundsByRiskWithSimulation = computed(() => {
           key-prop="fondo"
           mode="detailed"
           :show-simulation="isSimulating"
-          :show-history-link="true"
         />
       </div>
 
@@ -143,7 +142,6 @@ const fundsByRiskWithSimulation = computed(() => {
           key-prop="fondo"
           mode="detailed"
           :show-simulation="isSimulating"
-          :show-history-link="true"
         />
       </div>
 
@@ -186,21 +184,16 @@ const fundsByRiskWithSimulation = computed(() => {
             </div>
           </div>
 
-          <LinkCard
-            title="Análisis completo de FCI"
-            description="Consultá y compará todos los fondos disponibles con datos detallados de rendimiento, patrimonio y características"
-            to="/fondos"
-            icon="i-lucide-bar-chart-3"
-            link-text="Explorar todos los FCI"
-          />
+          <ExploreFundsLink />
 
-          <LinkCard
+          <ExploreFundsLink
             title="Análisis visual de cuentas y billeteras"
             description="Visualizaciones interactivas para comparar tasas, topes y características de las cuentas remuneradas y billeteras digitales"
-            to="/cuentas-billeteras/graficos"
+            to="/cuentas-billeteras-graficos"
             icon="i-lucide-line-chart"
-            link-text="Ver gráficos y análisis"
-          />
+          >
+            <template #link-text> Ver gráficos y análisis </template>
+          </ExploreFundsLink>
 
           <UCard class="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
             <template #header>
