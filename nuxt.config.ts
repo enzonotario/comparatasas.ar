@@ -95,6 +95,20 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'cloudflare_pages',
+    prerender: {
+      crawlLinks: false,
+    },
+    minify: true,
+  },
+
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: undefined,
+        },
+      },
+    },
   },
 
   echarts: {
