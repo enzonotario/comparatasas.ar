@@ -10,7 +10,7 @@ const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-const chartOption = computed(() => {
+const chartOptions = computed(() => {
   if (props.funds.length === 0) return null
 
   const sortedFunds = [...props.funds].sort((a, b) => b.tna - a.tna).reverse()
@@ -18,14 +18,16 @@ const chartOption = computed(() => {
   const tnaValues = sortedFunds.map((f) => f.tna * 100)
 
   return {
+    chart: {
+      type: 'bar',
+      backgroundColor: 'transparent',
+    },
+    title: {
+      text: '',
+    },
     tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow',
-      },
-      formatter: (params: any) => {
-        const param = params[0]
-        const fund = sortedFunds[param.dataIndex]
+      formatter() {
+        const fund = sortedFunds[this.point.index]
         const patrimonioText = fund.patrimonio
           ? `<br/>Patrimonio: ${new Intl.NumberFormat('es-AR', {
               style: 'currency',
@@ -35,68 +37,66 @@ const chartOption = computed(() => {
               notation: 'compact',
             }).format(fund.patrimonio)}`
           : ''
-        return `${param.name}<br/>${param.marker} TNA: ${param.value.toFixed(2)}%${patrimonioText}`
+        return `<b>${this.category}</b><br/>TNA: ${this.y.toFixed(2)}%${patrimonioText}`
       },
-    },
-    grid: {
-      left: '15%',
-      right: '5%',
-      bottom: '15%',
-      top: '10%',
     },
     xAxis: {
-      type: 'value',
-      name: 'TNA (%)',
-      nameLocation: 'middle',
-      nameGap: 30,
-      axisLabel: {
-        formatter: (value: number) => `${value.toFixed(1)}%`,
-        color: textColor.value,
-      },
-      nameTextStyle: {
-        color: textColor.value,
-      },
-      splitLine: {
-        lineStyle: {
-          color: gridLineColor.value,
+      categories: names,
+      labels: {
+        style: {
+          color: textColor.value,
+          fontSize: '11px',
         },
       },
     },
     yAxis: {
-      type: 'category',
-      data: names,
-      axisLabel: {
-        color: textColor.value,
-        fontSize: 11,
+      title: {
+        text: 'TNA (%)',
+        style: {
+          color: textColor.value,
+        },
+      },
+      labels: {
+        formatter() {
+          return `${this.value.toFixed(1)}%`
+        },
+        style: {
+          color: textColor.value,
+        },
+      },
+      gridLineColor: gridLineColor.value,
+    },
+    plotOptions: {
+      bar: {
+        dataLabels: {
+          enabled: true,
+          formatter() {
+            return `${this.y.toFixed(2)}%`
+          },
+          style: {
+            color: textColor.value,
+          },
+        },
+        colorByPoint: true,
+        colors: names.map((_, index) => CHART_COLORS[index % CHART_COLORS.length]),
       },
     },
     series: [
       {
         name: 'TNA',
-        type: 'bar',
         data: tnaValues,
-        itemStyle: {
-          color: (params: any) => {
-            const index = params.dataIndex
-            return CHART_COLORS[index % CHART_COLORS.length]
-          },
-        },
-        label: {
-          show: true,
-          position: 'right',
-          formatter: (params: any) => `${params.value.toFixed(2)}%`,
-          color: textColor.value,
-        },
       },
     ],
-    backgroundColor: 'transparent',
+    legend: {
+      enabled: false,
+    },
   }
 })
 </script>
 
 <template>
   <div class="w-full" style="height: 24rem; min-height: 384px">
-    <VChart v-if="chartOption" :option="chartOption" class="w-full h-full" autoresize />
+    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-neutral-500">Cargando gráfico...</div>
     </div>

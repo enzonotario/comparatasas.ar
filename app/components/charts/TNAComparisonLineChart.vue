@@ -10,7 +10,7 @@ const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-const chartOption = computed(() => {
+const chartOptions = computed(() => {
   if (props.accounts.length === 0) return null
 
   const sortedAccounts = [...props.accounts].sort((a, b) => b.tna - a.tna)
@@ -18,91 +18,96 @@ const chartOption = computed(() => {
   const tnaValues = sortedAccounts.map((a) => a.tna * 100)
 
   return {
+    chart: {
+      type: 'line',
+      backgroundColor: 'transparent',
+    },
+    title: {
+      text: '',
+    },
     tooltip: {
-      trigger: 'axis',
-      formatter: (params: any) => {
-        const param = params[0]
-        return `${param.name}<br/>${param.marker} TNA: ${param.value.toFixed(2)}%`
+      formatter() {
+        return `<b>${this.category}</b><br/>TNA: ${this.y.toFixed(2)}%`
       },
     },
-    grid: {
-      left: '10%',
-      right: '10%',
-      bottom: '20%',
-      top: '10%',
-    },
     xAxis: {
-      type: 'category',
-      data: names,
-      axisLabel: {
-        color: textColor.value,
-        rotate: 45,
-        fontSize: 10,
+      categories: names,
+      labels: {
+        style: {
+          color: textColor.value,
+          fontSize: '10px',
+        },
+        rotation: -45,
       },
     },
     yAxis: {
-      type: 'value',
-      name: 'TNA (%)',
-      nameLocation: 'middle',
-      nameGap: 50,
-      axisLabel: {
-        formatter: (value: number) => `${value.toFixed(1)}%`,
-        color: textColor.value,
+      title: {
+        text: 'TNA (%)',
+        style: {
+          color: textColor.value,
+        },
       },
-      nameTextStyle: {
-        color: textColor.value,
+      labels: {
+        formatter() {
+          return `${this.value.toFixed(1)}%`
+        },
+        style: {
+          color: textColor.value,
+        },
       },
-      splitLine: {
-        lineStyle: {
-          color: gridLineColor.value,
+      gridLineColor: gridLineColor.value,
+    },
+    plotOptions: {
+      line: {
+        dataLabels: {
+          enabled: true,
+          formatter() {
+            return `${this.y.toFixed(1)}%`
+          },
+          style: {
+            color: textColor.value,
+            fontSize: '9px',
+          },
+        },
+        marker: {
+          enabled: true,
+          radius: 4,
+        },
+      },
+      area: {
+        fillColor: {
+          linearGradient: {
+            x1: 0,
+            y1: 0,
+            x2: 0,
+            y2: 1,
+          },
+          stops: [
+            [0, 'rgba(16, 185, 129, 0.3)'],
+            [1, 'rgba(16, 185, 129, 0.05)'],
+          ],
         },
       },
     },
     series: [
       {
         name: 'TNA',
-        type: 'line',
         data: tnaValues,
-        smooth: true,
-        itemStyle: {
-          color: '#10b981',
-        },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              {
-                offset: 0,
-                color: 'rgba(16, 185, 129, 0.3)',
-              },
-              {
-                offset: 1,
-                color: 'rgba(16, 185, 129, 0.05)',
-              },
-            ],
-          },
-        },
-        label: {
-          show: true,
-          position: 'top',
-          formatter: (params: any) => `${params.value.toFixed(1)}%`,
-          fontSize: 9,
-          color: textColor.value,
-        },
+        type: 'area',
+        color: '#10b981',
+        lineWidth: 2,
       },
     ],
-    backgroundColor: 'transparent',
+    legend: {
+      enabled: false,
+    },
   }
 })
 </script>
 
 <template>
   <div class="w-full" style="height: 24rem; min-height: 384px">
-    <VChart v-if="chartOption" :option="chartOption" class="w-full h-full" autoresize />
+    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-neutral-500">Cargando gráfico...</div>
     </div>

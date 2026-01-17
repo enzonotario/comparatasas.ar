@@ -11,7 +11,7 @@ const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-const chartOption = computed(() => {
+const chartOptions = computed(() => {
   if (props.history.length === 0) return null
 
   // Filtrar solo items con tope
@@ -21,103 +21,101 @@ const chartOption = computed(() => {
 
   if (itemsWithTope.length === 0) return null
 
-  const dates = itemsWithTope.map((item) => item.fecha)
+  const dates = itemsWithTope.map((item) => {
+    const date = new Date(item.fecha)
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear().toString().slice(-2)}`
+  })
   const topeValues = itemsWithTope.map((item) => item.tope!)
 
   return {
+    chart: {
+      type: 'line',
+      backgroundColor: 'transparent',
+    },
+    title: {
+      text: '',
+    },
     tooltip: {
-      trigger: 'axis',
-      formatter: (params: any) => {
-        const param = params[0]
-        const index = param.dataIndex
+      formatter() {
+        const index = this.point.index
         const item = itemsWithTope[index]
         const tnaText = `TNA: ${(item.tna * 100).toFixed(2)}%`
-        return `${param.name}<br/>${param.marker} Tope: ${formatCurrency(param.value)}<br/>${tnaText}`
+        return `<b>${this.category}</b><br/>Tope: ${formatCurrency(this.y)}<br/>${tnaText}`
       },
-    },
-    grid: {
-      left: '10%',
-      right: '5%',
-      bottom: '15%',
-      top: '10%',
     },
     xAxis: {
-      type: 'category',
-      data: dates,
-      axisLabel: {
-        formatter: (value: string) => {
-          const date = new Date(value)
-          return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear().toString().slice(-2)}`
+      categories: dates,
+      labels: {
+        style: {
+          color: textColor.value,
         },
-        color: textColor.value,
-        rotate: 45,
+        rotation: -45,
       },
-      name: 'Fecha',
-      nameLocation: 'middle',
-      nameGap: 30,
-      nameTextStyle: {
-        color: textColor.value,
+      title: {
+        text: 'Fecha',
+        style: {
+          color: textColor.value,
+        },
       },
     },
     yAxis: {
-      type: 'value',
-      name: 'Tope (ARS)',
-      nameLocation: 'middle',
-      nameGap: 50,
-      axisLabel: {
-        formatter: (value: number) => formatCurrency(value),
-        color: textColor.value,
+      title: {
+        text: 'Tope (ARS)',
+        style: {
+          color: textColor.value,
+        },
       },
-      nameTextStyle: {
-        color: textColor.value,
+      labels: {
+        formatter() {
+          return formatCurrency(this.value)
+        },
+        style: {
+          color: textColor.value,
+        },
       },
-      splitLine: {
-        lineStyle: {
-          color: gridLineColor.value,
+      gridLineColor: gridLineColor.value,
+    },
+    plotOptions: {
+      line: {
+        marker: {
+          enabled: true,
+          radius: 3,
+        },
+      },
+      area: {
+        fillColor: {
+          linearGradient: {
+            x1: 0,
+            y1: 0,
+            x2: 0,
+            y2: 1,
+          },
+          stops: [
+            [0, 'rgba(16, 185, 129, 0.3)'],
+            [1, 'rgba(16, 185, 129, 0.05)'],
+          ],
         },
       },
     },
     series: [
       {
         name: 'Tope',
-        type: 'line',
         data: topeValues,
-        smooth: true,
-        symbol: 'circle',
-        symbolSize: 6,
-        lineStyle: {
-          width: 2,
-          color: '#10b981',
-        },
-        itemStyle: {
-          color: '#10b981',
-        },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: 'rgba(16, 185, 129, 0.3)' },
-              { offset: 1, color: 'rgba(16, 185, 129, 0.05)' },
-            ],
-          },
-        },
-        emphasis: {
-          focus: 'series',
-        },
+        type: 'area',
+        color: '#10b981',
+        lineWidth: 2,
       },
     ],
-    backgroundColor: 'transparent',
+    legend: {
+      enabled: false,
+    },
   }
 })
 </script>
 
 <template>
   <div class="w-full" style="height: 24rem; min-height: 384px">
-    <VChart v-if="chartOption" :option="chartOption" class="w-full h-full" autoresize />
+    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-neutral-500">No hay datos de tope disponibles</div>
     </div>

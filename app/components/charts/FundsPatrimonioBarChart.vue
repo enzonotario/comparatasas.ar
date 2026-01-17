@@ -10,7 +10,7 @@ const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-const chartOption = computed(() => {
+const chartOptions = computed(() => {
   // Filtrar fondos que tienen patrimonio
   const fundsWithPatrimonio = props.funds.filter(
     (f) => f.patrimonio !== null && f.patrimonio !== undefined && f.patrimonio > 0,
@@ -25,77 +25,77 @@ const chartOption = computed(() => {
   const patrimonioValues = sortedFunds.map((f) => f.patrimonio || 0)
 
   return {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow',
-      },
-      formatter: (params: any) => {
-        const param = params[0]
-        const fund = sortedFunds[param.dataIndex]
-        const tnaText = `<br/>TNA: ${(fund.tna * 100).toFixed(2)}%`
-        return `${param.name}<br/>${param.marker} Patrimonio: ${formatCurrency(param.value)}${tnaText}`
-      },
+    chart: {
+      type: 'bar',
+      backgroundColor: 'transparent',
     },
-    grid: {
-      left: '15%',
-      right: '5%',
-      bottom: '15%',
-      top: '10%',
+    title: {
+      text: '',
+    },
+    tooltip: {
+      formatter() {
+        const fund = sortedFunds[this.point.index]
+        const tnaText = `<br/>TNA: ${(fund.tna * 100).toFixed(2)}%`
+        return `<b>${this.category}</b><br/>Patrimonio: ${formatCurrency(this.y)}${tnaText}`
+      },
     },
     xAxis: {
-      type: 'value',
-      name: 'Patrimonio (ARS)',
-      nameLocation: 'middle',
-      nameGap: 30,
-      axisLabel: {
-        formatter: (value: number) => formatCurrency(value),
-        color: textColor.value,
-      },
-      nameTextStyle: {
-        color: textColor.value,
-      },
-      splitLine: {
-        lineStyle: {
-          color: gridLineColor.value,
+      categories: names,
+      labels: {
+        style: {
+          color: textColor.value,
+          fontSize: '11px',
         },
       },
     },
     yAxis: {
-      type: 'category',
-      data: names,
-      axisLabel: {
-        color: textColor.value,
-        fontSize: 11,
+      title: {
+        text: 'Patrimonio (ARS)',
+        style: {
+          color: textColor.value,
+        },
+      },
+      labels: {
+        formatter() {
+          return formatCurrency(this.value)
+        },
+        style: {
+          color: textColor.value,
+        },
+      },
+      gridLineColor: gridLineColor.value,
+    },
+    plotOptions: {
+      bar: {
+        dataLabels: {
+          enabled: true,
+          formatter() {
+            return formatCurrency(this.y)
+          },
+          style: {
+            color: textColor.value,
+          },
+        },
+        colorByPoint: true,
+        colors: names.map((_, index) => CHART_COLORS[index % CHART_COLORS.length]),
       },
     },
     series: [
       {
         name: 'Patrimonio',
-        type: 'bar',
         data: patrimonioValues,
-        itemStyle: {
-          color: (params: any) => {
-            const index = params.dataIndex
-            return CHART_COLORS[index % CHART_COLORS.length]
-          },
-        },
-        label: {
-          show: true,
-          position: 'right',
-          formatter: (params: any) => formatCurrency(params.value),
-          color: textColor.value,
-        },
       },
     ],
-    backgroundColor: 'transparent',
+    legend: {
+      enabled: false,
+    },
   }
 })
 </script>
 
 <template>
   <div class="w-full" style="height: 24rem; min-height: 384px">
-    <VChart v-if="chartOption" :option="chartOption" class="w-full h-full" autoresize />
+    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-neutral-500">Cargando gráfico...</div>
     </div>
