@@ -10,9 +10,6 @@ const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-// Necesitamos el módulo de zoom para Highcharts
-const modules = ['modules/accessibility', 'modules/exporting']
-
 const chartOptions = computed(() => {
   // Separar cuentas con tope y sin límite
   const accountsWithTope = props.accounts.filter((a) => a.tope !== null && a.tope !== undefined)
@@ -151,7 +148,6 @@ const chartOptions = computed(() => {
     <highchart
       v-if="chartOptions"
       :options="chartOptions"
-      :modules="modules"
       class="w-full h-full"
     />
     <div v-else class="w-full h-full flex items-center justify-center">

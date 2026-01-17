@@ -10,8 +10,6 @@ const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-const modules = ['modules/accessibility', 'modules/exporting']
-
 const chartOptions = computed(() => {
   // Filtrar fondos que tienen patrimonio
   const fundsWithPatrimonio = props.funds.filter(
@@ -124,7 +122,6 @@ const chartOptions = computed(() => {
     <highchart
       v-if="chartOptions"
       :options="chartOptions"
-      :modules="modules"
       class="w-full h-full"
     />
     <div v-else class="w-full h-full flex items-center justify-center">

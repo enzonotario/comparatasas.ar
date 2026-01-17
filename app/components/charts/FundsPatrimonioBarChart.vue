@@ -18,9 +18,9 @@ const chartOptions = computed(() => {
 
   if (fundsWithPatrimonio.length === 0) return null
 
-  const sortedFunds = [...fundsWithPatrimonio]
-    .sort((a, b) => (b.patrimonio || 0) - (a.patrimonio || 0))
-    .reverse()
+  const sortedFunds = [...fundsWithPatrimonio].sort(
+    (a, b) => (b.patrimonio || 0) - (a.patrimonio || 0),
+  )
   const names = sortedFunds.map((f) => f.displayName || f.fondo)
   const patrimonioValues = sortedFunds.map((f, index) => ({
     y: f.patrimonio || 0,

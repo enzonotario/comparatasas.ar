@@ -13,7 +13,7 @@ const { textColor, gridLineColor } = useChartTheme()
 const chartOptions = computed(() => {
   if (props.funds.length === 0) return null
 
-  const sortedFunds = [...props.funds].sort((a, b) => b.tna - a.tna).reverse()
+  const sortedFunds = [...props.funds].sort((a, b) => b.tna - a.tna)
   const names = sortedFunds.map((f) => f.displayName || f.fondo)
   const tnaValues = sortedFunds.map((f, index) => ({
     y: f.tna * 100,
