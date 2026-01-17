@@ -100,33 +100,32 @@ useSeoMeta({
     <FundsLoading v-if="loading" />
 
     <div v-else-if="history && history.length > 0" class="space-y-6">
-      <ClientOnly>
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon
-                name="i-lucide-line-chart"
-                class="size-5 text-primary-600 dark:text-primary-400"
-              />
-              <h3 class="font-semibold text-lg">Evolución de TNA</h3>
-            </div>
-          </template>
-          <AccountHistoryTNAChart :history="history" :provider-name="displayName" />
-        </UCard>
 
-        <UCard v-if="history.some((item) => item.tope !== null && item.tope !== undefined)">
-          <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon
-                name="i-lucide-trending-up"
-                class="size-5 text-primary-600 dark:text-primary-400"
-              />
-              <h3 class="font-semibold text-lg">Evolución de Tope</h3>
-            </div>
-          </template>
-          <AccountHistoryTopeChart :history="history" :provider-name="displayName" />
-        </UCard>
-      </ClientOnly>
+      <UCard>
+        <template #header>
+          <div class="flex items-center gap-2">
+            <UIcon
+              name="i-lucide-line-chart"
+              class="size-5 text-primary-600 dark:text-primary-400"
+            />
+            <h3 class="font-semibold text-lg">Evolución de TNA</h3>
+          </div>
+        </template>
+        <AccountHistoryTNAChart :history="history" :provider-name="displayName" />
+      </UCard>
+
+      <UCard v-if="history.some((item) => item.tope !== null && item.tope !== undefined)">
+        <template #header>
+          <div class="flex items-center gap-2">
+            <UIcon
+              name="i-lucide-trending-up"
+              class="size-5 text-primary-600 dark:text-primary-400"
+            />
+            <h3 class="font-semibold text-lg">Evolución de Tope</h3>
+          </div>
+        </template>
+        <AccountHistoryTopeChart :history="history" :provider-name="displayName" />
+      </UCard>
     </div>
 
     <div v-else-if="!loading" class="text-center py-12">

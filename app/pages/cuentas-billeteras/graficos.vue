@@ -111,33 +111,31 @@ onMounted(() => {
           </div>
 
           <div v-else-if="hasData && isMounted" class="space-y-6">
-            <ClientOnly>
-              <UCard>
-                <template #header>
-                  <div class="flex items-center gap-2">
-                    <UIcon
-                      name="i-lucide-bar-chart-3"
-                      class="size-5 text-primary-600 dark:text-primary-400"
-                    />
-                    <h3 class="font-semibold text-lg">Comparación de TNA</h3>
-                  </div>
-                </template>
-                <TNABarChart :accounts="allAccounts" />
-              </UCard>
+            <UCard>
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <UIcon
+                    name="i-lucide-bar-chart-3"
+                    class="size-5 text-primary-600 dark:text-primary-400"
+                  />
+                  <h3 class="font-semibold text-lg">Comparación de TNA</h3>
+                </div>
+              </template>
+              <TNABarChart :accounts="allAccounts" />
+            </UCard>
 
-              <UCard v-if="allAccounts.length > 0">
-                <template #header>
-                  <div class="flex items-center gap-2">
-                    <UIcon
-                      name="i-lucide-scatter-chart"
-                      class="size-5 text-primary-600 dark:text-primary-400"
-                    />
-                    <h3 class="font-semibold text-lg">TNA vs Tope</h3>
-                  </div>
-                </template>
-                <TopeTnaScatterChart :accounts="allAccounts" />
-              </UCard>
-            </ClientOnly>
+            <UCard v-if="allAccounts.length > 0">
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <UIcon
+                    name="i-lucide-scatter-chart"
+                    class="size-5 text-primary-600 dark:text-primary-400"
+                  />
+                  <h3 class="font-semibold text-lg">TNA vs Tope</h3>
+                </div>
+              </template>
+              <TopeTnaScatterChart :accounts="allAccounts" />
+            </UCard>
           </div>
         </div>
       </template>
@@ -160,46 +158,44 @@ onMounted(() => {
           </div>
 
           <div v-else-if="hasFundsData && isMounted" class="space-y-6">
-            <ClientOnly>
-              <UCard>
-                <template #header>
-                  <div class="flex items-center gap-2">
-                    <UIcon
-                      name="i-lucide-bar-chart-3"
-                      class="size-5 text-primary-600 dark:text-primary-400"
-                    />
-                    <h3 class="font-semibold text-lg">Comparación de TNA</h3>
-                  </div>
-                </template>
-                <FundsTNABarChart :funds="variableReturnFunds" />
-              </UCard>
+            <UCard>
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <UIcon
+                    name="i-lucide-bar-chart-3"
+                    class="size-5 text-primary-600 dark:text-primary-400"
+                  />
+                  <h3 class="font-semibold text-lg">Comparación de TNA</h3>
+                </div>
+              </template>
+              <FundsTNABarChart :funds="variableReturnFunds" />
+            </UCard>
 
-              <UCard v-if="variableReturnFunds.some((f) => f.patrimonio && f.patrimonio > 0)">
-                <template #header>
-                  <div class="flex items-center gap-2">
-                    <UIcon
-                      name="i-lucide-trending-up"
-                      class="size-5 text-primary-600 dark:text-primary-400"
-                    />
-                    <h3 class="font-semibold text-lg">Comparación de Patrimonio</h3>
-                  </div>
-                </template>
-                <FundsPatrimonioBarChart :funds="variableReturnFunds" />
-              </UCard>
+            <UCard v-if="variableReturnFunds.some((f) => f.patrimonio && f.patrimonio > 0)">
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <UIcon
+                    name="i-lucide-trending-up"
+                    class="size-5 text-primary-600 dark:text-primary-400"
+                  />
+                  <h3 class="font-semibold text-lg">Comparación de Patrimonio</h3>
+                </div>
+              </template>
+              <FundsPatrimonioBarChart :funds="variableReturnFunds" />
+            </UCard>
 
-              <UCard v-if="variableReturnFunds.some((f) => f.patrimonio && f.patrimonio > 0)">
-                <template #header>
-                  <div class="flex items-center gap-2">
-                    <UIcon
-                      name="i-lucide-scatter-chart"
-                      class="size-5 text-primary-600 dark:text-primary-400"
-                    />
-                    <h3 class="font-semibold text-lg">TNA vs Patrimonio</h3>
-                  </div>
-                </template>
-                <FundsTNAPatrimonioScatterChart :funds="variableReturnFunds" />
-              </UCard>
-            </ClientOnly>
+            <UCard v-if="variableReturnFunds.some((f) => f.patrimonio && f.patrimonio > 0)">
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <UIcon
+                    name="i-lucide-scatter-chart"
+                    class="size-5 text-primary-600 dark:text-primary-400"
+                  />
+                  <h3 class="font-semibold text-lg">TNA vs Patrimonio</h3>
+                </div>
+              </template>
+              <FundsTNAPatrimonioScatterChart :funds="variableReturnFunds" />
+            </UCard>
           </div>
         </div>
       </template>
