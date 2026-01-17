@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
     'nuxt-module-hotjar',
+    'nuxt-echarts',
   ],
   ssr: false,
   devtools: { enabled: true },
@@ -98,6 +99,11 @@ export default defineNuxtConfig({
       crawlLinks: false,
     },
     minify: true,
+  },
+
+  echarts: {
+    charts: ['LineChart', 'BarChart', 'ScatterChart', 'PieChart'],
+    components: ['GridComponent', 'TooltipComponent', 'LegendComponent', 'DataZoomComponent'],
   },
 
   eslint: {
