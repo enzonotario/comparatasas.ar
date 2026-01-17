@@ -11,7 +11,7 @@ const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-const chartOptions = computed(() => {
+  const chartOptions = computed(() => {
   if (props.history.length === 0) return null
 
   // Filtrar solo items con tope
@@ -25,7 +25,11 @@ const chartOptions = computed(() => {
     const date = new Date(item.fecha)
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear().toString().slice(-2)}`
   })
-  const topeValues = itemsWithTope.map((item) => item.tope!)
+  const topeValues = itemsWithTope.map((item, index) => ({
+    y: item.tope!,
+    name: dates[index],
+    customData: item,
+  }))
 
   return {
     chart: {
@@ -37,10 +41,10 @@ const chartOptions = computed(() => {
     },
     tooltip: {
       formatter() {
-        const index = this.point.index
-        const item = itemsWithTope[index]
-        const tnaText = `TNA: ${(item.tna * 100).toFixed(2)}%`
-        return `<b>${this.category}</b><br/>Tope: ${formatCurrency(this.y)}<br/>${tnaText}`
+        const category = (this.point as any).name || this.x
+        const item = (this.point as any).customData
+        const tnaText = `TNA: ${(item?.tna * 100).toFixed(2)}%`
+        return `<b>${category}</b><br/>Tope: ${formatCurrency(this.y)}<br/>${tnaText}`
       },
     },
     xAxis: {

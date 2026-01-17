@@ -15,7 +15,11 @@ const chartOptions = computed(() => {
 
   const sortedFunds = [...props.funds].sort((a, b) => b.tna - a.tna).reverse()
   const names = sortedFunds.map((f) => f.displayName || f.fondo)
-  const tnaValues = sortedFunds.map((f) => f.tna * 100)
+  const tnaValues = sortedFunds.map((f, index) => ({
+    y: f.tna * 100,
+    name: names[index],
+    customData: f,
+  }))
 
   return {
     chart: {
@@ -27,8 +31,9 @@ const chartOptions = computed(() => {
     },
     tooltip: {
       formatter() {
-        const fund = sortedFunds[this.point.index]
-        const patrimonioText = fund.patrimonio
+        const category = (this.point as any).name || this.x
+        const fund = (this.point as any).customData
+        const patrimonioText = fund?.patrimonio
           ? `<br/>Patrimonio: ${new Intl.NumberFormat('es-AR', {
               style: 'currency',
               currency: 'ARS',
@@ -37,7 +42,7 @@ const chartOptions = computed(() => {
               notation: 'compact',
             }).format(fund.patrimonio)}`
           : ''
-        return `<b>${this.category}</b><br/>TNA: ${this.y.toFixed(2)}%${patrimonioText}`
+        return `<b>${category}</b><br/>TNA: ${this.y.toFixed(2)}%${patrimonioText}`
       },
     },
     xAxis: {

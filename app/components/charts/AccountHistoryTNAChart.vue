@@ -11,14 +11,18 @@ const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-const chartOptions = computed(() => {
+  const chartOptions = computed(() => {
   if (props.history.length === 0) return null
 
   const dates = props.history.map((item) => {
     const date = new Date(item.fecha)
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear().toString().slice(-2)}`
   })
-  const tnaValues = props.history.map((item) => item.tna * 100)
+  const tnaValues = props.history.map((item, index) => ({
+    y: item.tna * 100,
+    name: dates[index],
+    customData: item,
+  }))
 
   return {
     chart: {
@@ -30,9 +34,9 @@ const chartOptions = computed(() => {
     },
     tooltip: {
       formatter() {
-        const index = this.point.index
-        const item = props.history[index]
-        const topeText = item.tope
+        const category = (this.point as any).name || this.x
+        const item = (this.point as any).customData
+        const topeText = item?.tope
           ? `Tope: ${new Intl.NumberFormat('es-AR', {
               style: 'currency',
               currency: 'ARS',
@@ -40,7 +44,7 @@ const chartOptions = computed(() => {
               maximumFractionDigits: 0,
             }).format(item.tope)}`
           : 'Tope: Sin Límite'
-        return `<b>${this.category}</b><br/>TNA: ${this.y.toFixed(2)}%<br/>${topeText}`
+        return `<b>${category}</b><br/>TNA: ${this.y.toFixed(2)}%<br/>${topeText}`
       },
     },
     xAxis: {

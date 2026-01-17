@@ -15,7 +15,10 @@ const chartOptions = computed(() => {
 
   const sortedAccounts = [...props.accounts].sort((a, b) => b.tna - a.tna).reverse()
   const names = sortedAccounts.map((a) => a.fondo)
-  const tnaValues = sortedAccounts.map((a) => a.tna * 100)
+  const tnaValues = sortedAccounts.map((a, index) => ({
+    y: a.tna * 100,
+    name: names[index],
+  }))
 
   return {
     chart: {
@@ -27,7 +30,8 @@ const chartOptions = computed(() => {
     },
     tooltip: {
       formatter() {
-        return `<b>${this.category}</b><br/>TNA: ${this.y.toFixed(2)}%`
+        const category = (this.point as any).name || this.x
+        return `<b>${category}</b><br/>TNA: ${this.y.toFixed(2)}%`
       },
     },
     xAxis: {
