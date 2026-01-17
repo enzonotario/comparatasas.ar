@@ -5,7 +5,7 @@ export default {
     {
       name: 'home',
       path: '/',
-      component: () => import('~/pages/cuentas-billeteras/index.vue'),
+      component: () => import('~/pages/cuentas-billeteras.vue'),
     },
     ..._routes,
   ],
