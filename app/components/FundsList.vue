@@ -54,11 +54,11 @@ function formatCurrency(value: number): string {
 
 <template>
   <div class="flex flex-col gap-3">
-    <template v-for="(item, index) in items" :key="keyProp ? `${item[keyProp]}-${index}` : `item-${index}`">
-      <NuxtLink
-        v-if="getHistoryUrl(item)"
-        :to="getHistoryUrl(item)!"
-      >
+    <template
+      v-for="(item, index) in items"
+      :key="keyProp ? `${item[keyProp]}-${index}` : `item-${index}`"
+    >
+      <NuxtLink v-if="getHistoryUrl(item)" :to="getHistoryUrl(item)!">
         <UCard :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }">
           <div class="space-y-2">
             <div class="flex items-center justify-between">
@@ -161,12 +161,15 @@ function formatCurrency(value: number): string {
                   >
                     <UIcon name="i-lucide-info" class="size-3 mt-0.5 shrink-0" />
                     <span>
-                      Hasta {{ formatCurrency(item.simulation.limit) }}: {{ (item.tna * 100).toFixed(2) }}% TNA.
-                      Excedente: {{ (item.simulation.deltaPesosTna * 100).toFixed(2) }}% TNA (Delta Pesos - Clase A).
+                      Hasta {{ formatCurrency(item.simulation.limit) }}:
+                      {{ (item.tna * 100).toFixed(2) }}% TNA. Excedente:
+                      {{ (item.simulation.deltaPesosTna * 100).toFixed(2) }}% TNA (Delta Pesos -
+                      Clase A).
                     </span>
                   </div>
                   <div class="text-xs text-neutral-500 dark:text-neutral-600">
-                    TNA: {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
+                    TNA:
+                    {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
                   </div>
                 </div>
                 <div v-else>
@@ -178,7 +181,9 @@ function formatCurrency(value: number): string {
                     <div v-if="item.fechaAnterior && item.fecha">
                       <span>Entre </span>
 
-                      <span>{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span>
+                      <span
+                        >{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span
+                      >
                     </div>
                     <div v-else-if="item.fecha">
                       <span>TNA vigente desde el </span>
@@ -300,12 +305,15 @@ function formatCurrency(value: number): string {
                   >
                     <UIcon name="i-lucide-info" class="size-3 mt-0.5 shrink-0" />
                     <span>
-                      Hasta {{ formatCurrency(item.simulation.limit) }}: {{ (item.tna * 100).toFixed(2) }}% TNA.
-                      Excedente: {{ (item.simulation.deltaPesosTna * 100).toFixed(2) }}% TNA (Delta Pesos - Clase A).
+                      Hasta {{ formatCurrency(item.simulation.limit) }}:
+                      {{ (item.tna * 100).toFixed(2) }}% TNA. Excedente:
+                      {{ (item.simulation.deltaPesosTna * 100).toFixed(2) }}% TNA (Delta Pesos -
+                      Clase A).
                     </span>
                   </div>
                   <div class="text-xs text-neutral-500 dark:text-neutral-600">
-                    TNA: {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
+                    TNA:
+                    {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
                   </div>
                 </div>
                 <div v-else>
@@ -317,7 +325,9 @@ function formatCurrency(value: number): string {
                     <div v-if="item.fechaAnterior && item.fecha">
                       <span>Entre </span>
 
-                      <span>{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span>
+                      <span
+                        >{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span
+                      >
                     </div>
                     <div v-else-if="item.fecha">
                       <span>TNA vigente desde el </span>

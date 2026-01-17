@@ -100,7 +100,6 @@ useSeoMeta({
     <FundsLoading v-if="loading" />
 
     <div v-else-if="history && history.length > 0" class="space-y-6">
-
       <UCard>
         <template #header>
           <div class="flex items-center gap-2">

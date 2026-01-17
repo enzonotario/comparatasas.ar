@@ -102,8 +102,8 @@ export default defineNuxtConfig({
   },
 
   echarts: {
-    charts: ['LineChart', 'BarChart', 'ScatterChart', 'PieChart'],
-    components: ['GridComponent', 'TooltipComponent', 'LegendComponent', 'DataZoomComponent'],
+    charts: ['LineChart'],
+    components: ['GridComponent', 'TooltipComponent'],
   },
 
   eslint: {

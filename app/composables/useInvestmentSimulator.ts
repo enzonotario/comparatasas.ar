@@ -33,7 +33,9 @@ export function useInvestmentSimulator() {
     }
   }
 
-  const calculateResults = <T extends { tna: number; tope?: number | null; type?: string; fondo?: string }>(
+  const calculateResults = <
+    T extends { tna: number; tope?: number | null; type?: string; fondo?: string },
+  >(
     itemsRef: Ref<T[]> | ComputedRef<T[]>,
     allFundsCache?: Ref<any[]>,
   ) => {

@@ -15,7 +15,9 @@ const chartOption = computed(() => {
   if (props.history.length === 0) return null
 
   // Filtrar solo items con tope
-  const itemsWithTope = props.history.filter((item) => item.tope !== null && item.tope !== undefined)
+  const itemsWithTope = props.history.filter(
+    (item) => item.tope !== null && item.tope !== undefined,
+  )
 
   if (itemsWithTope.length === 0) return null
 
@@ -115,12 +117,7 @@ const chartOption = computed(() => {
 
 <template>
   <div class="w-full" style="height: 24rem; min-height: 384px">
-    <VChart
-      v-if="chartOption"
-      :option="chartOption"
-      class="w-full h-full"
-      autoresize
-    />
+    <VChart v-if="chartOption" :option="chartOption" class="w-full h-full" autoresize />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-neutral-500">No hay datos de tope disponibles</div>
     </div>

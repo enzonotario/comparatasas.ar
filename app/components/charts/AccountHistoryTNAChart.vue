@@ -24,12 +24,14 @@ const chartOption = computed(() => {
         const param = params[0]
         const index = param.dataIndex
         const item = props.history[index]
-        const topeText = item.tope ? `Tope: ${new Intl.NumberFormat('es-AR', {
-          style: 'currency',
-          currency: 'ARS',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        }).format(item.tope)}` : 'Tope: Sin Límite'
+        const topeText = item.tope
+          ? `Tope: ${new Intl.NumberFormat('es-AR', {
+              style: 'currency',
+              currency: 'ARS',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(item.tope)}`
+          : 'Tope: Sin Límite'
         return `${param.name}<br/>${param.marker} TNA: ${param.value.toFixed(2)}%<br/>${topeText}`
       },
     },
@@ -115,12 +117,7 @@ const chartOption = computed(() => {
 
 <template>
   <div class="w-full" style="height: 24rem; min-height: 384px">
-    <VChart
-      v-if="chartOption"
-      :option="chartOption"
-      class="w-full h-full"
-      autoresize
-    />
+    <VChart v-if="chartOption" :option="chartOption" class="w-full h-full" autoresize />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-neutral-500">Cargando gráfico...</div>
     </div>
