@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
     'nuxt-module-hotjar',
+    'nuxt-highcharts',
   ],
   ssr: false,
   devtools: { enabled: true },
@@ -94,6 +95,14 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'cloudflare_pages',
+    prerender: {
+      crawlLinks: false,
+    },
+    minify: true,
+  },
+
+  highcharts: {
+    exporting: true,
   },
 
   eslint: {
