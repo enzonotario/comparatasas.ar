@@ -1,0 +1,59 @@
+name: Initial Sync Analytics
+
+on:
+  workflow_dispatch:
+    inputs:
+      days_back:
+        description: "Días hacia atrás para sincronizar (ej: 365 para 1 año, 730 para 2 años)"
+        required: false
+        default: "730"
+      start_date:
+        description: "Fecha de inicio específica (formato: YYYY-MM-DD). Si se especifica, ignora days_back"
+        required: false
+        default: ""
+
+jobs:
+  initial-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - run: pnpm install
+
+      - name: Initial sync analytics from GA4 to Turso
+        run: |
+          if [ -n "${{ github.event.inputs.start_date }}" ]; then
+            pnpm tsx scripts/initial-sync-analytics.ts --start-date "${{ github.event.inputs.start_date }}"
+          else
+            pnpm tsx scripts/initial-sync-analytics.ts --days-back "${{ github.event.inputs.days_back }}"
+          fi
+        env:
+          GA_PROPERTY_ID: ${{ secrets.GA_PROPERTY_ID }}
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+          TURSO_URL: ${{ secrets.TURSO_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+
+      - name: Generate analytics API endpoints
+        run: pnpm tsx scripts/generate-analytics-api.ts
+        env:
+          TURSO_URL: ${{ secrets.TURSO_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+
+      - name: Commit and push analytics data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/api/analytics/
+          git diff --staged --quiet || git commit -m "chore: initial analytics data sync [skip ci]"
+          git push

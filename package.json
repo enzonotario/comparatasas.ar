@@ -13,6 +13,7 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "sync-analytics": "tsx scripts/sync-analytics.ts",
+    "initial-sync-analytics": "tsx scripts/initial-sync-analytics.ts",
     "generate-analytics-api": "tsx scripts/generate-analytics-api.ts",
     "test:scripts": "vitest run scripts/"
   },
