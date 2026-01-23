@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --check .",
-    "format:fix": "prettier --write ."
+    "format:fix": "prettier --write .",
+    "sync-analytics": "tsx scripts/sync-analytics.ts",
+    "generate-analytics-api": "tsx scripts/generate-analytics-api.ts",
+    "test:scripts": "vitest run scripts/"
   },
   "dependencies": {
     "@nuxt/eslint": "1.9.0",
@@ -31,10 +34,15 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@google-analytics/data": "^4.9.0",
+    "@libsql/client": "^0.14.0",
+    "dotenv": "^17.2.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "prettier": "^3.8.0",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "tsx": "^4.19.0",
+    "vitest": "^2.1.0"
   },
   "packageManager": "pnpm@10.28.0"
 }

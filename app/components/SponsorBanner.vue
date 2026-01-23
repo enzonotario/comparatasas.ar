@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useAnalytics } from '~/composables/useAnalytics'
+
 interface Banner {
   id: number
   desktopUrl: string
@@ -14,6 +16,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { trackSponsorClick } = useAnalytics()
 
 const defaultBanners: Banner[] = [
   {
@@ -87,6 +90,16 @@ const handleImageError = () => {
   imageError.value = true
   console.warn('Error al cargar banner:', currentBanner.value?.id)
 }
+
+const handleSponsorClick = () => {
+  if (currentBanner.value) {
+    trackSponsorClick({
+      sponsorName: currentBanner.value.altText,
+      sponsorUrl: currentBanner.value.linkUrl,
+      bannerId: currentBanner.value.id,
+    })
+  }
+}
 </script>
 
 <template>
@@ -96,6 +109,7 @@ const handleImageError = () => {
       target="_blank"
       rel="noopener noreferrer"
       class="block w-full h-full"
+      @click="handleSponsorClick"
     >
       <img
         :src="bannerImageUrl"

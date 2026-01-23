@@ -5,6 +5,21 @@ import {
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
 import { getCryptoLogo, getCryptoName } from '~/lib/crypto-utils'
+import { useAnalytics } from '~/composables/useAnalytics'
+
+const { trackProviderClick } = useAnalytics()
+
+function handleExchangeClick(entidad: string, crypto?: string) {
+  const url = getInstitutionUrl(entidad)
+  if (url) {
+    trackProviderClick({
+      providerName: getInstitutionShortName(entidad),
+      providerUrl: url,
+      section: 'criptomonedas',
+      contentType: crypto ? `crypto-${crypto}` : 'exchange-card',
+    })
+  }
+}
 
 useSeoMeta({
   title: 'Rendimientos Criptomonedas - Mejores Tasas Crypto Argentina',
@@ -83,6 +98,7 @@ const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCr
                         :href="getInstitutionUrl(entity.entidad)"
                         target="_blank"
                         rel="noopener noreferrer"
+                        @click="handleExchangeClick(entity.entidad, crypto)"
                       >
                         {{ entity.rendimientos.find((r) => r.moneda === crypto)?.apy.toFixed(2) }}%
                       </UButton>
@@ -112,6 +128,7 @@ const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCr
               :to="getInstitutionUrl(entity.entidad)"
               target="_blank"
               rel="noopener noreferrer"
+              @click="handleExchangeClick(entity.entidad)"
             >
               <div class="flex items-center gap-3">
                 <UAvatar
@@ -149,6 +166,7 @@ const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCr
                   :href="getInstitutionUrl(entity.entidad)"
                   target="_blank"
                   rel="noopener noreferrer"
+                  @click="handleExchangeClick(entity.entidad, cryptoYield.moneda)"
                 >
                   {{ cryptoYield.apy.toFixed(2) }}% APY
                 </UButton>

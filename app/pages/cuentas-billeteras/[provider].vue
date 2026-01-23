@@ -2,6 +2,7 @@
 import AccountHistoryTNAChart from '~/components/charts/AccountHistoryTNAChart.vue'
 import AccountHistoryTopeChart from '~/components/charts/AccountHistoryTopeChart.vue'
 import { useAccountHistory } from '~/composables/useAccountHistory'
+import { useAnalytics } from '~/composables/useAnalytics'
 import {
   getInstitutionLogo,
   getInstitutionShortName,
@@ -14,6 +15,7 @@ definePageMeta({
 
 const route = useRoute()
 const providerParam = route.params.provider as string
+const { trackProviderClick } = useAnalytics()
 
 const slugToApiName: Record<string, string> = {
   uala: 'UALA',
@@ -38,6 +40,17 @@ const providerUrl = computed(() => getInstitutionUrl(providerApiName.value))
 const providerSlug = computed(() => providerParam.toLowerCase())
 
 const { data: history, loading, error, fetch } = useAccountHistory()
+
+function handleProviderClick() {
+  if (providerUrl.value) {
+    trackProviderClick({
+      providerName: displayName.value,
+      providerUrl: providerUrl.value,
+      section: 'cuentas-billeteras-detalle',
+      contentType: 'button',
+    })
+  }
+}
 
 onMounted(() => {
   fetch(providerSlug.value)
@@ -70,6 +83,7 @@ useSeoMeta({
         rel="noopener noreferrer"
         color="primary"
         class="flex items-center gap-2"
+        @click="handleProviderClick"
       >
         <UIcon name="i-lucide-external-link" class="size-4" />
         <span>Ir a {{ displayName }}</span>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { getProviderSlug, getProviderApiName, hasHistory } from '~/composables/useAccountHistory'
+import { useAnalytics } from '~/composables/useAnalytics'
+
+const { trackProviderClick } = useAnalytics()
 
 const props = defineProps<{
   items: any[]
@@ -49,6 +52,18 @@ function formatCurrency(value: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value)
+}
+
+function handleProviderClick(item: any) {
+  if (item.url) {
+    const providerName = item.fondo || item.institution || 'unknown'
+    trackProviderClick({
+      providerName,
+      providerUrl: item.url,
+      section: 'funds-list',
+      contentType: item.typeLabel || 'fund',
+    })
+  }
 }
 </script>
 
@@ -202,6 +217,7 @@ function formatCurrency(value: number): string {
         :href="item.url ? item.url : undefined"
         :target="item.url ? '_blank' : undefined"
         :rel="item.url ? 'noopener noreferrer' : undefined"
+        @click="handleProviderClick(item)"
       >
         <UCard :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }">
           <div class="space-y-2">
