@@ -65,7 +65,8 @@ export async function fetchAnalyticsData(
       { name: 'date' },
       { name: 'eventName' },
       { name: 'linkUrl' },
-      { name: 'outbound' },
+      { name: 'customEvent:section' },
+      { name: 'customEvent:content_type' },
     ],
     metrics: [{ name: 'eventCount' }],
     dimensionFilter: {
@@ -106,7 +107,7 @@ export async function fetchAnalyticsData(
         eventName: dimensions[1]?.value || '',
         providerName: dimensions[2]?.value || '',
         section: dimensions[3]?.value || '',
-        contentType: '',
+        contentType: dimensions[4]?.value || '',
         eventCount: parseInt(metrics[0]?.value || '0', 10),
       })
     }
