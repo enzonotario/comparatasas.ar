@@ -115,6 +115,20 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
+    fundName: 'Adcap Balanceado XXVIII - Clase A',
+    institutions: [
+      {
+        institution: 'IOL',
+        displayName: 'IOL Cash Management',
+        showInAccounts: true,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+      },
+    ],
+  },
+  {
     fundName: 'Cocos Ahorro Dólares - Clase A',
     institutions: [
       {
