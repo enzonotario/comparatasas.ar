@@ -62,7 +62,7 @@ const isProviderHistoryPage = computed(() => {
               fetchpriority="high"
             />
             <span
-              class="text-lg sm:text-xl font-bold text-zinc-900 dark:text-white hidden lg:block"
+              class="text-xs sm:text-sm md:text-lg lg:text-xl font-bold text-zinc-900 dark:text-white"
             >
               ComparaTasas.ar
             </span>
