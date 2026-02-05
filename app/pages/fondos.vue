@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
+import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn } from '@nuxt/ui'
 
 const UButton = resolveComponent('UButton')
@@ -220,10 +221,10 @@ onMounted(() => {
 })
 
 // Filtros
-const searchQuery = ref('')
+const searchQuery = useRouteQuery('q', '')
 const debouncedSearchQuery = refDebounced(searchQuery, 300)
-const selectedTipo = ref<undefined | string>(undefined)
-const selectedHorizonte = ref<undefined | string>(undefined)
+const selectedTipo = useRouteQuery<string | undefined>('tipo', undefined)
+const selectedHorizonte = useRouteQuery<string | undefined>('horizonte', undefined)
 
 // Obtener tipos únicos para el filtro
 const tiposDisponibles = computed(() => {
@@ -707,12 +708,20 @@ const columns: TableColumn<FundWithPrevious>[] = [
 ]
 
 // Estado de ordenamiento
-const sorting = ref([
+const sorting = useRouteQuery('sort', [
   {
     id: 'fondo',
     desc: false,
   },
-])
+], {
+  transform: (value: any) => {
+    try {
+      return typeof value === 'string' ? JSON.parse(value) : value
+    } catch {
+      return value
+    }
+  },
+})
 </script>
 
 <template>
