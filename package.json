@@ -37,6 +37,7 @@
   "devDependencies": {
     "@google-analytics/data": "^4.9.0",
     "@libsql/client": "^0.14.0",
+    "@vueuse/router": "^14.2.0",
     "dotenv": "^17.2.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
