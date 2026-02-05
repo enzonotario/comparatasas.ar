@@ -1,0 +1,33 @@
+{
+  "legacy": [
+    {
+      "event_name": "click",
+      "has_category": "sin_categoria",
+      "total_clicks": 2638,
+      "unique_providers": 66,
+      "days_tracked": 8
+    }
+  ],
+  "new_events": [
+    {
+      "event_name": "provider_click",
+      "has_category": "con_categoria",
+      "total_clicks": 2134,
+      "unique_providers": 52,
+      "days_tracked": 8
+    },
+    {
+      "event_name": "sponsor_click",
+      "has_category": "sin_categoria",
+      "total_clicks": 103,
+      "unique_providers": 1,
+      "days_tracked": 8
+    }
+  ],
+  "summary": {
+    "total_legacy": 2638,
+    "total_new": 2237,
+    "with_category": 2134,
+    "without_category": 2741
+  }
+}

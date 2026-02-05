@@ -1,0 +1,50 @@
+{
+  "total_records": 810,
+  "total_clicks": 4875,
+  "unique_providers": 69,
+  "days_tracked": 8,
+  "first_date": "20260129",
+  "last_date": "20260205",
+  "by_event_type": [
+    {
+      "event_type": "click",
+      "total_clicks": 2638
+    },
+    {
+      "event_type": "provider_click",
+      "total_clicks": 2134
+    },
+    {
+      "event_type": "sponsor_click",
+      "total_clicks": 103
+    }
+  ],
+  "top_providers": [
+    {
+      "provider": "IOL",
+      "total_clicks": 519,
+      "days_active": 8
+    },
+    {
+      "provider": "Banco BICA",
+      "total_clicks": 368,
+      "days_active": 8
+    },
+    {
+      "provider": "Carrefour Banco",
+      "total_clicks": 328,
+      "days_active": 8
+    },
+    {
+      "provider": "AstroPay",
+      "total_clicks": 294,
+      "days_active": 8
+    },
+    {
+      "provider": "Mercado Pago",
+      "total_clicks": 291,
+      "days_active": 8
+    }
+  ],
+  "generated_at": "2026-02-05T22:14:55.563Z"
+}
