@@ -708,20 +708,24 @@ const columns: TableColumn<FundWithPrevious>[] = [
 ]
 
 // Estado de ordenamiento
-const sorting = useRouteQuery('sort', [
+const sorting = useRouteQuery(
+  'sort',
+  [
+    {
+      id: 'fondo',
+      desc: false,
+    },
+  ],
   {
-    id: 'fondo',
-    desc: false,
+    transform: (value: any) => {
+      try {
+        return typeof value === 'string' ? JSON.parse(value) : value
+      } catch {
+        return value
+      }
+    },
   },
-], {
-  transform: (value: any) => {
-    try {
-      return typeof value === 'string' ? JSON.parse(value) : value
-    } catch {
-      return value
-    }
-  },
-})
+)
 </script>
 
 <template>

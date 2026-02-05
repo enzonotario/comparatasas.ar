@@ -101,10 +101,6 @@ export default defineNuxtConfig({
     minify: true,
   },
 
-  highcharts: {
-    exporting: true,
-  },
-
   eslint: {
     config: {
       stylistic: true,
@@ -113,6 +109,10 @@ export default defineNuxtConfig({
 
   gtag: {
     id: 'G-MVDC98G0E2',
+  },
+
+  highcharts: {
+    exporting: true,
   },
 
   hotjar: {

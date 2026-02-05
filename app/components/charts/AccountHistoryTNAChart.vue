@@ -11,7 +11,7 @@ const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-  const chartOptions = computed(() => {
+const chartOptions = computed(() => {
   if (props.history.length === 0) return null
 
   const dates = props.history.map((item) => {

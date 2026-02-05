@@ -152,11 +152,7 @@ const chartOptions = computed(() => {
 
 <template>
   <div class="w-full" style="height: 24rem; min-height: 384px">
-    <highchart
-      v-if="chartOptions"
-      :options="chartOptions"
-      class="w-full h-full"
-    />
+    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-neutral-500">Cargando gráfico...</div>
     </div>

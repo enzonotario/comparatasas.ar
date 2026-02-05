@@ -30,13 +30,16 @@ for (const inst of institutions) {
 // (sitios externos, variantes de URLs, o providers específicos)
 const EXTRA_URL_TO_PROVIDER: Record<string, string> = {
   // Variantes de DolarApp
-  'https://www.dolarapp.com/es-AR?utm_source=comparatasas&utm_medium=banner&utm_campaign=comparatasas_a': 'DolarApp',
-  'https://www.dolarapp.com/es-AR?utm_source=comparatasas&utm_medium=banner&utm_campaign=comparatasas_ad': 'DolarApp',
+  'https://www.dolarapp.com/es-AR?utm_source=comparatasas&utm_medium=banner&utm_campaign=comparatasas_a':
+    'DolarApp',
+  'https://www.dolarapp.com/es-AR?utm_source=comparatasas&utm_medium=banner&utm_campaign=comparatasas_ad':
+    'DolarApp',
   // Providers con URLs directos (no dub.link)
   'https://bancodecomercio.com.ar/plazo-fijo-web': 'Banco de Comercio',
   'https://www.creditoregional.com.ar/solplazofijoweb.html': 'Crédito Regional',
   'https://plazofijo.bancobica.com.ar/': 'Banco BICA',
-  'https://www.reba.com.ar/plazo-fijo/?utm_source=web&utm_medium=bcra&utm_campaign=cantidad-visitas-bcr': 'Reba',
+  'https://www.reba.com.ar/plazo-fijo/?utm_source=web&utm_medium=bcra&utm_campaign=cantidad-visitas-bcr':
+    'Reba',
   'https://www.btf.com.ar/contacto/solicitud_pf_web/': 'BTF',
   // Páginas Amigas (friendlyPages)
   'https://comparadolar.ar/': 'comparadolar.ar',
@@ -85,39 +88,39 @@ const URL_TO_PROVIDER: Record<string, string> = {
 // Basado en useAccounts.ts y usePlazosFijos.ts
 const PROVIDER_TO_CATEGORY: Record<string, string> = {
   // Cuentas Remuneradas (según useAccounts.ts)
-  'Ualá': 'Cuenta Remunerada',
+  Ualá: 'Cuenta Remunerada',
   'Carrefour Banco': 'Cuenta Remunerada',
   'Naranja X': 'Cuenta Remunerada',
-  'Supervielle': 'Cuenta Remunerada',
-  'Cresium': 'Cuenta Remunerada',
-  'Openbank': 'Cuenta Remunerada',
-  'Reba': 'Cuenta Remunerada',
+  Supervielle: 'Cuenta Remunerada',
+  Cresium: 'Cuenta Remunerada',
+  Openbank: 'Cuenta Remunerada',
+  Reba: 'Cuenta Remunerada',
   'Banco Nación': 'Cuenta Remunerada', // BNA tiene cuenta remunerada
   // Billeteras (según useAccounts.ts: FIWIND y BELO son billeteras)
-  'Fiwind': 'Billetera',
-  'Belo': 'Billetera',
+  Fiwind: 'Billetera',
+  Belo: 'Billetera',
   'Mercado Pago': 'Billetera',
   'Personal Pay': 'Billetera',
   'Cuenta DNI': 'Billetera',
-  'Modo': 'Billetera',
+  Modo: 'Billetera',
   'Claro Pay': 'Billetera',
-  'Prex': 'Billetera',
-  'Lemon': 'Billetera',
-  'Buenbit': 'Billetera',
-  'Ripio': 'Billetera',
-  'SatoshiTango': 'Billetera',
-  'AstroPay': 'Billetera',
+  Prex: 'Billetera',
+  Lemon: 'Billetera',
+  Buenbit: 'Billetera',
+  Ripio: 'Billetera',
+  SatoshiTango: 'Billetera',
+  AstroPay: 'Billetera',
   'Plus Pagos': 'Billetera',
   // Plazos Fijos (bancos que solo ofrecen plazo fijo, no cuenta remunerada)
   'Banco Galicia': 'Plazo Fijo',
   'Banco Santander': 'Plazo Fijo',
-  'BBVA': 'Plazo Fijo',
+  BBVA: 'Plazo Fijo',
   'Banco Macro': 'Plazo Fijo',
-  'ICBC': 'Plazo Fijo',
+  ICBC: 'Plazo Fijo',
   'Banco Provincia': 'Plazo Fijo',
   'Banco Ciudad': 'Plazo Fijo',
   'Banco Hipotecario': 'Plazo Fijo',
-  'Bancor': 'Plazo Fijo',
+  Bancor: 'Plazo Fijo',
   'Banco Credicoop': 'Plazo Fijo',
   'Banco Comafi': 'Plazo Fijo',
   'Banco del Sol': 'Plazo Fijo',
@@ -125,25 +128,25 @@ const PROVIDER_TO_CATEGORY: Record<string, string> = {
   'Banco Meridian': 'Plazo Fijo',
   'Banco CMF': 'Plazo Fijo',
   'Banco Mariva': 'Plazo Fijo',
-  'Bibank': 'Plazo Fijo',
+  Bibank: 'Plazo Fijo',
   'Banco Dino': 'Plazo Fijo',
   'Banco Masventas': 'Plazo Fijo',
-  'Brubank': 'Plazo Fijo',
+  Brubank: 'Plazo Fijo',
   'Banco de Comercio': 'Plazo Fijo',
   'Crédito Regional': 'Plazo Fijo',
   'Banco BICA': 'Plazo Fijo',
-  'BTF': 'Plazo Fijo',
-  'Toronto': 'Plazo Fijo',
+  BTF: 'Plazo Fijo',
+  Toronto: 'Plazo Fijo',
   // FCI Money Market (brokers con FCI)
-  'Cocos': 'Money Market',
-  'Balanz': 'Money Market',
-  'IOL': 'Money Market',
+  Cocos: 'Money Market',
+  Balanz: 'Money Market',
+  IOL: 'Money Market',
   'IEB+': 'Money Market',
-  'Adcap': 'Money Market',
+  Adcap: 'Money Market',
   // Criptomonedas (exchanges)
-  'Decrypto': 'Criptomonedas',
-  'LucaMoney': 'Criptomonedas',
-  'Vesseo': 'Criptomonedas',
+  Decrypto: 'Criptomonedas',
+  LucaMoney: 'Criptomonedas',
+  Vesseo: 'Criptomonedas',
   // Páginas Amigas (friendlyPages)
   'comparadolar.ar': 'Página Amiga',
   'comparapix.ar': 'Página Amiga',
@@ -155,13 +158,13 @@ const PROVIDER_TO_CATEGORY: Record<string, string> = {
   'enqueinvierto.ar': 'Página Amiga',
   'betece.app': 'Página Amiga',
   // Otro (sponsors, recursos externos, redirects, etc.)
-  'CAFCI': 'Otro',
-  'GitHub': 'Otro',
-  'Cafecito': 'Otro',
+  CAFCI: 'Otro',
+  GitHub: 'Otro',
+  Cafecito: 'Otro',
   'Cafecito Salinas': 'Otro',
   'X Salinas': 'Otro',
   'X (Twitter)': 'Otro',
-  'DolarApp': 'Otro',
+  DolarApp: 'Otro',
   'Bit.ly (redirect)': 'Otro',
 }
 
@@ -169,40 +172,46 @@ const PROVIDER_TO_CATEGORY: Record<string, string> = {
 // Las categorías son los badges/typeLabels que se muestran en la app
 function normalizeCategory(contentType: string): string {
   if (!contentType || contentType === '(not set)') return 'Sin categoría'
-  
+
   // Normalizar variantes
   const normalized = contentType.toLowerCase().trim()
-  
+
   // Cuenta Remunerada
-  if (normalized === 'cuenta remunerada' || normalized === 'cuentaremunerada') return 'Cuenta Remunerada'
+  if (normalized === 'cuenta remunerada' || normalized === 'cuentaremunerada')
+    return 'Cuenta Remunerada'
   if (normalized === 'cuenta remunerada usd') return 'Cuenta Remunerada USD'
-  
+
   // Billetera
   if (normalized === 'billetera') return 'Billetera'
   if (normalized === 'billetera usd') return 'Billetera USD'
-  
+
   // FCI por tipo (badges)
   if (normalized === 'money market' || normalized === 'moneymarket') return 'Money Market'
   if (normalized === 'renta fija' || normalized === 'rentafija') return 'Renta Fija'
   if (normalized === 'renta mixta' || normalized === 'rentamixta') return 'Renta Mixta'
   if (normalized === 'renta variable' || normalized === 'rentavariable') return 'Renta Variable'
   if (normalized === 'fund' || normalized === 'fci') return 'Money Market' // default a Money Market
-  
+
   // Plazo Fijo
-  if (normalized === 'plazo fijo 30 días' || normalized === 'plazofijo30d' || normalized === 'plazo fijo') return 'Plazo Fijo'
-  
+  if (
+    normalized === 'plazo fijo 30 días' ||
+    normalized === 'plazofijo30d' ||
+    normalized === 'plazo fijo'
+  )
+    return 'Plazo Fijo'
+
   // Criptomonedas (exchanges y compra/venta)
   if (normalized.startsWith('crypto-')) return 'Criptomonedas'
   if (normalized === 'exchange-card') return 'Criptomonedas'
-  
+
   // Criptopesos (stablecoins en pesos)
   if (normalized === 'criptopeso' || normalized.includes('criptopeso')) return 'Criptopesos'
   // Si tiene un token específico (ej: "DAI", "USDT"), es criptopeso
   if (['dai', 'usdt', 'usdc', 'usd+'].includes(normalized)) return 'Criptopesos'
-  
+
   // General (botones, links genéricos)
   if (normalized === 'button' || normalized === 'link') return 'General'
-  
+
   return contentType
 }
 
@@ -274,23 +283,23 @@ function getProviderName(url: string): string {
   if (URL_TO_PROVIDER[url]) {
     return URL_TO_PROVIDER[url]
   }
-  
+
   // Luego intentar match por prefijo (sin query params)
   for (const [key, value] of Object.entries(URL_TO_PROVIDER)) {
     if (url.startsWith(key.split('?')[0])) {
       return value
     }
   }
-  
+
   // Intentar extraer el hostname y buscar en el mapeo
   try {
     const hostname = new URL(url).hostname.replace('www.', '')
-    
+
     // Buscar en el mapeo de hostnames
     if (HOSTNAME_TO_PROVIDER[hostname]) {
       return HOSTNAME_TO_PROVIDER[hostname]
     }
-    
+
     // Si no está en el mapeo, formatear el hostname
     const cleanHostname = hostname.replace('.com.ar', '').replace('.com', '').replace('.ar', '')
     return cleanHostname.charAt(0).toUpperCase() + cleanHostname.slice(1)
@@ -510,7 +519,8 @@ async function generateClicksByCategory() {
       categories[category] = { total_clicks: 0, providers: {} }
     }
     categories[category].total_clicks += clicks
-    categories[category].providers[providerName] = (categories[category].providers[providerName] || 0) + clicks
+    categories[category].providers[providerName] =
+      (categories[category].providers[providerName] || 0) + clicks
   }
 
   // Convertir a array ordenado
@@ -542,7 +552,10 @@ async function generateTopProvidersByCategory() {
     ORDER BY total_clicks DESC
   `)
 
-  const categories: Record<string, Array<{ provider: string; total_clicks: number; days_active: number }>> = {}
+  const categories: Record<
+    string,
+    Array<{ provider: string; total_clicks: number; days_active: number }>
+  > = {}
 
   for (const row of result.rows) {
     const contentType = row.content_type as string
@@ -569,7 +582,11 @@ async function generateTopProvidersByCategory() {
       existing.total_clicks += clicks
       existing.days_active = Math.max(existing.days_active, daysActive)
     } else {
-      categories[category].push({ provider: providerName, total_clicks: clicks, days_active: daysActive })
+      categories[category].push({
+        provider: providerName,
+        total_clicks: clicks,
+        days_active: daysActive,
+      })
     }
   }
 
@@ -601,7 +618,9 @@ async function generateEventTypeStats() {
 
   return {
     legacy: result.rows.filter((r) => r.event_name === 'click'),
-    new_events: result.rows.filter((r) => r.event_name === 'provider_click' || r.event_name === 'sponsor_click'),
+    new_events: result.rows.filter(
+      (r) => r.event_name === 'provider_click' || r.event_name === 'sponsor_click',
+    ),
     summary: {
       total_legacy: result.rows
         .filter((r) => r.event_name === 'click')
