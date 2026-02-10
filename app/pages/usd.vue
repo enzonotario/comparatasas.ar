@@ -90,11 +90,14 @@ const usdYieldsForFundsList = computed(() => {
     .sort((a, b) => b.tna - a.tna) // Ordenar de mayor a menor
 })
 
+// Blacklist de instituciones para cuentas y billeteras USD
+const accountsBlacklist = ['Banco Galicia']
+
 // Combinar cuentas y billeteras USD
 const accountsAndWallets = computed(() => {
-  return [...usdAccountsForFundsList.value, ...usdYieldsForFundsList.value].sort(
-    (a, b) => b.tna - a.tna,
-  )
+  return [...usdAccountsForFundsList.value, ...usdYieldsForFundsList.value]
+    .filter((item) => !accountsBlacklist.includes(item.institution))
+    .sort((a, b) => b.tna - a.tna)
 })
 
 const accountsAndWalletsWithSimulation = calculateResults(accountsAndWallets)
