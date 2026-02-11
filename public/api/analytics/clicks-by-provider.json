@@ -1,151 +1,159 @@
 [
   {
     "provider": "IOL",
-    "total_clicks": 1092
-  },
-  {
-    "provider": "Banco BICA",
-    "total_clicks": 594
+    "total_clicks": 1187
   },
   {
     "provider": "Carrefour Banco",
-    "total_clicks": 592
+    "total_clicks": 660
+  },
+  {
+    "provider": "Banco BICA",
+    "total_clicks": 644
   },
   {
     "provider": "AstroPay",
-    "total_clicks": 501
+    "total_clicks": 551
   },
   {
     "provider": "Mercado Pago",
-    "total_clicks": 458
+    "total_clicks": 490
   },
   {
     "provider": "Ualá",
-    "total_clicks": 405
-  },
-  {
-    "provider": "DolarApp",
-    "total_clicks": 403
+    "total_clicks": 452
   },
   {
     "provider": "Cocos",
-    "total_clicks": 402
+    "total_clicks": 441
+  },
+  {
+    "provider": "DolarApp",
+    "total_clicks": 438
   },
   {
     "provider": "Fiwind",
-    "total_clicks": 346
+    "total_clicks": 379
   },
   {
     "provider": "Lemon",
-    "total_clicks": 343
+    "total_clicks": 379
   },
   {
     "provider": "Banco Galicia",
-    "total_clicks": 280
+    "total_clicks": 315
   },
   {
     "provider": "Banco Nación",
-    "total_clicks": 255
+    "total_clicks": 274
   },
   {
     "provider": "Banco Ciudad",
-    "total_clicks": 213
-  },
-  {
-    "provider": "Adcap",
-    "total_clicks": 187
+    "total_clicks": 226
   },
   {
     "provider": "Prex",
-    "total_clicks": 168
+    "total_clicks": 199
+  },
+  {
+    "provider": "Adcap",
+    "total_clicks": 193
   },
   {
     "provider": "Balanz",
-    "total_clicks": 159
-  },
-  {
-    "provider": "Banco del Sol",
-    "total_clicks": 144
-  },
-  {
-    "provider": "Banco Santander",
-    "total_clicks": 137
+    "total_clicks": 174
   },
   {
     "provider": "comparadolar.ar",
-    "total_clicks": 132
+    "total_clicks": 163
+  },
+  {
+    "provider": "Banco del Sol",
+    "total_clicks": 159
+  },
+  {
+    "provider": "Banco Santander",
+    "total_clicks": 151
   },
   {
     "provider": "Belo",
-    "total_clicks": 119
-  },
-  {
-    "provider": "LB",
-    "total_clicks": 106
+    "total_clicks": 128
   },
   {
     "provider": "Crédito Regional",
-    "total_clicks": 104
+    "total_clicks": 118
+  },
+  {
+    "provider": "LB",
+    "total_clicks": 116
+  },
+  {
+    "provider": "dolarito.ar",
+    "total_clicks": 93
   },
   {
     "provider": "Banco Meridian",
     "total_clicks": 93
   },
   {
-    "provider": "dolarito.ar",
-    "total_clicks": 80
+    "provider": "Personal Pay",
+    "total_clicks": 89
   },
   {
     "provider": "Banco Hipotecario",
-    "total_clicks": 77
+    "total_clicks": 80
   },
   {
     "provider": "BBVA",
-    "total_clicks": 71
-  },
-  {
-    "provider": "Personal Pay",
-    "total_clicks": 71
-  },
-  {
-    "provider": "Buenbit",
-    "total_clicks": 68
+    "total_clicks": 79
   },
   {
     "provider": "Banco Macro",
-    "total_clicks": 68
+    "total_clicks": 79
+  },
+  {
+    "provider": "Buenbit",
+    "total_clicks": 74
+  },
+  {
+    "provider": "Vesseo",
+    "total_clicks": 65
+  },
+  {
+    "provider": "IEB+",
+    "total_clicks": 57
   },
   {
     "provider": "ICBC",
     "total_clicks": 55
   },
   {
-    "provider": "IEB+",
-    "total_clicks": 52
-  },
-  {
-    "provider": "Vesseo",
-    "total_clicks": 52
-  },
-  {
     "provider": "comparapix.ar",
-    "total_clicks": 51
-  },
-  {
-    "provider": "Supervielle",
-    "total_clicks": 48
+    "total_clicks": 54
   },
   {
     "provider": "Reba",
-    "total_clicks": 47
+    "total_clicks": 53
+  },
+  {
+    "provider": "Supervielle",
+    "total_clicks": 49
   },
   {
     "provider": "enqueinvierto.ar",
-    "total_clicks": 37
+    "total_clicks": 46
   },
   {
     "provider": "GitHub",
-    "total_clicks": 34
+    "total_clicks": 38
+  },
+  {
+    "provider": "dolarya.info",
+    "total_clicks": 37
+  },
+  {
+    "provider": "betece.app",
+    "total_clicks": 33
   },
   {
     "provider": "Toronto",
@@ -153,27 +161,19 @@
   },
   {
     "provider": "Naranja X",
-    "total_clicks": 29
-  },
-  {
-    "provider": "betece.app",
-    "total_clicks": 28
-  },
-  {
-    "provider": "Banco Provincia",
-    "total_clicks": 28
-  },
-  {
-    "provider": "dolarya.info",
-    "total_clicks": 28
+    "total_clicks": 32
   },
   {
     "provider": "Docs.google",
-    "total_clicks": 27
+    "total_clicks": 30
+  },
+  {
+    "provider": "Banco Provincia",
+    "total_clicks": 29
   },
   {
     "provider": "Banco Mariva",
-    "total_clicks": 27
+    "total_clicks": 28
   },
   {
     "provider": "Bancor",
@@ -181,18 +181,26 @@
   },
   {
     "provider": "argentinadatos.com",
-    "total_clicks": 24
-  },
-  {
-    "provider": "Banco del Chubut",
-    "total_clicks": 18
+    "total_clicks": 26
   },
   {
     "provider": "impuestito.org",
-    "total_clicks": 16
+    "total_clicks": 20
+  },
+  {
+    "provider": "Banco del Chubut",
+    "total_clicks": 19
   },
   {
     "provider": "CAFCI",
+    "total_clicks": 18
+  },
+  {
+    "provider": "Ripio",
+    "total_clicks": 17
+  },
+  {
+    "provider": "Claro Pay",
     "total_clicks": 16
   },
   {
@@ -200,7 +208,11 @@
     "total_clicks": 16
   },
   {
-    "provider": "Ripio",
+    "provider": "LucaMoney",
+    "total_clicks": 15
+  },
+  {
+    "provider": "X Salinas",
     "total_clicks": 15
   },
   {
@@ -208,19 +220,11 @@
     "total_clicks": 14
   },
   {
-    "provider": "X Salinas",
-    "total_clicks": 14
-  },
-  {
-    "provider": "LucaMoney",
-    "total_clicks": 13
-  },
-  {
-    "provider": "Claro Pay",
-    "total_clicks": 10
-  },
-  {
     "provider": "icons.com.ar",
+    "total_clicks": 12
+  },
+  {
+    "provider": "#",
     "total_clicks": 9
   },
   {
@@ -240,11 +244,11 @@
     "total_clicks": 7
   },
   {
-    "provider": "#",
+    "provider": "Banco de Comercio",
     "total_clicks": 6
   },
   {
-    "provider": "Banco de Comercio",
+    "provider": "Banco Dino",
     "total_clicks": 6
   },
   {
@@ -262,10 +266,6 @@
   {
     "provider": "Banco Comafi",
     "total_clicks": 5
-  },
-  {
-    "provider": "Banco Dino",
-    "total_clicks": 4
   },
   {
     "provider": "Brubank",
