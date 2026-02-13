@@ -1,18 +1,33 @@
 [
   {
+    "date": "20260213",
+    "event_type": "click",
+    "clicks": 156
+  },
+  {
+    "date": "20260213",
+    "event_type": "provider_click",
+    "clicks": 112
+  },
+  {
+    "date": "20260213",
+    "event_type": "sponsor_click",
+    "clicks": 8
+  },
+  {
     "date": "20260212",
     "event_type": "click",
-    "clicks": 153
+    "clicks": 472
   },
   {
     "date": "20260212",
     "event_type": "provider_click",
-    "clicks": 124
+    "clicks": 250
   },
   {
     "date": "20260212",
     "event_type": "sponsor_click",
-    "clicks": 4
+    "clicks": 15
   },
   {
     "date": "20260211",
