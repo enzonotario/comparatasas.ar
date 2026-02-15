@@ -1,78 +1,78 @@
 [
   {
     "category": "Money Market",
-    "total_clicks": 2438,
+    "total_clicks": 2501,
     "provider_count": 21,
     "top_providers": [
       {
         "provider": "IOL",
-        "clicks": 866
+        "clicks": 900
       },
       {
         "provider": "Cocos",
-        "clicks": 392
+        "clicks": 404
       },
       {
         "provider": "Mercado Pago",
-        "clicks": 272
+        "clicks": 278
       },
       {
         "provider": "Adcap",
-        "clicks": 204
+        "clicks": 210
       },
       {
         "provider": "Balanz",
-        "clicks": 147
+        "clicks": 148
       }
     ]
   },
   {
     "category": "Plazo Fijo",
-    "total_clicks": 2333,
+    "total_clicks": 2399,
     "provider_count": 29,
     "top_providers": [
       {
         "provider": "Banco BICA",
-        "clicks": 751
+        "clicks": 775
       },
       {
         "provider": "Banco Galicia",
-        "clicks": 213
+        "clicks": 215
       },
       {
         "provider": "Banco del Sol",
-        "clicks": 200
-      },
-      {
-        "provider": "Banco Ciudad",
-        "clicks": 159
+        "clicks": 206
       },
       {
         "provider": "Crédito Regional",
-        "clicks": 155
+        "clicks": 163
+      },
+      {
+        "provider": "Banco Ciudad",
+        "clicks": 162
       }
     ]
   },
   {
     "category": "Billetera",
-    "total_clicks": 1575,
+    "total_clicks": 1618,
     "provider_count": 11,
     "top_providers": [
       {
         "provider": "AstroPay",
-        "clicks": 369
+        "clicks": 381
       },
       {
         "provider": "Mercado Pago",
-        "clicks": 329
+        "clicks": 337
       },
       {
         "provider": "Fiwind",
-        "clicks": 264
+        "clicks": 271
       },
       {
         "provider": "Lemon",
-        "clicks": 260
+        "clicks": 270
       },
       {
         "provider": "Prex",
@@ -82,24 +82,24 @@
   },
   {
     "category": "Cuenta Remunerada",
-    "total_clicks": 1102,
+    "total_clicks": 1143,
     "provider_count": 7,
     "top_providers": [
       {
         "provider": "Carrefour Banco",
-        "clicks": 413
+        "clicks": 422
       },
       {
         "provider": "Ualá",
-        "clicks": 300
+        "clicks": 318
       },
       {
         "provider": "Banco Nación",
-        "clicks": 284
+        "clicks": 293
       },
       {
         "provider": "Reba",
-        "clicks": 48
+        "clicks": 52
       },
       {
         "provider": "Supervielle",
@@ -109,20 +109,20 @@
   },
   {
     "category": "Renta Fija",
-    "total_clicks": 1020,
+    "total_clicks": 1053,
     "provider_count": 8,
     "top_providers": [
       {
         "provider": "IOL",
-        "clicks": 653
+        "clicks": 669
       },
       {
         "provider": "Banco Ciudad",
-        "clicks": 119
+        "clicks": 122
       },
       {
         "provider": "Ualá",
-        "clicks": 98
+        "clicks": 109
       },
       {
         "provider": "Balanz",
@@ -130,30 +130,30 @@
       },
       {
         "provider": "Banco Galicia",
-        "clicks": 41
+        "clicks": 43
       }
     ]
   },
   {
     "category": "Otro",
-    "total_clicks": 755,
+    "total_clicks": 778,
     "provider_count": 12,
     "top_providers": [
       {
         "provider": "DolarApp",
-        "clicks": 522
+        "clicks": 539
       },
       {
         "provider": "LB",
-        "clicks": 79
+        "clicks": 80
       },
       {
         "provider": "GitHub",
-        "clicks": 44
+        "clicks": 45
       },
       {
         "provider": "Docs.google",
-        "clicks": 33
+        "clicks": 34
       },
       {
         "provider": "CAFCI",
@@ -163,43 +163,43 @@
   },
   {
     "category": "Página Amiga",
-    "total_clicks": 647,
+    "total_clicks": 666,
     "provider_count": 9,
     "top_providers": [
       {
         "provider": "comparadolar.ar",
-        "clicks": 232
+        "clicks": 237
       },
       {
         "provider": "dolarito.ar",
-        "clicks": 127
+        "clicks": 130
       },
       {
         "provider": "comparapix.ar",
-        "clicks": 65
+        "clicks": 67
       },
       {
         "provider": "enqueinvierto.ar",
-        "clicks": 61
+        "clicks": 65
       },
       {
         "provider": "dolarya.info",
-        "clicks": 50
+        "clicks": 51
       }
     ]
   },
   {
     "category": "General",
-    "total_clicks": 554,
+    "total_clicks": 567,
     "provider_count": 8,
     "top_providers": [
       {
         "provider": "Carrefour Banco",
-        "clicks": 331
+        "clicks": 339
       },
       {
         "provider": "Fiwind",
-        "clicks": 166
+        "clicks": 170
       },
       {
         "provider": "Belo",
@@ -217,24 +217,24 @@
   },
   {
     "category": "Criptomonedas",
-    "total_clicks": 375,
+    "total_clicks": 387,
     "provider_count": 10,
     "top_providers": [
       {
         "provider": "Lemon",
-        "clicks": 170
+        "clicks": 178
       },
       {
         "provider": "Vesseo",
-        "clicks": 82
+        "clicks": 83
       },
       {
         "provider": "Buenbit",
-        "clicks": 40
+        "clicks": 41
       },
       {
         "provider": "Fiwind",
-        "clicks": 25
+        "clicks": 26
       },
       {
         "provider": "Decrypto",
@@ -244,27 +244,27 @@
   },
   {
     "category": "Billetera USD",
-    "total_clicks": 334,
+    "total_clicks": 341,
     "provider_count": 2,
     "top_providers": [
       {
         "provider": "AstroPay",
-        "clicks": 281
+        "clicks": 287
       },
       {
         "provider": "LB",
-        "clicks": 53
+        "clicks": 54
       }
     ]
   },
   {
     "category": "Renta Mixta",
-    "total_clicks": 144,
+    "total_clicks": 152,
     "provider_count": 1,
     "top_providers": [
       {
         "provider": "Cocos",
-        "clicks": 144
+        "clicks": 152
       }
     ]
   },
@@ -289,12 +289,12 @@
   },
   {
     "category": "ARGt",
-    "total_clicks": 34,
+    "total_clicks": 36,
     "provider_count": 1,
     "top_providers": [
       {
         "provider": "Belo",
-        "clicks": 34
+        "clicks": 36
       }
     ]
   }
