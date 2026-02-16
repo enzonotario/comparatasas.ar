@@ -131,10 +131,10 @@ export const institutions: Array<{
     url: 'https://dub.link/RBrqEXt',
   },
   {
-    names: ['Buenbit', 'BUENBIT'],
-    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/buenbit.png',
-    shortName: 'Buenbit',
-    url: 'https://dub.link/5tVftQu',
+    names: ['Nexo', 'NEXO'],
+    logo: 'https://api.argentinadatos.com/static/comparatasas/logos/nexo.png',
+    shortName: 'Nexo',
+    url: 'https://nexo.com/',
   },
   {
     names: ['Fiwind', 'FIWIND'],
