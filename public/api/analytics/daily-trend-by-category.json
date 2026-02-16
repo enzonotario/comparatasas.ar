@@ -1,29 +1,46 @@
 [
   {
+    "date": "20260216",
+    "categories": {
+      "Página Amiga": 10,
+      "Cuenta Remunerada": 13,
+      "Billetera": 11,
+      "Money Market": 26,
+      "Plazo Fijo": 32,
+      "Otro": 8,
+      "Billetera USD": 6,
+      "Renta Fija": 16,
+      "Renta Mixta": 1,
+      "General": 6,
+      "Criptomonedas": 3
+    },
+    "total": 132
+  },
+  {
     "date": "20260215",
     "categories": {
-      "Billetera": 15,
-      "Página Amiga": 6,
-      "Cuenta Remunerada": 15,
-      "Otro": 14,
-      "Plazo Fijo": 26,
-      "Money Market": 15,
+      "Billetera": 37,
+      "Página Amiga": 18,
+      "Cuenta Remunerada": 48,
+      "Otro": 49,
+      "Plazo Fijo": 65,
+      "Money Market": 47,
+      "Criptomonedas": 13,
       "ARGt": 1,
-      "Billetera USD": 3,
-      "Renta Fija": 14,
-      "Renta Mixta": 2,
-      "General": 9,
-      "Criptomonedas": 6
+      "Billetera USD": 6,
+      "Renta Fija": 32,
+      "Renta Mixta": 4,
+      "General": 19
     },
-    "total": 126
+    "total": 339
   },
   {
     "date": "20260214",
     "categories": {
-      "Otro": 13,
+      "Otro": 15,
       "Página Amiga": 21,
       "Cuenta Remunerada": 37,
-      "Billetera": 43,
+      "Billetera": 41,
       "Money Market": 82,
       "Plazo Fijo": 72,
       "Criptomonedas": 11,
@@ -59,31 +76,15 @@
     "categories": {
       "Página Amiga": 71,
       "Cuenta Remunerada": 63,
-      "Billetera": 114,
+      "Billetera": 109,
       "Money Market": 161,
-      "Otro": 39,
-      "Plazo Fijo": 120,
-      "Criptomonedas": 25,
+      "Otro": 44,
+      "Plazo Fijo": 85,
+      "Criptomonedas": 6,
       "ARGt": 4,
       "Billetera USD": 19,
-      "Cuenta Remunerada USD": 4,
-      "Renta Fija": 80,
-      "Renta Mixta": 10,
-      "General": 27
+      "Cuenta Remunerada USD": 4
     },
-    "total": 737
-  },
-  {
-    "date": "20260211",
-    "categories": {
-      "Página Amiga": 53,
-      "Otro": 28,
-      "Cuenta Remunerada": 51,
-      "Billetera": 126,
-      "Money Market": 98,
-      "Plazo Fijo": 74,
-      "Criptomonedas": 4
-    },
-    "total": 434
+    "total": 566
   }
 ]
