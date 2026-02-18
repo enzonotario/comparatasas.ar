@@ -14,19 +14,19 @@ const friendlyPages = [
   },
   {
     label: 'dolarya.info',
-    to: 'https://dub.link/asxwg8M',
+    to: 'https://www.dolarya.info/?ref=comparatasas',
   },
   {
     label: 'argentinadatos.com',
-    to: 'https://dub.link/l58DNjJ',
+    to: 'https://argentinadatos.com/?ref=comparatasas',
   },
   {
     label: 'dolarito.ar',
-    to: 'https://dub.link/cCOI35S',
+    to: 'https://www.dolarito.ar/?ref=comparatasas',
   },
   {
     label: 'impuestito.org',
-    to: 'https://dub.link/dh8pB0R',
+    to: 'https://www.impuestito.org/?ref=comparatasas',
   },
   {
     label: 'enqueinvierto.ar',

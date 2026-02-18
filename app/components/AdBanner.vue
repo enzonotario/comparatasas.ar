@@ -4,13 +4,13 @@ const { width } = useWindowSize()
 const desktopAds = [
   {
     src: '/assets/cocos-desktop.jpeg',
-    link: 'https://dub.link/sSLvNxm',
+    link: 'https://rs710.app.link/app-cocos-capital?ref=comparatasas',
   },
 ]
 const mobileAds = [
   {
     src: '/assets/cocos-mobile.jpeg',
-    link: 'https://dub.link/sSLvNxm',
+    link: 'https://rs710.app.link/app-cocos-capital?ref=comparatasas',
   },
 ]
 

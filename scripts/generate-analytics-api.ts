@@ -52,10 +52,10 @@ const EXTRA_URL_TO_PROVIDER: Record<string, string> = {
   'https://enqueinvierto.ar': 'enqueinvierto.ar',
   'https://betece.app/': 'betece.app',
   'https://betece.app': 'betece.app',
-  'https://dub.link/asxwg8M': 'dolarya.info', // dolarya.info via dub.link
-  'https://dub.link/l58DNjJ': 'argentinadatos.com', // argentinadatos via dub.link
-  'https://dub.link/cCOI35S': 'dolarito.ar', // dolarito via dub.link
-  'https://dub.link/dh8pB0R': 'impuestito.org', // impuestito via dub.link
+  'https://www.dolarya.info/?ref=comparatasas': 'dolarya.info',
+  'https://argentinadatos.com/?ref=comparatasas': 'argentinadatos.com',
+  'https://www.dolarito.ar/?ref=comparatasas': 'dolarito.ar',
+  'https://www.impuestito.org/?ref=comparatasas': 'impuestito.org',
   // Recursos externos (no páginas amigas)
   'https://www.cafci.org.ar/': 'CAFCI',
   'https://github.com/enzonotario/comparatasas.ar': 'GitHub',
