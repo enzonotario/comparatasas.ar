@@ -1,300 +1,224 @@
 [
   {
-    "category": "Money Market",
-    "total_clicks": 2637,
-    "provider_count": 22,
+    "category": "Otro",
+    "total_clicks": 6909,
+    "provider_count": 11,
     "top_providers": [
       {
-        "provider": "IOL",
-        "clicks": 968
+        "provider": "Dub.link",
+        "clicks": 6105
       },
       {
-        "provider": "Cocos",
-        "clicks": 419
+        "provider": "DolarApp",
+        "clicks": 614
       },
       {
-        "provider": "Mercado Pago",
-        "clicks": 293
+        "provider": "GitHub",
+        "clicks": 50
       },
       {
-        "provider": "Adcap",
-        "clicks": 216
+        "provider": "Docs.google",
+        "clicks": 34
       },
       {
-        "provider": "Balanz",
-        "clicks": 159
-      }
-    ]
-  },
-  {
-    "category": "Plazo Fijo",
-    "total_clicks": 2543,
-    "provider_count": 29,
-    "top_providers": [
-      {
-        "provider": "Banco BICA",
-        "clicks": 822
-      },
-      {
-        "provider": "Banco Galicia",
-        "clicks": 224
-      },
-      {
-        "provider": "Banco del Sol",
-        "clicks": 218
-      },
-      {
-        "provider": "Banco Ciudad",
-        "clicks": 180
-      },
-      {
-        "provider": "Crédito Regional",
-        "clicks": 177
-      }
-    ]
-  },
-  {
-    "category": "Billetera",
-    "total_clicks": 1657,
-    "provider_count": 10,
-    "top_providers": [
-      {
-        "provider": "AstroPay",
-        "clicks": 405
-      },
-      {
-        "provider": "Mercado Pago",
-        "clicks": 355
-      },
-      {
-        "provider": "Fiwind",
-        "clicks": 289
-      },
-      {
-        "provider": "Lemon",
-        "clicks": 282
-      },
-      {
-        "provider": "Prex",
-        "clicks": 132
-      }
-    ]
-  },
-  {
-    "category": "Cuenta Remunerada",
-    "total_clicks": 1222,
-    "provider_count": 7,
-    "top_providers": [
-      {
-        "provider": "Carrefour Banco",
-        "clicks": 448
-      },
-      {
-        "provider": "Ualá",
-        "clicks": 340
-      },
-      {
-        "provider": "Banco Nación",
-        "clicks": 316
-      },
-      {
-        "provider": "Reba",
-        "clicks": 54
-      },
-      {
-        "provider": "Supervielle",
-        "clicks": 38
+        "provider": "Dub.sh",
+        "clicks": 24
       }
     ]
   },
   {
     "category": "Renta Fija",
-    "total_clicks": 1141,
-    "provider_count": 8,
+    "total_clicks": 1206,
+    "provider_count": 1,
     "top_providers": [
-      {
-        "provider": "IOL",
-        "clicks": 726
-      },
-      {
-        "provider": "Banco Ciudad",
-        "clicks": 133
-      },
-      {
-        "provider": "Ualá",
-        "clicks": 116
-      },
-      {
-        "provider": "Balanz",
-        "clicks": 63
-      },
-      {
-        "provider": "Banco Galicia",
-        "clicks": 46
-      }
-    ]
-  },
-  {
-    "category": "Otro",
-    "total_clicks": 902,
-    "provider_count": 15,
-    "top_providers": [
-      {
-        "provider": "DolarApp",
-        "clicks": 595
-      },
-      {
-        "provider": "LB",
-        "clicks": 82
-      },
       {
         "provider": "Dub.link",
-        "clicks": 52
-      },
-      {
-        "provider": "GitHub",
-        "clicks": 48
-      },
-      {
-        "provider": "Docs.google",
-        "clicks": 34
+        "clicks": 1206
       }
     ]
   },
   {
-    "category": "Página Amiga",
-    "total_clicks": 714,
-    "provider_count": 9,
+    "category": "Plazo Fijo",
+    "total_clicks": 1100,
+    "provider_count": 7,
     "top_providers": [
       {
-        "provider": "comparadolar.ar",
-        "clicks": 244
+        "provider": "Dub.link",
+        "clicks": 852
       },
       {
-        "provider": "dolarito.ar",
-        "clicks": 140
+        "provider": "Crédito Regional",
+        "clicks": 183
       },
       {
-        "provider": "comparapix.ar",
-        "clicks": 75
+        "provider": "Reba",
+        "clicks": 41
       },
       {
-        "provider": "enqueinvierto.ar",
-        "clicks": 74
+        "provider": "#",
+        "clicks": 14
       },
       {
-        "provider": "dolarya.info",
-        "clicks": 54
+        "provider": "Banco de Comercio",
+        "clicks": 6
+      }
+    ]
+  },
+  {
+    "category": "Money Market",
+    "total_clicks": 1065,
+    "provider_count": 3,
+    "top_providers": [
+      {
+        "provider": "Dub.link",
+        "clicks": 1029
+      },
+      {
+        "provider": "Dub.sh",
+        "clicks": 23
+      },
+      {
+        "provider": "Claro Pay",
+        "clicks": 13
       }
     ]
   },
   {
     "category": "General",
-    "total_clicks": 596,
-    "provider_count": 8,
+    "total_clicks": 614,
+    "provider_count": 2,
     "top_providers": [
       {
         "provider": "Carrefour Banco",
-        "clicks": 355
+        "clicks": 368
       },
       {
-        "provider": "Fiwind",
-        "clicks": 179
+        "provider": "Dub.link",
+        "clicks": 246
+      }
+    ]
+  },
+  {
+    "category": "Cuenta Remunerada",
+    "total_clicks": 520,
+    "provider_count": 2,
+    "top_providers": [
+      {
+        "provider": "Carrefour Banco",
+        "clicks": 464
       },
       {
-        "provider": "Belo",
-        "clicks": 28
+        "provider": "Reba",
+        "clicks": 56
+      }
+    ]
+  },
+  {
+    "category": "Página Amiga",
+    "total_clicks": 477,
+    "provider_count": 5,
+    "top_providers": [
+      {
+        "provider": "comparadolar.ar",
+        "clicks": 252
       },
       {
-        "provider": "Naranja X",
+        "provider": "comparapix.ar",
+        "clicks": 81
+      },
+      {
+        "provider": "enqueinvierto.ar",
+        "clicks": 81
+      },
+      {
+        "provider": "betece.app",
+        "clicks": 47
+      },
+      {
+        "provider": "icons.com.ar",
         "clicks": 16
-      },
-      {
-        "provider": "Ualá",
-        "clicks": 7
       }
     ]
   },
   {
     "category": "Criptomonedas",
-    "total_clicks": 413,
-    "provider_count": 11,
+    "total_clicks": 431,
+    "provider_count": 5,
     "top_providers": [
       {
-        "provider": "Lemon",
-        "clicks": 183
+        "provider": "Dub.link",
+        "clicks": 283
       },
       {
         "provider": "Vesseo",
-        "clicks": 85
-      },
-      {
-        "provider": "Dub.link",
-        "clicks": 43
-      },
-      {
-        "provider": "Fiwind",
-        "clicks": 28
+        "clicks": 89
       },
       {
         "provider": "Decrypto",
-        "clicks": 22
+        "clicks": 23
+      },
+      {
+        "provider": "LucaMoney",
+        "clicks": 19
+      },
+      {
+        "provider": "Nexo",
+        "clicks": 17
       }
     ]
   },
   {
     "category": "Billetera USD",
-    "total_clicks": 361,
-    "provider_count": 2,
+    "total_clicks": 375,
+    "provider_count": 1,
     "top_providers": [
       {
-        "provider": "AstroPay",
-        "clicks": 306
-      },
-      {
-        "provider": "LB",
-        "clicks": 55
+        "provider": "Dub.link",
+        "clicks": 375
       }
     ]
   },
   {
     "category": "Renta Mixta",
-    "total_clicks": 158,
+    "total_clicks": 165,
     "provider_count": 1,
     "top_providers": [
       {
-        "provider": "Cocos",
-        "clicks": 158
+        "provider": "Dub.link",
+        "clicks": 165
       }
     ]
   },
   {
     "category": "Cuenta Remunerada USD",
     "total_clicks": 75,
-    "provider_count": 3,
+    "provider_count": 1,
     "top_providers": [
       {
-        "provider": "Banco Galicia",
-        "clicks": 54
-      },
-      {
-        "provider": "Banco Nación",
-        "clicks": 14
-      },
-      {
-        "provider": "Supervielle",
-        "clicks": 7
+        "provider": "Dub.link",
+        "clicks": 75
       }
     ]
   },
   {
     "category": "ARGt",
-    "total_clicks": 38,
+    "total_clicks": 40,
     "provider_count": 1,
     "top_providers": [
       {
-        "provider": "Belo",
-        "clicks": 38
+        "provider": "Dub.link",
+        "clicks": 40
+      }
+    ]
+  },
+  {
+    "category": "Billetera",
+    "total_clicks": 14,
+    "provider_count": 1,
+    "top_providers": [
+      {
+        "provider": "Claro Pay",
+        "clicks": 14
       }
     ]
   }

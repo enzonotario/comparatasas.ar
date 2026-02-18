@@ -1,50 +1,50 @@
 {
-  "total_records": 2333,
-  "total_clicks": 12457,
+  "total_records": 2457,
+  "total_clicks": 12991,
   "unique_providers": 73,
-  "days_tracked": 20,
+  "days_tracked": 21,
   "first_date": "20260129",
-  "last_date": "20260217",
+  "last_date": "20260218",
   "by_event_type": [
     {
       "event_type": "click",
-      "total_clicks": 7463
+      "total_clicks": 7793
     },
     {
       "event_type": "provider_click",
-      "total_clicks": 4697
+      "total_clicks": 4891
     },
     {
       "event_type": "sponsor_click",
-      "total_clicks": 297
+      "total_clicks": 307
     }
   ],
   "top_providers": [
     {
-      "provider": "IOL",
-      "total_clicks": 1694,
-      "days_active": 20
-    },
-    {
-      "provider": "Banco BICA",
-      "total_clicks": 822,
-      "days_active": 20
+      "provider": "Dub.link",
+      "total_clicks": 10376,
+      "days_active": 21
     },
     {
       "provider": "Carrefour Banco",
-      "total_clicks": 803,
-      "days_active": 20
+      "total_clicks": 832,
+      "days_active": 21
     },
     {
-      "provider": "AstroPay",
-      "total_clicks": 728,
-      "days_active": 20
+      "provider": "DolarApp",
+      "total_clicks": 614,
+      "days_active": 21
     },
     {
-      "provider": "Mercado Pago",
-      "total_clicks": 648,
-      "days_active": 20
+      "provider": "comparadolar.ar",
+      "total_clicks": 252,
+      "days_active": 21
+    },
+    {
+      "provider": "Crédito Regional",
+      "total_clicks": 183,
+      "days_active": 21
     }
   ],
-  "generated_at": "2026-02-17T22:17:49.199Z"
+  "generated_at": "2026-02-18T22:20:46.247Z"
 }
