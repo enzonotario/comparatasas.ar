@@ -1,21 +1,40 @@
 [
   {
+    "date": "20260220",
+    "categories": {
+      "Página Amiga": 16,
+      "Money Market": 67,
+      "Plazo Fijo": 53,
+      "Cuenta Remunerada": 27,
+      "Otro": 23,
+      "Billetera": 38,
+      "Criptomonedas": 13,
+      "ARGt": 1,
+      "Billetera USD": 12,
+      "Renta Fija": 29,
+      "Renta Mixta": 5,
+      "General": 17
+    },
+    "total": 301
+  },
+  {
     "date": "20260219",
     "categories": {
-      "Página Amiga": 21,
-      "Money Market": 70,
-      "Billetera": 32,
-      "Plazo Fijo": 65,
-      "Cuenta Remunerada": 27,
-      "Otro": 27,
-      "Billetera USD": 8,
-      "Cuenta Remunerada USD": 2,
-      "Renta Fija": 34,
-      "Renta Mixta": 2,
-      "General": 14,
-      "Criptomonedas": 10
+      "Página Amiga": 58,
+      "Money Market": 190,
+      "Billetera": 97,
+      "Plazo Fijo": 150,
+      "Cuenta Remunerada": 88,
+      "Otro": 75,
+      "Criptomonedas": 23,
+      "ARGt": 2,
+      "Billetera USD": 21,
+      "Cuenta Remunerada USD": 4,
+      "Renta Fija": 69,
+      "Renta Mixta": 7,
+      "General": 28
     },
-    "total": 312
+    "total": 812
   },
   {
     "date": "20260218",
@@ -39,34 +58,13 @@
   {
     "date": "20260217",
     "categories": {
-      "Otro": 244,
-      "Página Amiga": 18,
-      "Cuenta Remunerada": 12,
-      "Plazo Fijo": 27,
-      "Criptomonedas": 13,
-      "Billetera": 1,
-      "ARGt": 1,
-      "Billetera USD": 8,
-      "Money Market": 25,
-      "Renta Fija": 59,
-      "Renta Mixta": 6,
-      "General": 12
+      "Otro": 198,
+      "Página Amiga": 12,
+      "Cuenta Remunerada": 3,
+      "Plazo Fijo": 1,
+      "Criptomonedas": 1,
+      "Billetera": 1
     },
-    "total": 426
-  },
-  {
-    "date": "20260216",
-    "categories": {
-      "Página Amiga": 14,
-      "Otro": 216,
-      "Cuenta Remunerada": 10,
-      "Plazo Fijo": 5,
-      "Billetera": 1,
-      "ARGt": 2,
-      "Billetera USD": 12,
-      "Cuenta Remunerada USD": 2,
-      "Money Market": 20
-    },
-    "total": 282
+    "total": 216
   }
 ]

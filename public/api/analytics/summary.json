@@ -1,50 +1,50 @@
 {
-  "total_records": 2688,
-  "total_clicks": 13852,
-  "unique_providers": 118,
-  "days_tracked": 22,
+  "total_records": 2831,
+  "total_clicks": 14653,
+  "unique_providers": 119,
+  "days_tracked": 23,
   "first_date": "20260129",
-  "last_date": "20260219",
+  "last_date": "20260220",
   "by_event_type": [
     {
       "event_type": "click",
-      "total_clicks": 8338
+      "total_clicks": 8852
     },
     {
       "event_type": "provider_click",
-      "total_clicks": 5195
+      "total_clicks": 5469
     },
     {
       "event_type": "sponsor_click",
-      "total_clicks": 319
+      "total_clicks": 332
     }
   ],
   "top_providers": [
     {
       "provider": "Dub.link",
-      "total_clicks": 10615,
-      "days_active": 21
-    },
-    {
-      "provider": "Carrefour Banco",
-      "total_clicks": 866,
+      "total_clicks": 10618,
       "days_active": 22
     },
     {
+      "provider": "Carrefour Banco",
+      "total_clicks": 925,
+      "days_active": 23
+    },
+    {
       "provider": "DolarApp",
-      "total_clicks": 640,
+      "total_clicks": 665,
       "days_active": 21
     },
     {
       "provider": "comparadolar.ar",
-      "total_clicks": 263,
-      "days_active": 22
+      "total_clicks": 275,
+      "days_active": 23
     },
     {
       "provider": "Crédito Regional",
-      "total_clicks": 189,
-      "days_active": 21
+      "total_clicks": 195,
+      "days_active": 23
     }
   ],
-  "generated_at": "2026-02-19T22:18:48.022Z"
+  "generated_at": "2026-02-20T22:12:36.365Z"
 }
