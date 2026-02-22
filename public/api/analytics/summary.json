@@ -1,50 +1,50 @@
 {
-  "total_records": 2976,
-  "total_clicks": 15495,
+  "total_records": 3111,
+  "total_clicks": 16483,
   "unique_providers": 120,
-  "days_tracked": 24,
+  "days_tracked": 25,
   "first_date": "20260129",
-  "last_date": "20260221",
+  "last_date": "20260222",
   "by_event_type": [
     {
       "event_type": "click",
-      "total_clicks": 9386
+      "total_clicks": 10007
     },
     {
       "event_type": "provider_click",
-      "total_clicks": 5748
+      "total_clicks": 6045
     },
     {
       "event_type": "sponsor_click",
-      "total_clicks": 361
+      "total_clicks": 431
     }
   ],
   "top_providers": [
     {
       "provider": "Dub.link",
-      "total_clicks": 10626,
+      "total_clicks": 10631,
       "days_active": 22
     },
     {
       "provider": "Carrefour Banco",
-      "total_clicks": 988,
-      "days_active": 24
+      "total_clicks": 1060,
+      "days_active": 25
     },
     {
       "provider": "DolarApp",
-      "total_clicks": 727,
+      "total_clicks": 861,
       "days_active": 22
     },
     {
-      "provider": "comparadolar.ar",
-      "total_clicks": 292,
-      "days_active": 24
+      "provider": "IOL",
+      "total_clicks": 371,
+      "days_active": 5
     },
     {
-      "provider": "IOL",
-      "total_clicks": 263,
-      "days_active": 4
+      "provider": "comparadolar.ar",
+      "total_clicks": 309,
+      "days_active": 25
     }
   ],
-  "generated_at": "2026-02-21T22:01:52.037Z"
+  "generated_at": "2026-02-22T22:11:25.641Z"
 }
