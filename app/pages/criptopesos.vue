@@ -1,12 +1,19 @@
 <script setup lang="ts">
 useSeoMeta({
-  title: 'Criptopesos - comparatasas.ar',
+  title: 'Criptopesos',
   description:
-    'Compará las mejores tasas de criptopesos en Argentina. Encontrá rendimientos competitivos para tu dinero.',
+    'Compará las mejores tasas de stablecoins con paridad 1:1 con el peso argentino. Encontrá rendimientos competitivos para tu dinero.',
   ogTitle: 'Criptopesos - comparatasas.ar',
   ogDescription:
-    'Compará las mejores tasas de criptopesos en Argentina. Encontrá rendimientos competitivos para tu dinero.',
+    'Compará las mejores tasas de stablecoins con paridad 1:1 con el peso argentino. Encontrá rendimientos competitivos para tu dinero.',
 })
+
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+pageHeader.value = {
+  title: 'Tasas de Criptopesos',
+  description:
+    'Comparativa de rendimientos de stablecoins con paridad 1:1 con el peso argentino y estrategias crypto en moneda local.',
+}
 
 const { criptopesos, loading, error } = useCriptopesos()
 

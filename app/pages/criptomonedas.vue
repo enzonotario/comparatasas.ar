@@ -30,6 +30,13 @@ useSeoMeta({
     'Compará los mejores rendimientos de criptomonedas en Argentina. Encontrá las tasas más altas para Bitcoin, Ethereum, USDT y otras cryptos en exchanges locales.',
 })
 
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+pageHeader.value = {
+  title: 'Rendimientos Criptomonedas',
+  description:
+    'Compará las mejores tasas y rendimientos (APY) para Bitcoin, stablecoins y activos digitales en Argentina.',
+}
+
 const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCrypto()
 </script>
 

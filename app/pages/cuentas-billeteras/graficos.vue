@@ -14,6 +14,13 @@ useSeoMeta({
     'Explora gráficos interactivos que comparan las tasas de cuentas remuneradas, billeteras digitales y fondos comunes de inversión en Argentina. Visualiza TNA, topes y patrimonios para tomar decisiones informadas.',
 })
 
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+pageHeader.value = {
+  title: 'Análisis Visual y Gráficos',
+  description:
+    'Visualizá y compará tasas, topes y patrimonios de cuentas remuneradas, billeteras y fondos de inversión en Argentina.',
+}
+
 const { accounts, loading: loadingAccounts, specialAccounts, error: accountsError } = useAccounts()
 const {
   allFundsCache,
@@ -85,12 +92,6 @@ onMounted(() => {
 
 <template>
   <div class="space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
-        Análisis Visual de Cuentas Remuneradas, Billeteras y Fondos Comunes de Inversión
-      </h1>
-    </div>
-
     <UTabs
       :items="tabsItems"
       variant="link"

@@ -38,6 +38,8 @@ const isWideLayout = computed(() => {
 const isProviderHistoryPage = computed(() => {
   return route.path.startsWith('/cuentas-billeteras/') && route.params.provider
 })
+
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
 </script>
 
 <template>
@@ -86,12 +88,12 @@ const isProviderHistoryPage = computed(() => {
 
       <UMain class="flex flex-col space-y-6 pt-16">
         <UContainer v-if="!isProviderHistoryPage" class="space-y-6">
-          <div class="flex flex-col items-center text-center space-y-2">
+          <div v-if="pageHeader?.title" class="flex flex-col items-center text-center space-y-2">
             <h1 class="font-bold text-4xl sm:text-5xl text-neutral-900 dark:text-white">
-              ¡Encontra <span class="text-primary-600">las mejores inversiones</span> para vos!
+              {{ pageHeader.title }}
             </h1>
-            <p class="text-neutral-600 dark:text-neutral-400">
-              Compará tasas de plazos fijos, fondos comunes de inversión y rendimientos crypto.
+            <p v-if="pageHeader.description" class="text-neutral-600 dark:text-neutral-400">
+              {{ pageHeader.description }}
             </p>
           </div>
 

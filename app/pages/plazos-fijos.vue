@@ -8,6 +8,13 @@ useSeoMeta({
     'Compará las mejores tasas de plazos fijos en Argentina. Encontrá los bancos con mayor rendimiento para tus plazos fijos tradicionales y UVA actualizados diariamente.',
 })
 
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+pageHeader.value = {
+  title: 'Tasas de Plazos Fijos',
+  description:
+    'Comparativa actualizada de las tasas de plazos fijos tradicionales y UVA ofrecidas por los principales bancos y billeteras de Argentina.',
+}
+
 const { plazosFijosItems, loading, error } = usePlazosFijos()
 
 const { calculateResults, isSimulating } = useInvestmentSimulator()

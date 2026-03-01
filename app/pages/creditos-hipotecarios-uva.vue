@@ -12,6 +12,13 @@ useSeoMeta({
     'Compará las mejores tasas de créditos hipotecarios UVA en Argentina. Proyección de cuotas mensuales con inflación histórica y configurable.',
 })
 
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+pageHeader.value = {
+  title: 'Créditos Hipotecarios UVA',
+  description:
+    'Comparativa de tasas hipotecarias UVA en Argentina y proyección de cuotas mensuales.',
+}
+
 const {
   hipotecariosUVA,
   loading: loadingHipotecarios,

@@ -14,6 +14,13 @@ useSeoMeta({
     'Consultá y compará todos los fondos comunes de inversión (FCI) disponibles en Argentina. Información actualizada diariamente con datos de rendimiento, patrimonio y características.',
 })
 
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+pageHeader.value = {
+  title: 'Fondos Comunes de Inversión',
+  description:
+    'Consultá y compará todos los FCI disponibles en Argentina. Información actualizada diariamente con datos de rendimiento y patrimonio.',
+}
+
 interface FundRaw {
   fondo: string
   horizonte: string
@@ -731,11 +738,6 @@ const sorting = useRouteQuery(
 <template>
   <div class="space-y-3">
     <div>
-      <h1 class="text-2xl font-bold mb-2">Fondos Comunes de Inversión</h1>
-      <p class="text-muted">
-        Consultá y compará todos los FCI disponibles en Argentina. Información actualizada
-        diariamente con datos de rendimiento, patrimonio y características de cada fondo.
-      </p>
       <p class="text-xs text-muted mt-1">
         Fuente de datos:
         <NuxtLink

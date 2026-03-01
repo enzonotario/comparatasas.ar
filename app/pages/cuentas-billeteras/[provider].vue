@@ -62,6 +62,14 @@ useSeoMeta({
   ogTitle: `${displayName.value} - Historial de TNA y Tope - comparatasas.ar`,
   ogDescription: `Evolución histórica de TNA y Tope de ${displayName.value}.`,
 })
+
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+watchEffect(() => {
+  pageHeader.value = {
+    title: `Historial: ${displayName.value}`,
+    description: `Evolución histórica de TNA y Tope de ${displayName.value} en Argentina.`,
+  }
+})
 </script>
 
 <template>
@@ -88,25 +96,6 @@ useSeoMeta({
         <UIcon name="i-lucide-external-link" class="size-4" />
         <span>Ir a {{ displayName }}</span>
       </UButton>
-    </div>
-
-    <div class="flex items-center gap-4">
-      <img
-        v-if="logo"
-        :src="logo"
-        :alt="displayName"
-        referrerpolicy="no-referrer"
-        class="size-16 rounded-full object-cover"
-      />
-      <div v-else class="size-16 rounded-full bg-gray-200 dark:bg-gray-700" />
-      <div>
-        <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
-          {{ displayName }}
-        </h1>
-        <p class="text-sm text-neutral-600 dark:text-neutral-400">
-          Evolución histórica de TNA y Tope
-        </p>
-      </div>
     </div>
 
     <UAlert v-if="error" color="red" variant="soft" title="Error cargando historial" />

@@ -10,6 +10,13 @@ useSeoMeta({
     'Integrá tu servicio de tasas en ComparaTasas.ar. Listado gratuito para proveedores de tasas de interés.',
 })
 
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+pageHeader.value = {
+  title: 'Integrar tu servicio',
+  description:
+    'El listado en ComparaTasas.ar es gratuito. Integrá tu app o servicio de tasas proveyendo un endpoint con tus datos.',
+}
+
 const endpointTabs: TabsItem[] = [
   {
     label: 'Plazos Fijos',
@@ -43,14 +50,6 @@ const endpointTabs: TabsItem[] = [
     </div>
 
     <div class="space-y-8">
-      <div>
-        <h1 class="text-4xl font-bold mb-4">Integrar tu servicio</h1>
-        <p class="text-lg text-zinc-600 dark:text-zinc-400">
-          El listado en ComparaTasas.ar es gratuito. Para integrar tu app o servicio de tasas, solo
-          necesitás proveer un endpoint con las tasas de interés.
-        </p>
-      </div>
-
       <UCard>
         <template #header>
           <h2 class="text-2xl font-semibold">Requisitos</h2>

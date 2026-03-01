@@ -15,6 +15,13 @@ useSeoMeta({
     'Compará los mejores rendimientos en dólares estadounidenses. Encontrá fondos de renta fija, mercado de dinero y billeteras con rendimientos en USD.',
 })
 
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+pageHeader.value = {
+  title: 'Inversiones en USD',
+  description:
+    'Comparativa de las mejores opciones para invertir tus dólares en Argentina. Cuentas remuneradas, billeteras y fondos en USD.',
+}
+
 const { data, loading: fundsLoading, error: fundsError } = useFunds()
 const { fetchAll, loading: cryptoLoading, error: cryptoError } = useCrypto()
 

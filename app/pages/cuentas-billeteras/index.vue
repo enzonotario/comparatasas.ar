@@ -1,12 +1,39 @@
 <script setup lang="ts">
 useSeoMeta({
-  title: 'Cuentas Remuneradas y Billeteras - comparatasas.ar',
+  title: 'Cuentas Remuneradas y Billeteras',
   description:
     'Compará las mejores tasas de cuentas remuneradas y billeteras digitales en Argentina. Encontrá rendimientos competitivos para tu dinero con condiciones especiales.',
   ogTitle: 'Cuentas Remuneradas y Billeteras - comparatasas.ar',
   ogDescription:
     'Compará las mejores tasas de cuentas remuneradas y billeteras digitales en Argentina. Encontrá rendimientos competitivos para tu dinero con condiciones especiales.',
 })
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Cuentas Remuneradas y Billeteras - Compara Tasas',
+        description:
+          'Comparativa de las mejores tasas de cuentas remuneradas y billeteras digitales en Argentina.',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Compara Tasas',
+          url: 'https://comparatasas.ar',
+        },
+      }),
+    },
+  ],
+})
+
+const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+pageHeader.value = {
+  title: 'Cuentas Remuneradas y Billeteras Digitales',
+  description:
+    'Compará los rendimientos actualizados de las principales billeteras digitales y cuentas remuneradas de Argentina.',
+}
 
 const { allFundsCache, data, loading, error } = useFunds()
 const { accounts, loading: loadingAccounts, specialAccounts } = useAccounts()

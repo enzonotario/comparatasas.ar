@@ -10,7 +10,7 @@ export default defineNuxtConfig({
     'nuxt-module-hotjar',
     'nuxt-highcharts',
   ],
-  ssr: false,
+  ssr: true,
   devtools: { enabled: true },
 
   app: {
@@ -21,13 +21,13 @@ export default defineNuxtConfig({
       },
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
-      title: 'Compara Tasas - Encuentra las mejores inversiones en Argentina',
+      title: 'Compara Tasas - La mejor inversión para vos',
       titleTemplate: '%s | comparatasas.ar',
       meta: [
         {
           name: 'description',
           content:
-            'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encuentra la mejor inversión para tu dinero.',
+            'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encontrá la mejor inversión para vos.',
         },
         { name: 'application-name', content: 'Compara Tasas' },
         { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' },
@@ -39,17 +39,17 @@ export default defineNuxtConfig({
         { property: 'og:url', content: 'https://comparatasas.ar' },
         {
           property: 'og:title',
-          content: 'Compara Tasas - Encuentra las mejores inversiones en Argentina',
+          content: 'Compara Tasas - La mejor inversión para vos',
         },
         {
           property: 'og:description',
           content:
-            'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encuentra la mejor inversión para tu dinero.',
+            'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encontrá la mejor inversión para vos.',
         },
         { property: 'og:image', content: 'https://comparatasas.ar/meta-imagen.png' },
         {
           property: 'og:image:alt',
-          content: 'Compara Tasas - Encuentra las mejores inversiones en Argentina',
+          content: 'Compara Tasas - La mejor inversión para vos',
         },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
@@ -58,11 +58,12 @@ export default defineNuxtConfig({
         { name: 'twitter:image', content: 'https://comparatasas.ar/meta-imagen.png' },
         {
           name: 'twitter:image:alt',
-          content: 'Compara Tasas - Encuentra las mejores inversiones en Argentina',
+          content: 'Compara Tasas - La mejor inversión para vos',
         },
         { name: 'twitter:site', content: '@comparatasas' },
       ],
       link: [
+        { rel: 'canonical', href: 'https://comparatasas.ar' },
         { rel: 'icon', href: '/favicon.ico' },
         { rel: 'apple-touch-icon', href: '/icons/icon-192x192.png' },
         { rel: 'manifest', href: '/manifest.json' },
@@ -73,6 +74,19 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap',
+        },
+      ],
+      script: [
+        {
+          type: 'application/ld+json',
+          children: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'Compara Tasas',
+            url: 'https://comparatasas.ar',
+            logo: 'https://comparatasas.ar/icons/icon-512x512.png',
+            sameAs: ['https://x.com/comparatasas'],
+          }),
         },
       ],
     },
@@ -96,7 +110,18 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'cloudflare_pages',
     prerender: {
-      crawlLinks: false,
+      crawlLinks: true,
+      routes: [
+        '/',
+        '/cuentas-billeteras',
+        '/fondos',
+        '/plazos-fijos',
+        '/usd',
+        '/criptomonedas',
+        '/criptopesos',
+        '/creditos-hipotecarios-uva',
+        '/cuentas-billeteras/graficos',
+      ],
     },
     minify: true,
   },
