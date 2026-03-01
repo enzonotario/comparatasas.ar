@@ -87,7 +87,7 @@ const usdAccountsForFundsList = computed(() => {
 
       return {
         institution: getInstitutionShortName(account.entidad),
-        logo: logo || 'https://api.argentinadatos.com/static/comparatasas/logos/default.png',
+        logo: logo || 'https://api.argentinadatos.com/static/logos/default.png',
         url: url || '#',
         tna: account.tasa, // Ya viene en decimal
         tope: account.tope,
@@ -108,7 +108,7 @@ const usdYieldsForFundsList = computed(() => {
 
         return {
           institution: getInstitutionShortName(entity.entidad),
-          logo: logo || 'https://api.argentinadatos.com/static/comparatasas/logos/default.png',
+          logo: logo || 'https://api.argentinadatos.com/static/logos/default.png',
           url: url || '#',
           tna: rendimiento.apy / 100, // FundsList multiplica por 100 en mode='detailed'
           tope: null,
