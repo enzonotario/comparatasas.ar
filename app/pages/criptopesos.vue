@@ -76,7 +76,8 @@ const criptopesosWithSimulation = calculateResults(criptopesos)
           </h3>
           <p>
             Los <strong>criptopesos</strong> son stablecoins (monedas estables) que mantienen una
-            paridad 1:1 con el peso argentino. Ejemplos comunes en el mercado son ARGt (de Belo) y wARS (de Ripio).
+            paridad 1:1 con el peso argentino. Ejemplos comunes en el mercado son ARGt (de Belo) y
+            wARS (de Ripio).
           </p>
           <p>
             Estas monedas permiten operar en el ecosistema crypto utilizando una unidad de cuenta

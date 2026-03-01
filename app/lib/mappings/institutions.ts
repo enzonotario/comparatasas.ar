@@ -454,6 +454,12 @@ export const institutions: Array<{
     shortName: 'Vesseo',
     url: 'https://vesseoapp.com/?ref=comparatasas.ar',
   },
+  {
+    names: ['capyfi', 'CapyFi', 'CAPYFI'],
+    logo: 'https://api.argentinadatos.com/static/logos/capyfi.png',
+    shortName: 'CapyFi',
+    url: 'https://capyfi.com/?ref=comparatasas',
+  },
 ]
 
 export function getInstitutionLogo(name: string): string | undefined {

@@ -28,6 +28,7 @@ const slugToApiName: Record<string, string> = {
   cresium: 'CRESIUM',
   supervielle: 'SUPERVIELLE',
   bna: 'BNA',
+  capyfi: 'CAPYFI',
 }
 
 const providerApiName = computed(() => {
