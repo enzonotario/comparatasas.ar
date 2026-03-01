@@ -6,12 +6,36 @@ import FundsPatrimonioBarChart from '~/components/charts/FundsPatrimonioBarChart
 import FundsTNAPatrimonioScatterChart from '~/components/charts/FundsTNAPatrimonioScatterChart.vue'
 
 useSeoMeta({
-  title: 'Análisis Visual de Cuentas Remuneradas, Billeteras y FCI - comparatasas.ar',
+  title: 'Análisis Visual de Tasas',
   description:
-    'Explora gráficos interactivos que comparan las tasas de cuentas remuneradas, billeteras digitales y fondos comunes de inversión en Argentina. Visualiza TNA, topes y patrimonios para tomar decisiones informadas.',
-  ogTitle: 'Análisis Visual de Cuentas Remuneradas, Billeteras y FCI - comparatasas.ar',
+    'Gráficos interactivos de tasas de cuentas remuneradas, billeteras y FCI en Argentina. Visualizá TNA y topes fácilmente.',
+  ogTitle: 'Análisis Visual de Cuentas y FCI - Compara Tasas',
   ogDescription:
-    'Explora gráficos interactivos que comparan las tasas de cuentas remuneradas, billeteras digitales y fondos comunes de inversión en Argentina. Visualiza TNA, topes y patrimonios para tomar decisiones informadas.',
+    'Gráficos interactivos de tasas de cuentas remuneradas, billeteras y FCI en Argentina. Visualizá TNA y topes fácilmente.',
+})
+
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://comparatasas.ar/cuentas-billeteras/graficos' },
+    { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar/cuentas-billeteras/graficos' },
+    { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar/cuentas-billeteras/graficos' },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Análisis Visual - Compara Tasas',
+        description: 'Gráficos comparativos de tasas de interés en Argentina.',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Compara Tasas',
+          url: 'https://comparatasas.ar',
+        },
+      }),
+    },
+  ],
 })
 
 const pageHeader = useState<{ title?: string; description?: string }>('page-header')

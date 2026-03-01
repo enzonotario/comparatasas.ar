@@ -63,7 +63,6 @@ export default defineNuxtConfig({
         { name: 'twitter:site', content: '@comparatasas' },
       ],
       link: [
-        { rel: 'canonical', href: 'https://comparatasas.ar' },
         { rel: 'icon', href: '/favicon.ico' },
         { rel: 'apple-touch-icon', href: '/icons/icon-192x192.png' },
         { rel: 'manifest', href: '/manifest.json' },

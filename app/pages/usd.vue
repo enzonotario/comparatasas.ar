@@ -7,12 +7,36 @@ import {
 } from '~/lib/mappings/institutions'
 
 useSeoMeta({
-  title: 'Inversiones en USD - Mejores Tasas Argentina',
+  title: 'Inversiones en USD',
   description:
-    'Compará los mejores rendimientos en dólares estadounidenses. Encontrá fondos de renta fija, mercado de dinero y billeteras con rendimientos en USD.',
+    'Compará mejores rendimientos en dólares en Argentina. Encontrá fondos de renta fija, mercado de dinero y billeteras con rendimientos en USD.',
   ogTitle: 'Inversiones en USD - Mejores Tasas Argentina',
   ogDescription:
-    'Compará los mejores rendimientos en dólares estadounidenses. Encontrá fondos de renta fija, mercado de dinero y billeteras con rendimientos en USD.',
+    'Compará mejores rendimientos en dólares en Argentina. Encontrá fondos de renta fija, mercado de dinero y billeteras con rendimientos en USD.',
+})
+
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://comparatasas.ar/usd' },
+    { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar/usd' },
+    { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar/usd' },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Inversiones en USD - Compara Tasas',
+        description: 'Comparativa de inversiones en dólares en Argentina.',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Compara Tasas',
+          url: 'https://comparatasas.ar',
+        },
+      }),
+    },
+  ],
 })
 
 const pageHeader = useState<{ title?: string; description?: string }>('page-header')

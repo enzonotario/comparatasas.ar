@@ -1,11 +1,35 @@
 <script setup lang="ts">
 useSeoMeta({
-  title: 'Plazos Fijos - Mejores Tasas Argentina',
+  title: 'Plazos Fijos',
   description:
-    'Compará las mejores tasas de plazos fijos en Argentina. Encontrá los bancos con mayor rendimiento para tus plazos fijos tradicionales y UVA actualizados diariamente.',
+    'Compará las mejores tasas de plazos fijos en Argentina. Encontrá bancos con mayor rendimiento para plazos fijos tradicionales y UVA actualizados diariamente.',
   ogTitle: 'Plazos Fijos - Mejores Tasas Argentina',
   ogDescription:
-    'Compará las mejores tasas de plazos fijos en Argentina. Encontrá los bancos con mayor rendimiento para tus plazos fijos tradicionales y UVA actualizados diariamente.',
+    'Compará las mejores tasas de plazos fijos en Argentina. Encontrá bancos con mayor rendimiento para plazos fijos tradicionales y UVA actualizados diariamente.',
+})
+
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://comparatasas.ar/plazos-fijos' },
+    { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar/plazos-fijos' },
+    { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar/plazos-fijos' },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Plazos Fijos - Compara Tasas',
+        description: 'Comparativa de tasas de plazos fijos tradicionales y UVA en Argentina.',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Compara Tasas',
+          url: 'https://comparatasas.ar',
+        },
+      }),
+    },
+  ],
 })
 
 const pageHeader = useState<{ title?: string; description?: string }>('page-header')

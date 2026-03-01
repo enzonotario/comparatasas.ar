@@ -6,12 +6,36 @@ import type { TableColumn } from '@nuxt/ui'
 const UButton = resolveComponent('UButton')
 
 useSeoMeta({
-  title: 'Fondos Comunes de Inversión - Compara Tasas',
+  title: 'Fondos Comunes de Inversión',
   description:
-    'Consultá y compará todos los fondos comunes de inversión (FCI) disponibles en Argentina. Información actualizada diariamente con datos de rendimiento, patrimonio y características.',
+    'Consultá y compará todos los fondos comunes de inversión (FCI) en Argentina. Información actualizada con datos de rendimiento y patrimonio.',
   ogTitle: 'Fondos Comunes de Inversión - Compara Tasas',
   ogDescription:
-    'Consultá y compará todos los fondos comunes de inversión (FCI) disponibles en Argentina. Información actualizada diariamente con datos de rendimiento, patrimonio y características.',
+    'Consultá y compará todos los fondos comunes de inversión (FCI) en Argentina. Información actualizada con datos de rendimiento y patrimonio.',
+})
+
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://comparatasas.ar/fondos' },
+    { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar/fondos' },
+    { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar/fondos' },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Fondos Comunes de Inversión - Compara Tasas',
+        description: 'Comparativa de fondos comunes de inversión (FCI) en Argentina.',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Compara Tasas',
+          url: 'https://comparatasas.ar',
+        },
+      }),
+    },
+  ],
 })
 
 const pageHeader = useState<{ title?: string; description?: string }>('page-header')

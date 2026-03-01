@@ -1,14 +1,21 @@
 <script setup lang="ts">
+const route = useRoute()
+
 useSeoMeta({
-  title: 'Cuentas Remuneradas y Billeteras',
+  title: 'Compara Tasas - Cuentas Remuneradas y Billeteras',
   description:
-    'Compará las mejores tasas de cuentas remuneradas y billeteras digitales en Argentina. Encontrá rendimientos competitivos para tu dinero con condiciones especiales.',
-  ogTitle: 'Cuentas Remuneradas y Billeteras - comparatasas.ar',
+    'Compará las mejores tasas de cuentas remuneradas y billeteras digitales de Argentina. Encontrá la mejor inversión para vos con rendimientos actualizados.',
+  ogTitle: 'Compara Tasas - Cuentas Remuneradas y Billeteras',
   ogDescription:
-    'Compará las mejores tasas de cuentas remuneradas y billeteras digitales en Argentina. Encontrá rendimientos competitivos para tu dinero con condiciones especiales.',
+    'Compará las mejores tasas de cuentas remuneradas y billeteras digitales de Argentina. Encontrá la mejor inversión para vos con rendimientos actualizados.',
 })
 
 useHead({
+  link: [
+    { rel: 'canonical', href: 'https://comparatasas.ar' },
+    { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar' },
+    { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar' },
+  ],
   script: [
     {
       type: 'application/ld+json',

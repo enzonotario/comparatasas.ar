@@ -22,12 +22,36 @@ function handleExchangeClick(entidad: string, crypto?: string) {
 }
 
 useSeoMeta({
-  title: 'Rendimientos Criptomonedas - Mejores Tasas Crypto Argentina',
+  title: 'Rendimientos Criptomonedas',
   description:
-    'Compará los mejores rendimientos de criptomonedas en Argentina. Encontrá las tasas más altas para Bitcoin, Ethereum, USDT y otras cryptos en exchanges locales.',
-  ogTitle: 'Rendimientos Criptomonedas - Mejores Tasas Crypto Argentina',
+    'Compará mejores rendimientos de criptomonedas en Argentina. Encontrá tasas para Bitcoin, Ethereum, USDT y cryptos en exchanges.',
+  ogTitle: 'Rendimientos Criptomonedas - Mejores Tasas Crypto',
   ogDescription:
-    'Compará los mejores rendimientos de criptomonedas en Argentina. Encontrá las tasas más altas para Bitcoin, Ethereum, USDT y otras cryptos en exchanges locales.',
+    'Compará mejores rendimientos de criptomonedas en Argentina. Encontrá tasas para Bitcoin, Ethereum, USDT y cryptos en exchanges.',
+})
+
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://comparatasas.ar/criptomonedas' },
+    { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar/criptomonedas' },
+    { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar/criptomonedas' },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Rendimientos Criptomonedas - Compara Tasas',
+        description: 'Comparativa de rendimientos de criptomonedas en Argentina.',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Compara Tasas',
+          url: 'https://comparatasas.ar',
+        },
+      }),
+    },
+  ],
 })
 
 const pageHeader = useState<{ title?: string; description?: string }>('page-header')
