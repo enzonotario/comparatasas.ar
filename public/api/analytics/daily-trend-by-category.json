@@ -1,22 +1,41 @@
 [
   {
+    "date": "20260301",
+    "categories": {
+      "Money Market": 34,
+      "Plazo Fijo": 33,
+      "Cuenta Remunerada": 16,
+      "Página Amiga": 5,
+      "Otro": 21,
+      "Billetera": 20,
+      "Criptomonedas": 9,
+      "ARGt": 2,
+      "Billetera USD": 8,
+      "Cuenta Remunerada USD": 1,
+      "Renta Fija": 22,
+      "Renta Mixta": 4,
+      "General": 11
+    },
+    "total": 186
+  },
+  {
     "date": "20260228",
     "categories": {
-      "Money Market": 39,
-      "Plazo Fijo": 26,
-      "Cuenta Remunerada": 24,
-      "Otro": 13,
-      "Página Amiga": 6,
-      "Billetera": 15,
-      "ARGt": 1,
-      "Billetera USD": 4,
-      "Cuenta Remunerada USD": 1,
-      "Renta Fija": 27,
-      "Renta Mixta": 1,
-      "General": 17,
-      "Criptomonedas": 7
+      "Money Market": 106,
+      "Plazo Fijo": 85,
+      "Cuenta Remunerada": 68,
+      "Otro": 46,
+      "Página Amiga": 14,
+      "Billetera": 65,
+      "ARGt": 5,
+      "Billetera USD": 11,
+      "Cuenta Remunerada USD": 3,
+      "Renta Fija": 41,
+      "Renta Mixta": 3,
+      "General": 28,
+      "Criptomonedas": 17
     },
-    "total": 181
+    "total": 492
   },
   {
     "date": "20260227",
@@ -58,32 +77,14 @@
   {
     "date": "20260225",
     "categories": {
-      "Página Amiga": 37,
-      "Money Market": 108,
-      "Plazo Fijo": 139,
-      "Cuenta Remunerada": 91,
-      "Billetera": 111,
-      "Otro": 37,
-      "Criptomonedas": 11,
-      "ARGt": 5,
-      "Billetera USD": 11,
-      "Cuenta Remunerada USD": 7,
-      "Renta Fija": 42,
-      "Renta Mixta": 3,
-      "General": 33
+      "Página Amiga": 28,
+      "Money Market": 31,
+      "Plazo Fijo": 63,
+      "Cuenta Remunerada": 52,
+      "Billetera": 93,
+      "Otro": 16,
+      "Criptomonedas": 1
     },
-    "total": 635
-  },
-  {
-    "date": "20260224",
-    "categories": {
-      "Página Amiga": 10,
-      "Money Market": 19,
-      "Plazo Fijo": 35,
-      "Cuenta Remunerada": 40,
-      "Otro": 26,
-      "Billetera": 44
-    },
-    "total": 174
+    "total": 284
   }
 ]
