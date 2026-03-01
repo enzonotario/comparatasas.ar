@@ -62,18 +62,19 @@ useSeoMeta({
   ogTitle: `${displayName.value} - Historial de TNA y Tope - comparatasas.ar`,
   ogDescription: `Evolución histórica de TNA y Tope de ${displayName.value}.`,
 })
-
-const pageHeader = useState<{ title?: string; description?: string }>('page-header')
-watchEffect(() => {
-  pageHeader.value = {
-    title: `Historial: ${displayName.value}`,
-    description: `Evolución histórica de TNA y Tope de ${displayName.value} en Argentina.`,
-  }
-})
 </script>
 
 <template>
   <div class="space-y-6">
+    <div class="flex flex-col items-center text-center space-y-2 mb-6">
+      <h1 class="font-bold text-4xl sm:text-5xl text-neutral-900 dark:text-white">
+        Historial: {{ displayName }}
+      </h1>
+      <p class="text-neutral-600 dark:text-neutral-400">
+        Evolución histórica de TNA y Tope de {{ displayName }} en Argentina.
+      </p>
+    </div>
+
     <div class="flex items-center justify-between gap-4 mb-4">
       <NuxtLink
         to="/cuentas-billeteras"

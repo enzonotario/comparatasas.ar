@@ -3,6 +3,12 @@ import { ref, watch, computed } from 'vue'
 
 import type { InflacionREMData } from '~/composables/useInflacionREM'
 
+definePageMeta({
+  pageTitle: 'Créditos Hipotecarios UVA',
+  pageDescription:
+    'Comparativa de tasas hipotecarias UVA en Argentina y proyección de cuotas mensuales.',
+})
+
 useSeoMeta({
   title: 'Créditos Hipotecarios UVA',
   description:
@@ -15,8 +21,16 @@ useSeoMeta({
 useHead({
   link: [
     { rel: 'canonical', href: 'https://comparatasas.ar/creditos-hipotecarios-uva' },
-    { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar/creditos-hipotecarios-uva' },
-    { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar/creditos-hipotecarios-uva' },
+    {
+      rel: 'alternate',
+      hreflang: 'es-AR',
+      href: 'https://comparatasas.ar/creditos-hipotecarios-uva',
+    },
+    {
+      rel: 'alternate',
+      hreflang: 'x-default',
+      href: 'https://comparatasas.ar/creditos-hipotecarios-uva',
+    },
   ],
   script: [
     {
@@ -35,13 +49,6 @@ useHead({
     },
   ],
 })
-
-const pageHeader = useState<{ title?: string; description?: string }>('page-header')
-pageHeader.value = {
-  title: 'Créditos Hipotecarios UVA',
-  description:
-    'Comparativa de tasas hipotecarias UVA en Argentina y proyección de cuotas mensuales.',
-}
 
 const {
   hipotecariosUVA,
@@ -100,7 +107,7 @@ const inflacionOrdenada = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div class="space-y-6">
     <UAlert
       v-if="errorHipotecarios || errorInflacion || errorInflacionREM || errorUVA || errorTipoCambio"
       color="error"
@@ -161,5 +168,52 @@ const inflacionOrdenada = computed(() => {
       </h3>
       <p class="text-muted">No hay datos disponibles en este momento.</p>
     </div>
+
+    <section
+      class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"
+    >
+      <div class="flex flex-col gap-6 max-w-4xl mx-auto">
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            ¿Qué son los Créditos Hipotecarios UVA?
+          </h3>
+          <p>
+            Los <strong>Créditos Hipotecarios UVA</strong> son préstamos para la vivienda cuyas
+            cuotas se ajustan según la <strong>Unidad de Valor Adquisitivo (UVA)</strong>, la cual
+            varía diariamente en función del índice de inflación (CER).
+          </p>
+          <p>
+            A diferencia de los créditos de tasa fija, los préstamos UVA suelen tener una tasa de
+            interés nominal mucho más baja, ya que el capital se indexa por inflación. Esto permite
+            que la cuota inicial sea más accesible para muchas familias, aunque el saldo adeudado
+            también se ajusta con el tiempo.
+          </p>
+        </div>
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            Ventajas y Consideraciones
+          </h3>
+          <ul class="list-disc list-inside space-y-2">
+            <li>
+              <strong>Accesibilidad inicial:</strong> Las cuotas de entrada suelen ser más bajas que
+              en un crédito tradicional.
+            </li>
+            <li>
+              <strong>Relación cuota-ingreso:</strong> En general, la cuota se mantiene estable en
+              relación con los salarios si estos acompañan a la inflación.
+            </li>
+            <li>
+              <strong>Riesgo inflacionario:</strong> El capital adeudado crece nominalmente si la
+              inflación es alta.
+            </li>
+            <li>
+              <strong>Comparación de tasas:</strong> Cada banco ofrece una tasa adicional sobre la
+              UVA (ej: UVA + 3.5% o UVA + 5%). Comparar estas tasas es clave para ahorrar a largo
+              plazo.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </div>
 </template>

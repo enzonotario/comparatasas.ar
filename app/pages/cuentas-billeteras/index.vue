@@ -1,11 +1,17 @@
 <script setup lang="ts">
+definePageMeta({
+  pageTitle: 'Cuentas Remuneradas y Billeteras Digitales',
+  pageDescription:
+    'Compará los rendimientos actualizados de las principales billeteras digitales y cuentas remuneradas de Argentina.',
+})
+
 const route = useRoute()
 
 useSeoMeta({
-  title: 'Compara Tasas - Cuentas Remuneradas y Billeteras',
+  title: 'Cuentas Remuneradas y Billeteras',
   description:
     'Compará las mejores tasas de cuentas remuneradas y billeteras digitales de Argentina. Encontrá la mejor inversión para vos con rendimientos actualizados.',
-  ogTitle: 'Compara Tasas - Cuentas Remuneradas y Billeteras',
+  ogTitle: 'Cuentas Remuneradas y Billeteras - Compara Tasas',
   ogDescription:
     'Compará las mejores tasas de cuentas remuneradas y billeteras digitales de Argentina. Encontrá la mejor inversión para vos con rendimientos actualizados.',
 })
@@ -34,13 +40,6 @@ useHead({
     },
   ],
 })
-
-const pageHeader = useState<{ title?: string; description?: string }>('page-header')
-pageHeader.value = {
-  title: 'Cuentas Remuneradas y Billeteras Digitales',
-  description:
-    'Compará los rendimientos actualizados de las principales billeteras digitales y cuentas remuneradas de Argentina.',
-}
 
 const { allFundsCache, data, loading, error } = useFunds()
 const { accounts, loading: loadingAccounts, specialAccounts } = useAccounts()
@@ -109,169 +108,200 @@ const fundsByRiskWithSimulation = computed(() => {
     <InvestmentSimulator />
 
     <div class="space-y-6">
-      <div>
-        <div class="mb-2">
-          <div class="group relative">
-            <NuxtLink
-              to="#rendimiento-garantizado"
-              class="-ml-4.5 flex items-center gap-2 no-underline"
-            >
-              <span
-                class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
+      <div class="space-y-6">
+        <div>
+          <div class="mb-2">
+            <div class="group relative">
+              <NuxtLink
+                to="#rendimiento-garantizado"
+                class="-ml-4.5 flex items-center gap-2 no-underline"
               >
-                #
-              </span>
-              <h2 id="rendimiento-garantizado" class="text-lg font-medium scroll-mt-22">
-                Rendimiento garantizado
-              </h2>
-            </NuxtLink>
-          </div>
-          <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-            Cuentas remuneradas y billeteras con tasa fija garantizada
-          </p>
-        </div>
-
-        <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
-
-        <FundsLoading v-if="loadingAccounts && !accounts.length" />
-
-        <FundsList
-          v-else
-          :items="accountsWithSimulation"
-          key-prop="fondo"
-          mode="detailed"
-          :show-simulation="isSimulating"
-          :show-history-link="true"
-        />
-      </div>
-
-      <div>
-        <div class="mb-2">
-          <div class="group relative">
-            <NuxtLink
-              to="#condiciones-especiales"
-              class="-ml-4.5 flex items-center gap-2 no-underline"
-            >
-              <span
-                class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
-              >
-                #
-              </span>
-              <h2 id="condiciones-especiales" class="text-lg font-medium scroll-mt-22">
-                Con condiciones especiales
-              </h2>
-            </NuxtLink>
-          </div>
-          <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-            Productos con requisitos o condiciones particulares para acceder
-          </p>
-        </div>
-
-        <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
-
-        <FundsLoading v-if="loadingAccounts && !accounts.length" />
-
-        <FundsList
-          v-else
-          :items="specialAccountsWithSimulation"
-          key-prop="fondo"
-          mode="detailed"
-          :show-simulation="isSimulating"
-          :show-history-link="true"
-        />
-      </div>
-
-      <div>
-        <div class="mb-2">
-          <div class="group relative">
-            <NuxtLink
-              to="#rendimiento-variable"
-              class="-ml-4.5 flex items-center gap-2 no-underline"
-            >
-              <span
-                class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
-              >
-                #
-              </span>
-              <h2 id="rendimiento-variable" class="text-lg font-medium scroll-mt-22">
-                Rendimiento variable
-              </h2>
-            </NuxtLink>
-          </div>
-          <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-            Fondos comunes de inversión con rendimiento que puede variar según el mercado
-          </p>
-        </div>
-
-        <UAlert v-if="error" color="red" variant="soft" title="Error cargando fondos" />
-
-        <div class="space-y-6">
-          <div v-for="(funds, riskKey) in fundsByRiskWithSimulation" :key="riskKey">
-            <div v-if="funds.length > 0" class="space-y-3">
-              <h3 class="text-base font-medium text-neutral-700 dark:text-neutral-300">
-                {{ riskKey }}
-              </h3>
-              <FundsList
-                :items="funds"
-                key-prop="fondo"
-                mode="detailed"
-                :show-simulation="isSimulating"
-              />
+                <span
+                  class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
+                >
+                  #
+                </span>
+                <h2 id="rendimiento-garantizado" class="text-lg font-medium scroll-mt-22">
+                  Rendimiento garantizado
+                </h2>
+              </NuxtLink>
             </div>
+            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+              Cuentas remuneradas y billeteras con tasa fija garantizada
+            </p>
           </div>
 
-          <LinkCard
-            title="Análisis completo de FCI"
-            description="Consultá y compará todos los fondos disponibles con datos detallados de rendimiento, patrimonio y características"
-            to="/fondos"
-            icon="i-lucide-bar-chart-3"
-            link-text="Explorar todos los FCI"
-          />
+          <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
 
-          <LinkCard
-            title="Análisis visual de cuentas y billeteras"
-            description="Visualizaciones interactivas para comparar tasas, topes y características de las cuentas remuneradas y billeteras digitales"
-            to="/cuentas-billeteras/graficos"
-            icon="i-lucide-line-chart"
-            link-text="Ver gráficos y análisis"
-          />
+          <FundsLoading v-if="loadingAccounts && !accounts.length" />
 
-          <UCard class="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
-            <template #header>
-              <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-info" class="size-5 text-blue-600 dark:text-blue-400" />
-                <h3 class="text-base font-semibold text-blue-900 dark:text-blue-100">
-                  ¿Por qué pueden diferir los rendimientos a los mostrados en cada App?
+          <FundsList
+            v-else
+            :items="accountsWithSimulation"
+            key-prop="fondo"
+            mode="detailed"
+            :show-simulation="isSimulating"
+            :show-history-link="true"
+          />
+        </div>
+
+        <div>
+          <div class="mb-2">
+            <div class="group relative">
+              <NuxtLink
+                to="#condiciones-especiales"
+                class="-ml-4.5 flex items-center gap-2 no-underline"
+              >
+                <span
+                  class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
+                >
+                  #
+                </span>
+                <h2 id="condiciones-especiales" class="text-lg font-medium scroll-mt-22">
+                  Con condiciones especiales
+                </h2>
+              </NuxtLink>
+            </div>
+            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+              Productos con requisitos o condiciones particulares para acceder
+            </p>
+          </div>
+
+          <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
+
+          <FundsLoading v-if="loadingAccounts && !accounts.length" />
+
+          <FundsList
+            v-else
+            :items="specialAccountsWithSimulation"
+            key-prop="fondo"
+            mode="detailed"
+            :show-simulation="isSimulating"
+            :show-history-link="true"
+          />
+        </div>
+
+        <div>
+          <div class="mb-2">
+            <div class="group relative">
+              <NuxtLink
+                to="#rendimiento-variable"
+                class="-ml-4.5 flex items-center gap-2 no-underline"
+              >
+                <span
+                  class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
+                >
+                  #
+                </span>
+                <h2 id="rendimiento-variable" class="text-lg font-medium scroll-mt-22">
+                  Rendimiento variable
+                </h2>
+              </NuxtLink>
+            </div>
+            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+              Fondos comunes de inversión con rendimiento que puede variar según el mercado
+            </p>
+          </div>
+
+          <UAlert v-if="error" color="red" variant="soft" title="Error cargando fondos" />
+
+          <div class="space-y-6">
+            <div v-for="(funds, riskKey) in fundsByRiskWithSimulation" :key="riskKey">
+              <div v-if="funds.length > 0" class="space-y-3">
+                <h3 class="text-base font-medium text-neutral-700 dark:text-neutral-300">
+                  {{ riskKey }}
                 </h3>
+                <FundsList
+                  :items="funds"
+                  key-prop="fondo"
+                  mode="detailed"
+                  :show-simulation="isSimulating"
+                />
               </div>
-            </template>
-
-            <div class="space-y-3 text-sm text-blue-800 dark:text-blue-200">
-              <p>
-                Los rendimientos mostrados en comparatasas.ar se calculan comparando los últimos dos
-                valores cuotaparte reportados por la Cámara Argentina de Fondos Comunes de Inversión
-                (CAFCI), y luego se anualiza el rendimiento diario entre ambas fechas.
-              </p>
-              <p>
-                Las diferencias con otras aplicaciones (como Mercado Pago, Personal Pay, etc.)
-                pueden deberse a:
-              </p>
-              <ul class="list-disc list-inside space-y-1 ml-2">
-                <li>Muestran rendimientos estimados/esperados</li>
-                <li>Diferentes períodos de cálculo (últimos 7 días, 30 días, etc.)</li>
-                <li>Distintas fechas de referencia para los valores cuotaparte</li>
-                <li>Valores cuotaparte distintos a los reportados en CAFCI</li>
-              </ul>
-              <p class="text-xs text-blue-700 dark:text-blue-300 italic">
-                Siempre verificá los rendimientos actuales directamente con cada plataforma antes de
-                invertir.
-              </p>
             </div>
-          </UCard>
 
-          <FundsLoading v-if="loading || loadingAccounts" />
+            <LinkCard
+              title="Análisis completo de FCI"
+              description="Consultá y compará todos los fondos disponibles con datos detallados de rendimiento, patrimonio y características"
+              to="/fondos"
+              icon="i-lucide-bar-chart-3"
+              link-text="Explorar todos los FCI"
+            />
+
+            <LinkCard
+              title="Análisis visual de cuentas y billeteras"
+              description="Visualizaciones interactivas para comparar tasas, topes y características de las cuentas remuneradas y billeteras digitales"
+              to="/cuentas-billeteras/graficos"
+              icon="i-lucide-line-chart"
+              link-text="Ver gráficos y análisis"
+            />
+
+            <FundsLoading v-if="loading || loadingAccounts" />
+          </div>
         </div>
       </div>
+
+      <section
+        class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"
+      >
+        <div class="flex flex-col gap-6 max-w-4xl mx-auto">
+          <div class="space-y-4 text-sm leading-relaxed">
+            <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+              ¿Qué son las Cuentas Remuneradas y Billeteras Digitales?
+            </h3>
+            <p>
+              Las <strong>cuentas remuneradas</strong> son cuentas bancarias o de billeteras
+              virtuales que te ofrecen un rendimiento (interés) por el dinero que mantenés
+              depositado. A diferencia de un plazo fijo, el dinero suele estar disponible en todo
+              momento, lo que se conoce como <strong>liquidez inmediata</strong>.
+            </p>
+            <p>
+              En Argentina, las billeteras digitales han ganado una enorme popularidad como una
+              forma de proteger el poder adquisitivo de los ahorros diarios frente a la inflación.
+              Muchas de ellas invierten tu dinero en
+              <strong>Fondos Comunes de Inversión (FCI)</strong> de mercado de dinero, generando
+              rendimientos diarios que se acreditan en tu cuenta.
+            </p>
+          </div>
+        </div>
+        <p class="text-sm text-neutral-600 dark:text-neutral-400 italic">
+          Nota: Los rendimientos pasados no garantizan rendimientos futuros. Siempre verificá las
+          condiciones en la aplicación oficial antes de tomar una decisión de inversión.
+        </p>
+
+        <UCard class="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-info" class="size-5 text-blue-600 dark:text-blue-400" />
+              <h3 class="text-base font-semibold text-blue-900 dark:text-blue-100">
+                ¿Por qué pueden diferir los rendimientos a los mostrados en cada App?
+              </h3>
+            </div>
+          </template>
+
+          <div class="space-y-3 text-sm text-blue-800 dark:text-blue-200">
+            <p>
+              Los rendimientos mostrados en comparatasas.ar se calculan comparando los últimos dos
+              valores cuotaparte reportados por la Cámara Argentina de Fondos Comunes de Inversión
+              (CAFCI), y luego se anualiza el rendimiento diario entre ambas fechas.
+            </p>
+            <p>
+              Las diferencias con otras aplicaciones (como Mercado Pago, Personal Pay, etc.) pueden
+              deberse a:
+            </p>
+            <ul class="list-disc list-inside space-y-1 ml-2">
+              <li>Muestran rendimientos estimados/esperados</li>
+              <li>Diferentes períodos de cálculo (últimos 7 días, 30 días, etc.)</li>
+              <li>Distintas fechas de referencia para los valores cuotaparte</li>
+              <li>Valores cuotaparte distintos a los reportados en CAFCI</li>
+            </ul>
+            <p class="text-xs text-blue-700 dark:text-blue-300 italic">
+              Siempre verificá los rendimientos actuales directamente con cada plataforma antes de
+              invertir.
+            </p>
+          </div>
+        </UCard>
+      </section>
     </div>
   </div>
 </template>

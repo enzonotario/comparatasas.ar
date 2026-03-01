@@ -5,6 +5,12 @@ import FundsTNABarChart from '~/components/charts/FundsTNABarChart.vue'
 import FundsPatrimonioBarChart from '~/components/charts/FundsPatrimonioBarChart.vue'
 import FundsTNAPatrimonioScatterChart from '~/components/charts/FundsTNAPatrimonioScatterChart.vue'
 
+definePageMeta({
+  pageTitle: 'Análisis Visual y Gráficos',
+  pageDescription:
+    'Visualizá y compará tasas, topes y patrimonios de cuentas remuneradas, billeteras y fondos de inversión en Argentina.',
+})
+
 useSeoMeta({
   title: 'Análisis Visual de Tasas',
   description:
@@ -17,8 +23,16 @@ useSeoMeta({
 useHead({
   link: [
     { rel: 'canonical', href: 'https://comparatasas.ar/cuentas-billeteras/graficos' },
-    { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar/cuentas-billeteras/graficos' },
-    { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar/cuentas-billeteras/graficos' },
+    {
+      rel: 'alternate',
+      hreflang: 'es-AR',
+      href: 'https://comparatasas.ar/cuentas-billeteras/graficos',
+    },
+    {
+      rel: 'alternate',
+      hreflang: 'x-default',
+      href: 'https://comparatasas.ar/cuentas-billeteras/graficos',
+    },
   ],
   script: [
     {
@@ -37,13 +51,6 @@ useHead({
     },
   ],
 })
-
-const pageHeader = useState<{ title?: string; description?: string }>('page-header')
-pageHeader.value = {
-  title: 'Análisis Visual y Gráficos',
-  description:
-    'Visualizá y compará tasas, topes y patrimonios de cuentas remuneradas, billeteras y fondos de inversión en Argentina.',
-}
 
 const { accounts, loading: loadingAccounts, specialAccounts, error: accountsError } = useAccounts()
 const {
@@ -225,5 +232,50 @@ onMounted(() => {
         </div>
       </template>
     </UTabs>
+
+    <section
+      class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"
+    >
+      <div class="flex flex-col gap-6 max-w-4xl mx-auto">
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            Análisis de Datos de Tasas
+          </h3>
+          <p>
+            El <strong>análisis visual</strong> es una herramienta poderosa para entender
+            rápidamente qué entidades financieras están ofreciendo las mejores condiciones. A través
+            de nuestros gráficos de barras y de dispersión, podés identificar valores atípicos,
+            tendencias del mercado y la relación entre la Tasa Nominal Anual (TNA) y los topes de
+            inversión.
+          </p>
+          <p>
+            En un mercado tan dinámico como el argentino, visualizar cómo se posiciona cada
+            billetera o banco frente a la competencia te permite tomar decisiones informadas en
+            segundos.
+          </p>
+        </div>
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">Nuestros Gráficos</h3>
+          <ul class="list-disc list-inside space-y-2">
+            <li>
+              <strong>Comparación de TNA:</strong> Ranking visual de mayor a menor tasa para ver
+              quién lidera el mercado.
+            </li>
+            <li>
+              <strong>TNA vs Tope:</strong> Ideal para ver hasta qué monto se mantiene la tasa
+              promocional.
+            </li>
+            <li>
+              <strong>Comparación de Patrimonio:</strong> Tamaño relativo de cada fondo común de
+              inversión.
+            </li>
+            <li>
+              <strong>TNA vs Patrimonio:</strong> Correlación entre el tamaño del fondo y el
+              rendimiento que genera.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </div>
 </template>

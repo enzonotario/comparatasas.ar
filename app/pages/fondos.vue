@@ -3,6 +3,12 @@ import { h, resolveComponent } from 'vue'
 import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn } from '@nuxt/ui'
 
+definePageMeta({
+  pageTitle: 'Fondos Comunes de Inversión (FCI)',
+  pageDescription:
+    'Consultá y compará todos los FCI disponibles en Argentina. Información actualizada diariamente con datos de rendimiento y patrimonio.',
+})
+
 const UButton = resolveComponent('UButton')
 
 useSeoMeta({
@@ -37,13 +43,6 @@ useHead({
     },
   ],
 })
-
-const pageHeader = useState<{ title?: string; description?: string }>('page-header')
-pageHeader.value = {
-  title: 'Fondos Comunes de Inversión',
-  description:
-    'Consultá y compará todos los FCI disponibles en Argentina. Información actualizada diariamente con datos de rendimiento y patrimonio.',
-}
 
 interface FundRaw {
   fondo: string
@@ -760,110 +759,158 @@ const sorting = useRouteQuery(
 </script>
 
 <template>
-  <div class="space-y-3">
-    <div>
-      <p class="text-xs text-muted mt-1">
-        Fuente de datos:
-        <NuxtLink
-          to="https://www.cafci.org.ar/"
-          external
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-primary-600 dark:text-primary-400 hover:underline"
+  <div class="space-y-6">
+    <div class="space-y-3">
+      <div>
+        <p class="text-xs text-muted mt-1">
+          Fuente de datos:
+          <NuxtLink
+            to="https://www.cafci.org.ar/"
+            external
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary-600 dark:text-primary-400 hover:underline"
+          >
+            CAFCI - Cámara Argentina de Fondos Comunes de Inversión
+          </NuxtLink>
+        </p>
+      </div>
+
+      <!-- Filtros -->
+      <div class="flex flex-col sm:flex-row gap-4">
+        <UInput
+          v-model="searchQuery"
+          icon="i-lucide-search"
+          placeholder="Buscar por nombre de fondo..."
+          class="flex-1"
+        />
+
+        <USelect
+          v-model="selectedTipo"
+          :items="tipoItems"
+          placeholder="Filtrar por tipo"
+          value-key="value"
+          class="flex-1"
         >
-          CAFCI - Cámara Argentina de Fondos Comunes de Inversión
-        </NuxtLink>
-      </p>
-    </div>
+          <template #item-label="{ item }">
+            {{ item.label }}
+          </template>
+        </USelect>
 
-    <!-- Filtros -->
-    <div class="flex flex-col sm:flex-row gap-4">
-      <UInput
-        v-model="searchQuery"
-        icon="i-lucide-search"
-        placeholder="Buscar por nombre de fondo..."
-        class="flex-1"
-      />
-
-      <USelect
-        v-model="selectedTipo"
-        :items="tipoItems"
-        placeholder="Filtrar por tipo"
-        value-key="value"
-        class="flex-1"
-      >
-        <template #item-label="{ item }">
-          {{ item.label }}
-        </template>
-      </USelect>
-
-      <USelect
-        v-model="selectedHorizonte"
-        :items="horizonteItems"
-        placeholder="Filtrar por horizonte"
-        value-key="value"
-        class="flex-1"
-      >
-        <template #item-label="{ item }">
-          {{ item.label }}
-        </template>
-      </USelect>
-    </div>
-
-    <!-- Información de resultados -->
-    <div class="flex items-center justify-between text-sm text-muted">
-      <span> Mostrando {{ filteredFunds.length }} de {{ allFunds.length }} fondos </span>
-      <span v-if="searchQuery || selectedTipo || selectedHorizonte" class="text-primary">
-        Filtros activos
-      </span>
-    </div>
-
-    <!-- Error -->
-    <UAlert v-if="error" color="error" variant="soft" title="Error cargando fondos">
-      No se pudieron cargar los fondos. Por favor, intenta nuevamente.
-    </UAlert>
-
-    <!-- Tabla -->
-    <div class="border border-default rounded-lg overflow-hidden">
-      <UTable
-        v-model:sorting="sorting"
-        :data="filteredFunds"
-        :columns="columns"
-        :loading="loading"
-        virtualize
-        class="h-[600px]"
-      >
-        <template #empty>
-          <div class="py-12 text-center">
-            <UIcon name="i-lucide-search-x" class="w-12 h-12 text-muted mx-auto mb-4" />
-            <h3 class="text-lg font-medium mb-2">No se encontraron fondos</h3>
-            <p class="text-muted">
-              {{
-                searchQuery
-                  ? 'Intenta ajustar la búsqueda por nombre'
-                  : 'No hay fondos disponibles en este momento'
-              }}
-            </p>
-          </div>
-        </template>
-      </UTable>
-    </div>
-
-    <div class="text-center text-xs text-muted pt-4 border-t border-default">
-      <p>
-        Los datos provienen de la
-        <NuxtLink
-          to="https://www.cafci.org.ar/"
-          external
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-primary-600 dark:text-primary-400 hover:underline"
+        <USelect
+          v-model="selectedHorizonte"
+          :items="horizonteItems"
+          placeholder="Filtrar por horizonte"
+          value-key="value"
+          class="flex-1"
         >
-          Cámara Argentina de Fondos Comunes de Inversión (CAFCI)
-        </NuxtLink>
-        . La información puede estar desactualizada y no garantizamos que estos sean los últimos
-        rendimientos vigentes.
-      </p>
+          <template #item-label="{ item }">
+            {{ item.label }}
+          </template>
+        </USelect>
+      </div>
+
+      <!-- Información de resultados -->
+      <div class="flex items-center justify-between text-sm text-muted">
+        <span> Mostrando {{ filteredFunds.length }} de {{ allFunds.length }} fondos </span>
+        <span v-if="searchQuery || selectedTipo || selectedHorizonte" class="text-primary">
+          Filtros activos
+        </span>
+      </div>
+
+      <!-- Error -->
+      <UAlert v-if="error" color="error" variant="soft" title="Error cargando fondos">
+        No se pudieron cargar los fondos. Por favor, intenta nuevamente.
+      </UAlert>
+
+      <!-- Tabla -->
+      <div class="border border-default rounded-lg overflow-hidden">
+        <UTable
+          v-model:sorting="sorting"
+          :data="filteredFunds"
+          :columns="columns"
+          :loading="loading"
+          virtualize
+          class="h-[600px]"
+        >
+          <template #empty>
+            <div class="py-12 text-center">
+              <UIcon name="i-lucide-search-x" class="w-12 h-12 text-muted mx-auto mb-4" />
+              <h3 class="text-lg font-medium mb-2">No se encontraron fondos</h3>
+              <p class="text-muted">
+                {{
+                  searchQuery
+                    ? 'Intenta ajustar la búsqueda por nombre'
+                    : 'No hay fondos disponibles en este momento'
+                }}
+              </p>
+            </div>
+          </template>
+        </UTable>
+      </div>
+
+      <div class="text-center text-xs text-muted pt-4 border-t border-default">
+        <p>
+          Los datos provienen de la
+          <NuxtLink
+            to="https://www.cafci.org.ar/"
+            external
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary-600 dark:text-primary-400 hover:underline"
+          >
+            Cámara Argentina de Fondos Comunes de Inversión (CAFCI)
+          </NuxtLink>
+          . La información puede estar desactualizada y no garantizamos que estos sean los últimos
+          rendimientos vigentes.
+        </p>
+      </div>
     </div>
+
+    <section
+      class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"
+    >
+      <div class="flex flex-col gap-6 max-w-4xl mx-auto">
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            ¿Qué es un Fondo Común de Inversión (FCI)?
+          </h3>
+          <p>
+            Un <strong>Fondo Común de Inversión (FCI)</strong> es un patrimonio formado por los
+            aportes de muchas personas que tienen objetivos de inversión similares. Este dinero es
+            administrado por profesionales que lo invierten en distintos activos como acciones,
+            bonos o plazos fijos.
+          </p>
+          <p>
+            En Argentina, los FCI son una alternativa ideal para pequeños y medianos ahorristas, ya
+            que permiten diversificar la inversión de manera eficiente y acceder a mercados que, de
+            forma individual, serían más difíciles de alcanzar.
+          </p>
+        </div>
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            Tipos Principales de FCI
+          </h3>
+          <ul class="list-disc list-inside space-y-2">
+            <li>
+              <strong>Mercado de Dinero (Money Market):</strong> De bajo riesgo y liquidez
+              inmediata, ideal para el efectivo de corto plazo.
+            </li>
+            <li>
+              <strong>Renta Fija:</strong> Invierten mayormente en bonos y otros instrumentos de
+              deuda con una tasa predeterminada.
+            </li>
+            <li>
+              <strong>Renta Mixta:</strong> Combinan acciones y bonos para buscar un equilibrio
+              entre riesgo y potencial de ganancia.
+            </li>
+            <li>
+              <strong>Renta Variable:</strong> Invierten en acciones de empresas, ofreciendo mayor
+              potencial de ganancia a cambio de un mayor riesgo.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </div>
 </template>

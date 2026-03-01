@@ -18,13 +18,13 @@
     "test:scripts": "vitest run scripts/"
   },
   "dependencies": {
-    "@nuxt/eslint": "1.9.0",
+    "@nuxt/eslint": "1.15.2",
     "@nuxt/ui": "4.0.0",
     "@nuxtjs/sitemap": "7.4.3",
     "@nuxtjs/tailwindcss": "6.14.0",
     "@vite-pwa/nuxt": "1.0.4",
     "@vueuse/nuxt": "13.9.0",
-    "eslint": "^10.0.0",
+    "eslint": "^9.39.3",
     "highcharts": "^12.5.0",
     "nuxt": "4.1.0",
     "nuxt-gtag": "4.0.0",

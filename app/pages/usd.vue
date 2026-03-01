@@ -6,6 +6,12 @@ import {
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
 
+definePageMeta({
+  pageTitle: 'Inversiones en USD',
+  pageDescription:
+    'Comparativa de las mejores opciones para invertir tus dólares en Argentina. Cuentas remuneradas, billeteras y fondos en USD.',
+})
+
 useSeoMeta({
   title: 'Inversiones en USD',
   description:
@@ -38,13 +44,6 @@ useHead({
     },
   ],
 })
-
-const pageHeader = useState<{ title?: string; description?: string }>('page-header')
-pageHeader.value = {
-  title: 'Inversiones en USD',
-  description:
-    'Comparativa de las mejores opciones para invertir tus dólares en Argentina. Cuentas remuneradas, billeteras y fondos en USD.',
-}
 
 const { data, loading: fundsLoading, error: fundsError } = useFunds()
 const { fetchAll, loading: cryptoLoading, error: cryptoError } = useCrypto()
@@ -214,7 +213,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <div class="space-y-6">
     <InvestmentSimulator
       :preset-amounts="[
         { value: 1000, label: '$1k' },
@@ -345,5 +344,46 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+
+    <section
+      class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"
+    >
+      <div class="flex flex-col gap-6 max-w-4xl mx-auto">
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            Invertir en Dólares en Argentina
+          </h3>
+          <p>
+            Invertir en <strong>dólares (USD)</strong> es una de las estrategias más tradicionales
+            en Argentina para preservar el valor del capital. Más allá de la simple tenencia de
+            billetes ("bajo el colchón"), existen instrumentos financieros que permiten generar un
+            rendimiento sobre esos dólares.
+          </p>
+          <p>
+            En comparatasas.ar analizamos dos grandes grupos de inversión en moneda extranjera: las
+            <strong>cuentas remuneradas en USD</strong> (billeteras que pagan por tu saldo) y los
+            <strong>Fondos Comunes de Inversión en USD</strong> (que invierten en bonos corporativos
+            o soberanos del exterior y locales).
+          </p>
+        </div>
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">Opciones Disponibles</h3>
+          <ul class="list-disc list-inside space-y-2">
+            <li>
+              <strong>Cuentas Remuneradas:</strong> Ofrecen liquidez inmediata y una tasa baja pero
+              segura sobre el saldo depositado.
+            </li>
+            <li>
+              <strong>Fondos Money Market USD:</strong> Buscan preservar el capital con un riesgo
+              muy bajo y disponibilidad rápida del dinero.
+            </li>
+            <li>
+              <strong>Fondos de Renta Fija USD:</strong> Invierten en Obligaciones Negociables (ONs)
+              y otros títulos, buscando un rendimiento mayor a mediano plazo.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </div>
 </template>

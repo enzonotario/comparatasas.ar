@@ -39,7 +39,8 @@ const isProviderHistoryPage = computed(() => {
   return route.path.startsWith('/cuentas-billeteras/') && route.params.provider
 })
 
-const pageHeader = useState<{ title?: string; description?: string }>('page-header')
+const pageTitle = computed(() => route.meta.pageTitle as string | undefined)
+const pageDescription = computed(() => route.meta.pageDescription as string | undefined)
 </script>
 
 <template>
@@ -88,12 +89,12 @@ const pageHeader = useState<{ title?: string; description?: string }>('page-head
 
       <UMain class="flex flex-col space-y-6 pt-16">
         <UContainer v-if="!isProviderHistoryPage" class="space-y-6">
-          <div v-if="pageHeader?.title" class="flex flex-col items-center text-center space-y-2">
+          <div v-if="pageTitle" class="flex flex-col items-center text-center space-y-2">
             <h1 class="font-bold text-4xl sm:text-5xl text-neutral-900 dark:text-white">
-              {{ pageHeader.title }}
+              {{ pageTitle }}
             </h1>
-            <p v-if="pageHeader.description" class="text-neutral-600 dark:text-neutral-400">
-              {{ pageHeader.description }}
+            <p v-if="pageDescription" class="text-neutral-600 dark:text-neutral-400">
+              {{ pageDescription }}
             </p>
           </div>
 

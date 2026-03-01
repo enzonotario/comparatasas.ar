@@ -1,4 +1,10 @@
 <script setup lang="ts">
+definePageMeta({
+  pageTitle: 'Tasas de Plazos Fijos',
+  pageDescription:
+    'Comparativa actualizada de las tasas de plazos fijos tradicionales y UVA ofrecidas por los principales bancos y billeteras de Argentina.',
+})
+
 useSeoMeta({
   title: 'Plazos Fijos',
   description:
@@ -32,13 +38,6 @@ useHead({
   ],
 })
 
-const pageHeader = useState<{ title?: string; description?: string }>('page-header')
-pageHeader.value = {
-  title: 'Tasas de Plazos Fijos',
-  description:
-    'Comparativa actualizada de las tasas de plazos fijos tradicionales y UVA ofrecidas por los principales bancos y billeteras de Argentina.',
-}
-
 const { plazosFijosItems, loading, error } = usePlazosFijos()
 
 const { calculateResults, isSimulating } = useInvestmentSimulator()
@@ -46,7 +45,7 @@ const plazosFijosWithSimulation = calculateResults(plazosFijosItems)
 </script>
 
 <template>
-  <div>
+  <div class="space-y-6">
     <InvestmentSimulator :fixed-days="30" />
 
     <div class="flex items-center justify-between mb-2">
@@ -71,5 +70,52 @@ const plazosFijosWithSimulation = calculateResults(plazosFijosItems)
       </h3>
       <p class="text-muted">No hay plazos fijos disponibles en este momento.</p>
     </div>
+
+    <section
+      class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"
+    >
+      <div class="flex flex-col gap-6 max-w-4xl mx-auto">
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            ¿Qué es un Plazo Fijo?
+          </h3>
+          <p>
+            El <strong>plazo fijo</strong> es un instrumento de ahorro e inversión en el cual una
+            persona deposita una suma de dinero en un banco por un tiempo determinado (normalmente
+            30, 60 o 90 días). A cambio, el banco se compromete a devolver el dinero original más un
+            interés previamente acordado.
+          </p>
+          <p>
+            En Argentina, existen dos modalidades principales: el
+            <strong>plazo fijo tradicional</strong>, que tiene una tasa nominal anual (TNA) fija, y
+            el <strong>plazo fijo UVA</strong>, cuyo rendimiento se ajusta según la inflación
+            oficial más un pequeño porcentaje de interés adicional.
+          </p>
+        </div>
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            Ventajas del Plazo Fijo Tradicional
+          </h3>
+          <ul class="list-disc list-inside space-y-2">
+            <li>
+              <strong>Seguridad:</strong> Tus ahorros están respaldados por el Banco Central de la
+              República Argentina (BCRA).
+            </li>
+            <li>
+              <strong>Previsibilidad:</strong> Sabés exactamente cuánto dinero vas a cobrar al
+              finalizar el plazo.
+            </li>
+            <li>
+              <strong>Sencillez:</strong> Se puede constituir fácilmente desde el Home Banking de
+              cualquier entidad.
+            </li>
+            <li>
+              <strong>Tasas competitivas:</strong> Comparar las tasas de distintos bancos te permite
+              obtener el mejor rendimiento posible para tus ahorros.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </div>
 </template>

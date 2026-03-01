@@ -1,4 +1,12 @@
 export default defineNuxtRouteMiddleware((to) => {
+  // Redireccionar /cuentas-billeteras a / para evitar duplicados
+  if (to.path === '/cuentas-billeteras' || to.path === '/cuentas-billeteras/') {
+    return navigateTo('/', {
+      redirectCode: 301,
+      replace: true,
+    })
+  }
+
   // Redirecciones de páginas antiguas a nueva página unificada /usd
   if (to.path === '/renta-fija-usd' || to.path === '/mercado-dinero-usd') {
     return navigateTo('/usd', {

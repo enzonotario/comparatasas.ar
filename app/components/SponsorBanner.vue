@@ -24,8 +24,7 @@ const defaultBanners: Banner[] = [
     desktopUrl: 'https://api.argentinadatos.com/static/assets/dolarapp.gif',
     mobileUrl: 'https://api.argentinadatos.com/static/assets/dolarapp-mobile.gif',
     altText: 'DolarApp',
-    linkUrl:
-      'https://www.dolarapp.com/es-AR?ref=comparatasas',
+    linkUrl: 'https://www.dolarapp.com/es-AR?ref=comparatasas',
   },
 ]
 

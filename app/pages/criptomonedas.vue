@@ -7,6 +7,12 @@ import {
 import { getCryptoLogo, getCryptoName } from '~/lib/crypto-utils'
 import { useAnalytics } from '~/composables/useAnalytics'
 
+definePageMeta({
+  pageTitle: 'Rendimientos Criptomonedas',
+  pageDescription:
+    'Compará las mejores tasas y rendimientos (APY) para Bitcoin, stablecoins y activos digitales en Argentina.',
+})
+
 const { trackProviderClick } = useAnalytics()
 
 function handleExchangeClick(entidad: string, crypto?: string) {
@@ -54,18 +60,11 @@ useHead({
   ],
 })
 
-const pageHeader = useState<{ title?: string; description?: string }>('page-header')
-pageHeader.value = {
-  title: 'Rendimientos Criptomonedas',
-  description:
-    'Compará las mejores tasas y rendimientos (APY) para Bitcoin, stablecoins y activos digitales en Argentina.',
-}
-
 const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCrypto()
 </script>
 
 <template>
-  <div>
+  <div class="space-y-6">
     <div class="flex items-center justify-between mb-2">
       <h2 id="rendimientos-crypto" class="text-lg font-medium scroll-mt-16">Rendimientos Crypto</h2>
     </div>
@@ -207,5 +206,51 @@ const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCr
         </UCard>
       </div>
     </div>
+
+    <section
+      class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"
+    >
+      <div class="flex flex-col gap-6 max-w-4xl mx-auto">
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            Invertir en Criptomonedas en Argentina
+          </h3>
+          <p>
+            Las <strong>criptomonedas</strong> se han convertido en una de las formas preferidas de
+            inversión y ahorro para los argentinos. Además de Bitcoin (BTC) y Ethereum (ETH), las
+            <strong>stablecoins</strong> (como USDT, USDC o DAI) son fundamentales para protegerse
+            de la devaluación, ya que su valor suele estar atado al dólar estadounidense.
+          </p>
+          <p>
+            En comparatasas.ar te mostramos los rendimientos que ofrecen los principales exchanges
+            locales y globales por mantener tus activos en sus plataformas, lo que se conoce como
+            <strong>Staking</strong> o <strong>Cuentas de Inversión Crypto</strong>.
+          </p>
+        </div>
+        <div class="space-y-4 text-sm leading-relaxed">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">¿Qué es el APY?</h3>
+          <p>
+            El <strong>APY (Annual Percentage Yield)</strong> es el rendimiento porcentual anual que
+            incluye el efecto del interés compuesto. En el mundo crypto, muchas plataformas pagan
+            intereses diarios o semanales, y el APY te permite ver cuánto ganarías en un año si
+            reinvirtieras esos beneficios.
+          </p>
+          <ul class="list-disc list-inside space-y-1">
+            <li>
+              <strong>Liquidez:</strong> La mayoría de los rendimientos crypto tienen liquidez
+              inmediata.
+            </li>
+            <li>
+              <strong>Variabilidad:</strong> Las tasas pueden cambiar frecuentemente según el
+              mercado.
+            </li>
+            <li>
+              <strong>Riesgo:</strong> Siempre recordá que las inversiones crypto tienen riesgos
+              asociados.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </div>
 </template>

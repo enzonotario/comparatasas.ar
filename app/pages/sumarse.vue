@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
 
+definePageMeta({
+  pageTitle: 'Integrar tu servicio',
+  pageDescription:
+    'El listado en ComparaTasas.ar es gratuito. Integrá tu app o servicio de tasas proveyendo un endpoint con tus datos.',
+})
+
 useSeoMeta({
   title: 'Integrar tu servicio',
   description:
@@ -33,13 +39,6 @@ useHead({
     },
   ],
 })
-
-const pageHeader = useState<{ title?: string; description?: string }>('page-header')
-pageHeader.value = {
-  title: 'Integrar tu servicio',
-  description:
-    'El listado en ComparaTasas.ar es gratuito. Integrá tu app o servicio de tasas proveyendo un endpoint con tus datos.',
-}
 
 const endpointTabs: TabsItem[] = [
   {
@@ -218,6 +217,8 @@ const endpointTabs: TabsItem[] = [
             icon="i-heroicons-envelope"
             size="lg"
             color="primary"
+            rel="nofollow"
+            external
           >
             hi@enzonotario.me
           </UButton>
