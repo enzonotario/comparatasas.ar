@@ -25,30 +25,36 @@ const { trackSponsorClick } = useAnalytics()
 
 const BASE_URL = 'https://api.argentinadatos.com/static/assets/arq/'
 
+const LINK_URL = 'https://www.arqfinance.com/?ref=comparatasas.ar'
+
 const defaultBanners: Banner[] = [
   {
     id: 10,
     desktopUrl: `${BASE_URL}Desktop_banner_10.png`,
     mobileUrl: `${BASE_URL}Mobile_banner_10.png`,
     altText: 'Banner 10',
+    linkUrl: LINK_URL,
   },
   {
     id: 20,
     desktopUrl: `${BASE_URL}Desktop_banner_20.png`,
     mobileUrl: `${BASE_URL}Mobile_banner_20.png`,
     altText: 'Banner 20',
+    linkUrl: LINK_URL,
   },
   {
     id: 30,
     desktopUrl: `${BASE_URL}Desktop_banner_30.png`,
     mobileUrl: `${BASE_URL}Mobile_banner_30.png`,
     altText: 'Banner 30',
+    linkUrl: LINK_URL,
   },
   {
     id: 40,
     desktopUrl: `${BASE_URL}Desktop_banner_40.png`,
     mobileUrl: `${BASE_URL}Mobile_banner_40.png`,
     altText: 'Banner 40',
+    linkUrl: LINK_URL,
   },
 ]
 
