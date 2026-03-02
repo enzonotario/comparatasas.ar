@@ -1,22 +1,42 @@
 [
   {
+    "date": "20260302",
+    "categories": {
+      "Money Market": 95,
+      "Billetera": 62,
+      "Plazo Fijo": 78,
+      "Cuenta Remunerada": 38,
+      "Otro": 79,
+      "Página Amiga": 11,
+      "Criptomonedas": 36,
+      "Billetera USD": 16,
+      "Cuenta Remunerada USD": 2,
+      "Renta Fija": 37,
+      "Renta Mixta": 4,
+      "General": 29,
+      "wARS": 7
+    },
+    "total": 494
+  },
+  {
     "date": "20260301",
     "categories": {
-      "Money Market": 34,
-      "Plazo Fijo": 33,
-      "Cuenta Remunerada": 16,
-      "Página Amiga": 5,
-      "Otro": 21,
-      "Billetera": 20,
-      "Criptomonedas": 9,
-      "ARGt": 2,
-      "Billetera USD": 8,
+      "Money Market": 93,
+      "Plazo Fijo": 81,
+      "Cuenta Remunerada": 45,
+      "Página Amiga": 16,
+      "Otro": 67,
+      "Billetera": 64,
+      "Criptomonedas": 37,
+      "ARGt": 3,
+      "Billetera USD": 15,
       "Cuenta Remunerada USD": 1,
-      "Renta Fija": 22,
-      "Renta Mixta": 4,
-      "General": 11
+      "Renta Fija": 38,
+      "Renta Mixta": 5,
+      "General": 20,
+      "wARS": 1
     },
-    "total": 186
+    "total": 486
   },
   {
     "date": "20260228",
@@ -59,32 +79,13 @@
   {
     "date": "20260226",
     "categories": {
-      "Money Market": 151,
-      "Plazo Fijo": 152,
-      "Página Amiga": 43,
-      "Cuenta Remunerada": 131,
-      "Billetera": 115,
-      "Otro": 53,
-      "ARGt": 2,
-      "Billetera USD": 18,
-      "Renta Fija": 60,
-      "Renta Mixta": 1,
-      "General": 44,
-      "Criptomonedas": 14
+      "Money Market": 52,
+      "Plazo Fijo": 32,
+      "Página Amiga": 16,
+      "Cuenta Remunerada": 37,
+      "Billetera": 37,
+      "Otro": 11
     },
-    "total": 784
-  },
-  {
-    "date": "20260225",
-    "categories": {
-      "Página Amiga": 28,
-      "Money Market": 31,
-      "Plazo Fijo": 63,
-      "Cuenta Remunerada": 52,
-      "Billetera": 93,
-      "Otro": 16,
-      "Criptomonedas": 1
-    },
-    "total": 284
+    "total": 185
   }
 ]
