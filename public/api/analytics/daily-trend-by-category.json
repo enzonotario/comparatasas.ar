@@ -1,22 +1,43 @@
 [
   {
+    "date": "20260303",
+    "categories": {
+      "Página Amiga": 31,
+      "Billetera": 45,
+      "Money Market": 50,
+      "Plazo Fijo": 98,
+      "Cuenta Remunerada": 36,
+      "Otro": 72,
+      "Criptomonedas": 42,
+      "ARGt": 2,
+      "Billetera USD": 5,
+      "Cuenta Remunerada USD": 1,
+      "Renta Fija": 25,
+      "Renta Mixta": 6,
+      "General": 27,
+      "wARS": 5
+    },
+    "total": 445
+  },
+  {
     "date": "20260302",
     "categories": {
-      "Money Market": 95,
-      "Billetera": 62,
-      "Plazo Fijo": 78,
-      "Cuenta Remunerada": 38,
-      "Otro": 79,
-      "Página Amiga": 11,
-      "Criptomonedas": 36,
-      "Billetera USD": 16,
-      "Cuenta Remunerada USD": 2,
-      "Renta Fija": 37,
-      "Renta Mixta": 4,
-      "General": 29,
-      "wARS": 7
+      "Money Market": 213,
+      "Billetera": 172,
+      "Plazo Fijo": 207,
+      "Cuenta Remunerada": 117,
+      "Otro": 231,
+      "Página Amiga": 38,
+      "Criptomonedas": 72,
+      "ARGt": 3,
+      "Billetera USD": 37,
+      "Cuenta Remunerada USD": 4,
+      "Renta Fija": 69,
+      "Renta Mixta": 8,
+      "General": 52,
+      "wARS": 11
     },
-    "total": 494
+    "total": 1234
   },
   {
     "date": "20260301",
@@ -60,32 +81,13 @@
   {
     "date": "20260227",
     "categories": {
-      "Página Amiga": 52,
-      "Billetera": 127,
-      "Money Market": 187,
-      "Plazo Fijo": 142,
-      "Cuenta Remunerada": 88,
-      "Otro": 114,
-      "Criptomonedas": 30,
-      "ARGt": 7,
-      "Billetera USD": 26,
-      "Cuenta Remunerada USD": 1,
-      "Renta Fija": 53,
-      "Renta Mixta": 7,
-      "General": 43
+      "Página Amiga": 14,
+      "Billetera": 22,
+      "Money Market": 14,
+      "Plazo Fijo": 12,
+      "Cuenta Remunerada": 4,
+      "Otro": 14
     },
-    "total": 877
-  },
-  {
-    "date": "20260226",
-    "categories": {
-      "Money Market": 52,
-      "Plazo Fijo": 32,
-      "Página Amiga": 16,
-      "Cuenta Remunerada": 37,
-      "Billetera": 37,
-      "Otro": 11
-    },
-    "total": 185
+    "total": 80
   }
 ]

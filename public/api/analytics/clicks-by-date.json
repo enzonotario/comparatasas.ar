@@ -1,7 +1,11 @@
 [
   {
+    "date": "20260303",
+    "total_clicks": 445
+  },
+  {
     "date": "20260302",
-    "total_clicks": 494
+    "total_clicks": 1234
   },
   {
     "date": "20260301",
@@ -114,9 +118,5 @@
   {
     "date": "20260202",
     "total_clicks": 770
-  },
-  {
-    "date": "20260201",
-    "total_clicks": 450
   }
 ]
