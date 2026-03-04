@@ -134,7 +134,7 @@ export const institutions: Array<{
     names: ['Nexo', 'NEXO'],
     logo: 'https://api.argentinadatos.com/static/logos/nexo.png',
     shortName: 'Nexo',
-    url: 'https://nexo.com/?ref=comparatasas.ar',
+    url: 'https://nexo.go.link/5luH7',
   },
   {
     names: ['Fiwind', 'FIWIND'],
