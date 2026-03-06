@@ -1,23 +1,43 @@
 [
   {
-    "date": "20260305",
+    "date": "20260306",
     "categories": {
-      "Money Market": 57,
-      "Billetera": 32,
-      "Plazo Fijo": 79,
-      "Cuenta Remunerada": 38,
-      "Otro": 20,
-      "Página Amiga": 19,
-      "Criptomonedas": 17,
-      "ARGt": 2,
-      "Billetera USD": 12,
-      "Cuenta Remunerada USD": 3,
-      "Renta Fija": 22,
-      "Renta Mixta": 2,
-      "General": 26,
+      "Money Market": 54,
+      "Billetera": 37,
+      "Plazo Fijo": 105,
+      "Página Amiga": 20,
+      "Cuenta Remunerada": 25,
+      "Otro": 36,
+      "Criptomonedas": 22,
+      "ARGt": 1,
+      "Billetera USD": 8,
+      "Cuenta Remunerada USD": 1,
+      "Renta Fija": 30,
+      "Renta Mixta": 4,
+      "General": 15,
       "wARS": 1
     },
-    "total": 330
+    "total": 359
+  },
+  {
+    "date": "20260305",
+    "categories": {
+      "Money Market": 144,
+      "Billetera": 109,
+      "Plazo Fijo": 203,
+      "Cuenta Remunerada": 112,
+      "Otro": 70,
+      "Página Amiga": 59,
+      "Criptomonedas": 48,
+      "ARGt": 3,
+      "Billetera USD": 19,
+      "Cuenta Remunerada USD": 5,
+      "Renta Fija": 48,
+      "Renta Mixta": 4,
+      "General": 47,
+      "wARS": 3
+    },
+    "total": 874
   },
   {
     "date": "20260304",
@@ -44,32 +64,15 @@
     "categories": {
       "Página Amiga": 90,
       "Billetera": 120,
-      "Money Market": 145,
-      "Plazo Fijo": 228,
+      "Money Market": 89,
+      "Plazo Fijo": 155,
       "Cuenta Remunerada": 107,
       "Otro": 201,
-      "Criptomonedas": 74,
+      "Criptomonedas": 6,
       "ARGt": 4,
       "Billetera USD": 15,
-      "Cuenta Remunerada USD": 1,
-      "Renta Fija": 46,
-      "Renta Mixta": 10,
-      "General": 56,
-      "wARS": 9
+      "Cuenta Remunerada USD": 1
     },
-    "total": 1106
-  },
-  {
-    "date": "20260302",
-    "categories": {
-      "Money Market": 129,
-      "Billetera": 172,
-      "Plazo Fijo": 142,
-      "Cuenta Remunerada": 117,
-      "Otro": 191,
-      "Página Amiga": 38,
-      "Criptomonedas": 2
-    },
-    "total": 791
+    "total": 788
   }
 ]
