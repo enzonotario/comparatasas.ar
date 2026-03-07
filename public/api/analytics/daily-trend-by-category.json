@@ -1,23 +1,41 @@
 [
   {
+    "date": "20260307",
+    "categories": {
+      "Página Amiga": 13,
+      "Money Market": 46,
+      "Plazo Fijo": 66,
+      "Cuenta Remunerada": 28,
+      "Billetera": 31,
+      "Otro": 25,
+      "Billetera USD": 9,
+      "Cuenta Remunerada USD": 1,
+      "Renta Fija": 22,
+      "Renta Mixta": 1,
+      "General": 14,
+      "Criptomonedas": 9
+    },
+    "total": 265
+  },
+  {
     "date": "20260306",
     "categories": {
-      "Money Market": 54,
-      "Billetera": 37,
-      "Plazo Fijo": 105,
-      "Página Amiga": 20,
-      "Cuenta Remunerada": 25,
-      "Otro": 36,
-      "Criptomonedas": 22,
-      "ARGt": 1,
-      "Billetera USD": 8,
-      "Cuenta Remunerada USD": 1,
-      "Renta Fija": 30,
-      "Renta Mixta": 4,
-      "General": 15,
-      "wARS": 1
+      "Money Market": 145,
+      "Billetera": 106,
+      "Plazo Fijo": 261,
+      "Página Amiga": 54,
+      "Cuenta Remunerada": 74,
+      "Otro": 103,
+      "Criptomonedas": 43,
+      "ARGt": 2,
+      "Billetera USD": 20,
+      "Cuenta Remunerada USD": 2,
+      "Renta Fija": 63,
+      "Renta Mixta": 6,
+      "General": 28,
+      "wARS": 3
     },
-    "total": 359
+    "total": 910
   },
   {
     "date": "20260305",
@@ -43,36 +61,15 @@
     "date": "20260304",
     "categories": {
       "Money Market": 130,
-      "Plazo Fijo": 289,
+      "Plazo Fijo": 287,
       "Cuenta Remunerada": 80,
       "Otro": 127,
       "Página Amiga": 54,
       "Billetera": 97,
       "ARGt": 4,
       "Billetera USD": 25,
-      "Cuenta Remunerada USD": 2,
-      "Renta Fija": 54,
-      "Renta Mixta": 6,
-      "General": 36,
-      "Criptomonedas": 30,
-      "wARS": 1
+      "Cuenta Remunerada USD": 2
     },
-    "total": 935
-  },
-  {
-    "date": "20260303",
-    "categories": {
-      "Página Amiga": 90,
-      "Billetera": 120,
-      "Money Market": 89,
-      "Plazo Fijo": 155,
-      "Cuenta Remunerada": 107,
-      "Otro": 201,
-      "Criptomonedas": 6,
-      "ARGt": 4,
-      "Billetera USD": 15,
-      "Cuenta Remunerada USD": 1
-    },
-    "total": 788
+    "total": 806
   }
 ]
