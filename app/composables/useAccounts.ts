@@ -3,6 +3,7 @@ import {
   getInstitutionShortName,
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
+import { isBlacklisted } from '~/lib/blacklist'
 
 export interface ApiAccount {
   fondo: string
@@ -71,7 +72,7 @@ export function useAccounts() {
 
   function filterAndMapAccounts(fundNames: string[]): AccountItem[] {
     return (data.value ?? [])
-      .filter((a) => fundNames.includes(a.fondo))
+      .filter((a) => fundNames.includes(a.fondo) && !isBlacklisted(a.fondo))
       .map((a) => mapApiAccountToAccountItem(a))
       .sort((a, b) => b.tna - a.tna)
   }

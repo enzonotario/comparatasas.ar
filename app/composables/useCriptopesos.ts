@@ -3,6 +3,7 @@ import {
   getInstitutionShortName,
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
+import { isBlacklisted } from '~/lib/blacklist'
 
 export interface ApiCriptopeso {
   token: string
@@ -61,7 +62,10 @@ export function useCriptopesos() {
   }
 
   const criptopesos = computed<CriptopesoItem[]>((): CriptopesoItem[] => {
-    return (data.value ?? []).map((a) => mapApiCriptopesoToItem(a)).sort((a, b) => b.tna - a.tna)
+    return (data.value ?? [])
+      .filter((a) => !isBlacklisted(a.entidad))
+      .map((a) => mapApiCriptopesoToItem(a))
+      .sort((a, b) => b.tna - a.tna)
   })
 
   return { criptopesos, loading, error, fetch }
