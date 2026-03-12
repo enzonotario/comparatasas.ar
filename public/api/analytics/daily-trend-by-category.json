@@ -1,21 +1,39 @@
 [
   {
+    "date": "20260312",
+    "categories": {
+      "Página Amiga": 15,
+      "Money Market": 31,
+      "Billetera": 26,
+      "Plazo Fijo": 86,
+      "Cuenta Remunerada": 28,
+      "Otro": 19,
+      "Criptomonedas": 10,
+      "Billetera USD": 13,
+      "Renta Fija": 22,
+      "Renta Mixta": 4,
+      "General": 23,
+      "wARS": 1
+    },
+    "total": 278
+  },
+  {
     "date": "20260311",
     "categories": {
-      "Money Market": 59,
-      "Plazo Fijo": 96,
-      "Cuenta Remunerada": 19,
-      "Página Amiga": 7,
-      "Otro": 19,
-      "Billetera": 20,
-      "Billetera USD": 7,
-      "Cuenta Remunerada USD": 2,
-      "Renta Fija": 32,
+      "Money Market": 157,
+      "Plazo Fijo": 252,
+      "Cuenta Remunerada": 61,
+      "Página Amiga": 23,
+      "Otro": 63,
+      "Billetera": 61,
+      "Criptomonedas": 17,
+      "Billetera USD": 21,
+      "Cuenta Remunerada USD": 4,
+      "Renta Fija": 70,
       "Renta Mixta": 4,
-      "General": 13,
-      "Criptomonedas": 7
+      "General": 25
     },
-    "total": 285
+    "total": 758
   },
   {
     "date": "20260310",
@@ -46,45 +64,14 @@
       "Plazo Fijo": 315,
       "Cuenta Remunerada": 89,
       "Otro": 68,
-      "Criptomonedas": 34,
+      "Criptomonedas": 32,
       "ARGt": 4,
       "Billetera USD": 19,
       "Cuenta Remunerada USD": 1,
       "Renta Fija": 62,
       "Renta Mixta": 4,
-      "General": 39,
-      "wARS": 1
+      "General": 39
     },
-    "total": 885
-  },
-  {
-    "date": "20260308",
-    "categories": {
-      "Billetera": 47,
-      "Money Market": 79,
-      "Plazo Fijo": 176,
-      "Cuenta Remunerada": 54,
-      "Página Amiga": 22,
-      "Otro": 34,
-      "Criptomonedas": 18,
-      "ARGt": 1,
-      "Billetera USD": 12,
-      "Cuenta Remunerada USD": 2,
-      "Renta Fija": 27,
-      "Renta Mixta": 3,
-      "General": 19
-    },
-    "total": 494
-  },
-  {
-    "date": "20260307",
-    "categories": {
-      "Página Amiga": 11,
-      "Money Market": 12,
-      "Plazo Fijo": 16,
-      "Cuenta Remunerada": 9,
-      "Billetera": 2
-    },
-    "total": 50
+    "total": 882
   }
 ]
