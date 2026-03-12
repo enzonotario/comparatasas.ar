@@ -117,7 +117,6 @@ export default defineNuxtConfig({
         '/plazos-fijos',
         '/usd',
         '/criptomonedas',
-        '/criptopesos',
         '/creditos-hipotecarios-uva',
         '/cuentas-billeteras/graficos',
       ],

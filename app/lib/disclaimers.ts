@@ -60,9 +60,6 @@ export const disclaimerMappings: DisclaimerMapping = {
   ],
   criptopesos: [
     {
-      text: 'Las tasas de criptopesos provienen directamente de las plataformas y representan la TNA (Tasa Nominal Anual) ofrecida por cada entidad para sus tokens.',
-    },
-    {
       text: 'La información representada proviene de las propias plataformas. Puede llegar a estar desactualizada y no garantizamos que estos sean los ultimos rendimientos vigentes.',
     },
   ],

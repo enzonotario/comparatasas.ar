@@ -15,6 +15,13 @@ export default defineNuxtRouteMiddleware((to) => {
     })
   }
 
+  if (to.path === '/criptopesos' || to.path === '/criptopesos/') {
+    return navigateTo('/criptomonedas', {
+      redirectCode: 301,
+      replace: true,
+    })
+  }
+
   if (to.query.tab) {
     const tabId = to.query.tab as string
 
