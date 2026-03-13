@@ -1,8 +1,26 @@
 <script setup lang="ts">
+import { top3PlazosFijos } from '~/utils/og-data'
+
 definePageMeta({
   pageTitle: 'Tasas de Plazos Fijos',
   pageDescription:
     'Comparativa actualizada de las tasas de plazos fijos tradicionales y UVA ofrecidas por los principales bancos y billeteras de Argentina.',
+})
+
+const { data: ogItems } = await useAsyncData('og-plazos', () =>
+  $fetch<Array<{ entidad: string; tnaClientes: number }>>(
+    'https://api.argentinadatos.com/v1/finanzas/tasas/plazoFijo',
+  ).then((r) => top3PlazosFijos(r)),
+)
+
+defineOgImage('ComparaTasas.takumi', {
+  title: 'Top Plazos Fijos',
+  items: ogItems.value ?? [],
+  updatedAt: new Date().toLocaleDateString('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }),
 })
 
 useSeoMeta({

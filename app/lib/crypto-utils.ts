@@ -153,3 +153,21 @@ export function getCryptoMaxYield(
 
   return maxYieldsPerEntity.length > 0 ? Math.max(...maxYieldsPerEntity) : 0
 }
+
+/** Devuelve la entidad (proveedor) que ofrece el máximo APY para esa cripto */
+export function getCryptoMaxYieldProvider(
+  crypto: string,
+  cryptoEntities: { entidad: string; rendimientos: { moneda: string; apy: number }[] }[],
+): string | null {
+  let bestEntity: string | null = null
+  let bestApy = 0
+  for (const entity of cryptoEntities) {
+    const yields = entity.rendimientos.filter((r) => r.moneda === crypto).map((r) => r.apy)
+    const maxForEntity = yields.length > 0 ? Math.max(...yields) : 0
+    if (maxForEntity > bestApy) {
+      bestApy = maxForEntity
+      bestEntity = entity.entidad
+    }
+  }
+  return bestEntity
+}

@@ -4,8 +4,9 @@ import {
   getInstitutionShortName,
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
-import { getCryptoLogo, getCryptoName } from '~/lib/crypto-utils'
+import { getCryptoLogo, getCryptoName, getCryptoMaxYieldProvider } from '~/lib/crypto-utils'
 import { useAnalytics } from '~/composables/useAnalytics'
+import { formatApy } from '~/utils/og-data'
 
 definePageMeta({
   pageTitle: 'Rendimientos Criptomonedas',
@@ -26,6 +27,27 @@ function handleExchangeClick(entidad: string, crypto?: string) {
     })
   }
 }
+
+const { data: ogItems } = await useAsyncData('og-crypto', async () => {
+  const { data: cryptoData, fetchCriptos, cryptosByMaxYield } = useCrypto()
+  await fetchCriptos()
+  return cryptosByMaxYield.value.slice(0, 3).map(({ crypto, maxYield }) => {
+    const provider = getCryptoMaxYieldProvider(crypto, cryptoData.value)
+    const providerName = provider ? getInstitutionShortName(provider) : ''
+    const name = providerName ? `${getCryptoName(crypto)} (${providerName})` : getCryptoName(crypto)
+    return { name, rate: formatApy(maxYield) }
+  })
+})
+
+defineOgImage('ComparaTasas.takumi', {
+  title: 'Top Rendimientos Crypto',
+  items: ogItems.value ?? [],
+  updatedAt: new Date().toLocaleDateString('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }),
+})
 
 useSeoMeta({
   title: 'Rendimientos Criptomonedas',

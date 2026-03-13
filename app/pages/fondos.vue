@@ -2,6 +2,7 @@
 import { h, resolveComponent } from 'vue'
 import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn } from '@nuxt/ui'
+import { top3Funds } from '~/utils/og-data'
 
 definePageMeta({
   pageTitle: 'Fondos Comunes de Inversión (FCI)',
@@ -10,6 +11,45 @@ definePageMeta({
 })
 
 const UButton = resolveComponent('UButton')
+
+const { data: ogItems } = await useAsyncData('og-fondos', async () => {
+  const { allFundsCache, data: fundsData, fetch: fetchFunds } = useFunds()
+  await fetchFunds()
+  const accountsFunds = allFundsCache.value.filter((i) => i?.meta?.showInAccounts)
+  const mercadoDineroFunds = (fundsData.value?.mercadoDinero ?? []).filter(
+    (i) => i?.meta?.showInFunds,
+  )
+  const combined = [...accountsFunds, ...mercadoDineroFunds]
+  const seen = new Set<string>()
+  const resolved = combined.filter((item) => {
+    const key = `${item.fondo}-${item.institution}-${item.displayName}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+  const riesgoMuyBajo = resolved.filter(
+    (f) =>
+      (f.type ?? '') === 'mercadoDinero' || !['rentaFija', 'rentaMixta'].includes(f.type ?? ''),
+  )
+  return top3Funds(
+    riesgoMuyBajo.map((f) => ({
+      fondo: f.fondo,
+      displayName: f.displayName,
+      tna: f.tna,
+      meta: f.meta,
+    })),
+  )
+})
+
+defineOgImage('ComparaTasas.takumi', {
+  title: 'Top Fondos Money Market',
+  items: ogItems.value ?? [],
+  updatedAt: new Date().toLocaleDateString('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }),
+})
 
 useSeoMeta({
   title: 'Fondos Comunes de Inversión',

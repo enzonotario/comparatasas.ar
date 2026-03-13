@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     'nuxt-module-hotjar',
     'nuxt-highcharts',
+    'nuxt-og-image',
   ],
   ssr: true,
   devtools: { enabled: true },

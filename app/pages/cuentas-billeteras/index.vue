@@ -1,8 +1,26 @@
 <script setup lang="ts">
+import { top3Accounts } from '~/utils/og-data'
+
 definePageMeta({
   pageTitle: 'Cuentas Remuneradas y Billeteras Digitales',
   pageDescription:
     'Compará los rendimientos actualizados de las principales billeteras digitales y cuentas remuneradas de Argentina.',
+})
+
+const { data: ogItems } = await useAsyncData('og-accounts', () =>
+  $fetch<Array<{ fondo: string; tna: number }>>(
+    'https://api.argentinadatos.com/v1/finanzas/fci/otros/ultimo',
+  ).then((r) => top3Accounts(r)),
+)
+
+defineOgImage('ComparaTasas.takumi', {
+  title: 'Top Cuentas y Billeteras',
+  items: ogItems.value ?? [],
+  updatedAt: new Date().toLocaleDateString('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }),
 })
 
 const route = useRoute()

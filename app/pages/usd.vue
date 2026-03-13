@@ -5,11 +5,56 @@ import {
   getInstitutionShortName,
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
+import { formatTna } from '~/utils/og-data'
 
 definePageMeta({
   pageTitle: 'Inversiones en USD',
   pageDescription:
     'Comparativa de las mejores opciones para invertir tus dólares en Argentina. Cuentas remuneradas, billeteras y fondos en USD.',
+})
+
+const ACCOUNTS_BLACKLIST_OG = ['Banco Galicia']
+
+const { data: ogItems } = await useAsyncData('og-usd', async () => {
+  const [cuentasRes, allYields] = await Promise.all([
+    $fetch<Array<{ entidad: string; tasa: number; tope: number }>>(
+      'https://api.argentinadatos.com/v1/finanzas/cuentas-remuneradas-usd/',
+    ),
+    useCrypto().fetchAll(),
+  ])
+  const fromCuentas = (cuentasRes ?? []).map((c) => ({
+    name: getInstitutionShortName(c.entidad),
+    tna: c.tasa,
+  }))
+  const fromBilleteras = (allYields ?? [])
+    .map((entity) => {
+      const usdRendimientos = entity.rendimientos.filter(
+        (r: { moneda: string; apy: number }) =>
+          r.moneda.toUpperCase() === 'USD' && !isCrypto(r.moneda),
+      )
+      return usdRendimientos.map((r: { apy: number }) => ({
+        name: getInstitutionShortName(entity.entidad),
+        tna: r.apy / 100,
+      }))
+    })
+    .flat()
+  const combined = [...fromCuentas, ...fromBilleteras].filter(
+    (item) => !ACCOUNTS_BLACKLIST_OG.includes(item.name),
+  )
+  return combined
+    .sort((a, b) => b.tna - a.tna)
+    .slice(0, 3)
+    .map((item) => ({ name: item.name, rate: formatTna(item.tna * 100) }))
+})
+
+defineOgImage('ComparaTasas.takumi', {
+  title: 'Top Cuentas y Billeteras USD',
+  items: ogItems.value ?? [],
+  updatedAt: new Date().toLocaleDateString('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }),
 })
 
 useSeoMeta({

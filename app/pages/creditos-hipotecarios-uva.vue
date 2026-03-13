@@ -2,11 +2,28 @@
 import { ref, watch, computed } from 'vue'
 
 import type { InflacionREMData } from '~/composables/useInflacionREM'
+import { top3Hipotecarios } from '~/utils/og-data'
 
 definePageMeta({
   pageTitle: 'Créditos Hipotecarios UVA',
   pageDescription:
     'Comparativa de tasas hipotecarias UVA en Argentina y proyección de cuotas mensuales.',
+})
+
+const { data: ogItems } = await useAsyncData('og-hipotecarios', () =>
+  $fetch<Array<{ nombreComercial: string; tna: number }>>(
+    'https://api.argentinadatos.com/v1/finanzas/creditos/hipotecariosUva/',
+  ).then((r) => top3Hipotecarios(r.map((i) => ({ ...i, tna: i.tna * 100 })))),
+)
+
+defineOgImage('ComparaTasas.takumi', {
+  title: 'Mejores Hipotecarios UVA',
+  items: ogItems.value ?? [],
+  updatedAt: new Date().toLocaleDateString('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }),
 })
 
 useSeoMeta({
