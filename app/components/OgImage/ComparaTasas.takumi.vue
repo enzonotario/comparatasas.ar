@@ -93,6 +93,8 @@ const BORDER_COLORS = [
           maxWidth: '700px',
         }"
       >
+        <span v-if="updatedAt">{{ updatedAt }}</span>
+
         <div
           v-for="(item, i) in items.slice(0, 3)"
           :key="i"
@@ -139,19 +141,6 @@ const BORDER_COLORS = [
             {{ item.rate }}
           </span>
         </div>
-      </div>
-
-      <div
-        :style="{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '28px',
-          color: '#475569',
-          fontSize: '16px',
-        }"
-      >
-        <span v-if="updatedAt">{{ updatedAt }}</span>
       </div>
     </div>
   </div>

@@ -5,7 +5,7 @@ import {
   getInstitutionShortName,
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
-import { formatTna } from '~/utils/og-data'
+import { formatTna, ogUpdatedAtDate } from '~/utils/og-data'
 
 definePageMeta({
   pageTitle: 'Inversiones en USD',
@@ -50,12 +50,7 @@ const { data: ogItems } = await useAsyncData('og-usd', async () => {
 defineOgImage('ComparaTasas.takumi', {
   title: 'Top Cuentas y Billeteras USD',
   items: ogItems.value ?? [],
-  updatedAt: new Date().toLocaleDateString('es-AR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'America/Argentina/Buenos_Aires',
-  }),
+  updatedAt: ogUpdatedAtDate(),
 })
 
 useSeoMeta({

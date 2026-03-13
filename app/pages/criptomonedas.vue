@@ -6,7 +6,7 @@ import {
 } from '~/lib/mappings/institutions'
 import { getCryptoLogo, getCryptoName, getCryptoMaxYieldProvider } from '~/lib/crypto-utils'
 import { useAnalytics } from '~/composables/useAnalytics'
-import { formatApy } from '~/utils/og-data'
+import { formatApy, ogUpdatedAtDate } from '~/utils/og-data'
 
 definePageMeta({
   pageTitle: 'Rendimientos Criptomonedas',
@@ -42,12 +42,7 @@ const { data: ogItems } = await useAsyncData('og-crypto', async () => {
 defineOgImage('ComparaTasas.takumi', {
   title: 'Top Rendimientos Crypto',
   items: ogItems.value ?? [],
-  updatedAt: new Date().toLocaleDateString('es-AR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'America/Argentina/Buenos_Aires',
-  }),
+  updatedAt: ogUpdatedAtDate(),
 })
 
 useSeoMeta({

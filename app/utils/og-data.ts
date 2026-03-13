@@ -20,6 +20,16 @@ export function formatApy(pct: number): string {
   return `${pct.toFixed(1)}% APY`
 }
 
+/** Fecha formateada para updatedAt de las imágenes OG (timezone Argentina, mes largo). */
+export function ogUpdatedAtDate(date: Date = new Date()): string {
+  return date.toLocaleDateString('es-AR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'America/Argentina/Buenos_Aires',
+  })
+}
+
 export function calcFundTna(newerVcp: number, olderVcp: number, days: number): number {
   if (days <= 0 || olderVcp <= 0) return 0
   return ((newerVcp - olderVcp) / olderVcp / days) * 365

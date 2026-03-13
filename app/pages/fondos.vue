@@ -2,7 +2,7 @@
 import { h, resolveComponent } from 'vue'
 import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn } from '@nuxt/ui'
-import { top3Funds } from '~/utils/og-data'
+import { ogUpdatedAtDate, top3Funds } from '~/utils/og-data'
 
 definePageMeta({
   pageTitle: 'Fondos Comunes de Inversión (FCI)',
@@ -44,12 +44,7 @@ const { data: ogItems } = await useAsyncData('og-fondos', async () => {
 defineOgImage('ComparaTasas.takumi', {
   title: 'Top Fondos Money Market',
   items: ogItems.value ?? [],
-  updatedAt: new Date().toLocaleDateString('es-AR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'America/Argentina/Buenos_Aires',
-  }),
+  updatedAt: ogUpdatedAtDate(),
 })
 
 useSeoMeta({

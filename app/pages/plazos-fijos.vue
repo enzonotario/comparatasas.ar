@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { top3PlazosFijos } from '~/utils/og-data'
+import { ogUpdatedAtDate, top3PlazosFijos } from '~/utils/og-data'
 
 definePageMeta({
   pageTitle: 'Tasas de Plazos Fijos',
@@ -16,12 +16,7 @@ const { data: ogItems } = await useAsyncData('og-plazos', () =>
 defineOgImage('ComparaTasas.takumi', {
   title: 'Top Plazos Fijos',
   items: ogItems.value ?? [],
-  updatedAt: new Date().toLocaleDateString('es-AR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'America/Argentina/Buenos_Aires',
-  }),
+  updatedAt: ogUpdatedAtDate(),
 })
 
 useSeoMeta({

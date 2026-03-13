@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { top3Accounts } from '~/utils/og-data'
+import { ogUpdatedAtDate, top3Accounts } from '~/utils/og-data'
 
 definePageMeta({
   pageTitle: 'Cuentas Remuneradas y Billeteras Digitales',
@@ -16,12 +16,7 @@ const { data: ogItems } = await useAsyncData('og-accounts', () =>
 defineOgImage('ComparaTasas.takumi', {
   title: 'Top Cuentas y Billeteras',
   items: ogItems.value ?? [],
-  updatedAt: new Date().toLocaleDateString('es-AR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'America/Argentina/Buenos_Aires',
-  }),
+  updatedAt: ogUpdatedAtDate(),
 })
 
 const route = useRoute()

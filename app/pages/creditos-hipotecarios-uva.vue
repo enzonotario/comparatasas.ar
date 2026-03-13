@@ -2,7 +2,7 @@
 import { ref, watch, computed } from 'vue'
 
 import type { InflacionREMData } from '~/composables/useInflacionREM'
-import { top3Hipotecarios } from '~/utils/og-data'
+import { ogUpdatedAtDate, top3Hipotecarios } from '~/utils/og-data'
 
 definePageMeta({
   pageTitle: 'Créditos Hipotecarios UVA',
@@ -19,12 +19,7 @@ const { data: ogItems } = await useAsyncData('og-hipotecarios', () =>
 defineOgImage('ComparaTasas.takumi', {
   title: 'Mejores Hipotecarios UVA',
   items: ogItems.value ?? [],
-  updatedAt: new Date().toLocaleDateString('es-AR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'America/Argentina/Buenos_Aires',
-  }),
+  updatedAt: ogUpdatedAtDate(),
 })
 
 useSeoMeta({
