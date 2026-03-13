@@ -54,6 +54,7 @@ defineOgImage('ComparaTasas.takumi', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
+    timeZone: 'America/Argentina/Buenos_Aires',
   }),
 })
 
