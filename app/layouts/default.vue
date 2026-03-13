@@ -60,7 +60,7 @@ const pageDescription = computed(() => route.meta.pageDescription as string | un
             <img
               src="/assets/logo.png"
               alt="ComparaTasas.ar"
-              class="w-9 h-9 rounded-full object-cover"
+              class="w-8 h-8 rounded-full object-cover"
               loading="eager"
               fetchpriority="high"
             />
