@@ -10,6 +10,8 @@ interface CryptoEntity {
   rendimientos: CryptoYield[]
 }
 
+const CRYPTO_BLACKLIST = ['WARS']
+
 const data: Ref<CryptoEntity[]> = ref([])
 const dataProcessed: Ref<CryptoEntity[]> = ref([])
 const dataAll: Ref<CryptoEntity[]> = ref([])
@@ -17,11 +19,15 @@ const dataAllProcessed: Ref<CryptoEntity[]> = ref([])
 const loading = ref(true)
 const error = ref<unknown>(null)
 
+function isBlacklistedCrypto(moneda: string): boolean {
+  return CRYPTO_BLACKLIST.some((b) => b.toLowerCase() === (moneda || '').toLowerCase())
+}
+
 function getAllCryptos(cryptoYields: CryptoEntity[]): string[] {
   const cryptoSet = new Set<string>()
   cryptoYields.forEach((entity) => {
     entity.rendimientos.forEach((r) => {
-      if (shouldShowCrypto(r.moneda) && r.apy > 0) {
+      if (shouldShowCrypto(r.moneda) && r.apy > 0 && !isBlacklistedCrypto(r.moneda)) {
         cryptoSet.add(r.moneda)
       }
     })
@@ -54,7 +60,10 @@ export function useCrypto() {
       dataProcessed.value = responseArray
         .map((entity) => {
           const validRendimientos = entity.rendimientos.filter(
-            (rendimiento) => shouldShowCrypto(rendimiento.moneda) && rendimiento.apy > 0,
+            (rendimiento) =>
+              shouldShowCrypto(rendimiento.moneda) &&
+              rendimiento.apy > 0 &&
+              !isBlacklistedCrypto(rendimiento.moneda),
           )
 
           // Consolida tokens duplicados tomando el máximo APY
@@ -103,7 +112,9 @@ export function useCrypto() {
       // y consolida tokens duplicados por entidad (toma el máximo APY)
       const processed = responseArray
         .map((entity) => {
-          const validRendimientos = entity.rendimientos.filter((rendimiento) => rendimiento.apy > 0)
+          const validRendimientos = entity.rendimientos.filter(
+            (rendimiento) => rendimiento.apy > 0 && !isBlacklistedCrypto(rendimiento.moneda),
+          )
 
           // Consolida tokens duplicados tomando el máximo APY
           const consolidatedRendimientos = new Map<string, number>()
