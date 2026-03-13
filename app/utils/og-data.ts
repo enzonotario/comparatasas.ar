@@ -1,3 +1,5 @@
+import { getPlazoFijoShortName } from '../lib/mappings/plazo-fijo'
+
 export interface OgTopItem {
   name: string
   rate: string
@@ -38,7 +40,10 @@ export function top3PlazosFijos(
     .filter((a) => a.tnaClientes > 0)
     .sort((a, b) => b.tnaClientes - a.tnaClientes)
     .slice(0, 3)
-    .map((a) => ({ name: a.entidad, rate: formatTna(a.tnaClientes * 100) }))
+    .map((a) => ({
+      name: getPlazoFijoShortName(a.entidad),
+      rate: formatTna(a.tnaClientes * 100),
+    }))
 }
 
 /** Fondos procesados como en la sección Rendimiento variable de cuentas-billeteras */
