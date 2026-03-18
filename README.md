@@ -7,3 +7,14 @@
 <a href="https://github.com/enzonotario/comparatasas.ar/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=enzonotario/comparatasas.ar" />
 </a>
+
+---
+
+### ❤️ Sponsors & Backers
+
+<a href="https://github.com/sponsors/enzonotario">
+  <img src="https://raw.githubusercontent.com/enzonotario/enzonotario/main/sponsors.png" alt="Sponsors & Backers" />
+</a>
+
+> [Become a sponsor](https://github.com/sponsors/enzonotario)
+
