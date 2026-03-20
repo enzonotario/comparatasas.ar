@@ -1,50 +1,50 @@
 {
-  "total_records": 6652,
-  "total_clicks": 36600,
+  "total_records": 6800,
+  "total_clicks": 37586,
   "unique_providers": 136,
-  "days_tracked": 50,
+  "days_tracked": 51,
   "first_date": "20260129",
-  "last_date": "20260319",
+  "last_date": "20260320",
   "by_event_type": [
     {
       "event_type": "click",
-      "total_clicks": 22746
+      "total_clicks": 23349
     },
     {
       "event_type": "provider_click",
-      "total_clicks": 12894
+      "total_clicks": 13262
     },
     {
       "event_type": "sponsor_click",
-      "total_clicks": 960
+      "total_clicks": 975
     }
   ],
   "top_providers": [
     {
       "provider": "Dub.link",
-      "total_clicks": 10638,
+      "total_clicks": 10639,
       "days_active": 22
     },
     {
       "provider": "Carrefour Banco",
-      "total_clicks": 2667,
-      "days_active": 50
+      "total_clicks": 2757,
+      "days_active": 51
     },
     {
       "provider": "IOL",
-      "total_clicks": 2499,
-      "days_active": 30
+      "total_clicks": 2581,
+      "days_active": 31
     },
     {
       "provider": "Mercado Pago",
-      "total_clicks": 1538,
-      "days_active": 30
+      "total_clicks": 1567,
+      "days_active": 31
     },
     {
       "provider": "AstroPay",
-      "total_clicks": 1315,
-      "days_active": 30
+      "total_clicks": 1366,
+      "days_active": 31
     }
   ],
-  "generated_at": "2026-03-19T22:16:12.184Z"
+  "generated_at": "2026-03-20T22:15:05.576Z"
 }
