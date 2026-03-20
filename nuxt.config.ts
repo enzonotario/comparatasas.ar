@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     'nuxt-module-hotjar',
     'nuxt-highcharts',
     'nuxt-og-image',
+    'nitro-cloudflare-dev',
   ],
   ssr: true,
   devtools: { enabled: true },
@@ -108,7 +109,11 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
 
   nitro: {
-    preset: 'cloudflare_pages',
+    preset: 'cloudflare_module',
+    cloudflare: {
+      deployConfig: true,
+      nodeCompat: true,
+    },
     prerender: {
       crawlLinks: true,
       routes: [
