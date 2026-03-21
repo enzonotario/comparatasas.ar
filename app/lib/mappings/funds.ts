@@ -115,7 +115,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'Adcap Balanceado XXVIII - Clase A',
+    fundName: 'IOL Cash Management - Clase A',
     institutions: [
       {
         institution: 'IOL',
