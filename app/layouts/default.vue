@@ -32,6 +32,7 @@ const isWideLayout = computed(() => {
     'creditos-hipotecarios-uva',
     'fondos',
     'cuentas-billeteras-graficos',
+    'lecaps',
   ].includes(route.name as string)
 })
 

@@ -33,6 +33,19 @@ export interface PlazoFijo {
   typeLabel: string
 }
 
+export interface Lecap {
+  symbol: string
+  price: number
+  bid: number
+  ask: number
+  type: 'LECAP' | 'BONCAP'
+  finalPayment?: number
+  maturity?: string
+  days?: number
+  tna?: number
+  tir?: number
+}
+
 export interface UsdAccount {
   fondo: string
   tna: number

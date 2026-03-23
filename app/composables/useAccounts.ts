@@ -3,6 +3,7 @@ import {
   getInstitutionShortName,
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
+import { getLogoForEntity } from '~/lib/mappings/logos'
 import { isBlacklisted } from '~/lib/blacklist'
 
 export interface ApiAccount {
@@ -61,9 +62,11 @@ export function useAccounts() {
       tea: 0,
       tope: a.tope,
       fecha: a.fecha,
-      logo: getInstitutionLogo(a.fondo),
-      type: ['FIWIND', 'BELO'].includes(a.fondo) ? 'billetera' : 'cuentaRemunerada',
-      typeLabel: ['FIWIND', 'BELO'].includes(a.fondo) ? 'Billetera' : 'Cuenta Remunerada',
+      logo: getLogoForEntity(a.fondo) || getInstitutionLogo(a.fondo),
+      type: ['FIWIND', 'BELO'].includes(a.fondo.toUpperCase()) ? 'billetera' : 'cuentaRemunerada',
+      typeLabel: ['FIWIND', 'BELO'].includes(a.fondo.toUpperCase())
+        ? 'Billetera'
+        : 'Cuenta Remunerada',
       condiciones: a.condiciones,
       condicionesCorto: a.condicionesCorto,
       url: getInstitutionUrl(a.fondo),

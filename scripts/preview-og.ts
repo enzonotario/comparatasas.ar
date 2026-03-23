@@ -1,7 +1,7 @@
 import { writeFileSync, mkdirSync } from 'fs'
 import { join } from 'path'
 
-const BASE_URL = process.env.OG_BASE_URL ?? 'http://localhost:3000'
+const BASE_URL = process.env.OG_BASE_URL ?? 'http://localhost:3001'
 const OUT_DIR = 'preview-og'
 
 const routes = [
@@ -11,6 +11,7 @@ const routes = [
   { path: '/usd', name: 'usd' },
   { path: '/criptomonedas', name: 'criptomonedas' },
   { path: '/creditos-hipotecarios-uva', name: 'creditos-hipotecarios-uva' },
+  { path: '/lecaps', name: 'lecaps' },
 ]
 
 function parseOgImageUrl(html: string): string | null {

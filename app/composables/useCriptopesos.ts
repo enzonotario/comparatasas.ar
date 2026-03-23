@@ -3,6 +3,7 @@ import {
   getInstitutionShortName,
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
+import { getLogoForEntity } from '~/lib/mappings/logos'
 import { isBlacklisted } from '~/lib/blacklist'
 
 export interface ApiCriptopeso {
@@ -54,7 +55,7 @@ export function useCriptopesos() {
       tna: a.tna,
       tea: 0,
       tope: null,
-      logo: getInstitutionLogo(a.entidad),
+      logo: getLogoForEntity(a.entidad) || getInstitutionLogo(a.entidad),
       type: 'criptopeso',
       typeLabel: a.token,
       url: getInstitutionUrl(a.entidad),

@@ -75,6 +75,16 @@ export const plazoFijoInstitutions: Array<{
     url: 'https://bancociudad.com.ar/institucional/?ref=comparatasas',
   },
   {
+    names: ['BANCO DE FORMOSA S.A.', 'Banco de Formosa'],
+    shortName: 'Banco de Formosa',
+    url: 'https://www.bancoformosa.com.ar/simulador-plazo-fijo.aspx',
+  },
+  {
+    names: ['BANCO DE COMERCIO S.A.', 'Banco de Comercio'],
+    shortName: 'Banco de Comercio',
+    url: 'https://www.bancodecomercio.com.ar/',
+  },
+  {
     names: ['BANCO BICA S.A.', 'Banco BICA', 'BANCO BICA'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-bica.svg',
     shortName: 'Banco BICA',
@@ -143,7 +153,12 @@ export const plazoFijoInstitutions: Array<{
     url: 'https://bancomeridian.com.ar/?ref=comparatasas',
   },
   {
-    names: ['BANCO TIERRA DEL FUEGO', 'Banco Tierra del Fuego', 'BTF'],
+    names: [
+      'BANCO DE LA PROVINCIA DE TIERRA DEL FUEGO',
+      'BANCO TIERRA DEL FUEGO',
+      'Banco Tierra del Fuego',
+      'BTF',
+    ],
     logo: 'https://api.argentinadatos.com/static/logos/banco-tierra-del-fuego.png',
     shortName: 'Banco Tierra del Fuego',
     url: 'https://www.btf.com.ar/?ref=comparatasas',
@@ -174,6 +189,11 @@ export const plazoFijoInstitutions: Array<{
     names: ['REBA COMPAÑIA FINANCIERA S.A.', 'Reba'],
     shortName: 'Reba',
     url: 'https://reba.com.ar/?ref=comparatasas',
+  },
+  {
+    names: ['CRÉDITO REGIONAL COMPAÑÍA FINANCIERA S.A.U.', 'Crédito Regional'],
+    shortName: 'Crédito Regional',
+    url: 'https://creditoregional.com.ar/',
   },
   {
     names: ['BANCO DE FORMOSA S.A.', 'Banco de Formosa'],

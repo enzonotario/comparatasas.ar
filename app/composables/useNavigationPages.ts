@@ -39,6 +39,12 @@ export const useNavigationPages = () => {
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
         },
         {
+          to: '/lecaps',
+          label: 'LECAPs',
+          icon: 'i-lucide-banknote',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/letras.png',
+        },
+        {
           to: '/creditos-hipotecarios-uva',
           label: 'Créditos Hipotecarios UVA',
           icon: 'i-lucide-home',

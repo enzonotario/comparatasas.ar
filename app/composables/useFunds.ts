@@ -1,5 +1,6 @@
 import { getFundMapping, type FundInstitution } from '../lib/mappings/funds'
 import { getInstitutionLogo, getInstitutionUrl } from '../lib/mappings/institutions'
+import { getLogoForEntity } from '../lib/mappings/logos'
 import type { ProcessedFund } from '../types/investments'
 
 interface FundRaw {
@@ -70,7 +71,7 @@ function getFundsMap(latest: FundRaw[], previous: FundRaw[]) {
       fechaAnterior: olderDate,
       dias: d,
       patrimonio: l.patrimonio,
-      logo: getInstitutionLogo(inst.institution),
+      logo: getLogoForEntity(inst.institution) || getInstitutionLogo(inst.institution),
       url: getInstitutionUrl(inst.institution),
       type: inst.showInUsdMoneyMarket
         ? 'mercadoDineroUsd'
