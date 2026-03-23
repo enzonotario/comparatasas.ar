@@ -33,14 +33,14 @@ const { lecapsItems, loading, error, fetch } = useLecaps()
 const { data: ogData } = await useAsyncData('og-lecaps', async () => {
   // Intentar usar los datos si ya existen (aunque en SSR inicial estarán vacíos)
   if (lecapsItems.value.length > 0) return lecapsItems.value
-  
+
   // Si no hay datos, forzar un fetch
   await fetch()
   return lecapsItems.value
 })
 
 defineOgImage('LecapsCurve.takumi', {
-  title: 'LECAPs y BONCAPs: Curva de Rendimientos',
+  title: 'LECAPs y BONCAPs',
   lecaps: ogData.value ?? [],
   updatedAt: ogUpdatedAtDate(),
 })
