@@ -98,7 +98,7 @@ function createSortableHeader(label: string, accessorKey: string) {
   }
 }
 
-const columns: TableColumn<any>[] = [
+const baseColumns: TableColumn<any>[] = [
   {
     accessorKey: 'symbol',
     header: createSortableHeader('Ticker', 'symbol'),
@@ -174,11 +174,13 @@ const columns: TableColumn<any>[] = [
         formatPercent(row.getValue('tir') as number),
       ),
   },
+]
+
+const simulationColumns: TableColumn<any>[] = [
   {
     accessorKey: 'simulation.finalAmount',
     header: createSortableHeader('Monto final', 'simulation.finalAmount'),
     cell: ({ row }) => {
-      if (!isSimulating.value) return h('div', { class: 'text-muted' }, '-')
       const simulation = (row.original as any).simulation
       return h(
         'div',
@@ -193,7 +195,6 @@ const columns: TableColumn<any>[] = [
     accessorKey: 'simulation.earned',
     header: createSortableHeader('Ganancia', 'simulation.earned'),
     cell: ({ row }) => {
-      if (!isSimulating.value) return h('div', { class: 'text-muted' }, '-')
       const simulation = (row.original as any).simulation
       const value = formatCurrency(simulation.earned)
       const baseClass =
@@ -203,6 +204,10 @@ const columns: TableColumn<any>[] = [
     },
   },
 ]
+
+const columns = computed(() =>
+  isSimulating.value ? [...baseColumns, ...simulationColumns] : baseColumns,
+)
 
 onMounted(() => {
   fetch()
