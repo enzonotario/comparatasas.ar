@@ -6,16 +6,28 @@ interface PresetAmount {
   label: string
 }
 
+interface PresetDay {
+  value: number
+  label: string
+}
+
 const props = withDefaults(
   defineProps<{
     fixedDays?: number
     presetAmounts?: PresetAmount[]
+    presetDays?: PresetDay[]
   }>(),
   {
     presetAmounts: () => [
       { value: 100000, label: '$100k' },
       { value: 500000, label: '$500k' },
       { value: 1000000, label: '$1M' },
+    ],
+    presetDays: () => [
+      { value: 1, label: '1d' },
+      { value: 7, label: '7d' },
+      { value: 14, label: '14d' },
+      { value: 30, label: '30d' },
     ],
   },
 )
@@ -122,24 +134,17 @@ const closeSimulator = () => {
           </UFormField>
 
           <UFormField label="Días" name="days">
-            <UInputNumber v-model="days" :min="1" :max="365" :disabled="fixedDays !== undefined" />
+            <UInputNumber v-model="days" :min="1" :disabled="fixedDays !== undefined" />
             <template v-if="!fixedDays" #hint>
               <div class="flex gap-1 mt-1.5">
-                <UButton size="xs" color="neutral" variant="outline" label="1d" @click="days = 1" />
-                <UButton size="xs" color="neutral" variant="outline" label="7d" @click="days = 7" />
                 <UButton
+                  v-for="preset in presetDays"
+                  :key="preset.value"
                   size="xs"
                   color="neutral"
                   variant="outline"
-                  label="14d"
-                  @click="days = 14"
-                />
-                <UButton
-                  size="xs"
-                  color="neutral"
-                  variant="outline"
-                  label="30d"
-                  @click="days = 30"
+                  :label="preset.label"
+                  @click="days = preset.value"
                 />
               </div>
             </template>
@@ -206,24 +211,17 @@ const closeSimulator = () => {
           </UFormField>
 
           <UFormField label="Días" name="days">
-            <UInputNumber v-model="days" :min="1" :max="365" :disabled="fixedDays !== undefined" />
+            <UInputNumber v-model="days" :min="1" :disabled="fixedDays !== undefined" />
             <template v-if="!fixedDays" #hint>
               <div class="flex gap-1 mt-1.5">
-                <UButton size="xs" color="neutral" variant="outline" label="1d" @click="days = 1" />
-                <UButton size="xs" color="neutral" variant="outline" label="7d" @click="days = 7" />
                 <UButton
+                  v-for="preset in presetDays"
+                  :key="preset.value"
                   size="xs"
                   color="neutral"
                   variant="outline"
-                  label="14d"
-                  @click="days = 14"
-                />
-                <UButton
-                  size="xs"
-                  color="neutral"
-                  variant="outline"
-                  label="30d"
-                  @click="days = 30"
+                  :label="preset.label"
+                  @click="days = preset.value"
                 />
               </div>
             </template>

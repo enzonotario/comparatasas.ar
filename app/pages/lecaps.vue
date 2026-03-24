@@ -28,6 +28,7 @@ useHead({
 })
 
 const { lecapsItems, loading, error, fetch } = useLecaps()
+const { amount, days, calculateCompoundInterest, isSimulating } = useInvestmentSimulator()
 
 // Datos para la imagen OG
 const { data: ogData } = await useAsyncData('og-lecaps', async () => {
@@ -52,6 +53,33 @@ const sorting = ref([
   },
 ])
 
+const lecapsWithSimulation = computed(() => {
+  return lecapsItems.value.map((item) => {
+    const itemDays = item.days || days.value
+    const effectiveDays = Math.max(1, Math.min(days.value, itemDays))
+    const rate = item.tir || 0
+    const simulationResult = calculateCompoundInterest(amount.value, rate, effectiveDays)
+
+    return {
+      ...item,
+      simulation: {
+        initialAmount: amount.value,
+        finalAmount: simulationResult.finalAmount,
+        earned: simulationResult.earned,
+        requestedDays: days.value,
+        effectiveDays,
+        itemDays,
+        isOutOfHorizon: itemDays > days.value,
+      },
+    }
+  })
+})
+
+function getRowToneClass(row: any) {
+  const isOutOfHorizon = row?.simulation?.isOutOfHorizon
+  return isSimulating.value && isOutOfHorizon ? 'opacity-40 text-muted' : ''
+}
+
 function createSortableHeader(label: string, accessorKey: string) {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
@@ -75,7 +103,7 @@ const columns: TableColumn<any>[] = [
     accessorKey: 'symbol',
     header: createSortableHeader('Ticker', 'symbol'),
     cell: ({ row }) =>
-      h('div', { class: 'flex items-center gap-2' }, [
+      h('div', { class: `flex items-center gap-2 ${getRowToneClass(row.original)}` }, [
         h('span', { class: 'font-bold text-neutral-900 dark:text-white' }, row.getValue('symbol')),
         h(
           UBadge,
@@ -95,30 +123,46 @@ const columns: TableColumn<any>[] = [
     cell: ({ row }) =>
       h(
         'div',
-        { class: 'text-primary-600 dark:text-primary-400 font-bold' },
+        {
+          class: `${getRowToneClass(row.original)} text-primary-600 dark:text-primary-400 font-bold`,
+        },
         formatCurrency(row.getValue('price') as number),
       ),
   },
   {
     accessorKey: 'finalPayment',
     header: createSortableHeader('Pago final', 'finalPayment'),
-    cell: ({ row }) => h('div', {}, formatCurrency(row.getValue('finalPayment') as number)),
+    cell: ({ row }) =>
+      h(
+        'div',
+        { class: getRowToneClass(row.original) },
+        formatCurrency(row.getValue('finalPayment') as number),
+      ),
   },
   {
     accessorKey: 'days',
     header: createSortableHeader('Días', 'days'),
-    cell: ({ row }) => h('div', {}, row.getValue('days')),
+    cell: ({ row }) => h('div', { class: getRowToneClass(row.original) }, row.getValue('days')),
   },
   {
     accessorKey: 'maturity',
     header: createSortableHeader('Vencimiento', 'maturity'),
-    cell: ({ row }) => h('div', {}, formatDate(row.getValue('maturity') as string)),
+    cell: ({ row }) =>
+      h(
+        'div',
+        { class: getRowToneClass(row.original) },
+        formatDate(row.getValue('maturity') as string),
+      ),
   },
   {
     accessorKey: 'tna',
     header: createSortableHeader('TNA', 'tna'),
     cell: ({ row }) =>
-      h('div', { class: 'font-bold' }, formatPercent(row.getValue('tna') as number)),
+      h(
+        'div',
+        { class: `${getRowToneClass(row.original)} font-bold` },
+        formatPercent(row.getValue('tna') as number),
+      ),
   },
   {
     accessorKey: 'tir',
@@ -126,9 +170,37 @@ const columns: TableColumn<any>[] = [
     cell: ({ row }) =>
       h(
         'div',
-        { class: 'font-bold text-green-600 dark:text-green-400' },
+        { class: `${getRowToneClass(row.original)} font-bold text-green-600 dark:text-green-400` },
         formatPercent(row.getValue('tir') as number),
       ),
+  },
+  {
+    accessorKey: 'simulation.finalAmount',
+    header: createSortableHeader('Monto final', 'simulation.finalAmount'),
+    cell: ({ row }) => {
+      if (!isSimulating.value) return h('div', { class: 'text-muted' }, '-')
+      const simulation = (row.original as any).simulation
+      return h(
+        'div',
+        {
+          class: `${getRowToneClass(row.original)} font-bold text-primary-600 dark:text-primary-400`,
+        },
+        formatCurrency(simulation.finalAmount),
+      )
+    },
+  },
+  {
+    accessorKey: 'simulation.earned',
+    header: createSortableHeader('Ganancia', 'simulation.earned'),
+    cell: ({ row }) => {
+      if (!isSimulating.value) return h('div', { class: 'text-muted' }, '-')
+      const simulation = (row.original as any).simulation
+      const value = formatCurrency(simulation.earned)
+      const baseClass =
+        'font-bold ' +
+        (simulation.earned >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600')
+      return h('div', { class: `${getRowToneClass(row.original)} ${baseClass}` }, value)
+    },
   },
 ]
 
@@ -168,7 +240,21 @@ function formatDate(value: string): string {
 </script>
 
 <template>
-  <UContainer class="w-full mx-auto space-y-6 max-w-4xl">
+  <UContainer class="w-full mx-auto space-y-6 max-w-6xl">
+    <InvestmentSimulator
+      :preset-amounts="[
+        { value: 500000, label: '$500k' },
+        { value: 1000000, label: '$1M' },
+        { value: 10000000, label: '$10M' },
+      ]"
+      :preset-days="[
+        { value: 30, label: '30d' },
+        { value: 60, label: '60d' },
+        { value: 180, label: '180d' },
+        { value: 360, label: '360d' },
+      ]"
+    />
+
     <div class="flex items-center justify-between mb-2">
       <h2 id="lecaps" class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">
         LECAPs y BONCAPs
@@ -182,7 +268,12 @@ function formatDate(value: string): string {
 
     <div v-else-if="lecapsItems.length" class="space-y-6">
       <div class="border border-default rounded-lg overflow-hidden">
-        <UTable v-model:sorting="sorting" :data="lecapsItems" :columns="columns" :loading="loading">
+        <UTable
+          v-model:sorting="sorting"
+          :data="lecapsWithSimulation"
+          :columns="columns"
+          :loading="loading"
+        >
           <template #empty>
             <div class="py-12 text-center">
               <UIcon
