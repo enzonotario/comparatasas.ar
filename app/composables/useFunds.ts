@@ -207,7 +207,9 @@ async function getRentaFija() {
     }))
 }
 
-async function getRentaFijaPreviousData(targetDate: Date): Promise<FundRaw[]> {
+async function getRentaFijaPreviousData(targetDate: Date, retriesLeft = 7): Promise<FundRaw[]> {
+  if (retriesLeft <= 0) return []
+
   const targetDateString = targetDate.toISOString().split('T')[0].replace(/-/g, '/')
 
   try {
@@ -221,7 +223,10 @@ async function getRentaFijaPreviousData(targetDate: Date): Promise<FundRaw[]> {
 
     return response
   } catch {
-    return await getRentaFijaPreviousData(new Date(targetDate.setDate(targetDate.getDate() - 1)))
+    return await getRentaFijaPreviousData(
+      new Date(targetDate.setDate(targetDate.getDate() - 1)),
+      retriesLeft - 1,
+    )
   }
 }
 
