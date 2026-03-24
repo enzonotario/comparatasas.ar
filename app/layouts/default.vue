@@ -57,7 +57,7 @@ const pageDescription = computed(() => route.meta.pageDescription as string | un
         }"
       >
         <template #title>
-          <NuxtLink to="/" class="flex items-center gap-2">
+          <div class="flex items-center gap-2">
             <img
               src="/assets/logo.png"
               alt="ComparaTasas.ar"
@@ -70,7 +70,7 @@ const pageDescription = computed(() => route.meta.pageDescription as string | un
             >
               ComparaTasas.ar
             </span>
-          </NuxtLink>
+          </div>
         </template>
 
         <template #default>
