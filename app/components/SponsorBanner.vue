@@ -70,6 +70,8 @@ const isDarkMode = ref(false)
 const imageError = ref(false)
 const currentPlaylistIndex = ref(0)
 
+let cleanup: (() => void) | null = null
+
 const currentBanner = computed(() => {
   if (imageError.value) return null
 
@@ -129,13 +131,17 @@ onMounted(() => {
         scheduleNext()
       }
 
-      onUnmounted(() => {
+      cleanup = () => {
         window.removeEventListener('resize', checkMobile)
         darkModeQuery.removeEventListener('change', handleDarkModeChange)
         clearTimeout(timeoutId)
-      })
+      }
     })
   }
+})
+
+onUnmounted(() => {
+  cleanup?.()
 })
 
 const handleImageError = () => {
