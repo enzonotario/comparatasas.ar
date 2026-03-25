@@ -16,6 +16,8 @@ const props = withDefaults(
     fixedDays?: number
     /** Días iniciales si no hay `fixedDays` (se aplica al montar el componente). */
     defaultDays?: number
+    /** Monto inicial por defecto (p. ej. 1M en LECAPs). */
+    defaultAmount?: number
     presetAmounts?: PresetAmount[]
     presetDays?: PresetDay[]
   }>(),
@@ -43,12 +45,26 @@ if (props.fixedDays !== undefined) {
   days.value = props.defaultDays
 }
 
+// Si hay monto inicial por defecto, aplicar al montar (y cuando cambie)
+if (props.defaultAmount !== undefined) {
+  amount.value = props.defaultAmount
+}
+
 // Observar cambios en fixedDays
 watch(
   () => props.fixedDays,
   (newFixedDays) => {
     if (newFixedDays !== undefined) {
       days.value = newFixedDays
+    }
+  },
+)
+
+watch(
+  () => props.defaultAmount,
+  (newDefaultAmount) => {
+    if (newDefaultAmount !== undefined) {
+      amount.value = newDefaultAmount
     }
   },
 )

@@ -30,6 +30,10 @@ useHead({
 const { lecapsItems, loading, error, fetch } = useLecaps()
 const { amount, days, calculateCompoundInterest, isSimulating } = useInvestmentSimulator()
 
+// Por defecto en LECAPs: iniciar el simulador con 1M (y el horizonte por defecto 180d).
+amount.value = 1000000
+days.value = 180
+
 // Datos para la imagen OG
 const { data: ogData } = await useAsyncData('og-lecaps', async () => {
   // Intentar usar los datos si ya existen (aunque en SSR inicial estarán vacíos)
@@ -245,9 +249,10 @@ function formatDate(value: string): string {
 </script>
 
 <template>
-  <UContainer class="w-full mx-auto space-y-6 max-w-6xl">
+  <UContainer class="w-full mx-auto space-y-6 max-w-6xl px-0">
     <InvestmentSimulator
-      :default-days="360"
+      :default-amount="1000000"
+      :default-days="180"
       :preset-amounts="[
         { value: 500000, label: '$500k' },
         { value: 1000000, label: '$1M' },
