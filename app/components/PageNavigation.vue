@@ -31,7 +31,7 @@ const nextPage = computed(() => getNextPage(props.currentRoute))
           <UIcon name="i-lucide-arrow-left" class="size-6" />
         </div>
         <div class="flex items-center gap-3 flex-1">
-          <img :src="previousPage.image" :alt="previousPage.label" class="size-6" />
+          <img :src="previousPage.image" alt="" class="size-6" aria-hidden="true" />
           <div>
             <div
               class="font-medium text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400"
@@ -62,7 +62,7 @@ const nextPage = computed(() => getNextPage(props.currentRoute))
               {{ nextPage.label }}
             </div>
           </div>
-          <img :src="nextPage.image" :alt="nextPage.label" class="size-6" />
+          <img :src="nextPage.image" alt="" class="size-6" aria-hidden="true" />
         </div>
       </NuxtLink>
     </div>

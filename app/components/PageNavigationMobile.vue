@@ -21,7 +21,7 @@ const props = defineProps<Props>()
           page.to.split('#')[0] === currentRoute,
       }"
     >
-      <img :src="page.image" :alt="page.label" class="size-6" />
+      <img :src="page.image" alt="" class="size-6" aria-hidden="true" />
       <span class="font-medium text-gray-900 dark:text-white">{{ page.label }}</span>
     </NuxtLink>
   </div>

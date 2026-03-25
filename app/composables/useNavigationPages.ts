@@ -8,6 +8,7 @@ export interface NavigationPage {
 export interface NavigationCategory {
   id: string
   label: string
+  ariaLabel: string
   icon: string | 'flag-ars' | 'flag-usd' | 'bitcoin'
   pages: NavigationPage[]
 }
@@ -24,6 +25,8 @@ export const useNavigationPages = () => {
     {
       id: 'ars',
       label: 'ARS',
+      ariaLabel:
+        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, LECAPs y créditos hipotecarios UVA',
       icon: 'flag-ars',
       pages: [
         {
@@ -55,6 +58,7 @@ export const useNavigationPages = () => {
     {
       id: 'usd',
       label: 'USD',
+      ariaLabel: 'USD — comparadores en dólares estadounidenses',
       icon: 'flag-usd',
       pages: [
         {
@@ -68,6 +72,7 @@ export const useNavigationPages = () => {
     {
       id: 'crypto',
       label: 'Criptos',
+      ariaLabel: 'Criptos — comparador de criptomonedas',
       icon: 'bitcoin',
       pages: [
         {

@@ -48,7 +48,7 @@ const getSubcategoryRoute = (page: NavigationPage): string => {
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border-b-2 border-transparent',
             ]"
           >
-            <img :src="page.image" :alt="page.label" class="size-8" />
+            <img :src="page.image" alt="" class="size-8" aria-hidden="true" />
             {{ page.label }}
           </UButton>
         </div>
