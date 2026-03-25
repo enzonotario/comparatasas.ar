@@ -79,14 +79,15 @@ function handleProviderClick(item: any) {
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div>
-                  <img
+                  <UAvatar
                     v-if="item.logo"
                     :src="item.logo"
                     :alt="keyProp ? item[keyProp] : item.institution"
                     referrerpolicy="no-referrer"
-                    class="size-12 rounded-full object-cover"
+                    :ui="{
+                      image: 'object-contain',
+                    }"
                   />
-                  <div v-else class="size-12 rounded-full bg-gray-200 dark:bg-gray-700" />
                 </div>
 
                 <div class="flex flex-col gap-1 flex-1">
@@ -224,14 +225,15 @@ function handleProviderClick(item: any) {
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div>
-                  <img
+                  <UAvatar
                     v-if="item.logo"
                     :src="item.logo"
                     :alt="keyProp ? item[keyProp] : item.institution"
                     referrerpolicy="no-referrer"
-                    class="size-12 rounded-full object-cover"
+                    :ui="{
+                      image: 'object-contain',
+                    }"
                   />
-                  <div v-else class="size-12 rounded-full bg-gray-200 dark:bg-gray-700" />
                 </div>
 
                 <div class="flex flex-col gap-1 flex-1">
