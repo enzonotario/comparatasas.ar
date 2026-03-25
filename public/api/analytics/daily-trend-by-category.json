@@ -1,20 +1,38 @@
 [
   {
+    "date": "20260325",
+    "categories": {
+      "Money Market": 38,
+      "Plazo Fijo": 97,
+      "Cuenta Remunerada": 26,
+      "Billetera": 22,
+      "Página Amiga": 6,
+      "Otro": 30,
+      "Billetera USD": 11,
+      "Renta Fija": 10,
+      "Renta Mixta": 6,
+      "General": 7,
+      "Criptomonedas": 10
+    },
+    "total": 263
+  },
+  {
     "date": "20260324",
     "categories": {
-      "Plazo Fijo": 35,
-      "Cuenta Remunerada": 16,
-      "Money Market": 5,
-      "Página Amiga": 5,
-      "Otro": 13,
-      "Billetera": 12,
-      "Criptomonedas": 10,
-      "Billetera USD": 7,
-      "Renta Fija": 1,
-      "Renta Mixta": 1,
-      "General": 6
+      "Plazo Fijo": 127,
+      "Cuenta Remunerada": 51,
+      "Money Market": 25,
+      "Página Amiga": 23,
+      "Otro": 50,
+      "Billetera": 42,
+      "Criptomonedas": 19,
+      "Billetera USD": 13,
+      "Cuenta Remunerada USD": 1,
+      "Renta Fija": 6,
+      "Renta Mixta": 4,
+      "General": 11
     },
-    "total": 111
+    "total": 372
   },
   {
     "date": "20260323",
@@ -55,31 +73,13 @@
   {
     "date": "20260321",
     "categories": {
-      "Money Market": 54,
-      "Plazo Fijo": 169,
-      "Página Amiga": 32,
-      "Cuenta Remunerada": 64,
-      "Otro": 103,
-      "Billetera": 48,
-      "Criptomonedas": 17,
-      "Billetera USD": 17,
-      "Cuenta Remunerada USD": 19,
-      "Renta Fija": 14,
-      "Renta Mixta": 6,
-      "General": 23
+      "Money Market": 19,
+      "Plazo Fijo": 57,
+      "Página Amiga": 27,
+      "Cuenta Remunerada": 32,
+      "Otro": 37,
+      "Billetera": 19
     },
-    "total": 566
-  },
-  {
-    "date": "20260320",
-    "categories": {
-      "Página Amiga": 35,
-      "Money Market": 28,
-      "Plazo Fijo": 136,
-      "Cuenta Remunerada": 50,
-      "Otro": 23,
-      "Billetera": 21
-    },
-    "total": 293
+    "total": 191
   }
 ]
