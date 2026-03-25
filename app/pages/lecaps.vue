@@ -247,6 +247,7 @@ function formatDate(value: string): string {
 <template>
   <UContainer class="w-full mx-auto space-y-6 max-w-6xl">
     <InvestmentSimulator
+      :default-days="360"
       :preset-amounts="[
         { value: 500000, label: '$500k' },
         { value: 1000000, label: '$1M' },

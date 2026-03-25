@@ -14,6 +14,8 @@ interface PresetDay {
 const props = withDefaults(
   defineProps<{
     fixedDays?: number
+    /** Días iniciales si no hay `fixedDays` (se aplica al montar el componente). */
+    defaultDays?: number
     presetAmounts?: PresetAmount[]
     presetDays?: PresetDay[]
   }>(),
@@ -34,9 +36,11 @@ const props = withDefaults(
 
 const { amount, days, isOpen, isSimulating } = useInvestmentSimulator()
 
-// Si hay días fijos, establecerlos y mantenerlos
+// Si hay días fijos, establecerlos y mantenerlos; si no, aplicar default opcional por página
 if (props.fixedDays !== undefined) {
   days.value = props.fixedDays
+} else if (props.defaultDays !== undefined) {
+  days.value = props.defaultDays
 }
 
 // Observar cambios en fixedDays
