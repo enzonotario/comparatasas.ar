@@ -7,7 +7,12 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const colorMode = useColorMode()
 const { textColor, gridLineColor } = useChartTheme()
+
+const tooltipBackground = computed(() =>
+  colorMode.value === 'dark' ? '#171717' : '#ffffff',
+)
 
 // Polynomial regression (degree 2)
 function fitPolyCurve(points: [number, number][], degree: number, n: number) {
@@ -107,6 +112,18 @@ const chartOptions = computed(() => {
     },
     tooltip: {
       shared: false,
+      outside: true,
+      useHTML: true,
+      shape: 'rect',
+      backgroundColor: tooltipBackground.value,
+      borderColor: gridLineColor.value,
+      borderWidth: 1,
+      shadow: true,
+      padding: 10,
+      style: {
+        color: textColor.value,
+        zIndex: 10050,
+      },
       formatter(): string {
         const point = (this as any).point
         if (point.name) {
@@ -119,6 +136,26 @@ const chartOptions = computed(() => {
       scatter: {
         marker: {
           radius: 6,
+        },
+        dataLabels: {
+          enabled: true,
+          useHTML: true,
+          crop: false,
+          overflow: 'allow',
+          allowOverlap: false,
+          verticalAlign: 'bottom',
+          y: -10,
+          style: {
+            color: textColor.value,
+            fontSize: '11px',
+            fontWeight: '500',
+            textOutline: '1px contrast',
+          },
+          formatter(): string {
+            const point = (this as any).point
+            if (!point.name) return `${point.y.toFixed(2)}%`
+            return `<span style="display:block;text-align:center;line-height:1.25"><b>${point.name}</b><br/>TIR ${point.y.toFixed(2)}%</span>`
+          },
         },
       },
     },
@@ -156,7 +193,10 @@ const chartOptions = computed(() => {
 </script>
 
 <template>
-  <div class="w-full" style="height: 24rem; min-height: 384px">
+  <div
+    class="lecap-yield-curve-chart w-full"
+    style="height: 24rem; min-height: 384px"
+  >
     <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-neutral-500 text-sm italic text-muted">
@@ -165,3 +205,13 @@ const chartOptions = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* HTML dataLabels sit above SVG tooltip by default; keep labels under the HTML tooltip */
+.lecap-yield-curve-chart :deep(.highcharts-data-labels) {
+  z-index: 1;
+}
+.lecap-yield-curve-chart :deep(.highcharts-label.highcharts-tooltip) {
+  z-index: 10050;
+}
+</style>
