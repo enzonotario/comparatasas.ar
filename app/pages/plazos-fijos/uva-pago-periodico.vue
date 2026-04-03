@@ -103,6 +103,11 @@ onMounted(() => {
   <div class="space-y-6">
     <InvestmentSimulator
       :preset-days="uvaSimulatorPresets"
+      :preset-amounts="[
+        { value: 1000000, label: '$1M' },
+        { value: 5000000, label: '$5M' },
+        { value: 10000000, label: '$10M' },
+      ]"
       :days-min="PF_UVA_DIAS_MIN"
       :days-max="PF_UVA_DIAS_MAX"
       interest-info-mode="uvaPagoPeriodico"
@@ -122,7 +127,12 @@ onMounted(() => {
         adicional sobre UVA (no incluye la actualización por índice UVA).
       </p>
 
-      <UAlert v-if="errorUva" color="error" variant="soft" title="Error cargando plazos fijos UVA" />
+      <UAlert
+        v-if="errorUva"
+        color="error"
+        variant="soft"
+        title="Error cargando plazos fijos UVA"
+      />
 
       <FundsLoading v-if="loadingUva && !plazosFijosUvaPagoPeriodicoItems.length" />
 
