@@ -33,6 +33,22 @@ export interface PlazoFijo {
   typeLabel: string
 }
 
+/** Respuesta de `/v1/finanzas/tasas/plazoFijoUvaPagoPeriodico` (ArgentinaDatos). */
+export interface TasaPlazoFijoUvaPagoPeriodico {
+  nombre: string
+  plazoMinDias: number
+  plazoMaxDias: number
+  tna: number
+  tea: number
+}
+
+export interface ProveedorPlazoFijoUvaPagoPeriodico {
+  id: string
+  entidad: string
+  logo: string
+  tasas: TasaPlazoFijoUvaPagoPeriodico[]
+}
+
 export interface Lecap {
   symbol: string
   price: number

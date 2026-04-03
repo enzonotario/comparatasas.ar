@@ -10,9 +10,7 @@ const props = defineProps<Props>()
 const colorMode = useColorMode()
 const { textColor, gridLineColor } = useChartTheme()
 
-const tooltipBackground = computed(() =>
-  colorMode.value === 'dark' ? '#171717' : '#ffffff',
-)
+const tooltipBackground = computed(() => (colorMode.value === 'dark' ? '#171717' : '#ffffff'))
 
 // Polynomial regression (degree 2)
 function fitPolyCurve(points: [number, number][], degree: number, n: number) {
@@ -193,10 +191,7 @@ const chartOptions = computed(() => {
 </script>
 
 <template>
-  <div
-    class="lecap-yield-curve-chart w-full"
-    style="height: 24rem; min-height: 384px"
-  >
+  <div class="lecap-yield-curve-chart w-full" style="height: 24rem; min-height: 384px">
     <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-neutral-500 text-sm italic text-muted">

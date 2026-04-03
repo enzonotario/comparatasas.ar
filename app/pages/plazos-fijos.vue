@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
 import { ogUpdatedAtDate, top3PlazosFijos } from '~/utils/og-data'
 
 definePageMeta({
@@ -53,37 +54,171 @@ useHead({
 })
 
 const { plazosFijosItems, loading, error } = usePlazosFijos()
+const {
+  plazosFijosUvaPagoPeriodicoItems,
+  loading: loadingUva,
+  error: errorUva,
+} = usePlazosFijosUvaPagoPeriodico()
 
-const { calculateResults, isSimulating } = useInvestmentSimulator()
+const { calculateResults, isSimulating, days } = useInvestmentSimulator()
 const plazosFijosWithSimulation = calculateResults(plazosFijosItems)
+const plazosFijosUvaWithSimulation = calculateResults(plazosFijosUvaPagoPeriodicoItems)
+
+/** Alineado con rangos típicos de PF UVA pago periódico (ArgentinaDatos / BNA). */
+const PF_UVA_DIAS_MIN = 90
+const PF_UVA_DIAS_MAX = 1095
+const uvaSimulatorPresets = [
+  { value: 90, label: '90d' },
+  { value: 180, label: '180d' },
+  { value: 720, label: '720d' },
+  { value: 1080, label: '1080d' },
+]
+
+const route = useRoute()
+const router = useRouter()
+
+const plazosTab = ref<'tradicional' | 'uvaPeriodico'>('tradicional')
+
+const plazosFijosTabsItems: TabsItem[] = [
+  {
+    label: 'Tradicional (30 días)',
+    value: 'tradicional',
+    slot: 'tradicional' as const,
+    icon: 'i-lucide-clock',
+  },
+  {
+    label: 'UVA pago periódico',
+    value: 'uvaPeriodico',
+    slot: 'uvaPeriodico' as const,
+    icon: 'i-lucide-calendar-range',
+  },
+]
+
+function isUvaTabQuery(tab: typeof route.query.tab): boolean {
+  return tab === 'uvaPeriodico' || (Array.isArray(tab) && tab[0] === 'uvaPeriodico')
+}
+
+watch(
+  () => route.query.tab,
+  (tab) => {
+    plazosTab.value = isUvaTabQuery(tab) ? 'uvaPeriodico' : 'tradicional'
+  },
+  { immediate: true },
+)
+
+watch(plazosTab, (tab) => {
+  if (tab === 'tradicional') {
+    days.value = 30
+  } else {
+    if (days.value < PF_UVA_DIAS_MIN) days.value = 180
+    if (days.value > PF_UVA_DIAS_MAX) days.value = PF_UVA_DIAS_MAX
+  }
+
+  if (route.path !== '/plazos-fijos') return
+
+  const isUva = tab === 'uvaPeriodico'
+  const routeIsUva = isUvaTabQuery(route.query.tab)
+  if (isUva === routeIsUva) return
+
+  router.replace({
+    path: '/plazos-fijos',
+    query: isUva ? { tab: 'uvaPeriodico' } : {},
+  })
+})
 </script>
 
 <template>
   <div class="space-y-6">
-    <InvestmentSimulator :fixed-days="30" />
+    <InvestmentSimulator
+      :fixed-days="plazosTab === 'tradicional' ? 30 : undefined"
+      :default-days="plazosTab === 'uvaPeriodico' ? 180 : undefined"
+      :preset-days="plazosTab === 'uvaPeriodico' ? uvaSimulatorPresets : undefined"
+      :days-min="plazosTab === 'uvaPeriodico' ? PF_UVA_DIAS_MIN : 1"
+      :days-max="plazosTab === 'uvaPeriodico' ? PF_UVA_DIAS_MAX : undefined"
+      :interest-info-mode="plazosTab === 'uvaPeriodico' ? 'uvaPagoPeriodico' : 'default'"
+    />
 
     <div class="flex items-center justify-between mb-2">
       <h2 id="plazos-fijos" class="text-lg font-medium scroll-mt-16">Plazos Fijos</h2>
     </div>
 
-    <UAlert v-if="error" color="error" variant="soft" title="Error cargando plazos fijos" />
+    <UTabs
+      v-model="plazosTab"
+      :items="plazosFijosTabsItems"
+      variant="link"
+      class="w-full"
+      :ui="{
+        list: 'sticky z-20 top-[var(--ui-header-height)] bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700',
+      }"
+    >
+      <template #tradicional>
+        <div class="space-y-4 mt-6">
+          <UAlert v-if="error" color="error" variant="soft" title="Error cargando plazos fijos" />
 
-    <FundsLoading v-if="loading && !plazosFijosItems.length" />
+          <FundsLoading v-if="loading && !plazosFijosItems.length" />
 
-    <FundsList
-      v-else
-      :items="plazosFijosWithSimulation"
-      mode="simple"
-      :show-simulation="isSimulating"
-    />
+          <FundsList
+            v-else
+            :items="plazosFijosWithSimulation"
+            mode="simple"
+            :show-simulation="isSimulating"
+          />
 
-    <div v-if="!loading && !plazosFijosItems.length" class="text-center py-8">
-      <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 text-muted mx-auto mb-4" />
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-        No se encontraron plazos fijos
-      </h3>
-      <p class="text-muted">No hay plazos fijos disponibles en este momento.</p>
-    </div>
+          <div v-if="!loading && !plazosFijosItems.length" class="text-center py-8">
+            <UIcon
+              name="i-heroicons-exclamation-triangle"
+              class="w-12 h-12 text-muted mx-auto mb-4"
+            />
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              No se encontraron plazos fijos
+            </h3>
+            <p class="text-muted">No hay plazos fijos disponibles en este momento.</p>
+          </div>
+        </div>
+      </template>
+
+      <template #uvaPeriodico>
+        <div class="space-y-4 mt-6">
+          <p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-3xl">
+            Tasas nominales y efectivas anuales (TNA / TEA) informadas para plazos fijos en UVA con
+            cobro periódico de intereses (subperíodos de 30 días). La simulación usa solo la TNA
+            adicional sobre UVA (no incluye la actualización por índice UVA).
+          </p>
+
+          <UAlert
+            v-if="errorUva"
+            color="error"
+            variant="soft"
+            title="Error cargando plazos fijos UVA"
+          />
+
+          <FundsLoading v-if="loadingUva && !plazosFijosUvaPagoPeriodicoItems.length" />
+
+          <FundsList
+            v-else
+            :items="plazosFijosUvaWithSimulation"
+            mode="simple"
+            :show-simulation="isSimulating"
+            :simulator-days="days"
+            key-prop="rowKey"
+          />
+
+          <div
+            v-if="!loadingUva && !plazosFijosUvaPagoPeriodicoItems.length"
+            class="text-center py-8"
+          >
+            <UIcon
+              name="i-heroicons-exclamation-triangle"
+              class="w-12 h-12 text-muted mx-auto mb-4"
+            />
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              No hay cotizaciones UVA con pago periódico
+            </h3>
+            <p class="text-muted">No hay datos disponibles en este momento.</p>
+          </div>
+        </div>
+      </template>
+    </UTabs>
 
     <section
       class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"

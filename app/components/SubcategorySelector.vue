@@ -37,13 +37,13 @@ const getSubcategoryRoute = (page: NavigationPage): string => {
           <UButton
             v-for="page in currentCategory.pages"
             :key="page.to"
-            :variant="isActive(page, route.path) ? 'link' : 'ghost'"
+            :variant="isActive(page) ? 'link' : 'ghost'"
             color="neutral"
             size="sm"
             :to="getSubcategoryRoute(page)"
             :class="[
               'h-full transition-all duration-200 rounded-none flex-shrink-0',
-              isActive(page, route.path)
+              isActive(page)
                 ? 'border-b-2 border-primary-500 text-primary-600 dark:text-primary-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border-b-2 border-transparent',
             ]"

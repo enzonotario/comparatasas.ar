@@ -10,7 +10,13 @@ const props = defineProps<{
   mode?: 'simple' | 'detailed'
   showSimulation?: boolean
   showHistoryLink?: boolean
+  /** Días actuales del simulador (p. ej. PF UVA fuera de rango). */
+  simulatorDays?: number
 }>()
+
+function isUvaSimulationOutOfRange(item: any): boolean {
+  return !!(props.showSimulation && item.simulationDisabled)
+}
 
 function getHistoryUrl(item: any): string | null {
   if (!props.showHistoryLink) return null
@@ -74,7 +80,10 @@ function handleProviderClick(item: any) {
       :key="keyProp ? `${item[keyProp]}-${index}` : `item-${index}`"
     >
       <NuxtLink v-if="getHistoryUrl(item)" :to="getHistoryUrl(item)!">
-        <UCard :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }">
+        <UCard
+          :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }"
+          :class="isUvaSimulationOutOfRange(item) ? 'opacity-50 saturate-50' : ''"
+        >
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
@@ -153,8 +162,25 @@ function handleProviderClick(item: any) {
                 </div>
               </div>
 
-              <div class="text-right space-y-1">
-                <div v-if="showSimulation && item.simulation" class="space-y-1">
+              <div class="text-right space-y-1 max-w-[13rem] ml-auto">
+                <div v-if="isUvaSimulationOutOfRange(item)" class="space-y-1">
+                  <UBadge color="neutral" variant="subtle" class="tabular-nums">
+                    Fuera de rango
+                  </UBadge>
+                  <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-snug">
+                    <template v-if="simulatorDays != null">
+                      Con {{ simulatorDays }} días en el simulador esta fila no aplica (plazo
+                      {{ item.plazoMinDias }}–{{ item.plazoMaxDias }} días).
+                    </template>
+                    <template v-else>
+                      Plazo de esta tasa: {{ item.plazoMinDias }}–{{ item.plazoMaxDias }} días.
+                    </template>
+                  </p>
+                  <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                    {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}% TNA
+                  </div>
+                </div>
+                <div v-else-if="showSimulation && item.simulation" class="space-y-1">
                   <div class="text-primary-600 dark:text-primary-400 font-semibold text-lg">
                     {{ formatCurrency(item.simulation.earned) }}
                   </div>
@@ -220,7 +246,10 @@ function handleProviderClick(item: any) {
         :rel="item.url ? 'noopener noreferrer' : undefined"
         @click="handleProviderClick(item)"
       >
-        <UCard :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }">
+        <UCard
+          :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }"
+          :class="isUvaSimulationOutOfRange(item) ? 'opacity-50 saturate-50' : ''"
+        >
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
@@ -299,8 +328,25 @@ function handleProviderClick(item: any) {
                 </div>
               </div>
 
-              <div class="text-right space-y-1">
-                <div v-if="showSimulation && item.simulation" class="space-y-1">
+              <div class="text-right space-y-1 max-w-[13rem] ml-auto">
+                <div v-if="isUvaSimulationOutOfRange(item)" class="space-y-1">
+                  <UBadge color="neutral" variant="subtle" class="tabular-nums">
+                    Fuera de rango
+                  </UBadge>
+                  <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-snug">
+                    <template v-if="simulatorDays != null">
+                      Con {{ simulatorDays }} días en el simulador esta fila no aplica (plazo
+                      {{ item.plazoMinDias }}–{{ item.plazoMaxDias }} días).
+                    </template>
+                    <template v-else>
+                      Plazo de esta tasa: {{ item.plazoMinDias }}–{{ item.plazoMaxDias }} días.
+                    </template>
+                  </p>
+                  <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                    {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}% TNA
+                  </div>
+                </div>
+                <div v-else-if="showSimulation && item.simulation" class="space-y-1">
                   <div class="text-primary-600 dark:text-primary-400 font-semibold text-lg">
                     {{ formatCurrency(item.simulation.earned) }}
                   </div>

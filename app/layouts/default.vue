@@ -3,11 +3,11 @@ const { fetch: fetchFunds } = useFunds()
 const { fetch: fetchAccounts } = useAccounts()
 const { fetchCriptos: fetchCrypto } = useCrypto()
 const { fetch: fetchPlazosFijos } = usePlazosFijos()
+const { fetch: fetchPlazosFijosUvaPagoPeriodico } = usePlazosFijosUvaPagoPeriodico()
 const { fetch: fetchCriptopesos } = useCriptopesos()
 const { initialize } = useHotjar()
 
 const route = useRoute()
-const { pages } = useNavigationPages()
 
 const isSumarsePage = computed(() => route.path === '/sumarse')
 
@@ -22,6 +22,7 @@ onMounted(() => {
   fetchFunds()
   fetchCrypto()
   fetchPlazosFijos()
+  fetchPlazosFijosUvaPagoPeriodico()
   fetchCriptopesos()
   initialize()
 })
@@ -118,7 +119,7 @@ const pageDescription = computed(() => route.meta.pageDescription as string | un
 
           <FinancialAdviceCard v-if="!isSumarsePage" />
 
-          <PageNavigation :pages="pages" :current-route="route.path" />
+          <PageNavigation />
 
           <DisclaimerSection v-if="!isSumarsePage" :page="route.name" />
         </UContainer>

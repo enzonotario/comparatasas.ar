@@ -20,6 +20,12 @@ const props = withDefaults(
     defaultAmount?: number
     presetAmounts?: PresetAmount[]
     presetDays?: PresetDay[]
+    /** Mínimo de días editables (p. ej. 90 para PF UVA pago periódico). */
+    daysMin?: number
+    /** Máximo de días editables (p. ej. 1095). */
+    daysMax?: number
+    /** Modo informativo del recuadro ámbar (plazo fijo tradicional vs PF UVA). */
+    interestInfoMode?: 'default' | 'uvaPagoPeriodico'
   }>(),
   {
     presetAmounts: () => [
@@ -33,10 +39,19 @@ const props = withDefaults(
       { value: 14, label: '14d' },
       { value: 30, label: '30d' },
     ],
+    interestInfoMode: 'default',
   },
 )
 
 const { amount, days, isOpen, isSimulating } = useInvestmentSimulator()
+
+function clampDaysToBounds() {
+  if (props.fixedDays !== undefined) return
+  let d = days.value
+  if (props.daysMin !== undefined && d < props.daysMin) d = props.daysMin
+  if (props.daysMax !== undefined && d > props.daysMax) d = props.daysMax
+  days.value = d
+}
 
 // Si hay días fijos, establecerlos y mantenerlos; si no, aplicar default opcional por página
 if (props.fixedDays !== undefined) {
@@ -44,6 +59,7 @@ if (props.fixedDays !== undefined) {
 } else if (props.defaultDays !== undefined) {
   days.value = props.defaultDays
 }
+clampDaysToBounds()
 
 // Si hay monto inicial por defecto, aplicar al montar (y cuando cambie)
 if (props.defaultAmount !== undefined) {
@@ -56,7 +72,16 @@ watch(
   (newFixedDays) => {
     if (newFixedDays !== undefined) {
       days.value = newFixedDays
+    } else {
+      clampDaysToBounds()
     }
+  },
+)
+
+watch(
+  () => [props.daysMin, props.daysMax] as const,
+  () => {
+    clampDaysToBounds()
   },
 )
 
@@ -68,6 +93,9 @@ watch(
     }
   },
 )
+
+const resolvedDaysMin = computed(() => props.daysMin ?? 1)
+const resolvedDaysMax = computed(() => props.daysMax)
 
 const isDesktop = useMediaQuery('(min-width: 1024px)')
 
@@ -155,9 +183,14 @@ const closeSimulator = () => {
             </UFormField>
 
             <UFormField label="Días" name="days">
-              <UInputNumber v-model="days" :min="1" :disabled="fixedDays !== undefined" />
+              <UInputNumber
+                v-model="days"
+                :min="resolvedDaysMin"
+                :max="resolvedDaysMax"
+                :disabled="fixedDays !== undefined"
+              />
               <template v-if="!fixedDays" #hint>
-                <div class="flex gap-1 mt-1.5">
+                <div class="flex flex-wrap gap-1 mt-1.5">
                   <UButton
                     v-for="preset in presetDays"
                     :key="preset.value"
@@ -179,10 +212,18 @@ const closeSimulator = () => {
               <div class="flex items-start gap-2 text-xs text-amber-600 dark:text-amber-400">
                 <UIcon name="i-lucide-info" class="size-4 mt-0.5 flex-shrink-0" />
                 <div class="space-y-1">
-                  <p v-if="!fixedDays">
-                    Calcula con interés compuesto. Algunos proveedores tienen límites máximos.
-                  </p>
-                  <p v-if="fixedDays">Plazos fijos: {{ fixedDays }} días con interés simple.</p>
+                  <template v-if="interestInfoMode === 'uvaPagoPeriodico' && !fixedDays">
+                    <p>
+                      Interés compuesto sobre la TNA adicional (no incluye el ajuste por índice
+                      UVA).
+                    </p>
+                  </template>
+                  <template v-else>
+                    <p v-if="!fixedDays">
+                      Calcula con interés compuesto. Algunos proveedores tienen límites máximos.
+                    </p>
+                    <p v-if="fixedDays">Plazos fijos: {{ fixedDays }} días con interés simple.</p>
+                  </template>
                 </div>
               </div>
             </div>
@@ -232,9 +273,14 @@ const closeSimulator = () => {
             </UFormField>
 
             <UFormField label="Días" name="days">
-              <UInputNumber v-model="days" :min="1" :disabled="fixedDays !== undefined" />
+              <UInputNumber
+                v-model="days"
+                :min="resolvedDaysMin"
+                :max="resolvedDaysMax"
+                :disabled="fixedDays !== undefined"
+              />
               <template v-if="!fixedDays" #hint>
-                <div class="flex gap-1 mt-1.5">
+                <div class="flex flex-wrap gap-1 mt-1.5">
                   <UButton
                     v-for="preset in presetDays"
                     :key="preset.value"
@@ -256,10 +302,18 @@ const closeSimulator = () => {
               <div class="flex items-start gap-2 text-xs text-amber-600 dark:text-amber-400">
                 <UIcon name="i-lucide-info" class="size-4 mt-0.5 flex-shrink-0" />
                 <div class="space-y-1">
-                  <p v-if="!fixedDays">
-                    Calcula con interés compuesto. Algunos proveedores tienen límites máximos.
-                  </p>
-                  <p v-if="fixedDays">Plazos fijos: {{ fixedDays }} días con interés simple.</p>
+                  <template v-if="interestInfoMode === 'uvaPagoPeriodico' && !fixedDays">
+                    <p>
+                      Interés compuesto sobre la TNA adicional (no incluye el ajuste por índice
+                      UVA).
+                    </p>
+                  </template>
+                  <template v-else>
+                    <p v-if="!fixedDays">
+                      Calcula con interés compuesto. Algunos proveedores tienen límites máximos.
+                    </p>
+                    <p v-if="fixedDays">Plazos fijos: {{ fixedDays }} días con interés simple.</p>
+                  </template>
                 </div>
               </div>
             </div>

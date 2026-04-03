@@ -13,6 +13,11 @@ export interface NavigationCategory {
   pages: NavigationPage[]
 }
 
+function getPagePath(to: string): string {
+  const i = to.indexOf('?')
+  return i === -1 ? to : to.slice(0, i)
+}
+
 export const useNavigationPages = () => {
   const route = useRoute()
 
@@ -21,12 +26,32 @@ export const useNavigationPages = () => {
     return routePath === '/' ? '/cuentas-billeteras' : routePath
   }
 
+  const isPlazoUvaTabQuery = (): boolean => {
+    const t = route.query.tab
+    return t === 'uvaPeriodico' || (Array.isArray(t) && t[0] === 'uvaPeriodico')
+  }
+
+  /** Coincidencia de ruta + query (p. ej. /plazos-fijos vs ?tab=uvaPeriodico). */
+  const isPageActive = (page: NavigationPage): boolean => {
+    const normalizedPath = normalizeRoute(route.path)
+    const pagePath = normalizeRoute(getPagePath(page.to))
+    if (pagePath !== normalizedPath) return false
+
+    const pageHasUvaTab = page.to.includes('tab=uvaPeriodico')
+    if (pagePath === '/plazos-fijos') {
+      if (pageHasUvaTab) return isPlazoUvaTabQuery()
+      return !isPlazoUvaTabQuery()
+    }
+
+    return !pageHasUvaTab
+  }
+
   const categories: NavigationCategory[] = [
     {
       id: 'ars',
       label: 'ARS',
       ariaLabel:
-        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, LECAPs y créditos hipotecarios UVA',
+        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, PF UVA pago periódico, LECAPs y créditos hipotecarios UVA',
       icon: 'flag-ars',
       pages: [
         {
@@ -39,6 +64,12 @@ export const useNavigationPages = () => {
           to: '/plazos-fijos',
           label: 'Plazo Fijo',
           icon: 'i-lucide-clock',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
+        },
+        {
+          to: '/plazos-fijos?tab=uvaPeriodico',
+          label: 'PF UVA pago periódico',
+          icon: 'i-lucide-calendar-range',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
         },
         {
@@ -91,35 +122,36 @@ export const useNavigationPages = () => {
   const getCurrentCategory = (): NavigationCategory | null => {
     const currentPath = normalizeRoute(route.path)
     return (
-      categories.find((category) => category.pages.some((page) => page.to === currentPath)) ?? null
+      categories.find((category) =>
+        category.pages.some((page) => normalizeRoute(getPagePath(page.to)) === currentPath),
+      ) ?? null
     )
   }
 
   const getCurrentPage = (): NavigationPage | null => {
-    const currentPath = normalizeRoute(route.path)
-    return pages.find((page) => page.to === currentPath) ?? null
+    return pages.find((page) => isPageActive(page)) ?? null
   }
 
   const getCategoryByRoute = (routePath: string): NavigationCategory | null => {
     const normalizedPath = normalizeRoute(routePath)
     return (
-      categories.find((category) => category.pages.some((page) => page.to === normalizedPath)) ??
-      null
+      categories.find((category) =>
+        category.pages.some((page) => normalizeRoute(getPagePath(page.to)) === normalizedPath),
+      ) ?? null
     )
   }
 
-  const getCurrentIndex = (currentRoute: string) => {
-    const normalizedRoute = normalizeRoute(currentRoute)
-    return pages.findIndex((page) => page.to === normalizedRoute)
+  const getCurrentIndex = () => {
+    return pages.findIndex((page) => isPageActive(page))
   }
 
-  const getPreviousPage = (currentRoute: string): NavigationPage | null => {
-    const normalizedRoute = normalizeRoute(currentRoute)
+  const getPreviousPage = (): NavigationPage | null => {
+    const normalizedRoute = normalizeRoute(route.path)
     const currentCategory = getCategoryByRoute(normalizedRoute)
     if (!currentCategory) return null
 
     const categoryPages = currentCategory.pages
-    const currentIndex = categoryPages.findIndex((page) => page.to === normalizedRoute)
+    const currentIndex = categoryPages.findIndex((page) => isPageActive(page))
     const prevIndex = currentIndex - 1
 
     if (prevIndex >= 0) {
@@ -138,13 +170,13 @@ export const useNavigationPages = () => {
     return null
   }
 
-  const getNextPage = (currentRoute: string): NavigationPage | null => {
-    const normalizedRoute = normalizeRoute(currentRoute)
+  const getNextPage = (): NavigationPage | null => {
+    const normalizedRoute = normalizeRoute(route.path)
     const currentCategory = getCategoryByRoute(normalizedRoute)
     if (!currentCategory) return null
 
     const categoryPages = currentCategory.pages
-    const currentIndex = categoryPages.findIndex((page) => page.to === normalizedRoute)
+    const currentIndex = categoryPages.findIndex((page) => isPageActive(page))
     const nextIndex = currentIndex + 1
 
     if (nextIndex < categoryPages.length) {
@@ -163,14 +195,11 @@ export const useNavigationPages = () => {
     return null
   }
 
-  const isActive = (page: NavigationPage, currentRoute: string): boolean => {
-    const normalizedRoute = normalizeRoute(currentRoute)
-    return page.to === normalizedRoute
-  }
+  const isActive = (page: NavigationPage): boolean => isPageActive(page)
 
   const isCategoryActive = (category: NavigationCategory, currentRoute: string): boolean => {
     const normalizedRoute = normalizeRoute(currentRoute)
-    return category.pages.some((page) => page.to === normalizedRoute)
+    return category.pages.some((page) => normalizeRoute(getPagePath(page.to)) === normalizedRoute)
   }
 
   return {

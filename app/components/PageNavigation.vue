@@ -1,16 +1,8 @@
 <script setup lang="ts">
-import type { NavigationPage } from '~/composables/useNavigationPages'
-
-interface Props {
-  pages: NavigationPage[]
-  currentRoute: string
-}
-
-const props = defineProps<Props>()
 const { getPreviousPage, getNextPage } = useNavigationPages()
 
-const previousPage = computed(() => getPreviousPage(props.currentRoute))
-const nextPage = computed(() => getNextPage(props.currentRoute))
+const previousPage = computed(() => getPreviousPage())
+const nextPage = computed(() => getNextPage())
 </script>
 
 <template>

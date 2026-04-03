@@ -34,7 +34,14 @@ export function useInvestmentSimulator() {
   }
 
   const calculateResults = <
-    T extends { tna: number; tope?: number | null; type?: string; fondo?: string },
+    T extends {
+      tna: number
+      tope?: number | null
+      type?: string
+      fondo?: string
+      plazoMinDias?: number
+      plazoMaxDias?: number
+    },
   >(
     itemsRef: Ref<T[]> | ComputedRef<T[]>,
     allFundsCache?: Ref<any[]>,
@@ -51,10 +58,26 @@ export function useInvestmentSimulator() {
         const isFiwind = item.fondo === 'Fiwind' && hasLimit && exceedsLimit && deltaPesosFund
 
         const isPlazoFijo = item.type === 'plazoFijo30d'
+        const isUvaPagoPeriodico = item.type === 'plazoFijoUvaPagoPeriodico'
         const effectiveDays = isPlazoFijo ? 30 : days.value
+
+        const uvaPlazoMin = item.plazoMinDias
+        const uvaPlazoMax = item.plazoMaxDias
+        const simulationDisabled =
+          isUvaPagoPeriodico &&
+          uvaPlazoMin !== undefined &&
+          uvaPlazoMax !== undefined &&
+          (days.value < uvaPlazoMin || days.value > uvaPlazoMax)
 
         let result: { finalAmount: number; earned: number }
         let effectiveAmount = amount.value
+
+        if (simulationDisabled) {
+          return {
+            ...item,
+            simulationDisabled: true as const,
+          }
+        }
 
         if (isFiwind) {
           const topeAmount = item.tope!
@@ -74,7 +97,7 @@ export function useInvestmentSimulator() {
           }
         } else {
           effectiveAmount = exceedsLimit ? item.tope! : amount.value
-          const tnaValue = isPlazoFijo ? item.tna / 100 : item.tna
+          const tnaValue = isPlazoFijo || isUvaPagoPeriodico ? item.tna / 100 : item.tna
 
           result = isPlazoFijo
             ? calculateSimpleInterest(effectiveAmount, tnaValue, effectiveDays)
@@ -83,6 +106,7 @@ export function useInvestmentSimulator() {
 
         return {
           ...item,
+          simulationDisabled: false as const,
           simulation: {
             initialAmount: amount.value,
             effectiveAmount: isFiwind ? amount.value : effectiveAmount,
