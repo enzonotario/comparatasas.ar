@@ -21,16 +21,29 @@ function getPagePath(to: string): string {
 export const useNavigationPages = () => {
   const route = useRoute()
 
-  // Normaliza: sin barra final; '/' → '/cuentas-billeteras'
+  // Normaliza la ruta: convierte '/' a '/cuentas-billeteras'
   const normalizeRoute = (routePath: string): string => {
-    const trimmed = routePath.replace(/\/$/, '') || '/'
-    return trimmed === '/' ? '/cuentas-billeteras' : trimmed
+    return routePath === '/' ? '/cuentas-billeteras' : routePath
   }
 
+  const isPlazoUvaTabQuery = (): boolean => {
+    const t = route.query.tab
+    return t === 'uvaPeriodico' || (Array.isArray(t) && t[0] === 'uvaPeriodico')
+  }
+
+  /** Coincidencia de ruta + query (p. ej. /plazos-fijos vs ?tab=uvaPeriodico). */
   const isPageActive = (page: NavigationPage): boolean => {
     const normalizedPath = normalizeRoute(route.path)
     const pagePath = normalizeRoute(getPagePath(page.to))
-    return pagePath === normalizedPath
+    if (pagePath !== normalizedPath) return false
+
+    const pageHasUvaTab = page.to.includes('tab=uvaPeriodico')
+    if (pagePath === '/plazos-fijos') {
+      if (pageHasUvaTab) return isPlazoUvaTabQuery()
+      return !isPlazoUvaTabQuery()
+    }
+
+    return !pageHasUvaTab
   }
 
   const categories: NavigationCategory[] = [
@@ -54,7 +67,7 @@ export const useNavigationPages = () => {
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
         },
         {
-          to: '/plazos-fijos/uva-pago-periodico',
+          to: '/plazos-fijos?tab=uvaPeriodico',
           label: 'PF UVA pago periódico',
           icon: 'i-lucide-calendar-range',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
