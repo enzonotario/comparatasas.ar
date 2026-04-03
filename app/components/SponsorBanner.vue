@@ -161,7 +161,7 @@ const handleSponsorClick = () => {
 </script>
 
 <template>
-  <div v-if="currentBanner" class="w-full my-6 overflow-hidden rounded-xl shadow-sm relative group">
+  <div v-if="currentBanner" class="w-full overflow-hidden rounded-xl shadow-sm relative group">
     <NuxtLink
       v-if="currentBanner.linkUrl"
       :to="currentBanner.linkUrl"
