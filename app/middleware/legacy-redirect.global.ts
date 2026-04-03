@@ -1,4 +1,19 @@
+function tabQueryFirst(tab: unknown): string | undefined {
+  if (typeof tab === 'string') return tab
+  if (Array.isArray(tab) && typeof tab[0] === 'string') return tab[0]
+  return undefined
+}
+
 export default defineNuxtRouteMiddleware((to) => {
+  // Legacy: PF UVA pago periódico vivía en ?tab=uvaPeriodico (producción)
+  const plazosPath = to.path.replace(/\/$/, '') || '/'
+  if (plazosPath === '/plazos-fijos' && tabQueryFirst(to.query.tab) === 'uvaPeriodico') {
+    return navigateTo('/plazos-fijos/uva-pago-periodico', {
+      redirectCode: 301,
+      replace: true,
+    })
+  }
+
   // Redireccionar /cuentas-billeteras a / para evitar duplicados
   if (to.path === '/cuentas-billeteras' || to.path === '/cuentas-billeteras/') {
     return navigateTo('/', {
