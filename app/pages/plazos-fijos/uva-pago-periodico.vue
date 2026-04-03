@@ -102,6 +102,7 @@ onMounted(() => {
 <template>
   <div class="space-y-6">
     <InvestmentSimulator
+      :default-amount="1000000"
       :preset-days="uvaSimulatorPresets"
       :preset-amounts="[
         { value: 1000000, label: '$1M' },
