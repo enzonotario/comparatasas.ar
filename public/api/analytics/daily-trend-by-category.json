@@ -1,22 +1,40 @@
 [
   {
-    "date": "20260403",
+    "date": "20260404",
     "categories": {
-      "Money Market": 34,
-      "Plazo Fijo": 41,
-      "Página Amiga": 6,
-      "Cuenta Remunerada": 55,
-      "Otro": 27,
-      "Billetera": 28,
-      "Billetera USD": 18,
+      "Money Market": 27,
+      "Plazo Fijo": 56,
+      "Cuenta Remunerada": 31,
+      "Página Amiga": 2,
+      "Otro": 25,
+      "Billetera": 20,
+      "Billetera USD": 8,
       "Cuenta Remunerada USD": 1,
-      "PF UVA pago periódico": 28,
+      "PF UVA pago periódico": 10,
       "Renta Fija": 5,
-      "Renta Mixta": 5,
-      "General": 12,
+      "General": 13,
       "Criptomonedas": 8
     },
-    "total": 268
+    "total": 206
+  },
+  {
+    "date": "20260403",
+    "categories": {
+      "Money Market": 70,
+      "Plazo Fijo": 114,
+      "Página Amiga": 20,
+      "Cuenta Remunerada": 139,
+      "Otro": 74,
+      "Billetera": 74,
+      "Billetera USD": 27,
+      "Cuenta Remunerada USD": 1,
+      "PF UVA pago periódico": 47,
+      "Renta Fija": 10,
+      "Renta Mixta": 10,
+      "General": 20,
+      "Criptomonedas": 22
+    },
+    "total": 628
   },
   {
     "date": "20260402",
@@ -58,31 +76,14 @@
   {
     "date": "20260331",
     "categories": {
-      "Otro": 99,
-      "Página Amiga": 66,
-      "Money Market": 122,
-      "Plazo Fijo": 252,
-      "Cuenta Remunerada": 128,
-      "Billetera": 108,
-      "Criptomonedas": 27,
-      "Billetera USD": 39,
-      "Cuenta Remunerada USD": 6,
-      "Renta Fija": 24,
-      "Renta Mixta": 19,
-      "General": 28
+      "Otro": 37,
+      "Página Amiga": 27,
+      "Money Market": 22,
+      "Plazo Fijo": 50,
+      "Cuenta Remunerada": 46,
+      "Billetera": 42,
+      "Criptomonedas": 1
     },
-    "total": 918
-  },
-  {
-    "date": "20260330",
-    "categories": {
-      "Money Market": 8,
-      "Plazo Fijo": 46,
-      "Cuenta Remunerada": 16,
-      "Otro": 5,
-      "Billetera": 11,
-      "Página Amiga": 5
-    },
-    "total": 91
+    "total": 225
   }
 ]
