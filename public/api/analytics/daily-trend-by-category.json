@@ -1,21 +1,40 @@
 [
   {
+    "date": "20260405",
+    "categories": {
+      "Página Amiga": 9,
+      "Money Market": 31,
+      "Plazo Fijo": 59,
+      "Cuenta Remunerada": 21,
+      "Otro": 21,
+      "Billetera": 18,
+      "Billetera USD": 10,
+      "PF UVA pago periódico": 5,
+      "Renta Fija": 16,
+      "Renta Mixta": 2,
+      "General": 2,
+      "Criptomonedas": 6
+    },
+    "total": 200
+  },
+  {
     "date": "20260404",
     "categories": {
-      "Money Market": 27,
-      "Plazo Fijo": 56,
-      "Cuenta Remunerada": 31,
-      "Página Amiga": 2,
-      "Otro": 25,
-      "Billetera": 20,
-      "Billetera USD": 8,
-      "Cuenta Remunerada USD": 1,
-      "PF UVA pago periódico": 10,
-      "Renta Fija": 5,
-      "General": 13,
-      "Criptomonedas": 8
+      "Money Market": 69,
+      "Plazo Fijo": 116,
+      "Cuenta Remunerada": 96,
+      "Página Amiga": 9,
+      "Otro": 59,
+      "Billetera": 56,
+      "Criptomonedas": 14,
+      "Billetera USD": 14,
+      "Cuenta Remunerada USD": 2,
+      "PF UVA pago periódico": 25,
+      "Renta Fija": 11,
+      "Renta Mixta": 2,
+      "General": 29
     },
-    "total": 206
+    "total": 502
   },
   {
     "date": "20260403",
@@ -58,32 +77,14 @@
   {
     "date": "20260401",
     "categories": {
-      "Money Market": 115,
-      "Plazo Fijo": 265,
-      "Cuenta Remunerada": 129,
-      "Billetera": 106,
-      "Página Amiga": 29,
-      "Otro": 75,
-      "Criptomonedas": 31,
-      "Billetera USD": 37,
-      "Cuenta Remunerada USD": 7,
-      "Renta Fija": 40,
-      "Renta Mixta": 21,
-      "General": 29
+      "Money Market": 58,
+      "Plazo Fijo": 94,
+      "Cuenta Remunerada": 67,
+      "Billetera": 99,
+      "Página Amiga": 21,
+      "Otro": 62,
+      "Criptomonedas": 2
     },
-    "total": 884
-  },
-  {
-    "date": "20260331",
-    "categories": {
-      "Otro": 37,
-      "Página Amiga": 27,
-      "Money Market": 22,
-      "Plazo Fijo": 50,
-      "Cuenta Remunerada": 46,
-      "Billetera": 42,
-      "Criptomonedas": 1
-    },
-    "total": 225
+    "total": 403
   }
 ]
