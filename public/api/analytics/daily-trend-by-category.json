@@ -1,21 +1,39 @@
 [
   {
+    "date": "20260406",
+    "categories": {
+      "Money Market": 51,
+      "Plazo Fijo": 100,
+      "Página Amiga": 19,
+      "Cuenta Remunerada": 63,
+      "Otro": 40,
+      "Billetera": 14,
+      "Billetera USD": 13,
+      "PF UVA pago periódico": 23,
+      "Renta Fija": 16,
+      "Renta Mixta": 5,
+      "General": 13,
+      "Criptomonedas": 17
+    },
+    "total": 374
+  },
+  {
     "date": "20260405",
     "categories": {
-      "Página Amiga": 9,
-      "Money Market": 31,
-      "Plazo Fijo": 59,
-      "Cuenta Remunerada": 21,
-      "Otro": 21,
-      "Billetera": 18,
-      "Billetera USD": 10,
-      "PF UVA pago periódico": 5,
-      "Renta Fija": 16,
-      "Renta Mixta": 2,
-      "General": 2,
-      "Criptomonedas": 6
+      "Página Amiga": 20,
+      "Money Market": 73,
+      "Plazo Fijo": 154,
+      "Cuenta Remunerada": 78,
+      "Otro": 69,
+      "Billetera": 50,
+      "Billetera USD": 15,
+      "PF UVA pago periódico": 27,
+      "Renta Fija": 29,
+      "Renta Mixta": 7,
+      "General": 10,
+      "Criptomonedas": 13
     },
-    "total": 200
+    "total": 545
   },
   {
     "date": "20260404",
@@ -58,33 +76,13 @@
   {
     "date": "20260402",
     "categories": {
-      "Página Amiga": 30,
-      "Money Market": 59,
-      "Plazo Fijo": 205,
-      "Cuenta Remunerada": 62,
-      "Otro": 75,
-      "Billetera": 71,
-      "Billetera USD": 28,
-      "Cuenta Remunerada USD": 2,
-      "PF UVA pago periódico": 4,
-      "Renta Fija": 11,
-      "Renta Mixta": 6,
-      "General": 20,
-      "Criptomonedas": 28
+      "Página Amiga": 26,
+      "Money Market": 22,
+      "Plazo Fijo": 62,
+      "Cuenta Remunerada": 34,
+      "Otro": 34,
+      "Billetera": 26
     },
-    "total": 601
-  },
-  {
-    "date": "20260401",
-    "categories": {
-      "Money Market": 58,
-      "Plazo Fijo": 94,
-      "Cuenta Remunerada": 67,
-      "Billetera": 99,
-      "Página Amiga": 21,
-      "Otro": 62,
-      "Criptomonedas": 2
-    },
-    "total": 403
+    "total": 204
   }
 ]
