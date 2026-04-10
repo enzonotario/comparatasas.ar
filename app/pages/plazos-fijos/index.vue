@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PlazosFijosTnaBarChart from '~/components/charts/PlazosFijosTnaBarChart.vue'
 import { ogUpdatedAtDate, top3PlazosFijos } from '~/utils/og-data'
 
 definePageMeta({
@@ -86,6 +87,19 @@ const plazosFijosWithSimulation = calculateResults(plazosFijosItems)
         </h3>
         <p class="text-muted">No hay plazos fijos disponibles en este momento.</p>
       </div>
+
+      <UCard v-if="!loading && plazosFijosItems.length > 0">
+        <template #header>
+          <div class="flex items-center gap-2">
+            <UIcon
+              name="i-lucide-bar-chart-3"
+              class="size-5 text-primary-600 dark:text-primary-400"
+            />
+            <h3 class="font-semibold text-lg">TNA por entidad (30 días, clientes)</h3>
+          </div>
+        </template>
+        <PlazosFijosTnaBarChart :items="plazosFijosItems" />
+      </UCard>
     </div>
 
     <section
