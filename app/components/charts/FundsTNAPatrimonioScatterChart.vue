@@ -39,7 +39,8 @@ const chartOptions = computed(() => {
     },
     tooltip: {
       formatter() {
-        return `<b>${this.point.name}</b><br/>Patrimonio: ${formatCurrency(this.point.x)}<br/>TNA: ${this.point.y.toFixed(2)}%`
+        const p = (this as any).point
+        return `<b>${p.name}</b><br/>Patrimonio: ${formatCurrency(p.x)}<br/>TNA: ${p.y.toFixed(2)}%`
       },
     },
     xAxis: {
@@ -51,7 +52,7 @@ const chartOptions = computed(() => {
       },
       labels: {
         formatter() {
-          return formatCurrency(this.value)
+          return formatCurrency((this as any).value)
         },
         style: {
           color: textColor.value,
@@ -68,7 +69,7 @@ const chartOptions = computed(() => {
       },
       labels: {
         formatter() {
-          return `${this.value.toFixed(1)}%`
+          return `${(this as any).value.toFixed(1)}%`
         },
         style: {
           color: textColor.value,
@@ -86,8 +87,8 @@ const chartOptions = computed(() => {
         dataLabels: {
           enabled: true,
           formatter() {
-            const tna = this.y.toFixed(1)
-            return `${this.point.name}<br/>${tna}%`
+            const tna = (this as any).y.toFixed(1)
+            return `${(this as any).point.name}<br/>${tna}%`
           },
           style: {
             color: textColor.value,

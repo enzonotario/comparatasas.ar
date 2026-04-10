@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { AccountHistoryItem } from '~/composables/useAccountHistory'
+import 'vue-data-ui/style.css'
 import { useChartTheme } from '~/composables/useChartConfig'
+import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
+import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
 
 interface Props {
   history: AccountHistoryItem[]
@@ -9,122 +12,112 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const chart = useVueDataUiChart('VueUiXy')
 const { textColor, gridLineColor } = useChartTheme()
+const solidTooltip = useVueDataUiSolidTooltip()
 
-const chartOptions = computed(() => {
-  if (props.history.length === 0) return null
+function formatShortDate(iso: string) {
+  const d = new Date(iso)
+  return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear().toString().slice(-2)}`
+}
 
-  const dates = props.history.map((item) => {
-    const date = new Date(item.fecha)
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear().toString().slice(-2)}`
-  })
-  const tnaValues = props.history.map((item, index) => ({
-    y: item.tna * 100,
-    name: dates[index],
-    customData: item,
-  }))
+const xLabels = computed(() => props.history.map((item) => formatShortDate(item.fecha)))
 
-  return {
-    chart: {
-      type: 'line',
-      backgroundColor: 'transparent',
+const dataset = computed(() => {
+  if (!props.history.length) return []
+  return [
+    {
+      name: 'TNA',
+      series: props.history.map((item) => item.tna * 100),
+      type: 'line' as const,
+      useArea: true,
+      smooth: true,
+      color: '#3b82f6',
+      suffix: '%',
     },
-    title: {
-      text: '',
+  ]
+})
+
+const chartConfig = computed(() => ({
+  responsive: true,
+  theme: '',
+  useCssAnimation: false,
+  chart: {
+    fontFamily: 'inherit',
+    backgroundColor: 'transparent',
+    color: textColor.value,
+    height: 384,
+    userOptions: { show: false },
+    grid: {
+      stroke: gridLineColor.value,
+      showHorizontalLines: true,
+      showVerticalLines: false,
+      labels: {
+        color: textColor.value,
+        show: true,
+        fontSize: 11,
+        axis: {
+          yLabel: 'TNA (%)',
+          xLabel: 'Fecha',
+        },
+        yAxis: {
+          formatter: (v: number | string) => `${Number(v).toFixed(1)}%`,
+        },
+        xAxisLabels: {
+          values: xLabels.value,
+          rotation: -45,
+          fontSize: 10,
+        },
+      },
     },
     tooltip: {
-      formatter() {
-        const category = (this.point as any).name || this.x
-        const item = (this.point as any).customData
-        const topeText = item?.tope
+      ...solidTooltip.value,
+      show: true,
+      customFormat: (params: { absoluteIndex?: number }) => {
+        const i = params.absoluteIndex ?? 0
+        const item = props.history[i]
+        const label = xLabels.value[i] ?? ''
+        if (!item) return ''
+        const y = (item.tna * 100).toFixed(2)
+        const topeText = item.tope
           ? `Tope: ${new Intl.NumberFormat('es-AR', {
               style: 'currency',
               currency: 'ARS',
               minimumFractionDigits: 0,
               maximumFractionDigits: 0,
             }).format(item.tope)}`
-          : 'Tope: Sin Límite'
-        return `<b>${category}</b><br/>TNA: ${this.y.toFixed(2)}%<br/>${topeText}`
+          : 'Tope: Sin límite'
+        return `<div style="font-family:inherit"><b>${label}</b><br/>TNA: ${y}%<br/>${topeText}</div>`
       },
     },
-    xAxis: {
-      categories: dates,
-      labels: {
-        style: {
-          color: textColor.value,
-        },
-        rotation: -45,
-      },
-      title: {
-        text: 'Fecha',
-        style: {
-          color: textColor.value,
-        },
-      },
-    },
-    yAxis: {
-      title: {
-        text: 'TNA (%)',
-        style: {
-          color: textColor.value,
-        },
-      },
-      labels: {
-        formatter() {
-          return `${this.value.toFixed(1)}%`
-        },
-        style: {
-          color: textColor.value,
-        },
-      },
-      gridLineColor: gridLineColor.value,
-    },
-    plotOptions: {
-      line: {
-        marker: {
-          enabled: true,
-          radius: 3,
-        },
-      },
-      area: {
-        fillColor: {
-          linearGradient: {
-            x1: 0,
-            y1: 0,
-            x2: 0,
-            y2: 1,
-          },
-          stops: [
-            [0, 'rgba(59, 130, 246, 0.3)'],
-            [1, 'rgba(59, 130, 246, 0.05)'],
-          ],
-        },
-      },
-    },
-    series: [
-      {
-        name: 'TNA',
-        data: tnaValues,
-        type: 'area',
-        color: '#3b82f6',
-        lineWidth: 2,
-      },
-    ],
-    legend: {
-      enabled: false,
-    },
-    credits: {
-      enabled: false,
-    },
-  }
-})
+    legend: { show: false, color: textColor.value },
+  },
+  line: {
+    area: { opacity: 0.35, useGradient: true },
+    labels: { show: false },
+  },
+  table: { show: false },
+}))
 </script>
 
 <template>
-  <div class="w-full" style="height: 24rem; min-height: 384px">
-    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
-    <div v-else class="w-full h-full flex items-center justify-center">
-      <div class="text-neutral-500">Cargando gráfico...</div>
-    </div>
+  <div class="w-full min-h-96 [&_svg]:max-w-full [&_svg]:h-auto">
+    <ClientOnly>
+      <component
+        :is="chart"
+        v-if="chart && dataset.length > 0"
+        :dataset="dataset"
+        :config="chartConfig"
+      />
+      <div
+        v-else-if="chart && dataset.length === 0"
+        class="py-12 text-center text-sm text-neutral-500"
+      >
+        Sin datos de historial.
+      </div>
+      <div v-else class="min-h-96 flex items-center justify-center text-neutral-500">
+        Cargando gráfico…
+      </div>
+    </ClientOnly>
   </div>
 </template>

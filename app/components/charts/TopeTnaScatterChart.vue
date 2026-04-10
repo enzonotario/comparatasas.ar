@@ -56,10 +56,9 @@ const chartOptions = computed(() => {
     },
     tooltip: {
       formatter() {
-        const topeText = this.point.hasLimit
-          ? `Tope: ${formatCurrency(this.point.x)}`
-          : 'Tope: Sin Límite'
-        return `<b>${this.point.name}</b><br/>${topeText}<br/>TNA: ${this.point.y.toFixed(2)}%`
+        const p = (this as any).point
+        const topeText = p.hasLimit ? `Tope: ${formatCurrency(p.x)}` : 'Tope: Sin Límite'
+        return `<b>${p.name}</b><br/>${topeText}<br/>TNA: ${p.y.toFixed(2)}%`
       },
     },
     xAxis: {
@@ -71,13 +70,14 @@ const chartOptions = computed(() => {
       },
       labels: {
         formatter() {
+          const v = (this as any).value as number
           // Detectar si es el valor de "Sin Límite"
-          if (Math.abs(this.value - sinLimiteValue) < sinLimiteValue * 0.1) {
+          if (Math.abs(v - sinLimiteValue) < sinLimiteValue * 0.1) {
             return 'Sin Límite'
           }
-          if (this.value >= 1000000) return `$${(this.value / 1000000).toFixed(1)}M`
-          if (this.value >= 1000) return `$${(this.value / 1000).toFixed(0)}k`
-          return `$${this.value}`
+          if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`
+          if (v >= 1000) return `$${(v / 1000).toFixed(0)}k`
+          return `$${v}`
         },
         style: {
           color: textColor.value,
@@ -94,7 +94,7 @@ const chartOptions = computed(() => {
       },
       labels: {
         formatter() {
-          return `${this.value.toFixed(1)}%`
+          return `${(this as any).value.toFixed(1)}%`
         },
         style: {
           color: textColor.value,
@@ -112,8 +112,8 @@ const chartOptions = computed(() => {
         dataLabels: {
           enabled: true,
           formatter() {
-            const tna = this.y.toFixed(1)
-            return `${this.point.name}<br/>${tna}%`
+            const tna = (this as any).y.toFixed(1)
+            return `${(this as any).point.name}<br/>${tna}%`
           },
           style: {
             color: textColor.value,

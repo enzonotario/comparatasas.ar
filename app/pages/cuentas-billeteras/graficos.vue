@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import TNABarChart from '~/components/charts/TNABarChart.vue'
-import TopeTnaScatterChart from '~/components/charts/TopeTnaScatterChart.vue'
-import FundsTNABarChart from '~/components/charts/FundsTNABarChart.vue'
+import TNAGroupedTnaChart from '~/components/charts/TNAGroupedTnaChart.vue'
 import FundsPatrimonioBarChart from '~/components/charts/FundsPatrimonioBarChart.vue'
 import FundsTNAPatrimonioScatterChart from '~/components/charts/FundsTNAPatrimonioScatterChart.vue'
+import TopeTnaScatterChart from '~/components/charts/TopeTnaScatterChart.vue'
 
 definePageMeta({
   pageTitle: 'Análisis Visual y Gráficos',
   pageDescription:
-    'Visualizá y compará tasas, topes y patrimonios de cuentas remuneradas, billeteras y fondos de inversión en Argentina.',
+    'Visualizá y compará tasas y patrimonios de cuentas remuneradas, billeteras y fondos de inversión en Argentina.',
 })
 
 useSeoMeta({
   title: 'Análisis Visual de Tasas',
   description:
-    'Gráficos interactivos de tasas de cuentas remuneradas, billeteras y FCI en Argentina. Visualizá TNA y topes fácilmente.',
+    'Gráficos interactivos de tasas de cuentas remuneradas, billeteras y FCI en Argentina. Visualizá TNA y patrimonios fácilmente.',
   ogTitle: 'Análisis Visual de Cuentas y FCI - Compara Tasas',
   ogDescription:
-    'Gráficos interactivos de tasas de cuentas remuneradas, billeteras y FCI en Argentina. Visualizá TNA y topes fácilmente.',
+    'Gráficos interactivos de tasas de cuentas remuneradas, billeteras y FCI en Argentina. Visualizá TNA y patrimonios fácilmente.',
 })
 
 useHead({
@@ -95,21 +94,6 @@ const hasFundsData = computed(() => {
 
 const { fetch: fetchAccounts } = useAccounts()
 
-const tabsItems = [
-  {
-    label: 'Cuentas y Billeteras',
-    icon: 'i-lucide-wallet',
-    slot: 'accounts',
-    value: 'accounts',
-  },
-  {
-    label: 'Fondos Comunes de Inversión',
-    icon: 'i-lucide-trending-up',
-    slot: 'funds',
-    value: 'funds',
-  },
-]
-
 onMounted(() => {
   isMounted.value = true
   if (accounts.value.length === 0 && !loadingAccounts.value) {
@@ -123,115 +107,104 @@ onMounted(() => {
 
 <template>
   <div class="space-y-6">
-    <UTabs
-      :items="tabsItems"
-      variant="link"
-      default-value="accounts"
-      class="w-full"
-      :ui="{
-        list: 'sticky z-30 top-[var(--ui-header-height)] bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700',
-      }"
-    >
-      <template #accounts>
-        <div class="space-y-6 mt-6">
-          <UAlert v-if="accountsError" color="red" variant="soft" title="Error cargando datos" />
+    <div class="space-y-6">
+      <UAlert v-if="accountsError" color="red" variant="soft" title="Error cargando datos" />
 
-          <FundsLoading v-if="loadingAccounts && !accounts.length" />
+      <FundsLoading v-if="loadingAccounts && !accounts.length" />
 
-          <div v-if="!hasData && !loadingAccounts" class="text-center py-12">
-            <p class="text-neutral-500">No hay datos disponibles para mostrar los gráficos.</p>
+      <div v-if="!hasData && !loadingAccounts" class="text-center py-8">
+        <p class="text-neutral-500">
+          No hay datos disponibles para mostrar los gráficos de cuentas.
+        </p>
+      </div>
+
+      <div v-else-if="hasData && isMounted" class="space-y-6">
+        <UCard class="w-full max-w-7xl mx-auto">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon
+                name="i-lucide-chart-bar-big"
+                class="size-5 text-primary-600 dark:text-primary-400"
+              />
+              <h3 class="font-semibold text-lg">Comparación de TNA</h3>
+            </div>
+          </template>
+          <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-6 lg:items-start">
+            <TNAGroupedTnaChart
+              section="guaranteed"
+              :guaranteed-accounts="accounts"
+              :special-accounts="specialAccounts"
+              :variable-funds="variableReturnFunds"
+            />
+            <TNAGroupedTnaChart
+              section="variable"
+              :guaranteed-accounts="accounts"
+              :special-accounts="specialAccounts"
+              :variable-funds="variableReturnFunds"
+            />
           </div>
+        </UCard>
 
-          <div v-else-if="hasData && isMounted" class="space-y-6">
-            <UCard>
-              <template #header>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    name="i-lucide-bar-chart-3"
-                    class="size-5 text-primary-600 dark:text-primary-400"
-                  />
-                  <h3 class="font-semibold text-lg">Comparación de TNA</h3>
-                </div>
-              </template>
-              <TNABarChart :accounts="allAccounts" />
-            </UCard>
+        <UCard v-if="allAccounts.length > 0" class="w-full max-w-7xl mx-auto">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon
+                name="i-lucide-scatter-chart"
+                class="size-5 text-primary-600 dark:text-primary-400"
+              />
+              <h3 class="font-semibold text-lg">Rendimiento Garantizado: TNA vs Tope</h3>
+            </div>
+          </template>
+          <TopeTnaScatterChart :accounts="allAccounts" />
+        </UCard>
+      </div>
+    </div>
 
-            <UCard v-if="allAccounts.length > 0">
-              <template #header>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    name="i-lucide-scatter-chart"
-                    class="size-5 text-primary-600 dark:text-primary-400"
-                  />
-                  <h3 class="font-semibold text-lg">TNA vs Tope</h3>
-                </div>
-              </template>
-              <TopeTnaScatterChart :accounts="allAccounts" />
-            </UCard>
-          </div>
-        </div>
-      </template>
+    <div class="space-y-6">
+      <UAlert v-if="fundsError" color="red" variant="soft" title="Error cargando datos de fondos" />
 
-      <template #funds>
-        <div class="space-y-6 mt-6">
-          <UAlert
-            v-if="fundsError"
-            color="red"
-            variant="soft"
-            title="Error cargando datos de fondos"
-          />
+      <FundsLoading v-if="loadingFunds && variableReturnFunds.length === 0" />
 
-          <FundsLoading v-if="loadingFunds && variableReturnFunds.length === 0" />
+      <div v-if="!hasFundsData && !loadingFunds" class="text-center py-8">
+        <p class="text-neutral-500">
+          No hay datos disponibles para mostrar los gráficos de fondos.
+        </p>
+      </div>
 
-          <div v-if="!hasFundsData && !loadingFunds" class="text-center py-12">
-            <p class="text-neutral-500">
-              No hay datos disponibles para mostrar los gráficos de fondos.
-            </p>
-          </div>
+      <div v-else-if="hasFundsData && isMounted" class="space-y-6">
+        <UCard
+          v-if="variableReturnFunds.some((f) => f.patrimonio && f.patrimonio > 0)"
+          class="max-w-7xl mx-auto"
+        >
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon
+                name="i-lucide-trending-up"
+                class="size-5 text-primary-600 dark:text-primary-400"
+              />
+              <h3 class="font-semibold text-lg">FCI: Comparación de Patrimonio</h3>
+            </div>
+          </template>
+          <FundsPatrimonioBarChart :funds="variableReturnFunds" />
+        </UCard>
 
-          <div v-else-if="hasFundsData && isMounted" class="space-y-6">
-            <UCard>
-              <template #header>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    name="i-lucide-bar-chart-3"
-                    class="size-5 text-primary-600 dark:text-primary-400"
-                  />
-                  <h3 class="font-semibold text-lg">Comparación de TNA</h3>
-                </div>
-              </template>
-              <FundsTNABarChart :funds="variableReturnFunds" />
-            </UCard>
-
-            <UCard v-if="variableReturnFunds.some((f) => f.patrimonio && f.patrimonio > 0)">
-              <template #header>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    name="i-lucide-trending-up"
-                    class="size-5 text-primary-600 dark:text-primary-400"
-                  />
-                  <h3 class="font-semibold text-lg">Comparación de Patrimonio</h3>
-                </div>
-              </template>
-              <FundsPatrimonioBarChart :funds="variableReturnFunds" />
-            </UCard>
-
-            <UCard v-if="variableReturnFunds.some((f) => f.patrimonio && f.patrimonio > 0)">
-              <template #header>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    name="i-lucide-scatter-chart"
-                    class="size-5 text-primary-600 dark:text-primary-400"
-                  />
-                  <h3 class="font-semibold text-lg">TNA vs Patrimonio</h3>
-                </div>
-              </template>
-              <FundsTNAPatrimonioScatterChart :funds="variableReturnFunds" />
-            </UCard>
-          </div>
-        </div>
-      </template>
-    </UTabs>
+        <UCard
+          v-if="variableReturnFunds.some((f) => f.patrimonio && f.patrimonio > 0)"
+          class="max-w-7xl mx-auto"
+        >
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon
+                name="i-lucide-scatter-chart"
+                class="size-5 text-primary-600 dark:text-primary-400"
+              />
+              <h3 class="font-semibold text-lg">FCI: TNA vs Patrimonio</h3>
+            </div>
+          </template>
+          <FundsTNAPatrimonioScatterChart :funds="variableReturnFunds" />
+        </UCard>
+      </div>
+    </div>
 
     <section
       class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"
@@ -244,9 +217,9 @@ onMounted(() => {
           <p>
             El <strong>análisis visual</strong> es una herramienta poderosa para entender
             rápidamente qué entidades financieras están ofreciendo las mejores condiciones. A través
-            de nuestros gráficos de barras y de dispersión, podés identificar valores atípicos,
-            tendencias del mercado y la relación entre la Tasa Nominal Anual (TNA) y los topes de
-            inversión.
+            de nuestros gráficos de barras y de dispersión podés identificar valores atípicos,
+            tendencias del mercado en la Tasa Nominal Anual (TNA), la relación con topes de inversión
+            y el tamaño relativo de los fondos.
           </p>
           <p>
             En un mercado tan dinámico como el argentino, visualizar cómo se posiciona cada
@@ -262,12 +235,11 @@ onMounted(() => {
               quién lidera el mercado.
             </li>
             <li>
-              <strong>TNA vs Tope:</strong> Ideal para ver hasta qué monto se mantiene la tasa
-              promocional.
-            </li>
-            <li>
               <strong>Comparación de Patrimonio:</strong> Tamaño relativo de cada fondo común de
               inversión.
+            </li>
+            <li>
+              <strong>TNA vs Tope:</strong> Relación entre la tasa y el monto hasta el cual aplica.
             </li>
             <li>
               <strong>TNA vs Patrimonio:</strong> Correlación entre el tamaño del fondo y el

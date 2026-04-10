@@ -1,11 +1,29 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import 'vue-data-ui/style.css'
-import type { ProcessedFund } from '~/types/investments'
+import type { AccountItem } from '~/composables/useAccounts'
 import { CHART_COLORS, formatCurrency, useChartTheme } from '~/composables/useChartConfig'
+import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
+import type { ProcessedFund } from '~/types/investments'
+
+const SECTION_GUARANTEED_NAMES = [
+  'Rendimiento garantizado',
+  'Rendimiento garantizado / Con condiciones especiales',
+] as const
+const SECTION_VARIABLE_NAMES = [
+  'Rendimiento Variable / Riesgo muy bajo',
+  'Rendimiento Variable / Riesgo moderado',
+] as const
 
 interface Props {
-  funds: ProcessedFund[]
+  guaranteedAccounts: AccountItem[]
+  specialAccounts: AccountItem[]
+  variableFunds: ProcessedFund[]
+  /**
+   * `all`: un solo gráfico con los cuatro bloques (comportamiento clásico).
+   * `guaranteed` | `variable`: solo esos grupos, para armar dos columnas en desktop.
+   */
+  section?: 'all' | 'guaranteed' | 'variable'
 }
 
 type BarChild = {
@@ -13,128 +31,188 @@ type BarChild = {
   value: number
   color: string
   logo?: string
+  /** Condiciones / límite (cuentas) o tipo FCI (fondos), columna derecha del SVG. */
   rightLabel?: string
 }
 
-const GROUP_ORDER = [
-  { id: 'mm' as const, name: 'Money Market' },
-  { id: 'rf' as const, name: 'Renta fija' },
-  { id: 'rm' as const, name: 'Renta mixta' },
-  { id: 'rv' as const, name: 'Renta variable' },
-  { id: 'ot' as const, name: 'Otros' },
-]
+function truncateBarCaption(s: string, max = 38): string {
+  const t = s.trim()
+  if (t.length <= max) return t
+  return `${t.slice(0, max - 1)}…`
+}
 
-function fundCategory(f: ProcessedFund): (typeof GROUP_ORDER)[number]['id'] {
+function escapeTooltipHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function rightLabelForAccount(a: AccountItem): string {
+  const parts: string[] = []
+  if (a.tope != null && a.tope > 0) parts.push(`Límite ${formatCurrency(a.tope)}`)
+  if (a.condicionesCorto?.trim()) parts.push(a.condicionesCorto.trim())
+  return truncateBarCaption(parts.join(' · '))
+}
+
+function rightLabelForFund(f: ProcessedFund): string {
   const t = f.type || ''
-  if (t === 'mercadoDinero' || t === 'mercadoDineroUsd') return 'mm'
-  if (t === 'rentaFija' || t === 'rentaFijaUsd') return 'rf'
-  if (t === 'rentaMixta') return 'rm'
-  if (t === 'rentaVariable') return 'rv'
-  return 'ot'
+  if (t === 'mercadoDinero' || t === 'mercadoDineroUsd')
+    return truncateBarCaption('FCI · Money Market')
+  if (t === 'rentaMixta') return truncateBarCaption('FCI · Renta  mixta')
+  if (t === 'rentaFija' || t === 'rentaFijaUsd') return truncateBarCaption('FCI · Renta fija ')
+  if (t === 'rentaVariable') return truncateBarCaption('FCI · Renta variable')
+  if (f.typeLabel) return truncateBarCaption(`FCI · ${f.typeLabel}`)
+  return truncateBarCaption('FCI · Rendimiento variable')
 }
 
-function formatPatrimonioCompact(n: number): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-    notation: 'compact',
-  }).format(n)
-}
-
-/** vue-data-ui pasa `{ value, config }` al formatter de etiquetas. */
-function dataLabelCurrencyFormatter(payload: unknown): string {
-  const raw =
-    typeof payload === 'object' &&
-    payload !== null &&
-    'value' in payload &&
-    typeof (payload as { value: unknown }).value === 'number'
-      ? (payload as { value: number }).value
-      : typeof payload === 'number'
-        ? payload
-        : Number(payload)
-  if (!Number.isFinite(raw)) return ''
-  return formatPatrimonioCompact(raw)
-}
-
+/** Compactación vertical (debe coincidir con layout.bars en chartConfig y con barLogoLayout). */
 const BAR_GAP = 4
-const BAR_PARENT_FS = 9
-const BAR_NAME_FS = 9
-const BAR_DATA_FS = 9
+const BAR_PARENT_FS = 11
+const BAR_NAME_FS = 11
+const BAR_DATA_FS = 11
 const BAR_L = BAR_PARENT_FS * 3
-const BAR_MIN_ROW = 24
+const BAR_MIN_ROW = 20
 const BAR_TAIL = 24
+/** padding top/bottom fijos en vue-data-ui (K - 24 en la fórmula de d). */
 const BAR_LIB_PAD_V = 24
-const BAR_LIB_TOP = 9
-const LOGO_PX = 9
+const BAR_LIB_TOP = 12
+const LOGO_PX = 18
+/** Mismo valor que style.chart.width (viewBox). */
 const BAR_CHART_WIDTH = 520
-const BAR_RIGHT_LABEL_PAD = 88
+/** Suma al margen derecho interno (64 + paddingRight) para columna de condiciones. */
+const BAR_RIGHT_LABEL_PAD = 96
 
-const props = defineProps<Props>()
-
+const props = withDefaults(defineProps<Props>(), {
+  section: 'all',
+})
 const { textColor, gridLineColor, colorMode } = useChartTheme()
+const solidTooltip = useVueDataUiSolidTooltip()
 const horizontalBarComponent = shallowRef<Component | null>(null)
-const logoClipUid = `pat-bar-${useId().replace(/[^a-zA-Z0-9_-]/g, '-')}`
+/** IDs únicos para clipPath (válidos en SVG y sin colisiones entre instancias). */
+const logoClipUid = `tna-bar-${useId().replace(/[^a-zA-Z0-9_-]/g, '-')}`
 
 onMounted(async () => {
   const { VueUiHorizontalBar } = await import('vue-data-ui')
   horizontalBarComponent.value = VueUiHorizontalBar
 })
 
-const chartDataset = computed(() => {
-  const withP = props.funds.filter(
-    (f) => f.patrimonio != null && f.patrimonio !== undefined && f.patrimonio > 0,
-  )
-  if (!withP.length) return []
+/** Dataset completo (cuatro grupos); la prop `section` filtra para layouts en columnas. */
+const fullChartDataset = computed(() => {
+  // Con sort "desc" la librería también reordena los PADRES por value → Variable pasa arriba.
+  // sort "none" mantiene el orden del dataset: primero Garantizado (tasa fija → condiciones),
+  // luego Variable (riesgo muy bajo → moderado). Los hijos los ordenamos nosotros.
+  const sortChildrenByTnaDesc = (items: BarChild[]) =>
+    [...items].sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, 'es-AR'))
 
-  const buckets: Record<string, ProcessedFund[]> = {
-    mm: [],
-    rf: [],
-    rm: [],
-    rv: [],
-    ot: [],
-  }
-  for (const f of withP) {
-    buckets[fundCategory(f)].push(f)
-  }
+  const garantizado: BarChild[] = [...props.guaranteedAccounts]
+    .sort((a, b) => b.tna - a.tna)
+    .map((account, index) => ({
+      name: account.fondo,
+      value: account.tna * 100,
+      color: CHART_COLORS[index % CHART_COLORS.length],
+      logo: account.logo,
+      rightLabel: rightLabelForAccount(account),
+    }))
 
-  const sortByPatrimonioDesc = (a: ProcessedFund, b: ProcessedFund) =>
-    (b.patrimonio || 0) - (a.patrimonio || 0)
+  const conCondicionesEspeciales: BarChild[] = [...props.specialAccounts]
+    .sort((a, b) => b.tna - a.tna)
+    .map((account, index) => ({
+      name: account.fondo,
+      value: account.tna * 100,
+      color: CHART_COLORS[(index + garantizado.length) % CHART_COLORS.length],
+      logo: account.logo,
+      rightLabel: rightLabelForAccount(account),
+    }))
 
-  let colorOffset = 0
-  const groups: Array<{ name: string; value: number; children: BarChild[] }> = []
+  const riesgoMuyBajo: BarChild[] = [...props.variableFunds]
+    .filter((fund) => !['rentaFija', 'rentaMixta'].includes(fund.type || ''))
+    .sort((a, b) => b.tna - a.tna)
+    .map((fund, index) => ({
+      name: fund.displayName || fund.fondo,
+      value: fund.tna * 100,
+      color:
+        CHART_COLORS[
+          (index + garantizado.length + conCondicionesEspeciales.length) % CHART_COLORS.length
+        ],
+      logo: fund.logo,
+      rightLabel: rightLabelForFund(fund),
+    }))
 
-  for (const { id, name: groupName } of GROUP_ORDER) {
-    const list = [...buckets[id]!].sort(sortByPatrimonioDesc)
-    if (!list.length) continue
+  const riesgoModerado: BarChild[] = [...props.variableFunds]
+    .filter((fund) => ['rentaFija', 'rentaMixta'].includes(fund.type || ''))
+    .sort((a, b) => b.tna - a.tna)
+    .map((fund, index) => ({
+      name: fund.displayName || fund.fondo,
+      value: fund.tna * 100,
+      color:
+        CHART_COLORS[
+          (index + garantizado.length + conCondicionesEspeciales.length + riesgoMuyBajo.length) %
+            CHART_COLORS.length
+        ],
+      logo: fund.logo,
+      rightLabel: rightLabelForFund(fund),
+    }))
 
-    const children: BarChild[] = list.map((f, i) => {
-      const idx = colorOffset + i
-      const pat = f.patrimonio || 0
-      return {
-        name: f.displayName || f.fondo,
-        value: pat,
-        color: CHART_COLORS[idx % CHART_COLORS.length],
-        logo: f.logo,
-        rightLabel: `TNA ${(f.tna * 100).toFixed(2)}%`,
-      }
-    })
-    colorOffset += children.length
+  const getGroupValue = (items: Array<{ value: number }>) =>
+    items.length > 0 ? Math.max(...items.map((item) => item.value)) : 0
 
-    const maxV = Math.max(...children.map((c) => c.value))
-    groups.push({
-      name: groupName,
-      value: maxV,
-      children,
-    })
-  }
+  const garantizadoSorted = sortChildrenByTnaDesc(garantizado)
+  const conCondicionesEspecialesSorted = sortChildrenByTnaDesc(conCondicionesEspeciales)
+  const riesgoMuyBajoSorted = sortChildrenByTnaDesc(riesgoMuyBajo)
+  const riesgoModeradoSorted = sortChildrenByTnaDesc(riesgoModerado)
 
-  return groups
+  // Orden fijo: 1) Garantizado (tasa fija, condiciones) 2) Variable (muy bajo, moderado)
+  return [
+    {
+      name: 'Rendimiento garantizado',
+      value: getGroupValue(garantizadoSorted),
+      children: garantizadoSorted,
+    },
+    {
+      name: 'Rendimiento garantizado / Con condiciones especiales',
+      value: getGroupValue(conCondicionesEspecialesSorted),
+      children: conCondicionesEspecialesSorted,
+    },
+    {
+      name: 'Rendimiento Variable / Riesgo muy bajo',
+      value: getGroupValue(riesgoMuyBajoSorted),
+      children: riesgoMuyBajoSorted,
+    },
+    {
+      name: 'Rendimiento Variable / Riesgo moderado',
+      value: getGroupValue(riesgoModeradoSorted),
+      children: riesgoModeradoSorted,
+    },
+  ].filter((group) => group.children.length > 0)
 })
 
+const chartDataset = computed(() => {
+  const full = fullChartDataset.value
+  if (props.section === 'all') return full
+  const allow = new Set<string>(
+    props.section === 'guaranteed' ? SECTION_GUARANTEED_NAMES : SECTION_VARIABLE_NAMES,
+  )
+  return full.filter((g) => allow.has(g.name))
+})
+
+const chartRootClass = computed(() => {
+  const base = 'w-full [&_svg]:max-w-full [&_svg]:h-auto'
+  if (props.section === 'all') return `${base} max-w-xl`
+  return `${base} min-w-0`
+})
+
+/** Altura acorde al layout real del chart (solo filas-hijo + bloques de título padre), sin filas extra por grupo. */
 const chartHeight = computed(() => {
-  return 400
+  const ds = chartDataset.value
+  const bt = ds.reduce((s, g) => s + g.children.length, 0)
+  const numGroups = ds.length
+  if (bt === 0) return 420
+  return Math.max(
+    280,
+    BAR_LIB_PAD_V + (bt - 1) * BAR_GAP + numGroups * BAR_L + bt * BAR_MIN_ROW + BAR_TAIL,
+  )
 })
 
 const chartConfig = computed<any>(() => ({
@@ -143,6 +221,7 @@ const chartConfig = computed<any>(() => ({
   debug: false,
   loading: false,
   autoSize: false,
+  // Si responsive cambia width/height internos, las coordenadas del slot #svg dejan de coincidir con las barras.
   responsive: false,
   theme: '',
   customPalette: CHART_COLORS,
@@ -174,14 +253,16 @@ const chartConfig = computed<any>(() => ({
           sort: 'none',
           useStroke: false,
           strokeWidth: 2,
-          height: 26,
+          height: 22,
           gap: BAR_GAP,
           borderRadius: 3,
+          // Margen izquierdo extra (logo ~22px + aire); NO usar nameLabels.offsetX para eso:
+          // con text-anchor "end", un offset ahí empuja el texto *sobre* el inicio de la barra.
           offsetX: 56,
           paddingRight: BAR_RIGHT_LABEL_PAD,
           useGradient: true,
-          gradientIntensity: 32,
-          fillOpacity: 100,
+          gradientIntensity: 20,
+          fillOpacity: 90,
           underlayerColor: 'transparent',
           dataLabels: {
             color: textColor.value,
@@ -191,8 +272,8 @@ const chartConfig = computed<any>(() => ({
               show: true,
               roundingValue: 0,
               prefix: '',
-              suffix: '',
-              formatter: dataLabelCurrencyFormatter,
+              suffix: '%',
+              formatter: null,
             },
             percentage: {
               show: false,
@@ -260,35 +341,20 @@ const chartConfig = computed<any>(() => ({
         suffix: '',
       },
       tooltip: {
+        ...solidTooltip.value,
         show: true,
-        color: textColor.value,
-        backgroundColor: '#FFFFFF',
-        fontSize: 14,
         customFormat: ({ datapoint }: { datapoint: { name?: string; value?: number } }) => {
           const name = datapoint?.name ?? ''
-          const p = datapoint?.value != null ? formatCurrency(Number(datapoint.value)) : ''
-          const fund = props.funds.find((f) => (f.displayName || f.fondo) === name)
-          const tna = fund != null ? `<br/>TNA: ${(fund.tna * 100).toFixed(2)}%` : ''
-          return `<div style="font-family:inherit"><b>${name}</b><br/>Patrimonio: ${p}${tna}</div>`
+          const v = datapoint?.value
+          const tna = v != null && Number.isFinite(Number(v)) ? `${Number(v).toFixed(2)}%` : '—'
+          return `<div style="font-family:inherit"><b>${escapeTooltipHtml(name)}</b><br/>TNA: ${tna}</div>`
         },
-        borderRadius: 4,
-        borderColor: '#e1e5e8',
-        borderWidth: 1,
-        backgroundOpacity: 100,
-        position: 'center',
-        offsetY: 24,
-        smooth: true,
-        backdropFilter: false,
-        smoothForce: 0.18,
-        smoothSnapThreshold: 0.25,
-        teleportTo: 'body',
-        showValue: true,
+        showValue: false,
         showPercentage: false,
         roundingValue: 0,
         roundingPercentage: 0,
         prefix: '',
         suffix: '',
-        fontSize: BAR_DATA_FS,
       },
     },
   },
@@ -299,17 +365,17 @@ const chartConfig = computed<any>(() => ({
     position: 'right',
     buttons: {
       tooltip: true,
-      pdf: false,
-      csv: false,
-      img: false,
-      table: false,
+      pdf: true,
+      csv: true,
+      img: true,
+      table: true,
       labels: false,
-      fullscreen: false,
-      sort: false,
+      fullscreen: true,
+      sort: true,
       stack: false,
       animation: false,
-      annotator: false,
-      svg: false,
+      annotator: true,
+      svg: true,
       zoom: false,
       altCopy: false,
     },
@@ -380,6 +446,7 @@ const chartConfig = computed<any>(() => ({
 
 const barCaptionFill = computed(() => (colorMode.value === 'dark' ? '#a3a3a3' : '#525252'))
 
+/** Posiciones Y alineadas al layout interno de VueUiHorizontalBar (misma fórmula que el bundle). */
 const barLogoLayout = computed(() => {
   const dataset = chartDataset.value
   const K = chartHeight.value
@@ -443,7 +510,7 @@ const barLogoLayout = computed(() => {
 </script>
 
 <template>
-  <div class="w-full max-w-5xl min-h-96 [&_svg]:max-w-full [&_svg]:h-auto mx-auto">
+  <div :class="chartRootClass">
     <ClientOnly>
       <component
         :is="horizontalBarComponent"
@@ -491,18 +558,19 @@ const barLogoLayout = computed(() => {
       </component>
       <div
         v-else-if="horizontalBarComponent && chartDataset.length === 0"
-        class="py-12 text-center text-sm text-neutral-500 dark:text-neutral-400"
+        class="py-6 text-center text-sm text-neutral-500 dark:text-neutral-400"
       >
-        Sin datos de patrimonio para el gráfico.
+        No hay datos en esta categoría.
       </div>
-      <div v-else class="w-full min-h-96 flex items-center justify-center text-neutral-500">
-        Cargando gráfico…
+      <div v-else class="w-full min-h-96 flex items-center justify-center">
+        <div class="text-neutral-500">Cargando gráfico...</div>
       </div>
     </ClientOnly>
   </div>
 </template>
 
 <style scoped>
+/* Porcentaje duplicado bajo el título de grupo (vue-data-ui pinta nombre + valor en dos <text>) */
 :deep(.vue-ui-horizontal-bar-parent-label > text:last-of-type) {
   opacity: 0;
   pointer-events: none;

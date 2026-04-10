@@ -8,3 +8,30 @@
 :root {
   --ui-header-height: --spacing(9);
 }
+
+/*
+ * vue-data-ui: con `customFormat` el Tooltip usa `isCustom` y la librería no inyecta background/color
+ * en el estilo inline (solo .vue-data-ui-custom-tooltip en CSS, sin fondo). Sin esto el tooltip se ve
+ * transparente aunque `backdropFilter: false` en el config.
+ */
+.vue-data-ui-custom-tooltip {
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid #e1e5e8;
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 0 6px 12px -6px rgb(0 0 0 / 0.2);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.dark .vue-data-ui-custom-tooltip {
+  border-color: #404040;
+  background-color: #171717;
+  color: #ffffff;
+}
+
+.vue-data-ui-custom-tooltip.vue-data-ui-tooltip-backdrop {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

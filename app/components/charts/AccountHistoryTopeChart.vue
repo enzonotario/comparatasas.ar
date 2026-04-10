@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { AccountHistoryItem } from '~/composables/useAccountHistory'
+import 'vue-data-ui/style.css'
 import { formatCurrency, useChartTheme } from '~/composables/useChartConfig'
+import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
+import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
 
 interface Props {
   history: AccountHistoryItem[]
@@ -9,122 +12,107 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const chart = useVueDataUiChart('VueUiXy')
 const { textColor, gridLineColor } = useChartTheme()
+const solidTooltip = useVueDataUiSolidTooltip()
 
-const chartOptions = computed(() => {
-  if (props.history.length === 0) return null
+function formatShortDate(iso: string) {
+  const d = new Date(iso)
+  return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear().toString().slice(-2)}`
+}
 
-  // Filtrar solo items con tope
-  const itemsWithTope = props.history.filter(
-    (item) => item.tope !== null && item.tope !== undefined,
-  )
+const filtered = computed(() =>
+  props.history.filter((item) => item.tope != null && item.tope !== undefined),
+)
 
-  if (itemsWithTope.length === 0) return null
+const xLabels = computed(() => filtered.value.map((item) => formatShortDate(item.fecha)))
 
-  const dates = itemsWithTope.map((item) => {
-    const date = new Date(item.fecha)
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear().toString().slice(-2)}`
-  })
-  const topeValues = itemsWithTope.map((item, index) => ({
-    y: item.tope!,
-    name: dates[index],
-    customData: item,
-  }))
-
-  return {
-    chart: {
-      type: 'line',
-      backgroundColor: 'transparent',
+const dataset = computed(() => {
+  if (!filtered.value.length) return []
+  return [
+    {
+      name: 'Tope',
+      series: filtered.value.map((item) => item.tope!),
+      type: 'line' as const,
+      useArea: true,
+      smooth: true,
+      color: '#10b981',
     },
-    title: {
-      text: '',
+  ]
+})
+
+const chartConfig = computed(() => ({
+  responsive: true,
+  theme: '',
+  useCssAnimation: false,
+  chart: {
+    fontFamily: 'inherit',
+    backgroundColor: 'transparent',
+    color: textColor.value,
+    height: 384,
+    userOptions: { show: false },
+    grid: {
+      stroke: gridLineColor.value,
+      showHorizontalLines: true,
+      showVerticalLines: false,
+      labels: {
+        color: textColor.value,
+        show: true,
+        fontSize: 11,
+        axis: {
+          yLabel: 'Tope (ARS)',
+          xLabel: 'Fecha',
+        },
+        yAxis: {
+          formatter: (v: number | string) => formatCurrency(Number(v)),
+        },
+        xAxisLabels: {
+          values: xLabels.value,
+          rotation: -45,
+          fontSize: 10,
+        },
+      },
     },
     tooltip: {
-      formatter() {
-        const category = (this.point as any).name || this.x
-        const item = (this.point as any).customData
-        const tnaText = `TNA: ${(item?.tna * 100).toFixed(2)}%`
-        return `<b>${category}</b><br/>Tope: ${formatCurrency(this.y)}<br/>${tnaText}`
+      ...solidTooltip.value,
+      show: true,
+      customFormat: (params: { absoluteIndex?: number }) => {
+        const i = params.absoluteIndex ?? 0
+        const item = filtered.value[i]
+        const label = xLabels.value[i] ?? ''
+        if (!item || item.tope == null) return ''
+        const tna = `TNA: ${(item.tna * 100).toFixed(2)}%`
+        return `<div style="font-family:inherit"><b>${label}</b><br/>Tope: ${formatCurrency(item.tope)}<br/>${tna}</div>`
       },
     },
-    xAxis: {
-      categories: dates,
-      labels: {
-        style: {
-          color: textColor.value,
-        },
-        rotation: -45,
-      },
-      title: {
-        text: 'Fecha',
-        style: {
-          color: textColor.value,
-        },
-      },
-    },
-    yAxis: {
-      title: {
-        text: 'Tope (ARS)',
-        style: {
-          color: textColor.value,
-        },
-      },
-      labels: {
-        formatter() {
-          return formatCurrency(this.value)
-        },
-        style: {
-          color: textColor.value,
-        },
-      },
-      gridLineColor: gridLineColor.value,
-    },
-    plotOptions: {
-      line: {
-        marker: {
-          enabled: true,
-          radius: 3,
-        },
-      },
-      area: {
-        fillColor: {
-          linearGradient: {
-            x1: 0,
-            y1: 0,
-            x2: 0,
-            y2: 1,
-          },
-          stops: [
-            [0, 'rgba(16, 185, 129, 0.3)'],
-            [1, 'rgba(16, 185, 129, 0.05)'],
-          ],
-        },
-      },
-    },
-    series: [
-      {
-        name: 'Tope',
-        data: topeValues,
-        type: 'area',
-        color: '#10b981',
-        lineWidth: 2,
-      },
-    ],
-    legend: {
-      enabled: false,
-    },
-    credits: {
-      enabled: false,
-    },
-  }
-})
+    legend: { show: false, color: textColor.value },
+  },
+  line: {
+    area: { opacity: 0.35, useGradient: true },
+    labels: { show: false },
+  },
+  table: { show: false },
+}))
 </script>
 
 <template>
-  <div class="w-full" style="height: 24rem; min-height: 384px">
-    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
-    <div v-else class="w-full h-full flex items-center justify-center">
-      <div class="text-neutral-500">No hay datos de tope disponibles</div>
-    </div>
+  <div class="w-full min-h-96 [&_svg]:max-w-full [&_svg]:h-auto">
+    <ClientOnly>
+      <component
+        :is="chart"
+        v-if="chart && dataset.length > 0"
+        :dataset="dataset"
+        :config="chartConfig"
+      />
+      <div
+        v-else-if="chart && dataset.length === 0"
+        class="py-12 text-center text-sm text-neutral-500"
+      >
+        No hay datos de tope disponibles.
+      </div>
+      <div v-else class="min-h-96 flex items-center justify-center text-neutral-500">
+        Cargando gráfico…
+      </div>
+    </ClientOnly>
   </div>
 </template>
