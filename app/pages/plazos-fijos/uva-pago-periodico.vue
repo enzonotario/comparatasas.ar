@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PlazosFijosUvaPagoPeriodicoTnaChart from '~/components/charts/PlazosFijosUvaPagoPeriodicoTnaChart.vue'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 
 definePageMeta({
@@ -153,6 +154,22 @@ onMounted(() => {
         </h3>
         <p class="text-muted">No hay datos disponibles en este momento.</p>
       </div>
+
+      <UCard v-if="!loadingUva && plazosFijosUvaPagoPeriodicoItems.length > 0">
+        <template #header>
+          <div class="flex items-center gap-2">
+            <UIcon
+              name="i-lucide-chart-line"
+              class="size-5 text-primary-600 dark:text-primary-400"
+            />
+            <h3 class="font-semibold text-lg">TNA por rango de días</h3>
+          </div>
+        </template>
+        <PlazosFijosUvaPagoPeriodicoTnaChart
+          :items="plazosFijosUvaPagoPeriodicoItems"
+          :selected-days="days"
+        />
+      </UCard>
     </div>
 
     <section
