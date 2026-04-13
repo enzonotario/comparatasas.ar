@@ -52,6 +52,16 @@ const chartConfig = computed<VueUiXyConfig>(() => ({
     padding: {
       bottom: 0
     },
+    zoom: {
+      minimap: {
+        show: true,
+        selectedColor: '#3b82f6',
+        frameColor: gridLineColor.value,
+      }
+    },
+    highlighter: {
+      color: textColor.value,
+    },
     grid: {
       stroke: gridLineColor.value,
       showHorizontalLines: true,
@@ -70,8 +80,10 @@ const chartConfig = computed<VueUiXyConfig>(() => ({
         xAxisLabels: {
           values: xLabels.value,
           color: textColor.value,
-          rotation: -45,
-          fontSize: 10,
+          autoRotate: {
+            enable: true,
+            angle: -45
+          }
         },
       },
     },
