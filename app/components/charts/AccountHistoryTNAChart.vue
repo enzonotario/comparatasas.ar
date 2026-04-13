@@ -4,6 +4,7 @@ import 'vue-data-ui/style.css'
 import { useChartTheme } from '~/composables/useChartConfig'
 import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
 import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
+import type { VueUiXyConfig, VueUiXyDatasetItem } from 'vue-data-ui'
 
 interface Props {
   history: AccountHistoryItem[]
@@ -23,7 +24,7 @@ function formatShortDate(iso: string) {
 
 const xLabels = computed(() => props.history.map((item) => formatShortDate(item.fecha)))
 
-const dataset = computed(() => {
+const dataset = computed<VueUiXyDatasetItem[]>(() => {
   if (!props.history.length) return []
   return [
     {
@@ -38,7 +39,7 @@ const dataset = computed(() => {
   ]
 })
 
-const chartConfig = computed(() => ({
+const chartConfig = computed<VueUiXyConfig>(() => ({
   responsive: true,
   theme: '',
   useCssAnimation: false,
@@ -48,6 +49,9 @@ const chartConfig = computed(() => ({
     color: textColor.value,
     height: 384,
     userOptions: { show: false },
+    padding: {
+      bottom: 0
+    },
     grid: {
       stroke: gridLineColor.value,
       showHorizontalLines: true,
@@ -61,10 +65,11 @@ const chartConfig = computed(() => ({
           xLabel: 'Fecha',
         },
         yAxis: {
-          formatter: (v: number | string) => `${Number(v).toFixed(1)}%`,
+          formatter: ({ value }) => `${Number(value).toFixed(1)}%`,
         },
         xAxisLabels: {
           values: xLabels.value,
+          color: textColor.value,
           rotation: -45,
           fontSize: 10,
         },
@@ -93,10 +98,9 @@ const chartConfig = computed(() => ({
     legend: { show: false, color: textColor.value },
   },
   line: {
-    area: { opacity: 0.35, useGradient: true },
+    area: { opacity: 35, useGradient: true },
     labels: { show: false },
   },
-  table: { show: false },
 }))
 </script>
 
