@@ -53,7 +53,7 @@ const horizontalBarComponent = shallowRef<Component | null>(null)
 const logoClipUid = `pf-tna-bar-${useId().replace(/[^a-zA-Z0-9_-]/g, '-')}`
 
 onMounted(async () => {
-  const { VueUiHorizontalBar } = await import('vue-data-ui')
+  const { VueUiHorizontalBar } = await import('vue-data-ui/vue-ui-horizontal-bar')
   horizontalBarComponent.value = VueUiHorizontalBar
 })
 
