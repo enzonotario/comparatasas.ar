@@ -2,6 +2,7 @@
 import AccountHistoryTNAChart from '~/components/charts/AccountHistoryTNAChart.vue'
 import AccountHistoryTopeChart from '~/components/charts/AccountHistoryTopeChart.vue'
 import { useAccountHistory } from '~/composables/useAccountHistory'
+import { useAccountHistoryChartZoomSync } from '~/composables/useAccountHistoryChartZoomSync'
 import { useAnalytics } from '~/composables/useAnalytics'
 import {
   getInstitutionLogo,
@@ -41,6 +42,16 @@ const providerUrl = computed(() => getInstitutionUrl(providerApiName.value))
 const providerSlug = computed(() => providerParam.toLowerCase())
 
 const { data: history, loading, error, fetch } = useAccountHistory()
+
+const {
+  tnaZoom,
+  topeZoom,
+  onTnaZoomStart,
+  onTnaZoomEnd,
+  onTopeZoomStart,
+  onTopeZoomEnd,
+  onZoomReset,
+} = useAccountHistoryChartZoomSync(history)
 
 function handleProviderClick() {
   if (providerUrl.value) {
@@ -115,7 +126,14 @@ useSeoMeta({
             <h3 class="font-semibold text-lg">Evolución de TNA</h3>
           </div>
         </template>
-        <AccountHistoryTNAChart :history="history" :provider-name="displayName" />
+        <AccountHistoryTNAChart
+          :history="history"
+          :provider-name="displayName"
+          :zoom-range="tnaZoom"
+          @zoom-start="onTnaZoomStart"
+          @zoom-end="onTnaZoomEnd"
+          @zoom-reset="onZoomReset"
+        />
       </UCard>
 
       <UCard v-if="history.some((item) => item.tope !== null && item.tope !== undefined)">
@@ -128,7 +146,14 @@ useSeoMeta({
             <h3 class="font-semibold text-lg">Evolución de Tope</h3>
           </div>
         </template>
-        <AccountHistoryTopeChart :history="history" :provider-name="displayName" />
+        <AccountHistoryTopeChart
+          :history="history"
+          :provider-name="displayName"
+          :zoom-range="topeZoom"
+          @zoom-start="onTopeZoomStart"
+          @zoom-end="onTopeZoomEnd"
+          @zoom-reset="onZoomReset"
+        />
       </UCard>
     </div>
 

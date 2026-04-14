@@ -2,6 +2,7 @@
 import type { AccountHistoryItem } from '~/composables/useAccountHistory'
 import 'vue-data-ui/style.css'
 import type { VueUiXyConfig, VueUiXyDatasetItem } from 'vue-data-ui'
+import type { ChartZoomRange } from '~/composables/useAccountHistoryChartZoomSync'
 import { formatCurrency, useChartTheme } from '~/composables/useChartConfig'
 import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
 import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
@@ -9,9 +10,17 @@ import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip
 interface Props {
   history: AccountHistoryItem[]
   providerName: string
+  /** Rango de zoom sincronizado (índices de la serie filtrada con tope; end exclusivo). */
+  zoomRange?: ChartZoomRange | null
 }
 
 const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  zoomStart: [payload: { index: number }]
+  zoomEnd: [payload: { index: number }]
+  zoomReset: []
+}>()
 
 const chart = useVueDataUiChart('VueUiXy')
 const { textColor, gridLineColor } = useChartTheme()
@@ -56,6 +65,12 @@ const chartConfig = computed<VueUiXyConfig>(() => ({
       bottom: 0,
     },
     zoom: {
+      ...(props.zoomRange != null
+        ? {
+            startIndex: props.zoomRange.start,
+            endIndex: props.zoomRange.end,
+          }
+        : {}),
       minimap: {
         show: true,
         selectedColor: '#3b82f6',
@@ -119,6 +134,9 @@ const chartConfig = computed<VueUiXyConfig>(() => ({
         v-if="chart && dataset.length > 0"
         :dataset="dataset"
         :config="chartConfig"
+        @zoom-start="emit('zoomStart', $event)"
+        @zoom-end="emit('zoomEnd', $event)"
+        @zoom-reset="emit('zoomReset')"
       />
       <div
         v-else-if="chart && dataset.length === 0"

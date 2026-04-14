@@ -5,13 +5,22 @@ import { useChartTheme } from '~/composables/useChartConfig'
 import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
 import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
 import type { VueUiXyConfig, VueUiXyDatasetItem } from 'vue-data-ui'
+import type { ChartZoomRange } from '~/composables/useAccountHistoryChartZoomSync'
 
 interface Props {
   history: AccountHistoryItem[]
   providerName: string
+  /** Rango de zoom sincronizado (índices del historial; end exclusivo). */
+  zoomRange?: ChartZoomRange | null
 }
 
 const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  zoomStart: [payload: { index: number }]
+  zoomEnd: [payload: { index: number }]
+  zoomReset: []
+}>()
 
 const chart = useVueDataUiChart('VueUiXy')
 const { textColor, gridLineColor } = useChartTheme()
@@ -50,14 +59,20 @@ const chartConfig = computed<VueUiXyConfig>(() => ({
     height: 384,
     userOptions: { show: false },
     padding: {
-      bottom: 0
+      bottom: 0,
     },
     zoom: {
+      ...(props.zoomRange != null
+        ? {
+            startIndex: props.zoomRange.start,
+            endIndex: props.zoomRange.end,
+          }
+        : {}),
       minimap: {
         show: true,
         selectedColor: '#3b82f6',
         frameColor: gridLineColor.value,
-      }
+      },
     },
     highlighter: {
       color: textColor.value,
@@ -82,8 +97,8 @@ const chartConfig = computed<VueUiXyConfig>(() => ({
           color: textColor.value,
           autoRotate: {
             enable: true,
-            angle: -45
-          }
+            angle: -45,
+          },
         },
       },
     },
@@ -124,6 +139,9 @@ const chartConfig = computed<VueUiXyConfig>(() => ({
         v-if="chart && dataset.length > 0"
         :dataset="dataset"
         :config="chartConfig"
+        @zoom-start="emit('zoomStart', $event)"
+        @zoom-end="emit('zoomEnd', $event)"
+        @zoom-reset="emit('zoomReset')"
       />
       <div
         v-else-if="chart && dataset.length === 0"
