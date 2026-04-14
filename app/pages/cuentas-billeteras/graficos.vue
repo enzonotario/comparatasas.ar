@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import TNAGroupedTnaChart from '~/components/charts/TNAGroupedTnaChart.vue'
 import FundsPatrimonioBarChart from '~/components/charts/FundsPatrimonioBarChart.vue'
+import FundsPatrimonioCirclePackChart from '~/components/charts/FundsPatrimonioCirclePackChart.vue'
 import FundsTNAPatrimonioScatterChart from '~/components/charts/FundsTNAPatrimonioScatterChart.vue'
 import TopeTnaScatterChart from '~/components/charts/TopeTnaScatterChart.vue'
 
@@ -186,6 +187,22 @@ onMounted(() => {
             </div>
           </template>
           <FundsPatrimonioBarChart :funds="variableReturnFunds" />
+        </UCard>
+
+        <UCard
+          v-if="variableReturnFunds.some((f) => f.patrimonio && f.patrimonio > 0)"
+          class="max-w-7xl mx-auto"
+        >
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon
+                name="i-lucide-circle-dot-dashed"
+                class="size-5 text-primary-600 dark:text-primary-400"
+              />
+              <h3 class="font-semibold text-lg">FCI: Patrimonio (circle pack)</h3>
+            </div>
+          </template>
+          <FundsPatrimonioCirclePackChart :funds="variableReturnFunds" />
         </UCard>
 
         <UCard
