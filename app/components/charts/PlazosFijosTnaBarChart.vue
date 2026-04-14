@@ -58,9 +58,7 @@ onMounted(async () => {
 })
 
 const chartDataset = computed(() => {
-  const sorted = [...props.items]
-    .filter((i) => i.tna > 0)
-    .sort((a, b) => b.tna - a.tna)
+  const sorted = [...props.items].filter((i) => i.tna > 0).sort((a, b) => b.tna - a.tna)
   if (sorted.length === 0) return []
 
   const children: BarChild[] = sorted.map((item, index) => ({

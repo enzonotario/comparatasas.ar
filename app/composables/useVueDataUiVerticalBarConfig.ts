@@ -91,8 +91,7 @@ export function useVueDataUiVerticalBarConfig(valueFormat: ValueFormat) {
                 roundingValue: valueFormat === 'percent' ? 2 : 0,
                 prefix: '',
                 suffix: valueSuffix,
-                formatter:
-                  valueFormat === 'currencyCompact' ? dataLabelFormatter : null,
+                formatter: valueFormat === 'currencyCompact' ? dataLabelFormatter : null,
               },
               percentage: { show: false, roundingPercentage: 0 },
               offsetX: 0,

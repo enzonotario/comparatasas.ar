@@ -218,8 +218,8 @@ onMounted(() => {
             El <strong>análisis visual</strong> es una herramienta poderosa para entender
             rápidamente qué entidades financieras están ofreciendo las mejores condiciones. A través
             de nuestros gráficos de barras y de dispersión podés identificar valores atípicos,
-            tendencias del mercado en la Tasa Nominal Anual (TNA), la relación con topes de inversión
-            y el tamaño relativo de los fondos.
+            tendencias del mercado en la Tasa Nominal Anual (TNA), la relación con topes de
+            inversión y el tamaño relativo de los fondos.
           </p>
           <p>
             En un mercado tan dinámico como el argentino, visualizar cómo se posiciona cada
