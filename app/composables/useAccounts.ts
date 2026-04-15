@@ -92,6 +92,7 @@ export function useAccounts() {
       'UALA PLUS 1',
       'UALA PLUS 2',
       'BNA',
+      'FIWIND',
     ])
   })
 
