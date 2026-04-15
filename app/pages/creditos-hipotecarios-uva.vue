@@ -180,6 +180,7 @@ const hipotecariosChartItems = computed(() => {
           </template>
           <PlazosFijosTnaBarChart
             parent-group-name="Créditos hipotecarios UVA · TNA"
+            preserve-tna-precision
             sort-tna-ascending
             :items="hipotecariosChartItems"
           />

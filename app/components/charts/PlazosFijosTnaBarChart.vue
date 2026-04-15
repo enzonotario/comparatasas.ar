@@ -17,11 +17,14 @@ interface Props {
   parentGroupName?: string
   /** Si es true, ordena por TNA de menor a mayor (por defecto: mayor a menor). */
   sortTnaAscending?: boolean
+  /** Si es true, muestra la TNA sin redondear en la etiqueta de barra. */
+  preserveTnaPrecision?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   parentGroupName: 'Plazo fijo 30 días · TNA clientes',
   sortTnaAscending: false,
+  preserveTnaPrecision: false,
 })
 
 type BarChild = {
@@ -38,6 +41,14 @@ function escapeTooltipHtml(s: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
+}
+
+function formatTnaPreservingPrecision(value: number | string): string {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return '0'
+
+  // Evita ceros de más y mantiene los decimales relevantes.
+  return n.toFixed(6).replace(/\.?0+$/, '')
 }
 
 /** Mismas constantes que TNAGroupedTnaChart (VueUiHorizontalBar + slot #svg). */
@@ -159,7 +170,9 @@ const chartConfig = computed<any>(() => ({
               roundingValue: 0,
               prefix: '',
               suffix: '%',
-              formatter: null,
+              formatter: props.preserveTnaPrecision
+                ? ({ value }: { value: number | string }) => formatTnaPreservingPrecision(value)
+                : null,
             },
             percentage: {
               show: false,
