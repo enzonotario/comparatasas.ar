@@ -62,11 +62,28 @@ const items = computed(() => {
 
                 <div class="flex items-center gap-1 flex-wrap">
                   <UBadge
-                    color="info"
+                    v-if="item.metadata?.plazo_max_anios != null"
+                    color="error"
                     variant="outline"
-                    class="text-blue-800 dark:text-blue-100 bg-blue-50 dark:bg-blue-950/30"
+                    class="text-red-800 dark:text-red-100 bg-red-50 dark:bg-red-950/30"
                   >
-                    Crédito Hipotecario UVA
+                    {{ item.metadata.plazo_max_anios }} años
+                  </UBadge>
+                  <UBadge
+                    v-if="item.metadata?.relacion_cuota_ingreso"
+                    color="neutral"
+                    variant="outline"
+                    class="text-neutral-800 dark:text-neutral-100 bg-neutral-50 dark:bg-neutral-950/30"
+                  >
+                    Cuota/ingreso {{ item.metadata.relacion_cuota_ingreso }}
+                  </UBadge>
+                  <UBadge
+                    v-if="item.metadata?.financiamiento"
+                    color="neutral"
+                    variant="outline"
+                    class="text-neutral-800 dark:text-neutral-100 bg-neutral-50 dark:bg-neutral-950/30"
+                  >
+                    Financiamiento {{ item.metadata.financiamiento }}
                   </UBadge>
                 </div>
               </div>

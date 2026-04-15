@@ -1,13 +1,21 @@
+export interface HipotecarioUVAMetadata {
+  plazo_max_anios?: number
+  relacion_cuota_ingreso?: string
+  financiamiento?: string
+}
+
 export interface HipotecarioUVA {
   entidad: string
   nombreComercial: string
   tna: number
+  metadata?: HipotecarioUVAMetadata
 }
 
 interface HipotecarioUVAApiResponse {
   entidad: string
   nombreComercial: string
   tna: number
+  metadata?: HipotecarioUVAMetadata
 }
 
 const data = ref<HipotecarioUVA[] | null>(null)
@@ -33,6 +41,7 @@ export function useHipotecariosUVA() {
         entidad: item.entidad,
         nombreComercial: item.nombreComercial,
         tna: item.tna * 100,
+        metadata: item.metadata,
       }))
     } catch (err) {
       error.value = err
