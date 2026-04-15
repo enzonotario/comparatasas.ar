@@ -33,6 +33,7 @@ type BarChild = {
   logo?: string
   /** Condiciones / límite (cuentas) o tipo FCI (fondos), columna derecha del SVG. */
   rightLabel?: string
+  condicionesCorto?: string
 }
 
 function truncateBarCaption(s: string, max = 38): string {
@@ -114,6 +115,7 @@ const fullChartDataset = computed(() => {
       color: CHART_COLORS[index % CHART_COLORS.length],
       logo: account.logo,
       rightLabel: rightLabelForAccount(account),
+      condicionesCorto: account.condicionesCorto?.trim(),
     }))
 
   const conCondicionesEspeciales: BarChild[] = [...props.specialAccounts]
@@ -124,6 +126,7 @@ const fullChartDataset = computed(() => {
       color: CHART_COLORS[(index + garantizado.length) % CHART_COLORS.length],
       logo: account.logo,
       rightLabel: rightLabelForAccount(account),
+      condicionesCorto: account.condicionesCorto?.trim(),
     }))
 
   const riesgoMuyBajo: BarChild[] = [...props.variableFunds]
@@ -343,11 +346,19 @@ const chartConfig = computed<any>(() => ({
       tooltip: {
         ...solidTooltip.value,
         show: true,
-        customFormat: ({ datapoint }: { datapoint: { name?: string; value?: number } }) => {
+        customFormat: ({
+          datapoint,
+        }: {
+          datapoint: { name?: string; value?: number; condicionesCorto?: string }
+        }) => {
           const name = datapoint?.name ?? ''
           const v = datapoint?.value
           const tna = v != null && Number.isFinite(Number(v)) ? `${Number(v).toFixed(2)}%` : '—'
-          return `<div style="font-family:inherit"><b>${escapeTooltipHtml(name)}</b><br/>TNA: ${tna}</div>`
+          const condicionesCorto = datapoint?.condicionesCorto?.trim()
+          const condiciones = condicionesCorto
+            ? `<div style="margin-top:6px;color:inherit;opacity:.8">Condiciones: ${escapeTooltipHtml(condicionesCorto)}</div>`
+            : ''
+          return `<div style="font-family:inherit;max-width:240px;white-space:normal;overflow-wrap:anywhere;line-height:1.35"><b>${escapeTooltipHtml(name)}</b><div>TNA: ${tna}</div>${condiciones}</div>`
         },
         showValue: false,
         showPercentage: false,
