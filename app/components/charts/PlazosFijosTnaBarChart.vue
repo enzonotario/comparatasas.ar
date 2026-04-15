@@ -15,10 +15,13 @@ interface Props {
   items: PlazoFijoTnaChartItem[]
   /** Etiqueta del grupo raíz (serie) en el gráfico horizontal. */
   parentGroupName?: string
+  /** Si es true, ordena por TNA de menor a mayor (por defecto: mayor a menor). */
+  sortTnaAscending?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   parentGroupName: 'Plazo fijo 30 días · TNA clientes',
+  sortTnaAscending: false,
 })
 
 type BarChild = {
@@ -62,7 +65,9 @@ onMounted(async () => {
 })
 
 const chartDataset = computed(() => {
-  const sorted = [...props.items].filter((i) => i.tna > 0).sort((a, b) => b.tna - a.tna)
+  const sorted = [...props.items]
+    .filter((i) => i.tna > 0)
+    .sort((a, b) => (props.sortTnaAscending ? a.tna - b.tna : b.tna - a.tna))
   if (sorted.length === 0) return []
 
   const children: BarChild[] = sorted.map((item, index) => ({
