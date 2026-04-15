@@ -1,22 +1,41 @@
 [
   {
+    "date": "20260415",
+    "categories": {
+      "Página Amiga": 14,
+      "Billetera": 20,
+      "Money Market": 54,
+      "Plazo Fijo": 71,
+      "Otro": 16,
+      "Cuenta Remunerada": 58,
+      "Billetera USD": 6,
+      "Cuenta Remunerada USD": 2,
+      "PF UVA pago periódico": 23,
+      "Renta Fija": 36,
+      "Renta Mixta": 2,
+      "General": 10,
+      "Criptomonedas": 9
+    },
+    "total": 321
+  },
+  {
     "date": "20260414",
     "categories": {
-      "Otro": 26,
-      "Billetera": 42,
-      "Money Market": 96,
-      "Plazo Fijo": 79,
-      "Cuenta Remunerada": 73,
-      "Página Amiga": 17,
-      "Billetera USD": 31,
-      "Cuenta Remunerada USD": 4,
-      "PF UVA pago periódico": 30,
-      "Renta Fija": 60,
-      "Renta Mixta": 4,
-      "General": 13,
-      "Criptomonedas": 6
+      "Otro": 67,
+      "Billetera": 121,
+      "Money Market": 217,
+      "Plazo Fijo": 191,
+      "Cuenta Remunerada": 196,
+      "Página Amiga": 42,
+      "Billetera USD": 47,
+      "Cuenta Remunerada USD": 6,
+      "PF UVA pago periódico": 59,
+      "Renta Fija": 98,
+      "Renta Mixta": 10,
+      "General": 22,
+      "Criptomonedas": 11
     },
-    "total": 481
+    "total": 1087
   },
   {
     "date": "20260413",
@@ -51,40 +70,8 @@
       "PF UVA pago periódico": 14,
       "Renta Fija": 21,
       "Renta Mixta": 3,
-      "General": 16,
-      "Criptomonedas": 15
+      "General": 16
     },
-    "total": 432
-  },
-  {
-    "date": "20260411",
-    "categories": {
-      "Money Market": 85,
-      "Plazo Fijo": 80,
-      "Cuenta Remunerada": 88,
-      "Otro": 54,
-      "Billetera": 44,
-      "Página Amiga": 15,
-      "Billetera USD": 15,
-      "Cuenta Remunerada USD": 2,
-      "PF UVA pago periódico": 24,
-      "Renta Fija": 38,
-      "Renta Mixta": 5,
-      "General": 17,
-      "Criptomonedas": 18
-    },
-    "total": 485
-  },
-  {
-    "date": "20260410",
-    "categories": {
-      "Billetera": 23,
-      "Money Market": 38,
-      "Plazo Fijo": 43,
-      "Cuenta Remunerada": 54,
-      "Otro": 25,
-      "Página Amiga": 8
-    },
-    "total": 191
+    "total": 417
   }
 ]
