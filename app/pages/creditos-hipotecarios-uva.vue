@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
 
-import type { InflacionREMData } from '~/composables/useInflacionREM'
+import PlazosFijosTnaBarChart from '~/components/charts/PlazosFijosTnaBarChart.vue'
+import { getInstitutionLogo, getInstitutionShortName } from '~/lib/mappings/institutions'
 import { ogUpdatedAtDate, top3Hipotecarios } from '~/utils/og-data'
 
 definePageMeta({
@@ -117,6 +118,14 @@ const inflacionOrdenada = computed(() => {
     return new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
   })
 })
+
+const hipotecariosChartItems = computed(() => {
+  return hipotecariosUVA.value.map((h) => ({
+    institution: getInstitutionShortName(h.entidad) || h.nombreComercial,
+    tna: h.tna,
+    logo: getInstitutionLogo(h.entidad) || getInstitutionLogo(h.nombreComercial),
+  }))
+})
 </script>
 
 <template>
@@ -158,6 +167,22 @@ const inflacionOrdenada = computed(() => {
         </div>
 
         <HipotecariosUVAList :hipotecarios="hipotecariosUVA" />
+
+        <UCard>
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon
+                name="i-lucide-bar-chart-3"
+                class="size-5 text-primary-600 dark:text-primary-400"
+              />
+              <h3 class="font-semibold text-lg">TNA por entidad</h3>
+            </div>
+          </template>
+          <PlazosFijosTnaBarChart
+            parent-group-name="Créditos hipotecarios UVA · TNA"
+            :items="hipotecariosChartItems"
+          />
+        </UCard>
       </div>
 
       <HipotecariosUVATable

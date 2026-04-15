@@ -13,9 +13,13 @@ export interface PlazoFijoTnaChartItem {
 
 interface Props {
   items: PlazoFijoTnaChartItem[]
+  /** Etiqueta del grupo raíz (serie) en el gráfico horizontal. */
+  parentGroupName?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  parentGroupName: 'Plazo fijo 30 días · TNA clientes',
+})
 
 type BarChild = {
   name: string
@@ -73,7 +77,7 @@ const chartDataset = computed(() => {
 
   return [
     {
-      name: 'Plazo fijo 30 días · TNA clientes',
+      name: props.parentGroupName,
       value,
       children,
     },
