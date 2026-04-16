@@ -1,22 +1,41 @@
 [
   {
-    "date": "20260415",
+    "date": "20260416",
     "categories": {
-      "Página Amiga": 14,
-      "Billetera": 20,
-      "Money Market": 54,
-      "Plazo Fijo": 71,
-      "Otro": 16,
-      "Cuenta Remunerada": 58,
-      "Billetera USD": 6,
-      "Cuenta Remunerada USD": 2,
-      "PF UVA pago periódico": 23,
-      "Renta Fija": 36,
+      "Página Amiga": 17,
+      "Money Market": 40,
+      "Billetera": 21,
+      "Plazo Fijo": 50,
+      "Cuenta Remunerada": 48,
+      "Otro": 27,
+      "Billetera USD": 11,
+      "Cuenta Remunerada USD": 4,
+      "PF UVA pago periódico": 14,
+      "Renta Fija": 27,
       "Renta Mixta": 2,
-      "General": 10,
+      "General": 12,
       "Criptomonedas": 9
     },
-    "total": 321
+    "total": 282
+  },
+  {
+    "date": "20260415",
+    "categories": {
+      "Página Amiga": 41,
+      "Billetera": 57,
+      "Money Market": 128,
+      "Plazo Fijo": 163,
+      "Otro": 48,
+      "Cuenta Remunerada": 156,
+      "Billetera USD": 14,
+      "Cuenta Remunerada USD": 4,
+      "PF UVA pago periódico": 43,
+      "Renta Fija": 73,
+      "Renta Mixta": 3,
+      "General": 20,
+      "Criptomonedas": 12
+    },
+    "total": 762
   },
   {
     "date": "20260414",
@@ -42,36 +61,14 @@
     "categories": {
       "Billetera": 58,
       "Money Market": 151,
-      "Plazo Fijo": 242,
+      "Plazo Fijo": 212,
       "Otro": 61,
       "Página Amiga": 33,
       "Cuenta Remunerada": 153,
       "Billetera USD": 22,
       "Cuenta Remunerada USD": 4,
-      "PF UVA pago periódico": 58,
-      "Renta Fija": 77,
-      "Renta Mixta": 7,
-      "General": 9,
-      "Criptomonedas": 16
+      "PF UVA pago periódico": 58
     },
-    "total": 891
-  },
-  {
-    "date": "20260412",
-    "categories": {
-      "Money Market": 62,
-      "Billetera": 48,
-      "Otro": 54,
-      "Plazo Fijo": 100,
-      "Página Amiga": 12,
-      "Cuenta Remunerada": 68,
-      "Billetera USD": 16,
-      "Cuenta Remunerada USD": 3,
-      "PF UVA pago periódico": 14,
-      "Renta Fija": 21,
-      "Renta Mixta": 3,
-      "General": 16
-    },
-    "total": 417
+    "total": 752
   }
 ]
