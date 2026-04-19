@@ -29,7 +29,8 @@ const { data: ogItems } = await useAsyncData('og-fondos', async () => {
   })
   const riesgoMuyBajo = resolved.filter(
     (f) =>
-      (f.type ?? '') === 'mercadoDinero' || !['rentaFija', 'rentaMixta'].includes(f.type ?? ''),
+      (f.type ?? '') === 'mercadoDinero' ||
+      !['rentaFija', 'rentaMixta', 'retornoTotal'].includes(f.type ?? ''),
   )
   return top3Funds(
     riesgoMuyBajo.map((f) => ({

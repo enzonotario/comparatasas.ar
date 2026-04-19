@@ -115,6 +115,20 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
+    fundName: 'Cocos Pesos Plus - Clase A',
+    institutions: [
+      {
+        institution: 'Cocos',
+        displayName: 'Cocos Pesos Plus',
+        showInAccounts: true,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+      },
+    ],
+  },
+  {
     fundName: 'IOL Cash Management - Clase A',
     institutions: [
       {

@@ -88,9 +88,10 @@ const fundsByRisk = computed(() => {
   }
 
   resolvedFundsAccounts.value.forEach((fund) => {
-    if (['mercadoDinero'].includes(fund.type || '')) {
+    const t = fund.type || ''
+    if (t === 'mercadoDinero') {
       grouped['Riesgo muy bajo'].push(fund)
-    } else if (['rentaFija', 'rentaMixta'].includes(fund.type || '')) {
+    } else if (['rentaFija', 'rentaMixta', 'retornoTotal'].includes(t)) {
       grouped['Riesgo moderado'].push(fund)
     } else {
       grouped['Riesgo muy bajo'].push(fund)

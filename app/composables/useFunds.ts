@@ -17,6 +17,7 @@ interface Funds {
   mercadoDinero: ProcessedFund[]
   rentaMixta: ProcessedFund[]
   rentaVariable: ProcessedFund[]
+  retornoTotal: ProcessedFund[]
 }
 
 const data: Ref<Funds> = ref({
@@ -24,6 +25,7 @@ const data: Ref<Funds> = ref({
   mercadoDinero: [],
   rentaMixta: [],
   rentaVariable: [],
+  retornoTotal: [],
 })
 
 const allFundsCache: Ref<ProcessedFund[]> = ref([])
@@ -99,12 +101,14 @@ async function getLatestAndPreviousFundData() {
   const mercadoDineroResponses = await getMercadoDinero()
   const rentaMixtaResponses = await getRentaMixta()
   const rentaVariableResponses = await getRentaVariable()
+  const retornoTotalResponses = await getRetornoTotal()
 
   allFundsCache.value = [
     ...rentaFijaResponses,
     ...mercadoDineroResponses,
     ...rentaMixtaResponses,
     ...rentaVariableResponses,
+    ...retornoTotalResponses,
   ]
 
   return {
@@ -112,7 +116,34 @@ async function getLatestAndPreviousFundData() {
     mercadoDinero: mercadoDineroResponses,
     rentaMixta: rentaMixtaResponses,
     rentaVariable: rentaVariableResponses,
+    retornoTotal: retornoTotalResponses,
   }
+}
+
+async function getRetornoTotal() {
+  const { latest, previous } = await getLatestAndPreviousRetornoTotal()
+
+  const funds = getFundsMap(latest, previous)
+
+  return funds
+    .sort((a, b) => b.tna - a.tna)
+    .map((fund) => ({
+      ...fund,
+      type: fund.type ?? 'retornoTotal',
+      typeLabel: fund.typeLabel ?? 'Retorno total',
+    }))
+}
+
+async function getLatestAndPreviousRetornoTotal() {
+  const latest = await $fetch<FundRaw[]>(
+    'https://api.argentinadatos.com/v1/finanzas/fci/retornoTotal/ultimo',
+  )
+
+  const previous = await $fetch<FundRaw[]>(
+    'https://api.argentinadatos.com/v1/finanzas/fci/retornoTotal/penultimo',
+  )
+
+  return { latest, previous }
 }
 
 async function getMercadoDinero() {
@@ -284,7 +315,8 @@ export function useFunds() {
       data.value.rentaFija.length > 0 ||
       data.value.mercadoDinero.length > 0 ||
       data.value.rentaMixta.length > 0 ||
-      data.value.rentaVariable.length > 0
+      data.value.rentaVariable.length > 0 ||
+      data.value.retornoTotal.length > 0
     ) {
       return data.value // Return cached data if available
     }

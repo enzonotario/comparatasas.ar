@@ -64,6 +64,7 @@ function rightLabelForFund(f: ProcessedFund): string {
   if (t === 'rentaMixta') return truncateBarCaption('FCI · Renta  mixta')
   if (t === 'rentaFija' || t === 'rentaFijaUsd') return truncateBarCaption('FCI · Renta fija ')
   if (t === 'rentaVariable') return truncateBarCaption('FCI · Renta variable')
+  if (t === 'retornoTotal') return truncateBarCaption('FCI · Retorno total')
   if (f.typeLabel) return truncateBarCaption(`FCI · ${f.typeLabel}`)
   return truncateBarCaption('FCI · Rendimiento variable')
 }
@@ -130,7 +131,7 @@ const fullChartDataset = computed(() => {
     }))
 
   const riesgoMuyBajo: BarChild[] = [...props.variableFunds]
-    .filter((fund) => !['rentaFija', 'rentaMixta'].includes(fund.type || ''))
+    .filter((fund) => !['rentaFija', 'rentaMixta', 'retornoTotal'].includes(fund.type || ''))
     .sort((a, b) => b.tna - a.tna)
     .map((fund, index) => ({
       name: fund.displayName || fund.fondo,
@@ -144,7 +145,7 @@ const fullChartDataset = computed(() => {
     }))
 
   const riesgoModerado: BarChild[] = [...props.variableFunds]
-    .filter((fund) => ['rentaFija', 'rentaMixta'].includes(fund.type || ''))
+    .filter((fund) => ['rentaFija', 'rentaMixta', 'retornoTotal'].includes(fund.type || ''))
     .sort((a, b) => b.tna - a.tna)
     .map((fund, index) => ({
       name: fund.displayName || fund.fondo,
