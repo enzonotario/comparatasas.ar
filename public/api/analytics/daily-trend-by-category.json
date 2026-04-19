@@ -1,23 +1,44 @@
 [
   {
+    "date": "20260419",
+    "categories": {
+      "Página Amiga": 15,
+      "Money Market": 39,
+      "Cuenta Remunerada": 23,
+      "Billetera": 9,
+      "Otro": 12,
+      "Plazo Fijo": 20,
+      "Billetera USD": 2,
+      "Cuenta Remunerada USD": 1,
+      "PF UVA pago periódico": 11,
+      "Renta Fija": 8,
+      "Renta Mixta": 2,
+      "Retorno total": 17,
+      "General": 5,
+      "Criptomonedas": 4
+    },
+    "total": 168
+  },
+  {
     "date": "20260418",
     "categories": {
-      "Página Amiga": 14,
-      "Money Market": 25,
-      "Plazo Fijo": 39,
-      "Cuenta Remunerada": 25,
-      "Otro": 17,
-      "Billetera": 12,
-      "Criptomonedas": 10,
-      "Billetera USD": 8,
-      "Cuenta Remunerada USD": 2,
-      "PF UVA pago periódico": 8,
-      "PF UVA precancelable": 2,
-      "Renta Fija": 20,
-      "Renta Mixta": 1,
-      "General": 7
+      "Página Amiga": 32,
+      "Money Market": 63,
+      "Plazo Fijo": 86,
+      "Cuenta Remunerada": 75,
+      "Otro": 63,
+      "Billetera": 33,
+      "Criptomonedas": 15,
+      "Billetera USD": 15,
+      "Cuenta Remunerada USD": 3,
+      "PF UVA pago periódico": 14,
+      "PF UVA precancelable": 3,
+      "Renta Fija": 32,
+      "Renta Mixta": 2,
+      "Retorno total": 1,
+      "General": 14
     },
-    "total": 190
+    "total": 451
   },
   {
     "date": "20260417",
@@ -60,32 +81,13 @@
   {
     "date": "20260415",
     "categories": {
-      "Página Amiga": 41,
-      "Billetera": 57,
-      "Money Market": 128,
-      "Plazo Fijo": 163,
-      "Otro": 48,
-      "Cuenta Remunerada": 156,
-      "Billetera USD": 14,
-      "Cuenta Remunerada USD": 4,
-      "PF UVA pago periódico": 43,
-      "Renta Fija": 73,
-      "Renta Mixta": 3,
-      "General": 20,
-      "Criptomonedas": 12
+      "Página Amiga": 16,
+      "Billetera": 22,
+      "Money Market": 31,
+      "Plazo Fijo": 43,
+      "Otro": 16,
+      "Cuenta Remunerada": 58
     },
-    "total": 762
-  },
-  {
-    "date": "20260414",
-    "categories": {
-      "Otro": 5,
-      "Billetera": 5,
-      "Money Market": 21,
-      "Plazo Fijo": 21,
-      "Cuenta Remunerada": 46,
-      "Página Amiga": 12
-    },
-    "total": 110
+    "total": 186
   }
 ]
