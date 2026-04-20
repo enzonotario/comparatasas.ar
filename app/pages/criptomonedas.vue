@@ -15,6 +15,15 @@ definePageMeta({
 })
 
 const { trackProviderClick } = useAnalytics()
+const cryptoStore = useCrypto()
+const {
+  dataProcessed: cryptoYields,
+  loading,
+  error,
+  cryptosByMaxYield,
+  fetchCriptos,
+  data: cryptoData,
+} = cryptoStore
 
 function handleExchangeClick(entidad: string, crypto?: string) {
   const url = getInstitutionUrl(entidad)
@@ -29,7 +38,6 @@ function handleExchangeClick(entidad: string, crypto?: string) {
 }
 
 const { data: ogItems } = await useAsyncData('og-crypto', async () => {
-  const { data: cryptoData, fetchCriptos, cryptosByMaxYield } = useCrypto()
   await fetchCriptos()
   return cryptosByMaxYield.value.slice(0, 3).map(({ crypto, maxYield }) => {
     const provider = getCryptoMaxYieldProvider(crypto, cryptoData.value)
@@ -78,7 +86,6 @@ useHead({
   ],
 })
 
-const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCrypto()
 </script>
 
 <template>
@@ -195,8 +202,8 @@ const { dataProcessed: cryptoYields, loading, error, cryptosByMaxYield } = useCr
           <div class="space-y-3">
             <div class="space-y-2">
               <div
-                v-for="(cryptoYield, yieldIndex) in entity.rendimientos"
-                :key="yieldIndex"
+                v-for="cryptoYield in entity.rendimientos"
+                :key="`${entity.entidad}-${cryptoYield.moneda}`"
                 class="p-4 flex items-center justify-between py-1 hover:bg-gray-100 dark:hover:bg-gray-900 rounded"
               >
                 <div class="flex items-center gap-2">

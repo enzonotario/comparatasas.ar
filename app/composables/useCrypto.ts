@@ -12,13 +12,6 @@ interface CryptoEntity {
 
 const CRYPTO_BLACKLIST = ['WARS']
 
-const data: Ref<CryptoEntity[]> = ref([])
-const dataProcessed: Ref<CryptoEntity[]> = ref([])
-const dataAll: Ref<CryptoEntity[]> = ref([])
-const dataAllProcessed: Ref<CryptoEntity[]> = ref([])
-const loading = ref(true)
-const error = ref<unknown>(null)
-
 function isBlacklistedCrypto(moneda: string): boolean {
   return CRYPTO_BLACKLIST.some((b) => b.toLowerCase() === (moneda || '').toLowerCase())
 }
@@ -69,6 +62,13 @@ async function fetchDataFromAPI(): Promise<CryptoEntity[]> {
 }
 
 export function useCrypto() {
+  const data = useState<CryptoEntity[]>('crypto:data', () => [])
+  const dataProcessed = useState<CryptoEntity[]>('crypto:dataProcessed', () => [])
+  const dataAll = useState<CryptoEntity[]>('crypto:dataAll', () => [])
+  const dataAllProcessed = useState<CryptoEntity[]>('crypto:dataAllProcessed', () => [])
+  const loading = useState<boolean>('crypto:loading', () => false)
+  const error = useState<unknown>('crypto:error', () => null)
+
   async function fetchCriptos() {
     if (data.value.length > 0) {
       return data.value // Return cached data if available
