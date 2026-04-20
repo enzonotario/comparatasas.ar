@@ -18,6 +18,11 @@ function isUvaSimulationOutOfRange(item: any): boolean {
   return !!(props.showSimulation && item.simulationDisabled)
 }
 
+function formatPlazoRange(item: any): string {
+  if (item.plazoMaxDias == null) return `desde ${item.plazoMinDias} días`
+  return `${item.plazoMinDias}–${item.plazoMaxDias} días`
+}
+
 function getHistoryUrl(item: any): string | null {
   if (!props.showHistoryLink) return null
 
@@ -170,11 +175,9 @@ function handleProviderClick(item: any) {
                   <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-snug">
                     <template v-if="simulatorDays != null">
                       Con {{ simulatorDays }} días en el simulador esta fila no aplica (plazo
-                      {{ item.plazoMinDias }}–{{ item.plazoMaxDias }} días).
+                      {{ formatPlazoRange(item) }}).
                     </template>
-                    <template v-else>
-                      Plazo de esta tasa: {{ item.plazoMinDias }}–{{ item.plazoMaxDias }} días.
-                    </template>
+                    <template v-else> Plazo de esta tasa: {{ formatPlazoRange(item) }}. </template>
                   </p>
                   <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                     {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}% TNA
@@ -336,11 +339,9 @@ function handleProviderClick(item: any) {
                   <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-snug">
                     <template v-if="simulatorDays != null">
                       Con {{ simulatorDays }} días en el simulador esta fila no aplica (plazo
-                      {{ item.plazoMinDias }}–{{ item.plazoMaxDias }} días).
+                      {{ formatPlazoRange(item) }}).
                     </template>
-                    <template v-else>
-                      Plazo de esta tasa: {{ item.plazoMinDias }}–{{ item.plazoMaxDias }} días.
-                    </template>
+                    <template v-else> Plazo de esta tasa: {{ formatPlazoRange(item) }}. </template>
                   </p>
                   <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                     {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}% TNA

@@ -40,7 +40,7 @@ export function useInvestmentSimulator() {
       type?: string
       fondo?: string
       plazoMinDias?: number
-      plazoMaxDias?: number
+      plazoMaxDias?: number | null
     },
   >(
     itemsRef: Ref<T[]> | ComputedRef<T[]>,
@@ -59,15 +59,15 @@ export function useInvestmentSimulator() {
 
         const isPlazoFijo = item.type === 'plazoFijo30d'
         const isUvaPagoPeriodico = item.type === 'plazoFijoUvaPagoPeriodico'
+        const isUvaPrecancelable = item.type === 'plazoFijoPrecancelable'
         const effectiveDays = isPlazoFijo ? 30 : days.value
 
         const uvaPlazoMin = item.plazoMinDias
         const uvaPlazoMax = item.plazoMaxDias
         const simulationDisabled =
-          isUvaPagoPeriodico &&
-          uvaPlazoMin !== undefined &&
-          uvaPlazoMax !== undefined &&
-          (days.value < uvaPlazoMin || days.value > uvaPlazoMax)
+          (isUvaPagoPeriodico || isUvaPrecancelable) &&
+          ((uvaPlazoMin !== undefined && days.value < uvaPlazoMin) ||
+            (uvaPlazoMax != null && days.value > uvaPlazoMax))
 
         let result: { finalAmount: number; earned: number }
         let effectiveAmount = amount.value
@@ -97,7 +97,8 @@ export function useInvestmentSimulator() {
           }
         } else {
           effectiveAmount = exceedsLimit ? item.tope! : amount.value
-          const tnaValue = isPlazoFijo || isUvaPagoPeriodico ? item.tna / 100 : item.tna
+          const tnaValue =
+            isPlazoFijo || isUvaPagoPeriodico || isUvaPrecancelable ? item.tna / 100 : item.tna
 
           result = isPlazoFijo
             ? calculateSimpleInterest(effectiveAmount, tnaValue, effectiveDays)

@@ -39,7 +39,7 @@ export const plazoFijoInstitutions: Array<{
     url: 'https://www.bancoprovincia.com.ar/home/?ref=comparatasas',
   },
   {
-    names: ['BANCO BBVA ARGENTINA S.A.', 'BBVA BANCO FRANCES S.A.', 'BBVA'],
+    names: ['BANCO BBVA ARGENTINA S.A.', 'BBVA BANCO FRANCES S.A.', 'BBVA', 'BBVA BANCO ARGENTINA'],
     logo: 'https://api.argentinadatos.com/static/logos/bbva.png',
     shortName: 'BBVA',
     url: 'https://www.bbva.com.ar/?ref=comparatasas',

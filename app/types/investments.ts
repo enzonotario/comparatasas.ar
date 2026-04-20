@@ -49,6 +49,27 @@ export interface ProveedorPlazoFijoUvaPagoPeriodico {
   tasas: TasaPlazoFijoUvaPagoPeriodico[]
 }
 
+/** Respuesta de `/v1/finanzas/tasas/plazoFijoPrecancelable` (ArgentinaDatos). */
+export interface PlazoFijoPrecancelable {
+  id: string
+  entidad: string
+  logo: string
+  enlace: string | null
+  canal: string | null
+  moneda: string
+  plazoMinDias: number
+  plazoMaxDias: number | null
+  plazoPrecancelacionDias: number | null
+  avisoPrecancelacionDias: number | null
+  montoMinimo: number | null
+  montoMaximo: number | null
+  modalidad: string | null
+  tna: number | null
+  tea: number | null
+  tnaPrecancelacion: number | null
+  teaPrecancelacion: number | null
+}
+
 export interface Lecap {
   symbol: string
   price: number

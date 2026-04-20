@@ -21,6 +21,18 @@ export function formatCurrency(value: number): string {
   }).format(value)
 }
 
+/**
+ * ARS en notación estándar (sin compact), para ejes/tooltips donde 1,0M y 1,2M no deben verse iguales.
+ */
+export function formatCurrencyFull(value: number): string {
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value)
+}
+
 export function useChartTheme() {
   const colorMode = computed(() => useColorMode().value)
 

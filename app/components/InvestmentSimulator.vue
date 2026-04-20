@@ -26,6 +26,7 @@ const props = withDefaults(
     daysMax?: number
     /** Modo informativo del recuadro ámbar (plazo fijo tradicional vs PF UVA). */
     interestInfoMode?: 'default' | 'uvaPagoPeriodico'
+    daysFieldDescription?: string
   }>(),
   {
     presetAmounts: () => [
@@ -190,6 +191,9 @@ const closeSimulator = () => {
                 :disabled="fixedDays !== undefined"
               />
               <template v-if="!fixedDays" #hint>
+                <p v-if="daysFieldDescription" class="text-xs text-gray-500 dark:text-gray-400">
+                  {{ daysFieldDescription }}
+                </p>
                 <div class="flex flex-wrap gap-1 mt-1.5">
                   <UButton
                     v-for="preset in presetDays"
@@ -280,6 +284,9 @@ const closeSimulator = () => {
                 :disabled="fixedDays !== undefined"
               />
               <template v-if="!fixedDays" #hint>
+                <p v-if="daysFieldDescription" class="text-xs text-gray-500 dark:text-gray-400">
+                  {{ daysFieldDescription }}
+                </p>
                 <div class="flex flex-wrap gap-1 mt-1.5">
                   <UButton
                     v-for="preset in presetDays"

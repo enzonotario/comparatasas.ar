@@ -8,6 +8,11 @@ const tabs = [
     label: 'UVA pago periódico',
     icon: 'i-lucide-calendar-range' as const,
   },
+  {
+    to: '/plazos-fijos/uva-precancelable',
+    label: 'UVA precancelable',
+    icon: 'i-lucide-calendar-clock' as const,
+  },
 ]
 
 function isActive(tabTo: string): boolean {
@@ -18,10 +23,7 @@ function isActive(tabTo: string): boolean {
 </script>
 
 <template>
-  <nav
-    class="sticky z-20 top-[var(--ui-header-height)] bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700 -mx-px"
-    aria-label="Tipo de plazo fijo"
-  >
+  <nav aria-label="Tipo de plazo fijo">
     <div class="flex flex-row overflow-x-auto h-10 sm:justify-center">
       <NuxtLink
         v-for="tab in tabs"
