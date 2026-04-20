@@ -19,13 +19,14 @@ function getPagePath(to: string): string {
 }
 
 function normalizeNavigationAlias(path: string): string {
+  const trimmed = path.replace(/\/$/, '') || '/'
   if (
-    path === '/plazos-fijos/uva-pago-periodico' ||
-    path === '/plazos-fijos/uva-precancelable'
+    trimmed === '/plazos-fijos/uva-pago-periodico' ||
+    trimmed === '/plazos-fijos/uva-precancelable'
   ) {
     return '/plazos-fijos'
   }
-  return path
+  return trimmed
 }
 
 export const useNavigationPages = () => {
@@ -34,8 +35,7 @@ export const useNavigationPages = () => {
   // Normaliza: sin barra final; '/' → '/cuentas-billeteras'
   const normalizeRoute = (routePath: string): string => {
     const aliased = normalizeNavigationAlias(routePath)
-    const trimmed = aliased.replace(/\/$/, '') || '/'
-    return trimmed === '/' ? '/cuentas-billeteras' : trimmed
+    return aliased === '/' ? '/cuentas-billeteras' : aliased
   }
 
   const isPageActive = (page: NavigationPage): boolean => {
