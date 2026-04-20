@@ -45,7 +45,7 @@ const fechaInicioYmd = computed(() => {
 })
 
 function ymdToUtcMs(ymd: string): number {
-  const [y, m, d] = ymd.split('-').map(Number)
+  const [y = 1970, m = 1, d = 1] = ymd.split('-').map(Number)
   return Date.UTC(y, m - 1, d)
 }
 
@@ -60,11 +60,12 @@ function utcMsToYmd(ms: number): string {
 function formatFechaCorta(ymd: string): string {
   const [yy, mm, dd] = ymd.split('-').map(Number)
   if (!yy || !mm || !dd) return ymd
-  return new Date(yy, mm - 1, dd).toLocaleDateString('es-AR', {
+  return new Intl.DateTimeFormat('es-AR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
-  })
+    timeZone: 'UTC',
+  }).format(new Date(Date.UTC(yy, mm - 1, dd)))
 }
 
 /** Variación % respecto al capital colocado (mismo criterio que el eje en pesos). */
@@ -164,6 +165,9 @@ const chartOptions = computed(() => {
       spacing: [12, 12, 16, 12],
     },
     title: { text: '' },
+    accessibility: {
+      enabled: false,
+    },
     time: {
       useUTC: true,
     },
@@ -190,7 +194,7 @@ const chartOptions = computed(() => {
       labels: {
         style: { color: textColor.value },
         formatter(): string {
-          return formatCurrencyFull(Number((this as { value: number }).value))
+          return formatCurrencyFull(Number((this as unknown as { value: number }).value))
         },
       },
       gridLineColor: gridLineColor.value,
@@ -215,11 +219,12 @@ const chartOptions = computed(() => {
           points?: Array<{ series: { name: string }; y: number }>
         }
         const t = new Date(ctx.x)
-        const fechaStr = t.toLocaleDateString('es-AR', {
+        const fechaStr = new Intl.DateTimeFormat('es-AR', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
-        })
+          timeZone: 'UTC',
+        }).format(t)
         const xMs = ctx.x
         const p = pts.find((row) => row.fechaYmd === utcMsToYmd(xMs))
         const inst = entidad

@@ -37,6 +37,9 @@ const chartOptions = computed(() => {
     title: {
       text: '',
     },
+    accessibility: {
+      enabled: false,
+    },
     tooltip: {
       formatter() {
         const p = (this as any).point
