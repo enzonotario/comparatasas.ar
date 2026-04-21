@@ -60,7 +60,7 @@ const generarProyeccion = () => {
     })
   }
 
-  // Mapa de inflación REM (tiene prioridad sobre histórica)
+  // Mapa de inflación REM (se usa si no hay dato del endpoint de inflación histórica)
   const remMap = new Map<string, number>()
   const remTipoMap = new Map<string, string>()
   // Acceder al valor del prop - usar toValue para desenrollar cualquier ref/computed/getter
@@ -95,18 +95,18 @@ const generarProyeccion = () => {
     const fechaKey = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`
     const fechaStr = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`
 
-    // Prioridad: REM > Histórica > Extender última disponible
+    // Prioridad: Histórica (INDEC / indices inflación) > REM > extender última disponible
     let inflacionMensual = ultimaInflacion
     let tipoInflacion: string | null = ultimoTipoInflacion
 
-    if (remMap.has(fechaKey)) {
-      inflacionMensual = remMap.get(fechaKey) || ultimaInflacion
-      tipoInflacion = remTipoMap.get(fechaKey) || null
-      ultimaInflacion = inflacionMensual
-      ultimoTipoInflacion = tipoInflacion
-    } else if (inflacionMap.has(fechaKey)) {
+    if (inflacionMap.has(fechaKey)) {
       inflacionMensual = inflacionMap.get(fechaKey) || ultimaInflacion
       tipoInflacion = 'Real'
+      ultimaInflacion = inflacionMensual
+      ultimoTipoInflacion = tipoInflacion
+    } else if (remMap.has(fechaKey)) {
+      inflacionMensual = remMap.get(fechaKey) || ultimaInflacion
+      tipoInflacion = remTipoMap.get(fechaKey) || null
       ultimaInflacion = inflacionMensual
       ultimoTipoInflacion = tipoInflacion
     } else {
@@ -114,7 +114,6 @@ const generarProyeccion = () => {
       tipoInflacion = ultimoTipoInflacion || 'Estimada'
     }
 
-    let uvaEncontrado = false
     const uvasDelMes: Array<{ fecha: string; valor: number }> = []
     for (const [fechaUVAKey, valorUVA] of uvaMap.entries()) {
       if (fechaUVAKey.startsWith(fechaKey)) {
@@ -128,7 +127,6 @@ const generarProyeccion = () => {
     if (uvasDelMes.length > 0) {
       uvasDelMes.sort((a, b) => b.fecha.localeCompare(a.fecha))
       uvaActual = uvasDelMes[0].valor
-      uvaEncontrado = true
       uvaParaCalculo = uvaActual
     } else {
       // Si no hay UVA histórico, calcularlo
