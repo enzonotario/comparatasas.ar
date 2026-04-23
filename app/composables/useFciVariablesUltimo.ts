@@ -1,10 +1,15 @@
-import { getInstitutionLogo, getInstitutionShortName, getInstitutionUrl } from '~/lib/mappings/institutions'
+import {
+  getInstitutionLogo,
+  getInstitutionShortName,
+  getInstitutionUrl,
+} from '~/lib/mappings/institutions'
 import { getLogoForEntity } from '~/lib/mappings/logos'
 import { isBlacklisted } from '~/lib/blacklist'
 import type { ProcessedFund } from '~/types/investments'
 
 export interface FciVariableUltimoRow {
-  fondo: string
+  nombre?: string
+  fondo?: string
   tipo: string
   tna: number
   tea: number
@@ -24,16 +29,26 @@ const data = ref<FciVariableUltimoRow[] | null>(null)
 const loading = ref(true)
 const error = ref<unknown>(null)
 
+function variableEntityKey(row: FciVariableUltimoRow): string {
+  return row.nombre?.trim() || row.fondo?.trim() || ''
+}
+
 function mapRow(row: FciVariableUltimoRow): FciVariableUltimoFund {
-  const label = getInstitutionShortName(row.fondo)
+  const rawEntity = variableEntityKey(row)
+  const label = getInstitutionShortName(rawEntity) || rawEntity
+  const fundName = row.fondo?.trim()
+  const displayName =
+    row.nombre?.trim() && fundName && fundName.toUpperCase() !== rawEntity.toUpperCase()
+      ? `${label} · ${fundName}`
+      : label
   return {
-    fondo: label,
+    fondo: displayName,
     institution: label,
     tna: row.tna,
     tea: row.tea,
     fecha: row.fecha,
-    logo: getLogoForEntity(label) || getLogoForEntity(row.fondo) || getInstitutionLogo(row.fondo),
-    url: getInstitutionUrl(row.fondo),
+    logo: getLogoForEntity(label) || getLogoForEntity(rawEntity) || getInstitutionLogo(rawEntity),
+    url: getInstitutionUrl(rawEntity),
     type: 'fciVariablesUltimo',
     typeLabel: row.tipo === 'billetera' ? 'Billetera' : 'Renta variable',
     tope: row.tope,
@@ -69,7 +84,10 @@ export function useFciVariablesUltimo() {
 
   const funds = computed<FciVariableUltimoFund[]>(() => {
     return (data.value ?? [])
-      .filter((row) => !isBlacklisted(row.fondo))
+      .filter((row) => {
+        const key = variableEntityKey(row)
+        return key && !isBlacklisted(key)
+      })
       .map(mapRow)
       .sort((a, b) => b.tna - a.tna)
   })
