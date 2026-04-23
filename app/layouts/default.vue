@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { fetch: fetchFunds } = useFunds()
 const { fetch: fetchAccounts } = useAccounts()
+const { fetch: fetchFciVariablesUltimo } = useFciVariablesUltimo()
 const { fetchCriptos: fetchCrypto } = useCrypto()
 const { fetch: fetchPlazosFijos } = usePlazosFijos()
 const { fetch: fetchPlazosFijosUvaPagoPeriodico } = usePlazosFijosUvaPagoPeriodico()
@@ -21,6 +22,7 @@ const useSponsorBanner = computed(() => {
 onMounted(() => {
   fetchAccounts()
   fetchFunds()
+  fetchFciVariablesUltimo()
   fetchCrypto()
   fetchPlazosFijos()
   fetchPlazosFijosUvaPagoPeriodico()

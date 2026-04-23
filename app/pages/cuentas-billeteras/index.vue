@@ -57,13 +57,18 @@ useHead({
 
 const { allFundsCache, data, loading, error } = useFunds()
 const { accounts, loading: loadingAccounts, specialAccounts } = useAccounts()
+const {
+  funds: fciVariablesFunds,
+  loading: loadingFciVariables,
+  error: fciVariablesError,
+} = useFciVariablesUltimo()
 
 const { calculateResults, isSimulating } = useInvestmentSimulator()
 
 const resolvedFundsAccounts = computed(() => {
   const accountsFunds = allFundsCache.value.filter((i) => i?.meta?.showInAccounts)
   const mercadoDineroFunds = data.value.mercadoDinero.filter((i) => i?.meta?.showInFunds)
-  const combined = [...accountsFunds, ...mercadoDineroFunds]
+  const combined = [...accountsFunds, ...mercadoDineroFunds, ...fciVariablesFunds.value]
 
   const seen = new Set<string>()
   const unique = combined.filter((item) => {
@@ -89,7 +94,7 @@ const fundsByRisk = computed(() => {
 
   resolvedFundsAccounts.value.forEach((fund) => {
     const t = fund.type || ''
-    if (t === 'mercadoDinero') {
+    if (t === 'mercadoDinero' || t === 'fciVariablesUltimo') {
       grouped['Riesgo muy bajo'].push(fund)
     } else if (['rentaFija', 'rentaMixta', 'retornoTotal'].includes(t)) {
       grouped['Riesgo moderado'].push(fund)
@@ -218,7 +223,12 @@ const fundsByRiskWithSimulation = computed(() => {
             </p>
           </div>
 
-          <UAlert v-if="error" color="red" variant="soft" title="Error cargando fondos" />
+          <UAlert
+            v-if="error || fciVariablesError"
+            color="red"
+            variant="soft"
+            title="Error cargando fondos"
+          />
 
           <div class="space-y-6">
             <div v-for="(funds, riskKey) in fundsByRiskWithSimulation" :key="riskKey">
@@ -251,7 +261,7 @@ const fundsByRiskWithSimulation = computed(() => {
               link-text="Ver gráficos y análisis"
             />
 
-            <FundsLoading v-if="loading || loadingAccounts" />
+            <FundsLoading v-if="loading || loadingAccounts || loadingFciVariables" />
           </div>
         </div>
       </div>

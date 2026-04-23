@@ -119,6 +119,12 @@ export const institutions: Array<{
     url: 'https://personalpay.com.ar/?ref=comparatasas',
   },
   {
+    names: ['GLOBAL66', 'Global66', 'global66'],
+    logo: 'https://api.argentinadatos.com/static/logos/global66.svg',
+    shortName: 'Global66',
+    url: 'https://share.global66.com/ENZNOT1',
+  },
+  {
     names: ['Lemon', 'lemoncash'],
     logo: 'https://api.argentinadatos.com/static/logos/lemon.png',
     shortName: 'Lemon',

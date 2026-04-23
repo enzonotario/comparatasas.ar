@@ -60,6 +60,8 @@ const {
   error: fundsError,
   fetch: fetchFunds,
 } = useFunds()
+const { funds: fciVariablesFunds, loading: loadingFciVariables, fetch: fetchFciVariablesUltimo } =
+  useFciVariablesUltimo()
 
 const isMounted = ref(false)
 
@@ -74,7 +76,7 @@ const hasData = computed(() => {
 const variableReturnFunds = computed(() => {
   const accountsFunds = allFundsCache.value.filter((i) => i?.meta?.showInAccounts)
   const mercadoDineroFunds = fundsData.value.mercadoDinero.filter((i) => i?.meta?.showInFunds)
-  const combined = [...accountsFunds, ...mercadoDineroFunds]
+  const combined = [...accountsFunds, ...mercadoDineroFunds, ...fciVariablesFunds.value]
 
   const seen = new Set<string>()
   const unique = combined.filter((item) => {
@@ -90,7 +92,7 @@ const variableReturnFunds = computed(() => {
 })
 
 const hasFundsData = computed(() => {
-  return variableReturnFunds.value.length > 0 && !loadingFunds.value
+  return variableReturnFunds.value.length > 0 && !loadingFunds.value && !loadingFciVariables.value
 })
 
 const { fetch: fetchAccounts } = useAccounts()
@@ -103,6 +105,7 @@ onMounted(() => {
   if (allFundsCache.value.length === 0 && !loadingFunds.value) {
     fetchFunds()
   }
+  fetchFciVariablesUltimo()
 })
 </script>
 
