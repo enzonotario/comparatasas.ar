@@ -173,6 +173,12 @@ export const institutions: Array<{
     url: 'https://www.supervielle.com.ar/?ref=comparatasas',
   },
   {
+    names: ['SUPERVIELLE HIT IOL'],
+    logo: 'https://api.argentinadatos.com/static/logos/banco-supervielle.png',
+    shortName: 'Supervielle Hit IOL',
+    url: 'https://www.supervielle.com.ar/?ref=comparatasas',
+  },
+  {
     names: ['Banza'],
     logo: 'https://api.argentinadatos.com/static/logos/banza.svg',
     shortName: 'Banza',

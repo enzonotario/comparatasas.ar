@@ -93,6 +93,7 @@ export function useAccounts() {
       'UALA PLUS 2',
       'BNA',
       'FIWIND',
+      'SUPERVIELLE HIT IOL',
     ])
   })
 

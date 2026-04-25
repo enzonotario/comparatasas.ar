@@ -19,6 +19,7 @@ export function getProviderApiName(displayName: string): string | null {
     'Naranja X': 'NARANJA X',
     Cresium: 'CRESIUM',
     Supervielle: 'SUPERVIELLE',
+    'Supervielle Hit IOL': 'SUPERVIELLE HIT IOL',
     'Banco Nación': 'BNA',
     Brubank: 'BRUBANK',
     'Montemar Pay': 'MONTEMAR PAY',
