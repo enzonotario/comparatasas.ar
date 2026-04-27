@@ -6,8 +6,7 @@ import type { TableColumn } from '@nuxt/ui'
 
 definePageMeta({
   pageTitle: 'LECAPs y BONCAPs',
-  pageDescription:
-    'Precios en vivo de LECAPs y BONCAPs (Letras y Bonos de Capitalización) en Argentina.',
+  pageDescription: 'Precios en vivo de Letras y Bonos de Capitalización en Argentina.',
 })
 
 useSeoMeta({
