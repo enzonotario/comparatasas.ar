@@ -13,7 +13,9 @@ definePageMeta({
     'Comparativa de las mejores opciones para invertir tus dólares en Argentina. Cuentas remuneradas, billeteras y fondos en USD.',
 })
 
-const ACCOUNTS_BLACKLIST_OG = ['Banco Galicia']
+const ACCOUNTS_BLACKLIST_OG = [
+  // 'Banco Galicia'
+]
 
 const { data: ogItems } = await useAsyncData('og-usd', async () => {
   const [cuentasRes, allYields] = await Promise.all([
@@ -162,7 +164,9 @@ const usdYieldsForFundsList = computed(() => {
 })
 
 // Blacklist de instituciones para cuentas y billeteras USD
-const accountsBlacklist = ['Banco Galicia']
+const accountsBlacklist = [
+  // 'Banco Galicia'
+]
 
 // Combinar cuentas y billeteras USD
 const accountsAndWallets = computed(() => {
