@@ -5,7 +5,7 @@ import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { TableColumn } from '@nuxt/ui'
 
 definePageMeta({
-  pageTitle: 'LECAPs',
+  pageTitle: 'LECAPs y BONCAPs',
   pageDescription:
     'Precios en vivo de LECAPs y BONCAPs (Letras y Bonos de Capitalización) en Argentina.',
 })
