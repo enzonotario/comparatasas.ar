@@ -1,23 +1,44 @@
 [
   {
+    "date": "20260502",
+    "categories": {
+      "Página Amiga": 5,
+      "Money Market": 28,
+      "Plazo Fijo": 50,
+      "Cuenta Remunerada": 35,
+      "Billetera": 12,
+      "Otro": 13,
+      "Criptomonedas": 7,
+      "Billetera USD": 3,
+      "PF UVA pago periódico": 2,
+      "PF UVA precancelable": 1,
+      "Renta Fija": 27,
+      "Renta Mixta": 1,
+      "Retorno total": 1,
+      "General": 4
+    },
+    "total": 189
+  },
+  {
     "date": "20260501",
     "categories": {
-      "Página Amiga": 8,
-      "Money Market": 37,
-      "Plazo Fijo": 28,
-      "Cuenta Remunerada": 32,
-      "Otro": 18,
-      "Billetera": 20,
-      "Billetera USD": 5,
-      "PF UVA pago periódico": 2,
-      "PF UVA precancelable": 4,
-      "Renta Fija": 21,
+      "Página Amiga": 19,
+      "Money Market": 75,
+      "Plazo Fijo": 65,
+      "Cuenta Remunerada": 85,
+      "Otro": 48,
+      "Billetera": 57,
+      "Billetera USD": 18,
+      "Cuenta Remunerada USD": 2,
+      "PF UVA pago periódico": 11,
+      "PF UVA precancelable": 5,
+      "Renta Fija": 29,
       "Renta Mixta": 1,
-      "Retorno total": 6,
-      "General": 14,
-      "Criptomonedas": 12
+      "Retorno total": 7,
+      "General": 21,
+      "Criptomonedas": 17
     },
-    "total": 208
+    "total": 460
   },
   {
     "date": "20260430",
@@ -63,21 +84,14 @@
   {
     "date": "20260428",
     "categories": {
-      "Otro": 87,
-      "Money Market": 129,
-      "Plazo Fijo": 157,
-      "Página Amiga": 33,
-      "Cuenta Remunerada": 121,
-      "Billetera": 71,
-      "Criptomonedas": 4,
-      "Billetera USD": 29,
-      "Cuenta Remunerada USD": 1,
-      "PF UVA pago periódico": 18,
-      "Renta Fija": 56,
-      "Renta Mixta": 1,
-      "Retorno total": 6,
-      "General": 19
+      "Otro": 18,
+      "Money Market": 33,
+      "Plazo Fijo": 20,
+      "Página Amiga": 10,
+      "Cuenta Remunerada": 29,
+      "Billetera": 16,
+      "Criptomonedas": 1
     },
-    "total": 732
+    "total": 127
   }
 ]
