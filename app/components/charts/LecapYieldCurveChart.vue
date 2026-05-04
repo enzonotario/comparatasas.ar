@@ -197,9 +197,7 @@ const chartOptions = computed(() => {
   <div class="lecap-yield-curve-chart w-full" style="height: 24rem; min-height: 384px">
     <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
     <div v-else class="w-full h-full flex items-center justify-center">
-      <div class="text-muted text-sm italic">
-        Cargando curva de rendimientos...
-      </div>
+      <div class="text-muted text-sm italic">Cargando curva de rendimientos...</div>
     </div>
   </div>
 </template>

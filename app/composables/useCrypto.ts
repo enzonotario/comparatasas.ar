@@ -85,33 +85,33 @@ export function useCrypto() {
       // Filtra criptomonedas válidas y consolida tokens duplicados por entidad (toma el máximo APY)
       dataProcessed.value = normalizeEntities(
         responseArray
-        .map((entity) => {
-          const validRendimientos = entity.rendimientos.filter(
-            (rendimiento) =>
-              shouldShowCrypto(rendimiento.moneda) &&
-              rendimiento.apy > 0 &&
-              !isBlacklistedCrypto(rendimiento.moneda),
-          )
+          .map((entity) => {
+            const validRendimientos = entity.rendimientos.filter(
+              (rendimiento) =>
+                shouldShowCrypto(rendimiento.moneda) &&
+                rendimiento.apy > 0 &&
+                !isBlacklistedCrypto(rendimiento.moneda),
+            )
 
-          // Consolida tokens duplicados tomando el máximo APY
-          const consolidatedRendimientos = new Map<string, number>()
-          validRendimientos.forEach((rendimiento) => {
-            const currentMax = consolidatedRendimientos.get(rendimiento.moneda) || 0
-            if (rendimiento.apy > currentMax) {
-              consolidatedRendimientos.set(rendimiento.moneda, rendimiento.apy)
+            // Consolida tokens duplicados tomando el máximo APY
+            const consolidatedRendimientos = new Map<string, number>()
+            validRendimientos.forEach((rendimiento) => {
+              const currentMax = consolidatedRendimientos.get(rendimiento.moneda) || 0
+              if (rendimiento.apy > currentMax) {
+                consolidatedRendimientos.set(rendimiento.moneda, rendimiento.apy)
+              }
+            })
+
+            const consolidated = Array.from(consolidatedRendimientos.entries()).map(
+              ([moneda, apy]) => ({ moneda, apy }),
+            )
+
+            return {
+              entidad: entity.entidad,
+              rendimientos: consolidated,
             }
           })
-
-          const consolidated = Array.from(consolidatedRendimientos.entries()).map(
-            ([moneda, apy]) => ({ moneda, apy }),
-          )
-
-          return {
-            entidad: entity.entidad,
-            rendimientos: consolidated,
-          }
-        })
-        .filter((entity) => entity.rendimientos.length > 0),
+          .filter((entity) => entity.rendimientos.length > 0),
       )
     } catch (err) {
       error.value = err
@@ -140,30 +140,30 @@ export function useCrypto() {
       // y consolida tokens duplicados por entidad (toma el máximo APY)
       const processed = normalizeEntities(
         responseArray
-        .map((entity) => {
-          const validRendimientos = entity.rendimientos.filter(
-            (rendimiento) => rendimiento.apy > 0 && !isBlacklistedCrypto(rendimiento.moneda),
-          )
+          .map((entity) => {
+            const validRendimientos = entity.rendimientos.filter(
+              (rendimiento) => rendimiento.apy > 0 && !isBlacklistedCrypto(rendimiento.moneda),
+            )
 
-          // Consolida tokens duplicados tomando el máximo APY
-          const consolidatedRendimientos = new Map<string, number>()
-          validRendimientos.forEach((rendimiento) => {
-            const currentMax = consolidatedRendimientos.get(rendimiento.moneda) || 0
-            if (rendimiento.apy > currentMax) {
-              consolidatedRendimientos.set(rendimiento.moneda, rendimiento.apy)
+            // Consolida tokens duplicados tomando el máximo APY
+            const consolidatedRendimientos = new Map<string, number>()
+            validRendimientos.forEach((rendimiento) => {
+              const currentMax = consolidatedRendimientos.get(rendimiento.moneda) || 0
+              if (rendimiento.apy > currentMax) {
+                consolidatedRendimientos.set(rendimiento.moneda, rendimiento.apy)
+              }
+            })
+
+            const consolidated = Array.from(consolidatedRendimientos.entries()).map(
+              ([moneda, apy]) => ({ moneda, apy }),
+            )
+
+            return {
+              entidad: entity.entidad,
+              rendimientos: consolidated,
             }
           })
-
-          const consolidated = Array.from(consolidatedRendimientos.entries()).map(
-            ([moneda, apy]) => ({ moneda, apy }),
-          )
-
-          return {
-            entidad: entity.entidad,
-            rendimientos: consolidated,
-          }
-        })
-        .filter((entity) => entity.rendimientos.length > 0),
+          .filter((entity) => entity.rendimientos.length > 0),
       )
 
       // Almacena los datos procesados

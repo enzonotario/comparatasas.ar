@@ -60,8 +60,11 @@ const {
   error: fundsError,
   fetch: fetchFunds,
 } = useFunds()
-const { funds: fciVariablesFunds, loading: loadingFciVariables, fetch: fetchFciVariablesUltimo } =
-  useFciVariablesUltimo()
+const {
+  funds: fciVariablesFunds,
+  loading: loadingFciVariables,
+  fetch: fetchFciVariablesUltimo,
+} = useFciVariablesUltimo()
 
 const isMounted = ref(false)
 

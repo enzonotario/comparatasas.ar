@@ -85,7 +85,6 @@ useHead({
     },
   ],
 })
-
 </script>
 
 <template>
