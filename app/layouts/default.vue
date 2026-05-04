@@ -38,6 +38,7 @@ const isWideLayout = computed(() => {
     'fondos',
     'cuentas-billeteras-graficos',
     'lecaps',
+    'bonos-cer',
   ].includes(route.name as string)
 })
 

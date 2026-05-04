@@ -269,7 +269,38 @@ function formatDate(value: string): string {
       <h2 id="lecaps" class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">
         LECAPs y BONCAPs
       </h2>
-      <div v-if="!loading" class="text-xs text-muted">Fuente: data912</div>
+      <div class="text-xs text-muted">
+        Fuente:
+        <a
+          href="https://data912.apidocs.ar/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-primary-600 dark:text-primary-400 font-medium"
+        >
+          Data912
+        </a>
+
+        y
+
+        <a
+          href="https://x.com/arielsbdar"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-primary-600 dark:text-primary-400 font-medium"
+        >
+          @arielsbdar
+        </a>
+
+        vía
+        <a
+          href="https://argentinadatos.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-primary-600 dark:text-primary-400 font-medium"
+        >
+          ArgentinaDatos
+        </a>
+      </div>
     </div>
 
     <UAlert v-if="error" color="error" variant="soft" title="Error cargando datos de LECAPs" />

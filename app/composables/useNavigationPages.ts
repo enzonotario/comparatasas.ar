@@ -49,7 +49,7 @@ export const useNavigationPages = () => {
       id: 'ars',
       label: 'ARS',
       ariaLabel:
-        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, PF UVA pago periódico, PF UVA precancelable, LECAPs y créditos hipotecarios UVA',
+        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, PF UVA pago periódico, PF UVA precancelable, LECAPs, bonos CER y créditos hipotecarios UVA',
       icon: 'flag-ars',
       pages: [
         {
@@ -69,6 +69,12 @@ export const useNavigationPages = () => {
           label: 'LECAPs',
           icon: 'i-lucide-banknote',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/letras.png',
+        },
+        {
+          to: '/bonos-cer',
+          label: 'Bonos CER',
+          icon: 'i-lucide-trending-up',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
         },
         {
           to: '/creditos-hipotecarios-uva',
