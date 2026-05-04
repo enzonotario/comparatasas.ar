@@ -2,10 +2,12 @@
 import { UButton } from '#components'
 import CerYieldCurveChart from '~/components/charts/CerYieldCurveChart.vue'
 import {
+  type BonosCerPayload,
   type CerBondRow,
   diasAlVencimientoCer,
   durationYearsCerAprox,
 } from '~/composables/useBonosCer'
+import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { TableColumn } from '@nuxt/ui'
 
 definePageMeta({
@@ -27,6 +29,23 @@ useHead({
     { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar/bonos-cer' },
     { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar/bonos-cer' },
   ],
+})
+
+function textoActualizacionOg(iso?: string) {
+  if (!iso) return ogUpdatedAtDate()
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ogUpdatedAtDate()
+  return `${d.toLocaleString('es-AR', { timeZone: 'UTC', dateStyle: 'long', timeStyle: 'short' })} UTC`
+}
+
+const { data: ogBonosCer } = await useAsyncData('og-bonos-cer', () =>
+  $fetch<BonosCerPayload>('https://api.argentinadatos.com/v1/finanzas/bonos-cer'),
+)
+
+defineOgImage('BonosCerCurve.takumi', {
+  title: 'Bonos CER — soberanos',
+  bonds: ogBonosCer.value?.bonos ?? [],
+  updatedAt: textoActualizacionOg(ogBonosCer.value?.fechaActualizacion),
 })
 
 const { bonds, loading, error, fetch, data } = useBonosCer()
