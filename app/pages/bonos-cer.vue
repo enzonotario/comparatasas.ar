@@ -207,5 +207,51 @@ const textoActualizacion = computed(() => {
     <div v-else-if="!loading" class="text-center py-12 text-muted">
       No hay datos de bonos CER en este momento.
     </div>
+
+    <section
+      class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"
+    >
+      <div class="flex flex-col gap-6 max-w-4xl mx-auto text-sm leading-relaxed">
+        <div class="space-y-4">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            ¿Qué son los bonos CER?
+          </h3>
+          <p>
+            Los <strong>bonos soberanos CER</strong> son títulos de deuda emitidos por el Estado
+            argentino, denominados en pesos, cuyos pagos de capital e intereses se actualizan
+            mediante el <strong>coeficiente CER</strong> publicado por el Banco Central (BCRA). En la
+            práctica, el saldo nominal del bono se ajusta para reflejar la evolución del costo de
+            vida y preservar el poder adquisitivo frente a la inflación.
+          </p>
+          <p>
+            En esta página se muestran <strong>precio de cotización</strong> y
+            <strong>TIR</strong> (tasa interna de retorno en porcentaje) según datos de mercado
+            agregados por ArgentinaDatos. Son valores <strong>orientativos</strong>: la TIR depende
+            del precio observado, del calendario de cupones y de supuestos de mercado; no
+            constituyen asesoramiento financiero.
+          </p>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">¿Qué es el CER?</h3>
+          <p>
+            El <strong>CER</strong> (Coeficiente de Estabilización de Referencia) es un índice
+            elaborado por el BCRA que se utiliza para indexar créditos, depósitos y títulos públicos
+            en pesos. Su evolución está ligada a la dinámica de precios de la economía; los bonos
+            CER capitalizan o pagan cupones en función de ese coeficiente según las condiciones de
+            cada emisión.
+          </p>
+          <p>
+            Para la definición oficial y la serie histórica conviene consultar la documentación del
+            <a
+              class="text-primary-600 dark:text-primary-400 underline underline-offset-2"
+              href="https://www.bcra.gob.ar/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >BCRA</a
+            >.
+          </p>
+        </div>
+      </div>
+    </section>
   </UContainer>
 </template>
