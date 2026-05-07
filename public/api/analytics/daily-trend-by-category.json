@@ -1,21 +1,41 @@
 [
   {
+    "date": "20260507",
+    "categories": {
+      "Otro": 17,
+      "Página Amiga": 14,
+      "Money Market": 41,
+      "Billetera": 36,
+      "Plazo Fijo": 68,
+      "Cuenta Remunerada": 43,
+      "Billetera USD": 11,
+      "Cuenta Remunerada USD": 2,
+      "PF UVA pago periódico": 4,
+      "PF UVA precancelable": 2,
+      "Renta Fija": 27,
+      "General": 18,
+      "Criptomonedas": 8
+    },
+    "total": 291
+  },
+  {
     "date": "20260506",
     "categories": {
-      "Página Amiga": 15,
-      "Money Market": 61,
-      "Billetera": 32,
-      "Plazo Fijo": 92,
-      "Cuenta Remunerada": 38,
-      "Otro": 16,
-      "Billetera USD": 15,
-      "Renta Fija": 21,
-      "Renta Mixta": 4,
-      "Retorno total": 10,
-      "General": 14,
-      "Criptomonedas": 5
+      "Página Amiga": 42,
+      "Money Market": 126,
+      "Billetera": 83,
+      "Plazo Fijo": 182,
+      "Cuenta Remunerada": 93,
+      "Otro": 47,
+      "Criptomonedas": 10,
+      "Billetera USD": 19,
+      "PF UVA precancelable": 1,
+      "Renta Fija": 38,
+      "Renta Mixta": 6,
+      "Retorno total": 12,
+      "General": 31
     },
-    "total": 323
+    "total": 690
   },
   {
     "date": "20260505",
@@ -41,36 +61,15 @@
   {
     "date": "20260504",
     "categories": {
-      "Money Market": 128,
-      "Plazo Fijo": 180,
+      "Money Market": 120,
+      "Plazo Fijo": 113,
       "Cuenta Remunerada": 123,
       "Otro": 87,
       "Billetera": 73,
       "Página Amiga": 38,
-      "Criptomonedas": 26,
-      "Billetera USD": 27,
-      "PF UVA pago periódico": 7,
-      "PF UVA precancelable": 3,
-      "Renta Fija": 60,
-      "Renta Mixta": 1,
-      "Retorno total": 6,
-      "General": 23
+      "Criptomonedas": 3,
+      "Billetera USD": 27
     },
-    "total": 782
-  },
-  {
-    "date": "20260503",
-    "categories": {
-      "Otro": 32,
-      "Página Amiga": 15,
-      "Money Market": 63,
-      "Plazo Fijo": 87,
-      "Cuenta Remunerada": 81,
-      "Billetera": 25,
-      "Billetera USD": 8,
-      "PF UVA pago periódico": 6,
-      "Renta Fija": 1
-    },
-    "total": 318
+    "total": 584
   }
 ]
