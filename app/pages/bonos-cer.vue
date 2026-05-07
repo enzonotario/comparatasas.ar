@@ -175,12 +175,12 @@ const textoActualizacion = computed(() => {
       <div class="text-xs text-muted">
         Fuente:
         <a
-          href="https://www.doctacapital.com.ar/"
+          href="https://app.doctacapital.com.ar/?utm_source=comparatasas&utm_medium=bonos-cer"
           target="_blank"
           rel="noopener noreferrer"
           class="text-primary-800 dark:text-primary-200 font-medium"
         >
-          DoctaCapital
+          Docta Terminal
         </a>
         vía
         <a
@@ -238,8 +238,8 @@ const textoActualizacion = computed(() => {
           <p>
             Los <strong>bonos soberanos CER</strong> son títulos de deuda emitidos por el Estado
             argentino, denominados en pesos, cuyos pagos de capital e intereses se actualizan
-            mediante el <strong>coeficiente CER</strong> publicado por el Banco Central (BCRA). En la
-            práctica, el saldo nominal del bono se ajusta para reflejar la evolución del costo de
+            mediante el <strong>coeficiente CER</strong> publicado por el Banco Central (BCRA). En
+            la práctica, el saldo nominal del bono se ajusta para reflejar la evolución del costo de
             vida y preservar el poder adquisitivo frente a la inflación.
           </p>
           <p>
