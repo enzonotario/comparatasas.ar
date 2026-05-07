@@ -182,15 +182,6 @@ const textoActualizacion = computed(() => {
         >
           Docta Terminal
         </a>
-        vía
-        <a
-          href="https://argentinadatos.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-primary-800 dark:text-primary-200 font-medium"
-        >
-          ArgentinaDatos
-        </a>
       </div>
     </div>
 
