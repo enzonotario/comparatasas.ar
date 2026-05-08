@@ -1,22 +1,43 @@
 [
   {
+    "date": "20260508",
+    "categories": {
+      "Otro": 41,
+      "Página Amiga": 19,
+      "Money Market": 49,
+      "Plazo Fijo": 88,
+      "Cuenta Remunerada": 62,
+      "Billetera": 32,
+      "Billetera USD": 6,
+      "PF UVA pago periódico": 5,
+      "PF UVA precancelable": 1,
+      "Renta Fija": 29,
+      "Retorno total": 1,
+      "General": 21,
+      "Criptomonedas": 19
+    },
+    "total": 373
+  },
+  {
     "date": "20260507",
     "categories": {
-      "Otro": 17,
-      "Página Amiga": 14,
-      "Money Market": 41,
-      "Billetera": 36,
-      "Plazo Fijo": 68,
-      "Cuenta Remunerada": 43,
-      "Billetera USD": 11,
+      "Otro": 47,
+      "Página Amiga": 30,
+      "Money Market": 94,
+      "Billetera": 83,
+      "Plazo Fijo": 154,
+      "Cuenta Remunerada": 122,
+      "Billetera USD": 18,
       "Cuenta Remunerada USD": 2,
-      "PF UVA pago periódico": 4,
+      "PF UVA pago periódico": 16,
       "PF UVA precancelable": 2,
-      "Renta Fija": 27,
-      "General": 18,
-      "Criptomonedas": 8
+      "Renta Fija": 48,
+      "Renta Mixta": 1,
+      "Retorno total": 2,
+      "General": 34,
+      "Criptomonedas": 10
     },
-    "total": 291
+    "total": 663
   },
   {
     "date": "20260506",
@@ -43,33 +64,15 @@
       "Página Amiga": 51,
       "Billetera": 69,
       "Money Market": 97,
-      "Plazo Fijo": 138,
+      "Plazo Fijo": 88,
       "Cuenta Remunerada": 129,
       "Otro": 73,
-      "Criptomonedas": 23,
+      "Criptomonedas": 4,
       "Billetera USD": 20,
       "Cuenta Remunerada USD": 1,
       "PF UVA pago periódico": 15,
-      "PF UVA precancelable": 2,
-      "Renta Fija": 48,
-      "Renta Mixta": 3,
-      "Retorno total": 5,
-      "General": 24
+      "PF UVA precancelable": 2
     },
-    "total": 698
-  },
-  {
-    "date": "20260504",
-    "categories": {
-      "Money Market": 120,
-      "Plazo Fijo": 113,
-      "Cuenta Remunerada": 123,
-      "Otro": 87,
-      "Billetera": 73,
-      "Página Amiga": 38,
-      "Criptomonedas": 3,
-      "Billetera USD": 27
-    },
-    "total": 584
+    "total": 549
   }
 ]
