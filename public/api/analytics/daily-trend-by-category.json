@@ -1,22 +1,42 @@
 [
   {
+    "date": "20260509",
+    "categories": {
+      "Página Amiga": 4,
+      "Billetera": 25,
+      "Money Market": 35,
+      "Plazo Fijo": 52,
+      "Cuenta Remunerada": 28,
+      "Otro": 20,
+      "Criptomonedas": 14,
+      "Billetera USD": 7,
+      "Cuenta Remunerada USD": 2,
+      "Renta Fija": 15,
+      "Renta Mixta": 3,
+      "Retorno total": 2,
+      "General": 12
+    },
+    "total": 219
+  },
+  {
     "date": "20260508",
     "categories": {
-      "Otro": 41,
-      "Página Amiga": 19,
-      "Money Market": 49,
-      "Plazo Fijo": 88,
-      "Cuenta Remunerada": 62,
-      "Billetera": 32,
-      "Billetera USD": 6,
-      "PF UVA pago periódico": 5,
-      "PF UVA precancelable": 1,
-      "Renta Fija": 29,
+      "Otro": 90,
+      "Página Amiga": 54,
+      "Money Market": 99,
+      "Plazo Fijo": 161,
+      "Cuenta Remunerada": 147,
+      "Billetera": 80,
+      "Criptomonedas": 24,
+      "Billetera USD": 12,
+      "PF UVA pago periódico": 8,
+      "PF UVA precancelable": 3,
+      "Renta Fija": 39,
+      "Renta Mixta": 1,
       "Retorno total": 1,
-      "General": 21,
-      "Criptomonedas": 19
+      "General": 29
     },
-    "total": 373
+    "total": 748
   },
   {
     "date": "20260507",
@@ -48,31 +68,13 @@
       "Plazo Fijo": 182,
       "Cuenta Remunerada": 93,
       "Otro": 47,
-      "Criptomonedas": 10,
+      "Criptomonedas": 2,
       "Billetera USD": 19,
       "PF UVA precancelable": 1,
       "Renta Fija": 38,
       "Renta Mixta": 6,
-      "Retorno total": 12,
-      "General": 31
+      "Retorno total": 12
     },
-    "total": 690
-  },
-  {
-    "date": "20260505",
-    "categories": {
-      "Página Amiga": 51,
-      "Billetera": 69,
-      "Money Market": 97,
-      "Plazo Fijo": 88,
-      "Cuenta Remunerada": 129,
-      "Otro": 73,
-      "Criptomonedas": 4,
-      "Billetera USD": 20,
-      "Cuenta Remunerada USD": 1,
-      "PF UVA pago periódico": 15,
-      "PF UVA precancelable": 2
-    },
-    "total": 549
+    "total": 651
   }
 ]
