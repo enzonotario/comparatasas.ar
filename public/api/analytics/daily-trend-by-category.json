@@ -1,22 +1,41 @@
 [
   {
+    "date": "20260511",
+    "categories": {
+      "Página Amiga": 18,
+      "Money Market": 19,
+      "Plazo Fijo": 67,
+      "Cuenta Remunerada": 37,
+      "Otro": 26,
+      "Billetera": 16,
+      "Billetera USD": 6,
+      "PF UVA pago periódico": 6,
+      "Renta Fija": 15,
+      "Retorno total": 1,
+      "General": 15,
+      "Criptomonedas": 7
+    },
+    "total": 233
+  },
+  {
     "date": "20260510",
     "categories": {
-      "Otro": 8,
-      "Página Amiga": 2,
-      "Money Market": 24,
-      "Plazo Fijo": 31,
-      "Cuenta Remunerada": 20,
-      "Billetera": 22,
-      "Billetera USD": 9,
-      "PF UVA pago periódico": 4,
+      "Otro": 30,
+      "Página Amiga": 5,
+      "Money Market": 61,
+      "Plazo Fijo": 71,
+      "Cuenta Remunerada": 63,
+      "Billetera": 67,
+      "Criptomonedas": 20,
+      "Billetera USD": 12,
+      "Cuenta Remunerada USD": 1,
+      "PF UVA pago periódico": 7,
       "PF UVA precancelable": 1,
-      "Renta Fija": 18,
+      "Renta Fija": 31,
       "Renta Mixta": 1,
-      "General": 9,
-      "Criptomonedas": 6
+      "General": 19
     },
-    "total": 155
+    "total": 389
   },
   {
     "date": "20260509",
@@ -62,34 +81,13 @@
   {
     "date": "20260507",
     "categories": {
-      "Otro": 47,
-      "Página Amiga": 30,
-      "Money Market": 94,
-      "Billetera": 83,
-      "Plazo Fijo": 154,
-      "Cuenta Remunerada": 122,
-      "Billetera USD": 18,
-      "Cuenta Remunerada USD": 2,
-      "PF UVA pago periódico": 16,
-      "PF UVA precancelable": 2,
-      "Renta Fija": 48,
-      "Renta Mixta": 1,
-      "Retorno total": 2,
-      "General": 34,
-      "Criptomonedas": 10
-    },
-    "total": 663
-  },
-  {
-    "date": "20260506",
-    "categories": {
-      "Página Amiga": 8,
-      "Money Market": 18,
+      "Otro": 3,
+      "Página Amiga": 11,
+      "Money Market": 8,
       "Billetera": 1,
-      "Plazo Fijo": 7,
-      "Cuenta Remunerada": 9,
-      "Otro": 1
+      "Plazo Fijo": 9,
+      "Cuenta Remunerada": 17
     },
-    "total": 44
+    "total": 49
   }
 ]
