@@ -33,7 +33,7 @@ const getSubcategoryRoute = (page: NavigationPage): string => {
         v-if="shouldShow && currentCategory"
         class="bg-white/70 dark:bg-neutral-900/70 backdrop-blur border-b border-gray-200 dark:border-gray-800 h-10"
       >
-        <div class="h-10 flex flex-row sm:justify-center overflow-x-auto">
+        <div class="h-10 flex flex-row md:justify-center overflow-x-auto">
           <UButton
             v-for="page in currentCategory.pages"
             :key="page.to"

@@ -114,9 +114,7 @@ const chartConfig = computed(() => {
   const raw: [number, number][] = withDays.map((b) => [b.days, b.tirPorcentaje])
   const degree = withDays.length >= 3 ? 2 : withDays.length === 2 ? 1 : 0
   const curveRaw =
-    degree > 0 && raw.length >= degree + 1
-      ? fitPolyCurve(raw, degree, 50, minDays, maxDays)
-      : []
+    degree > 0 && raw.length >= degree + 1 ? fitPolyCurve(raw, degree, 50, minDays, maxDays) : []
 
   const curvePath = curveRaw.reduce((path, p, i) => {
     const x = scaleX(p[0])

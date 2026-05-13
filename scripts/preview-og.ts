@@ -11,6 +11,7 @@ const routes = [
   { path: '/usd', name: 'usd' },
   { path: '/criptomonedas', name: 'criptomonedas' },
   { path: '/creditos-hipotecarios-uva', name: 'creditos-hipotecarios-uva' },
+  { path: '/contado-cuotas', name: 'contado-cuotas' },
   { path: '/lecaps', name: 'lecaps' },
   { path: '/bonos-cer', name: 'bonos-cer' },
 ]

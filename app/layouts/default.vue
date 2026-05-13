@@ -35,6 +35,7 @@ const isWideLayout = computed(() => {
   return [
     'criptomonedas',
     'creditos-hipotecarios-uva',
+    'contado-cuotas',
     'fondos',
     'cuentas-billeteras-graficos',
     'lecaps',
