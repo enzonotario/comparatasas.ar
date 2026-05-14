@@ -2,28 +2,28 @@
   "Cuenta Remunerada": [
     {
       "provider": "Banco Nación",
-      "total_clicks": 3327,
-      "days_active": 84
+      "total_clicks": 3369,
+      "days_active": 85
     },
     {
       "provider": "Carrefour Banco",
-      "total_clicks": 2697,
-      "days_active": 104
+      "total_clicks": 2739,
+      "days_active": 105
     },
     {
       "provider": "Ualá",
-      "total_clicks": 1641,
-      "days_active": 84
+      "total_clicks": 1690,
+      "days_active": 85
     },
     {
       "provider": "Reba",
-      "total_clicks": 800,
-      "days_active": 56
+      "total_clicks": 802,
+      "days_active": 57
     },
     {
       "provider": "Supervielle",
-      "total_clicks": 377,
-      "days_active": 77
+      "total_clicks": 382,
+      "days_active": 78
     },
     {
       "provider": "Naranja X",
@@ -39,8 +39,8 @@
   "Renta Fija": [
     {
       "provider": "IOL",
-      "total_clicks": 1956,
-      "days_active": 74
+      "total_clicks": 1968,
+      "days_active": 75
     },
     {
       "provider": "Dub.link",
@@ -54,23 +54,23 @@
     },
     {
       "provider": "Balanz",
-      "total_clicks": 396,
-      "days_active": 78
+      "total_clicks": 401,
+      "days_active": 79
     },
     {
       "provider": "Ualá",
-      "total_clicks": 353,
-      "days_active": 67
+      "total_clicks": 371,
+      "days_active": 68
     },
     {
       "provider": "Banco Ciudad",
-      "total_clicks": 215,
+      "total_clicks": 216,
       "days_active": 59
     },
     {
       "provider": "Cocos",
-      "total_clicks": 129,
-      "days_active": 67
+      "total_clicks": 131,
+      "days_active": 69
     },
     {
       "provider": "IEB+",
@@ -79,30 +79,30 @@
     },
     {
       "provider": "StoneX",
-      "total_clicks": 16,
-      "days_active": 13
+      "total_clicks": 17,
+      "days_active": 14
     }
   ],
   "Money Market": [
     {
       "provider": "IOL",
-      "total_clicks": 2947,
-      "days_active": 73
+      "total_clicks": 2974,
+      "days_active": 74
     },
     {
       "provider": "Cocos",
-      "total_clicks": 1823,
-      "days_active": 84
-    },
-    {
-      "provider": "Mercado Pago",
-      "total_clicks": 1197,
+      "total_clicks": 1833,
       "days_active": 85
     },
     {
+      "provider": "Mercado Pago",
+      "total_clicks": 1218,
+      "days_active": 86
+    },
+    {
       "provider": "Balanz",
-      "total_clicks": 1043,
-      "days_active": 83
+      "total_clicks": 1059,
+      "days_active": 84
     },
     {
       "provider": "Dub.link",
@@ -111,63 +111,68 @@
     },
     {
       "provider": "Adcap",
-      "total_clicks": 450,
+      "total_clicks": 452,
       "days_active": 65
     },
     {
       "provider": "Prex",
-      "total_clicks": 314,
-      "days_active": 74
+      "total_clicks": 316,
+      "days_active": 75
     },
     {
       "provider": "IEB+",
-      "total_clicks": 276,
-      "days_active": 53
+      "total_clicks": 280,
+      "days_active": 54
     },
     {
       "provider": "Banco Galicia",
-      "total_clicks": 207,
-      "days_active": 72
+      "total_clicks": 208,
+      "days_active": 73
     },
     {
       "provider": "Personal Pay",
-      "total_clicks": 198,
+      "total_clicks": 199,
       "days_active": 77
     },
     {
       "provider": "Banco Santander",
-      "total_clicks": 182,
-      "days_active": 71
+      "total_clicks": 183,
+      "days_active": 72
     },
     {
       "provider": "ICBC",
-      "total_clicks": 117,
+      "total_clicks": 122,
       "days_active": 56
     },
     {
       "provider": "Ualá",
-      "total_clicks": 101,
+      "total_clicks": 102,
       "days_active": 54
     },
     {
       "provider": "Lemon",
-      "total_clicks": 93,
-      "days_active": 53
+      "total_clicks": 96,
+      "days_active": 54
     },
     {
       "provider": "Claro Pay",
-      "total_clicks": 83,
-      "days_active": 51
+      "total_clicks": 85,
+      "days_active": 52
     },
     {
       "provider": "Toronto",
-      "total_clicks": 83,
-      "days_active": 49
+      "total_clicks": 84,
+      "days_active": 50
     },
     {
       "provider": "Supervielle",
-      "total_clicks": 78,
-      "days_active": 47
+      "total_clicks": 80,
+      "days_active": 49
+    },
+    {
+      "provider": "Banco Macro",
+      "total_clicks": 67,
+      "days_active": 43
     },
     {
       "provider": "AstroPay",
@@ -175,19 +180,14 @@
       "days_active": 42
     },
     {
-      "provider": "Banco Macro",
-      "total_clicks": 65,
-      "days_active": 42
-    },
-    {
       "provider": "LB",
-      "total_clicks": 50,
-      "days_active": 39
+      "total_clicks": 51,
+      "days_active": 40
     },
     {
       "provider": "Fiwind",
-      "total_clicks": 45,
-      "days_active": 34
+      "total_clicks": 47,
+      "days_active": 35
     },
     {
       "provider": "Dub.sh",
@@ -208,13 +208,13 @@
   "General": [
     {
       "provider": "Carrefour Banco",
-      "total_clicks": 1871,
-      "days_active": 105
+      "total_clicks": 1887,
+      "days_active": 106
     },
     {
       "provider": "Ualá",
-      "total_clicks": 287,
-      "days_active": 72
+      "total_clicks": 293,
+      "days_active": 73
     },
     {
       "provider": "Dub.link",
@@ -223,8 +223,8 @@
     },
     {
       "provider": "Fiwind",
-      "total_clicks": 201,
-      "days_active": 51
+      "total_clicks": 217,
+      "days_active": 52
     },
     {
       "provider": "Naranja X",
@@ -233,8 +233,8 @@
     },
     {
       "provider": "Supervielle",
-      "total_clicks": 41,
-      "days_active": 30
+      "total_clicks": 42,
+      "days_active": 31
     },
     {
       "provider": "Cresium",
@@ -255,65 +255,65 @@
   "Billetera": [
     {
       "provider": "AstroPay",
-      "total_clicks": 2377,
-      "days_active": 84
+      "total_clicks": 2414,
+      "days_active": 85
     },
     {
       "provider": "Mercado Pago",
-      "total_clicks": 1758,
-      "days_active": 84
+      "total_clicks": 1789,
+      "days_active": 85
     },
     {
       "provider": "Lemon",
-      "total_clicks": 512,
-      "days_active": 74
+      "total_clicks": 522,
+      "days_active": 75
     },
     {
       "provider": "Fiwind",
-      "total_clicks": 482,
-      "days_active": 75
+      "total_clicks": 514,
+      "days_active": 76
     },
     {
       "provider": "Prex",
-      "total_clicks": 475,
-      "days_active": 73
+      "total_clicks": 479,
+      "days_active": 74
     },
     {
       "provider": "Personal Pay",
-      "total_clicks": 295,
-      "days_active": 75
+      "total_clicks": 297,
+      "days_active": 76
     },
     {
       "provider": "Belo",
-      "total_clicks": 177,
-      "days_active": 41
+      "total_clicks": 181,
+      "days_active": 42
     },
     {
       "provider": "Ripio",
-      "total_clicks": 144,
+      "total_clicks": 145,
       "days_active": 40
     },
     {
       "provider": "Claro Pay",
-      "total_clicks": 121,
-      "days_active": 49
+      "total_clicks": 123,
+      "days_active": 50
     },
     {
       "provider": "Global66",
-      "total_clicks": 50,
-      "days_active": 18
+      "total_clicks": 52,
+      "days_active": 19
     },
     {
       "provider": "SatoshiTango",
-      "total_clicks": 17,
+      "total_clicks": 18,
       "days_active": 8
     }
   ],
   "Billetera USD": [
     {
       "provider": "AstroPay",
-      "total_clicks": 1513,
-      "days_active": 85
+      "total_clicks": 1534,
+      "days_active": 86
     },
     {
       "provider": "Dub.link",
@@ -322,40 +322,40 @@
     },
     {
       "provider": "LB",
-      "total_clicks": 182,
-      "days_active": 66
+      "total_clicks": 183,
+      "days_active": 67
     }
   ],
   "Plazo Fijo": [
     {
       "provider": "Banco Voii",
-      "total_clicks": 3080,
-      "days_active": 69
+      "total_clicks": 3099,
+      "days_active": 70
     },
     {
       "provider": "Crédito Regional",
-      "total_clicks": 1507,
-      "days_active": 59
+      "total_clicks": 1512,
+      "days_active": 60
     },
     {
       "provider": "Banco CMF",
-      "total_clicks": 1484,
-      "days_active": 50
+      "total_clicks": 1486,
+      "days_active": 51
     },
     {
       "provider": "Banco Galicia",
-      "total_clicks": 1245,
-      "days_active": 84
+      "total_clicks": 1248,
+      "days_active": 85
     },
     {
       "provider": "Banco Meridian",
-      "total_clicks": 962,
-      "days_active": 58
+      "total_clicks": 965,
+      "days_active": 59
     },
     {
       "provider": "Banco BICA",
-      "total_clicks": 930,
-      "days_active": 64
+      "total_clicks": 931,
+      "days_active": 65
     },
     {
       "provider": "Dub.link",
@@ -363,54 +363,59 @@
       "days_active": 21
     },
     {
+      "provider": "Banco Santander",
+      "total_clicks": 713,
+      "days_active": 83
+    },
+    {
       "provider": "Banco del Sol",
       "total_clicks": 712,
       "days_active": 69
     },
     {
-      "provider": "Banco Santander",
-      "total_clicks": 710,
-      "days_active": 82
-    },
-    {
       "provider": "BBVA",
-      "total_clicks": 591,
-      "days_active": 80
+      "total_clicks": 599,
+      "days_active": 81
     },
     {
       "provider": "Banco Macro",
-      "total_clicks": 527,
-      "days_active": 74
+      "total_clicks": 535,
+      "days_active": 75
     },
     {
       "provider": "Reba",
-      "total_clicks": 523,
-      "days_active": 57
+      "total_clicks": 524,
+      "days_active": 58
     },
     {
       "provider": "ICBC",
-      "total_clicks": 440,
-      "days_active": 70
+      "total_clicks": 456,
+      "days_active": 71
     },
     {
       "provider": "Banco Ciudad",
-      "total_clicks": 411,
-      "days_active": 68
+      "total_clicks": 413,
+      "days_active": 69
     },
     {
       "provider": "Ualá",
-      "total_clicks": 344,
-      "days_active": 82
+      "total_clicks": 348,
+      "days_active": 83
     },
     {
       "provider": "Bancor",
-      "total_clicks": 287,
-      "days_active": 59
+      "total_clicks": 291,
+      "days_active": 60
     },
     {
       "provider": "Banco Provincia",
-      "total_clicks": 225,
-      "days_active": 48
+      "total_clicks": 235,
+      "days_active": 49
+    },
+    {
+      "provider": "Banco Masventas",
+      "total_clicks": 150,
+      "days_active": 25
     },
     {
       "provider": "Banco Hipotecario",
@@ -418,39 +423,34 @@
       "days_active": 30
     },
     {
-      "provider": "Banco Masventas",
-      "total_clicks": 129,
-      "days_active": 24
-    },
-    {
       "provider": "Banco Nación",
-      "total_clicks": 126,
-      "days_active": 63
+      "total_clicks": 128,
+      "days_active": 65
     },
     {
       "provider": "Toronto",
-      "total_clicks": 124,
-      "days_active": 47
+      "total_clicks": 128,
+      "days_active": 48
     },
     {
       "provider": "Bibank",
-      "total_clicks": 101,
-      "days_active": 29
+      "total_clicks": 106,
+      "days_active": 31
     },
     {
       "provider": "#",
-      "total_clicks": 87,
-      "days_active": 58
+      "total_clicks": 88,
+      "days_active": 59
+    },
+    {
+      "provider": "BTF",
+      "total_clicks": 84,
+      "days_active": 27
     },
     {
       "provider": "Banco Mariva",
       "total_clicks": 83,
       "days_active": 22
-    },
-    {
-      "provider": "BTF",
-      "total_clicks": 79,
-      "days_active": 26
     },
     {
       "provider": "Banco Credicoop",
@@ -506,48 +506,48 @@
   "Página Amiga": [
     {
       "provider": "comparadolar.ar",
-      "total_clicks": 1323,
-      "days_active": 104
+      "total_clicks": 1340,
+      "days_active": 105
     },
     {
       "provider": "dolarito.ar",
-      "total_clicks": 499,
-      "days_active": 78
+      "total_clicks": 506,
+      "days_active": 79
     },
     {
       "provider": "enqueinvierto.ar",
-      "total_clicks": 382,
-      "days_active": 95
+      "total_clicks": 385,
+      "days_active": 96
     },
     {
       "provider": "comparapix.ar",
-      "total_clicks": 322,
-      "days_active": 90
+      "total_clicks": 323,
+      "days_active": 91
     },
     {
       "provider": "betece.app",
-      "total_clicks": 270,
-      "days_active": 72
+      "total_clicks": 273,
+      "days_active": 73
     },
     {
       "provider": "argentinadatos.com",
-      "total_clicks": 218,
-      "days_active": 67
+      "total_clicks": 226,
+      "days_active": 68
     },
     {
       "provider": "dolarya.info",
-      "total_clicks": 213,
-      "days_active": 61
+      "total_clicks": 216,
+      "days_active": 62
     },
     {
       "provider": "impuestito.org",
-      "total_clicks": 152,
-      "days_active": 58
+      "total_clicks": 156,
+      "days_active": 59
     },
     {
       "provider": "icons.com.ar",
-      "total_clicks": 132,
-      "days_active": 53
+      "total_clicks": 134,
+      "days_active": 54
     }
   ],
   "Otro": [
@@ -558,13 +558,13 @@
     },
     {
       "provider": "Arqfinance",
-      "total_clicks": 2180,
-      "days_active": 72
+      "total_clicks": 2241,
+      "days_active": 73
     },
     {
       "provider": "Nexo",
-      "total_clicks": 1776,
-      "days_active": 71
+      "total_clicks": 1796,
+      "days_active": 72
     },
     {
       "provider": "DolarApp",
@@ -573,18 +573,18 @@
     },
     {
       "provider": "X Salinas",
-      "total_clicks": 375,
-      "days_active": 84
+      "total_clicks": 379,
+      "days_active": 85
     },
     {
       "provider": "LB",
-      "total_clicks": 358,
-      "days_active": 69
+      "total_clicks": 362,
+      "days_active": 70
     },
     {
       "provider": "GitHub",
-      "total_clicks": 261,
-      "days_active": 81
+      "total_clicks": 264,
+      "days_active": 82
     },
     {
       "provider": "CAFCI",
@@ -593,28 +593,28 @@
     },
     {
       "provider": "Docs.google",
-      "total_clicks": 122,
-      "days_active": 54
+      "total_clicks": 124,
+      "days_active": 55
     },
     {
       "provider": "Cafecito",
-      "total_clicks": 106,
+      "total_clicks": 107,
       "days_active": 46
     },
     {
       "provider": "Global66",
-      "total_clicks": 78,
-      "days_active": 16
+      "total_clicks": 82,
+      "days_active": 17
     },
     {
       "provider": "Cafecito Salinas",
-      "total_clicks": 59,
-      "days_active": 29
+      "total_clicks": 61,
+      "days_active": 30
     },
     {
       "provider": "Bna",
-      "total_clicks": 55,
-      "days_active": 17
+      "total_clicks": 58,
+      "days_active": 18
     },
     {
       "provider": "CapyFi",
@@ -627,17 +627,17 @@
       "days_active": 17
     },
     {
+      "provider": "StoneX",
+      "total_clicks": 26,
+      "days_active": 14
+    },
+    {
       "provider": "Banco Patagonia",
       "total_clicks": 26,
       "days_active": 11
     },
     {
       "provider": "Dub.sh",
-      "total_clicks": 25,
-      "days_active": 14
-    },
-    {
-      "provider": "StoneX",
       "total_clicks": 25,
       "days_active": 14
     },
@@ -657,14 +657,14 @@
       "days_active": 12
     },
     {
+      "provider": "Data912.apidocs",
+      "total_clicks": 18,
+      "days_active": 8
+    },
+    {
       "provider": "SBS",
       "total_clicks": 18,
       "days_active": 9
-    },
-    {
-      "provider": "Data912.apidocs",
-      "total_clicks": 17,
-      "days_active": 7
     },
     {
       "provider": "Bancodecomercio",
@@ -678,8 +678,8 @@
     },
     {
       "provider": "App.doctacapital",
-      "total_clicks": 9,
-      "days_active": 3
+      "total_clicks": 12,
+      "days_active": 4
     },
     {
       "provider": "X (Twitter)",
@@ -710,15 +710,15 @@
   "PF UVA pago periódico": [
     {
       "provider": "Banco Nación",
-      "total_clicks": 861,
-      "days_active": 41
+      "total_clicks": 868,
+      "days_active": 42
     }
   ],
   "Criptomonedas": [
     {
       "provider": "Nexo",
-      "total_clicks": 1206,
-      "days_active": 71
+      "total_clicks": 1216,
+      "days_active": 72
     },
     {
       "provider": "Dub.link",
@@ -727,12 +727,12 @@
     },
     {
       "provider": "Vesseo",
-      "total_clicks": 269,
-      "days_active": 61
+      "total_clicks": 274,
+      "days_active": 62
     },
     {
       "provider": "Lemon",
-      "total_clicks": 254,
+      "total_clicks": 255,
       "days_active": 55
     },
     {
@@ -752,13 +752,13 @@
     },
     {
       "provider": "LucaMoney",
-      "total_clicks": 36,
+      "total_clicks": 37,
       "days_active": 7
     },
     {
       "provider": "Belo",
-      "total_clicks": 26,
-      "days_active": 8
+      "total_clicks": 29,
+      "days_active": 9
     },
     {
       "provider": "SatoshiTango",
@@ -774,8 +774,8 @@
   "Renta Mixta": [
     {
       "provider": "Cocos",
-      "total_clicks": 404,
-      "days_active": 82
+      "total_clicks": 405,
+      "days_active": 83
     },
     {
       "provider": "Dub.link",
@@ -786,8 +786,8 @@
   "Retorno total": [
     {
       "provider": "Cocos",
-      "total_clicks": 238,
-      "days_active": 24
+      "total_clicks": 240,
+      "days_active": 26
     }
   ],
   "Cuenta Remunerada USD": [
@@ -798,8 +798,8 @@
     },
     {
       "provider": "Supervielle",
-      "total_clicks": 116,
-      "days_active": 54
+      "total_clicks": 118,
+      "days_active": 55
     },
     {
       "provider": "Dub.link",
@@ -832,13 +832,13 @@
   "PF UVA precancelable": [
     {
       "provider": "Bna",
-      "total_clicks": 35,
-      "days_active": 18
+      "total_clicks": 37,
+      "days_active": 19
     },
     {
       "provider": "Banco Provincia",
-      "total_clicks": 12,
-      "days_active": 10
+      "total_clicks": 13,
+      "days_active": 11
     },
     {
       "provider": "BBVA",
