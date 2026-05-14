@@ -654,5 +654,39 @@ const columns: TableColumn<RemesaRow>[] = [
         </UTable>
       </UCard>
     </template>
+
+    <UCard class="w-full max-w-4xl mx-auto">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div class="space-y-1">
+          <p class="text-sm font-semibold text-neutral-900 dark:text-white">
+            ¿También querés comparar dólar cripto, MEP y otras cotizaciones?
+          </p>
+          <p class="text-sm text-neutral-500">
+            Mirá el comparador de
+            <a
+              href="https://comparadolar.ar/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-medium text-primary-600 hover:underline dark:text-primary-400"
+            >
+              comparadolar.ar
+            </a>
+            para ver precios y spreads en tiempo real.
+          </p>
+        </div>
+
+        <UButton
+          to="https://comparadolar.ar/"
+          external
+          target="_blank"
+          rel="noopener noreferrer"
+          color="primary"
+          variant="soft"
+          icon="i-lucide-arrow-up-right"
+        >
+          Comparar dólar
+        </UButton>
+      </div>
+    </UCard>
   </div>
 </template>
