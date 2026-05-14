@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import type { NavigationPage } from '~/composables/useNavigationPages'
 
-const route = useRoute()
 const { getCurrentCategory, isActive } = useNavigationPages()
 
 const currentCategory = computed(() => getCurrentCategory())
 
-// Solo mostrar para ARS y si tiene más de una página
+// Mostrar para cualquier categoría que tenga más de una página
 const shouldShow = computed(() => {
-  return currentCategory.value?.id === 'ars' && (currentCategory.value?.pages.length ?? 0) > 1
+  return (currentCategory.value?.pages.length ?? 0) > 1
 })
 
 const getSubcategoryRoute = (page: NavigationPage): string => {

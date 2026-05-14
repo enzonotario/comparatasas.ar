@@ -102,6 +102,12 @@ export const useNavigationPages = () => {
           icon: 'i-lucide-dollar-sign',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
         },
+        {
+          to: '/remesas',
+          label: 'Remesas',
+          icon: 'i-lucide-send',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
+        },
       ],
     },
     {

@@ -317,10 +317,52 @@ export const institutions: Array<{
     url: 'https://www.invertironline.com/?ref=comparatasas',
   },
   {
+    names: ['arq', 'ARQ', 'Arq', 'dolarapp', 'DolarApp'],
+    logo: 'https://api.argentinadatos.com/static/logos/arq.png',
+    shortName: 'ARQ',
+    url: 'https://arqfinance.com/',
+  },
+  {
+    names: ['airtm', 'Airtm', 'AirTM'],
+    logo: 'https://api.argentinadatos.com/static/logos/airtm.svg',
+    shortName: 'Airtm',
+    url: 'https://www.airtm.com/',
+  },
+  {
     names: ['astropay', 'Astropay', 'AstroPay'],
     logo: 'https://api.argentinadatos.com/static/logos/astropay.png',
     shortName: 'AstroPay',
     url: 'https://www.astropay.com/?ref=comparatasas',
+  },
+  {
+    names: ['grabrfi', 'GrabrFi', 'grabr'],
+    logo: 'https://api.argentinadatos.com/static/logos/grabr.svg',
+    shortName: 'GrabrFi',
+    url: 'https://grabrfi.com/',
+  },
+  {
+    names: ['payoneer', 'Payoneer'],
+    logo: 'https://api.argentinadatos.com/static/logos/payoneer.svg',
+    shortName: 'Payoneer',
+    url: 'https://www.payoneer.com/',
+  },
+  {
+    names: ['takenos', 'Takenos'],
+    logo: 'https://api.argentinadatos.com/static/logos/takenos.svg',
+    shortName: 'Takenos',
+    url: 'https://www.takenos.com/',
+  },
+  {
+    names: ['wise', 'Wise'],
+    logo: 'https://api.argentinadatos.com/static/logos/wise.svg',
+    shortName: 'Wise',
+    url: 'https://wise.com/',
+  },
+  {
+    names: ['wallbit', 'Wallbit'],
+    logo: 'https://api.argentinadatos.com/static/logos/wallbit.png',
+    shortName: 'Wallbit',
+    url: 'https://www.wallbit.io/en?ref=comparadolar',
   },
   {
     names: ['SBS', 'SBS Fondos', 'SBS Asset Management'],

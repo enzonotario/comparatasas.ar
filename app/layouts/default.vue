@@ -37,6 +37,7 @@ const isWideLayout = computed(() => {
     'creditos-hipotecarios-uva',
     'contado-cuotas',
     'fondos',
+    'remesas',
     'cuentas-billeteras-graficos',
     'lecaps',
     'bonos-cer',
