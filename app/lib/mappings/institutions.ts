@@ -514,6 +514,12 @@ export const institutions: Array<{
     shortName: 'CapyFi',
     url: 'https://capyfi.com/?ref=comparatasas',
   },
+  {
+    names: ['Lune.fi', 'LUNE.FI', 'lunefi'],
+    logo: 'https://api.argentinadatos.com/static/logos/lune.png',
+    shortName: 'Lune.fi',
+    url: 'https://lune.fi/investments?ref=comparatasas',
+  },
 ]
 
 export function getInstitutionLogo(name: string): string | undefined {
