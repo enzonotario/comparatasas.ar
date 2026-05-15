@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
+import { useMediaQuery } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 import { getInstitutionLogo } from '~/lib/mappings/institutions'
 import { ogUpdatedAtDate } from '~/utils/og-data'
@@ -127,6 +128,8 @@ function getDetail(details: RemesaDetalles | null | undefined, key: keyof Remesa
   return details?.[key] ?? ''
 }
 
+const hasHover = useMediaQuery('(hover: hover)')
+
 function renderBooleanCell(value: boolean, detail?: string) {
   return h('div', { class: 'min-w-0' }, [
     h('div', { class: 'flex items-center gap-2' }, [
@@ -152,7 +155,7 @@ function renderBooleanCell(value: boolean, detail?: string) {
         ? h(
             UPopover,
             {
-              mode: 'hover',
+              mode: hasHover.value ? 'hover' : 'click',
               openDelay: 80,
               closeDelay: 300,
               content: {
@@ -221,7 +224,7 @@ function renderCostCell(value: string | null, detail?: string) {
         ? h(
             UPopover,
             {
-              mode: 'hover',
+              mode: hasHover.value ? 'hover' : 'click',
               openDelay: 80,
               closeDelay: 300,
               content: {
