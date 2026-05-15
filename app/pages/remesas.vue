@@ -50,7 +50,8 @@ interface RemesaRow extends RemesaOption {
   zeroArsWithdrawal: boolean
 }
 
-function normalizeText(value: string): string {
+function normalizeText(value: string | null): string {
+  if (!value) return ''
   return value
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
@@ -75,19 +76,22 @@ function getInitials(name: string): string {
   return `${words[0]![0] ?? ''}${words[1]![0] ?? ''}`.toUpperCase()
 }
 
-function isZeroLike(value: string): boolean {
+function isZeroLike(value: string | null): boolean {
+  if (!value) return false
   const normalized = value.trim().toLowerCase().replace(/\s+/g, '').replace(',', '.')
   return ['0', '0%', '0usd', '0ars', '$0', '0.0', '0.00'].includes(normalized)
 }
 
-function hasPositiveNumericValue(value: string): boolean {
+function hasPositiveNumericValue(value: string | null): boolean {
+  if (!value) return false
   const normalized = value.trim().toLowerCase().replace(',', '.')
   const match = normalized.match(/-?\d+(?:\.\d+)?/)
   if (!match) return false
   return Number(match[0]) > 0
 }
 
-function getSortableNumericValue(value: string): number {
+function getSortableNumericValue(value: string | null): number {
+  if (!value) return Number.POSITIVE_INFINITY
   if (isZeroLike(value)) return 0
 
   const normalized = value.trim().toLowerCase().replace(',', '.')
@@ -185,12 +189,9 @@ function renderBooleanCell(value: boolean, detail?: string) {
   ])
 }
 
-function renderCostCell(value: string, detail?: string) {
-  const badgeColor = isZeroLike(value)
-    ? 'success'
-    : hasPositiveNumericValue(value)
-      ? 'error'
-      : 'neutral'
+function renderCostCell(value: string | null, detail?: string) {
+  const displayValue = value ?? 'N/A'
+  const badgeColor = !value ? 'neutral' : isZeroLike(value) ? 'success' : hasPositiveNumericValue(value) ? 'error' : 'neutral'
 
   return h('div', { class: 'min-w-0' }, [
     h('div', { class: 'flex items-center gap-2' }, [
@@ -203,7 +204,7 @@ function renderCostCell(value: string, detail?: string) {
           class: 'font-semibold',
         },
         {
-          default: () => value,
+          default: () => displayValue,
         },
       ),
       detail
@@ -255,7 +256,10 @@ const rows = computed<RemesaRow[]>(() => {
   return remesas.value
     .map((item) => {
       const displayName = displayCompanyName(item.compania)
-      const averageRating = (item.calificacionAndroid + item.calificacionIos) / 2
+      const androidRating = item.calificacionAndroid ?? 0
+      const iosRating = item.calificacionIos ?? 0
+      const ratingCount = (item.calificacionAndroid !== null ? 1 : 0) + (item.calificacionIos !== null ? 1 : 0)
+      const averageRating = ratingCount > 0 ? (androidRating + iosRating) / ratingCount : 0
 
       return {
         ...item,
@@ -263,7 +267,7 @@ const rows = computed<RemesaRow[]>(() => {
         initials: getInitials(displayName),
         logo: getInstitutionLogo(item.compania) || getInstitutionLogo(displayName),
         averageRating,
-        averageRatingLabel: `${formatRating(averageRating)}★`,
+        averageRatingLabel: ratingCount > 0 ? `${formatRating(averageRating)}★` : '—',
         costoRecibirPagosSort: getSortableNumericValue(item.costoRecibirPagos),
         costoMantenimientoTarjetaSort: getSortableNumericValue(item.costoMantenimientoTarjeta),
         costoTarjetaSort: getSortableNumericValue(item.costoTarjeta),

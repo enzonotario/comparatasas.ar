@@ -14,13 +14,13 @@ export interface RemesaOption {
   moneda: 'FIAT' | 'CRIPTO' | string
   inversiones: boolean
   tarjetaUsa: boolean
-  costoRecibirPagos: string
-  costoMantenimientoTarjeta: string
-  costoTarjeta: string
-  retiroArs: string
+  costoRecibirPagos: string | null
+  costoMantenimientoTarjeta: string | null
+  costoTarjeta: string | null
+  retiroArs: string | null
   detalles?: RemesaDetalles | null
-  calificacionAndroid: number
-  calificacionIos: number
+  calificacionAndroid: number | null
+  calificacionIos: number | null
 }
 
 interface RemesasResponse {
