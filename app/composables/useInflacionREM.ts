@@ -12,6 +12,7 @@ interface RemUltimoRow {
   periodoTipo: string
   periodoDesde: string | null
   promedio: number
+  informe?: string
 }
 
 const IPC_NIVEL_GENERAL = 'IPC nivel general'
@@ -91,6 +92,7 @@ function buildInflacionRemFromRemUltimo(rows: RemUltimoRow[]): InflacionREMData[
 const data = ref<InflacionREMData[] | null>(null)
 const loading = ref(true)
 const error = ref<unknown>(null)
+const informeDate = ref<string | null>(null)
 
 export function useInflacionREM() {
   async function fetch() {
@@ -104,6 +106,7 @@ export function useInflacionREM() {
     try {
       const response = await $fetch<RemUltimoRow[]>('https://api.argentinadatos.com/v1/rems/ultimo')
       data.value = buildInflacionRemFromRemUltimo(response)
+      informeDate.value = response[0]?.informe ?? null
     } catch (err) {
       error.value = err
     } finally {
@@ -130,5 +133,6 @@ export function useInflacionREM() {
     loading,
     error,
     fetch,
+    informeDate,
   }
 }

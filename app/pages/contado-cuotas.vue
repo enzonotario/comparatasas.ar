@@ -89,6 +89,7 @@ const {
   loading: loadingRem,
   error: errorRem,
   fetch: fetchInflacionRem,
+  informeDate: remInformeDate,
 } = useInflacionREM()
 const {
   accounts,
@@ -337,6 +338,20 @@ const remExpectedMonthlyAvg = computed(() => {
     next12RemRates.value.reduce((acc, value) => acc + value, 0) / next12RemRates.value.length
   return avg
 })
+
+function formatRemInforme(value: string | null): string {
+  if (!value) return ''
+  const [year, month] = value.split('-').map(Number)
+  if (!year || !month) return value
+
+  const date = new Date(year, month - 1)
+  return new Intl.DateTimeFormat('es-AR', {
+    month: 'long',
+    year: 'numeric',
+  }).format(date)
+}
+
+const remInformeLabel = computed(() => formatRemInforme(remInformeDate.value))
 
 const installmentAmount = computed(() => {
   if (inputMode.value === 'installment') return installmentAmountInput.value
@@ -1123,27 +1138,33 @@ const carrySectionLoading = computed(() => {
                 </div>
               </div>
 
-              <div class="grid gap-3 sm:grid-cols-2">
-                <div
-                  class="rounded-xl border border-neutral-200 bg-neutral-50/80 p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-                >
-                  <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                    REM 12 meses
-                  </p>
-                  <p class="mt-1 text-2xl font-semibold">
-                    {{ formatPercentFromFraction(remExpectedAnnual) }}
-                  </p>
+              <div
+                class="rounded-xl border border-neutral-200 bg-neutral-50/80 p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+              >
+                <div class="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                      REM 12 meses
+                    </p>
+                    <p class="mt-1 text-2xl font-semibold">
+                      {{ formatPercentFromFraction(remExpectedAnnual) }}
+                    </p>
+                  </div>
+                  <div>
+                    <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                      REM mensual
+                    </p>
+                    <p class="mt-1 text-2xl font-semibold">
+                      {{ formatPercentFromFraction(remExpectedMonthlyAvg) }}
+                    </p>
+                  </div>
                 </div>
-                <div
-                  class="rounded-xl border border-neutral-200 bg-neutral-50/80 p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+                <p
+                  v-if="remInformeLabel"
+                  class="mt-2 text-xs text-neutral-500"
                 >
-                  <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                    REM mensual
-                  </p>
-                  <p class="mt-1 text-2xl font-semibold">
-                    {{ formatPercentFromFraction(remExpectedMonthlyAvg) }}
-                  </p>
-                </div>
+                  Informe {{ remInformeLabel }}
+                </p>
               </div>
             </div>
           </UCard>
