@@ -129,6 +129,52 @@ function getDetail(details: RemesaDetalles | null | undefined, key: keyof Remesa
 }
 
 const hasHover = useMediaQuery('(hover: hover)')
+const isMobile = useMediaQuery('(max-width: 1023px)')
+const sortDirection = ref(false)
+
+function renderDetailPopover(detail: string | null | undefined) {
+  if (!detail) return null
+
+  return h(
+    UPopover,
+    {
+      mode: hasHover.value ? 'hover' : 'click',
+      openDelay: 80,
+      closeDelay: 300,
+      content: {
+        side: 'top',
+        sideOffset: 8,
+      },
+      ui: {
+        content: 'max-w-sm whitespace-normal text-left p-3',
+      },
+    },
+    {
+      default: () =>
+        h(
+          'span',
+          {
+            class:
+              'inline-flex cursor-help items-center gap-1 rounded-full border border-neutral-200 p-0.5 text-[11px] font-medium text-neutral-500 dark:border-neutral-800 dark:text-neutral-400',
+          },
+          [h(UIcon, { name: 'i-lucide-info', class: 'size-3' })],
+        ),
+      content: () =>
+        h('div', { class: 'space-y-1' }, [
+          h(
+            'p',
+            { class: 'text-xs font-semibold text-neutral-900 dark:text-white' },
+            'Detalle',
+          ),
+          h(
+            'p',
+            { class: 'text-xs leading-5 text-neutral-600 dark:text-neutral-300' },
+            detail,
+          ),
+        ]),
+    },
+  )
+}
 
 function renderBooleanCell(value: boolean, detail?: string) {
   return h('div', { class: 'min-w-0' }, [
@@ -345,6 +391,62 @@ watch(
 function matchBooleanFilter(filter: string, value: boolean): boolean {
   return filter === 'all' || (filter === 'si' && value) || (filter === 'no' && !value)
 }
+
+const sortedFilteredRows = computed(() => {
+  const items = [...filteredRows.value]
+  if (sorting.value.length === 0) return items
+
+  const sortDef = sorting.value[0]
+  if (!sortDef) return items
+
+  const id = sortDef.id
+  const desc = sortDef.desc
+
+  return items.sort((a, b) => {
+    let aVal: any = a[id as keyof RemesaRow]
+    let bVal: any = b[id as keyof RemesaRow]
+
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      return desc ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal)
+    }
+
+    if (aVal == null) aVal = desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY
+    if (bVal == null) bVal = desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY
+
+    return desc ? bVal - aVal : aVal - bVal
+  })
+})
+
+const sortableColumns = [
+  { id: 'retiroArsSort', label: 'Retiro ARS' },
+  { id: 'costoRecibirPagosSort', label: 'Recibir pagos' },
+  { id: 'costoMantenimientoTarjetaSort', label: 'Mant. tarjeta' },
+  { id: 'costoTarjetaSort', label: 'Uso tarjeta' },
+  { id: 'averageRating', label: 'Rating' },
+  { id: 'displayName', label: 'Nombre' },
+]
+
+const activeSortColumn = ref(sortableColumns.find((c) => c.id === (sorting.value[0]?.id ?? 'retiroArsSort')) ?? sortableColumns[0]!)
+const activeSortDesc = ref(sorting.value[0]?.desc ?? false)
+
+watch(activeSortColumn, (col) => {
+  sorting.value = [{ id: col.id, desc: activeSortDesc.value }]
+})
+
+watch(activeSortDesc, (desc) => {
+  if (sorting.value[0]) {
+    sorting.value = [{ id: sorting.value[0].id, desc }]
+  }
+})
+
+watch(sorting, (value) => {
+  const col = value[0]
+  if (col) {
+    const found = sortableColumns.find((c) => c.id === col.id)
+    if (found) activeSortColumn.value = found
+    activeSortDesc.value = col.desc
+  }
+})
 
 const filteredRows = computed(() => {
   const query = normalizeText(searchQuery.value)
@@ -670,13 +772,165 @@ const columns: TableColumn<RemesaRow>[] = [
           class="mb-4"
         />
 
-        <UTable v-model:sorting="sorting" :data="filteredRows" :columns="columns">
-          <template #empty>
-            <div class="py-10 text-center text-sm text-neutral-500">
-              No hay plataformas que coincidan con los filtros actuales.
+        <div class="hidden lg:block">
+          <UTable v-model:sorting="sorting" :data="filteredRows" :columns="columns">
+            <template #empty>
+              <div class="py-10 text-center text-sm text-neutral-500">
+                No hay plataformas que coincidan con los filtros actuales.
+              </div>
+            </template>
+          </UTable>
+        </div>
+
+        <div v-if="isMobile" class="lg:hidden space-y-4">
+          <div class="flex items-center gap-3">
+            <USelect
+              v-model="activeSortColumn"
+              :items="sortableColumns"
+              value-key="id"
+              label-key="label"
+              placeholder="Ordenar por"
+              size="sm"
+              class="min-w-0 flex-1"
+            />
+            <UButton
+              size="sm"
+              color="neutral"
+              variant="outline"
+              :icon="activeSortDesc ? 'i-lucide-arrow-down-narrow-wide' : 'i-lucide-arrow-up-narrow-wide'"
+              @click="activeSortDesc = !activeSortDesc"
+            />
+          </div>
+
+          <div class="space-y-3">
+            <div
+              v-for="row in sortedFilteredRows"
+              :key="row.compania"
+              class="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <img
+                  v-if="row.logo"
+                  :src="row.logo"
+                  :alt="`${row.displayName} logo`"
+                  class="size-10 rounded-full object-contain"
+                  loading="lazy"
+                />
+                <div
+                  v-else
+                  class="flex size-10 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                >
+                  {{ row.initials }}
+                </div>
+                <div>
+                  <p class="font-medium text-neutral-900 dark:text-white">
+                    {{ row.displayName }}
+                  </p>
+                  <p class="text-xs text-neutral-500">
+                    {{ row.monedaLabel }}
+                  </p>
+                </div>
+                <div class="ml-auto">
+                  <UBadge color="neutral" variant="outline" size="sm">
+                    {{ row.averageRatingLabel }}
+                  </UBadge>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                  <span class="text-neutral-500">Cuenta propia</span>
+                  <span class="ml-auto" />
+                  <UBadge :color="row.cuentaPropia ? 'success' : 'error'" variant="soft" size="sm">
+                    {{ row.cuentaPropiaLabel }}
+                  </UBadge>
+                  <component
+                    :is="renderDetailPopover(getDetail(row.detalles, 'cuentaPropia'))"
+                    class="ml-1"
+                  />
+                </div>
+                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                  <span class="text-neutral-500">Inversiones</span>
+                  <span class="ml-auto" />
+                  <UBadge :color="row.inversiones ? 'success' : 'error'" variant="soft" size="sm">
+                    {{ row.inversionesLabel }}
+                  </UBadge>
+                  <component
+                    :is="renderDetailPopover(getDetail(row.detalles, 'inversiones'))"
+                    class="ml-1"
+                  />
+                </div>
+                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                  <span class="text-neutral-500">Tarjeta EEUU</span>
+                  <span class="ml-auto" />
+                  <UBadge :color="row.tarjetaUsa ? 'success' : 'error'" variant="soft" size="sm">
+                    {{ row.tarjetaUsaLabel }}
+                  </UBadge>
+                  <component
+                    :is="renderDetailPopover(getDetail(row.detalles, 'tarjetaUsa'))"
+                    class="ml-1"
+                  />
+                </div>
+                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                  <span class="text-neutral-500">Recibir pagos</span>
+                  <span class="ml-auto" />
+                  <UBadge :color="row.zeroReceiveCost ? 'success' : 'error'" variant="soft" size="sm">
+                    {{ row.costoRecibirPagos ?? 'N/A' }}
+                  </UBadge>
+                  <component
+                    :is="renderDetailPopover(getDetail(row.detalles, 'costoRecibirPagos'))"
+                    class="ml-1"
+                  />
+                </div>
+                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                  <span class="text-neutral-500">Retiro ARS</span>
+                  <span class="ml-auto" />
+                  <UBadge :color="row.zeroArsWithdrawal ? 'success' : 'error'" variant="soft" size="sm">
+                    {{ row.retiroArs ?? 'N/A' }}
+                  </UBadge>
+                  <component
+                    :is="renderDetailPopover(getDetail(row.detalles, 'retiroArs'))"
+                    class="ml-1"
+                  />
+                </div>
+                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                  <span class="text-neutral-500">Mant. tarjeta</span>
+                  <span class="ml-auto" />
+                  <UBadge color="neutral" variant="soft" size="sm">
+                    {{ row.costoMantenimientoTarjeta ?? 'N/A' }}
+                  </UBadge>
+                  <component
+                    :is="renderDetailPopover(getDetail(row.detalles, 'costoMantenimientoTarjeta'))"
+                    class="ml-1"
+                  />
+                </div>
+                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                  <span class="text-neutral-500">Uso tarjeta</span>
+                  <span class="ml-auto" />
+                  <UBadge color="neutral" variant="soft" size="sm">
+                    {{ row.costoTarjeta ?? 'N/A' }}
+                  </UBadge>
+                  <component
+                    :is="renderDetailPopover(getDetail(row.detalles, 'costoTarjeta'))"
+                    class="ml-1"
+                  />
+                </div>
+                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                  <span class="text-neutral-500">Rating</span>
+                  <span class="ml-auto" />
+                  <span class="text-xs">{{ row.averageRatingLabel }}</span>
+                </div>
+              </div>
             </div>
-          </template>
-        </UTable>
+          </div>
+
+          <div
+            v-if="sortedFilteredRows.length === 0"
+            class="py-10 text-center text-sm text-neutral-500"
+          >
+            No hay plataformas que coincidan con los filtros actuales.
+          </div>
+        </div>
       </UCard>
     </template>
 
