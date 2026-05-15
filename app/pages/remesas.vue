@@ -108,6 +108,10 @@ function formatRating(value: number): string {
   }).format(value)
 }
 
+function formatOgRating(value: number): string {
+  return value.toFixed(2)
+}
+
 function formatUpdatedAt(value: string | null): string {
   if (!value) return ogUpdatedAtDate()
 
@@ -191,7 +195,13 @@ function renderBooleanCell(value: boolean, detail?: string) {
 
 function renderCostCell(value: string | null, detail?: string) {
   const displayValue = value ?? 'N/A'
-  const badgeColor = !value ? 'neutral' : isZeroLike(value) ? 'success' : hasPositiveNumericValue(value) ? 'error' : 'neutral'
+  const badgeColor = !value
+    ? 'neutral'
+    : isZeroLike(value)
+      ? 'success'
+      : hasPositiveNumericValue(value)
+        ? 'error'
+        : 'neutral'
 
   return h('div', { class: 'min-w-0' }, [
     h('div', { class: 'flex items-center gap-2' }, [
@@ -258,7 +268,8 @@ const rows = computed<RemesaRow[]>(() => {
       const displayName = displayCompanyName(item.compania)
       const androidRating = item.calificacionAndroid ?? 0
       const iosRating = item.calificacionIos ?? 0
-      const ratingCount = (item.calificacionAndroid !== null ? 1 : 0) + (item.calificacionIos !== null ? 1 : 0)
+      const ratingCount =
+        (item.calificacionAndroid !== null ? 1 : 0) + (item.calificacionIos !== null ? 1 : 0)
       const averageRating = ratingCount > 0 ? (androidRating + iosRating) / ratingCount : 0
 
       return {
@@ -379,14 +390,21 @@ function createSortableHeader(label: string) {
 }
 
 const ogItems = computed(() => {
-  return rows.value.slice(0, 3).map((item) => ({
-    name: item.displayName,
-    rate: item.averageRatingLabel,
-  }))
+  return [...rows.value]
+    .sort((a, b) => b.averageRating - a.averageRating || a.displayName.localeCompare(b.displayName))
+    .slice(0, 3)
+    .map((item) => ({
+      name: item.displayName,
+      currency: item.monedaLabel,
+      rating: formatOgRating(item.averageRating),
+      receiveCost: item.costoRecibirPagos ?? 'N/A',
+      arsWithdrawal: item.retiroArs ?? 'N/A',
+    }))
 })
 
-defineOgImage('ComparaTasas.takumi', {
-  title: 'Top Plataformas de Remesas',
+defineOgImage('Remesas.takumi', {
+  title: 'Remesas',
+  subtitle: 'Top plataformas para cobrar del exterior, ordenadas por rating promedio.',
   items: ogItems.value ?? [],
   updatedAt: formattedUpdatedAt.value,
 })
