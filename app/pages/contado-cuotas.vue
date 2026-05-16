@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
+import type { PlanInputMode, ProductScenario } from '~/types/product-scenarios'
 import {
   compareContadoVsCuotas,
   effectiveAnnualRateFromMonthlyCurve,
@@ -56,8 +57,6 @@ useHead({
     },
   ],
 })
-
-type PlanInputMode = 'installment' | 'total'
 
 interface HeatmapRow {
   label: number
@@ -156,6 +155,7 @@ const inputModeQuery = useRouteQuery<PlanInputMode>('modo', 'installment')
 const installmentAmountQuery = useRouteQuery('valorCuota', '55555.5')
 const financedTotalQuery = useRouteQuery('totalFinanciado', '999999')
 const carryQuery = useRouteQuery<string | undefined>('carry', undefined)
+const productQuery = useRouteQuery<string | undefined>('producto', undefined)
 
 const cashPrice = computed<number>({
   get: () => parseQueryNumber(cashPriceQuery.value, 1_000_000, { min: 0 }),
@@ -212,6 +212,25 @@ const selectedCarryOptionIds = computed<string[]>({
   },
 })
 
+const { productScenarios, isSamePriceInstallmentLabel } = useProductScenarios()
+const summarySectionRef = ref<HTMLElement | null>(null)
+const productPanelReservedSpace = ref(220)
+
+const selectedProductScenarioId = computed<string | undefined>({
+  get: () => {
+    const normalized = getQueryString(productQuery.value)
+    if (!normalized) return undefined
+    return productScenarios.some((product) => product.id === normalized) ? normalized : undefined
+  },
+  set: (value) => {
+    productQuery.value = value || undefined
+  },
+})
+
+const selectedProductScenario = computed(() => {
+  return productScenarios.find((product) => product.id === selectedProductScenarioId.value) ?? null
+})
+
 const planInputTabs: TabsItem[] = [
   {
     label: 'Valor de cuota',
@@ -231,6 +250,59 @@ const selectedPlanInputTab = computed({
     inputMode.value = value === 'total' ? 'total' : 'installment'
   },
 })
+
+function applyProductScenario(product: ProductScenario) {
+  selectedProductScenarioId.value = product.id
+  cashPrice.value = product.cashPrice
+  installmentCount.value = product.installmentCount
+  inputMode.value = product.inputMode
+
+  const total =
+    product.financedTotal ??
+    (product.installmentAmount != null
+      ? product.installmentAmount * Math.max(1, product.installmentCount)
+      : product.cashPrice)
+
+  const installment = product.installmentAmount ?? total / Math.max(1, product.installmentCount)
+
+  installmentAmountInput.value = installment
+  financedTotalInput.value = total
+}
+
+function scrollSummaryIntoViewIfNeeded() {
+  if (!import.meta.client || !summarySectionRef.value) return
+
+  const rect = summarySectionRef.value.getBoundingClientRect()
+  const isVisible = rect.bottom > 0 && rect.top < window.innerHeight
+
+  if (isVisible) return
+
+  summarySectionRef.value.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+  })
+}
+
+async function handleProductScenarioClick(product: ProductScenario) {
+  applyProductScenario(product)
+  await nextTick()
+  scrollSummaryIntoViewIfNeeded()
+}
+
+function handleProductPanelHeightChange(height: number) {
+  productPanelReservedSpace.value = Math.max(220, height + 32)
+}
+
+watch(
+  selectedProductScenarioId,
+  (id, previousId) => {
+    if (!id || id === previousId) return
+
+    const product = productScenarios.find((item) => item.id === id)
+    if (product) applyProductScenario(product)
+  },
+  { immediate: true },
+)
 
 watch(inputMode, (newMode, oldMode) => {
   if (newMode === oldMode) return
@@ -767,7 +839,7 @@ const carrySectionLoading = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6" :style="{ paddingBottom: `${productPanelReservedSpace}px` }">
     <UAlert
       v-if="errorRem"
       color="warning"
@@ -782,6 +854,17 @@ const carrySectionLoading = computed(() => {
       variant="soft"
       title="Algunas opciones de inversión no pudieron cargarse"
       description="La simulación de invertir el efectivo podría mostrar menos alternativas que las disponibles en cuentas y billeteras."
+    />
+
+    <ProductScenariosRail
+      v-if="productScenarios.length"
+      floating
+      minimizable
+      :selected-product-id="selectedProductScenarioId"
+      subtitle="Elegí un producto para cargar automáticamente la simulación."
+      action-label="Cargar simulación"
+      @select="handleProductScenarioClick"
+      @height-change="handleProductPanelHeightChange"
     />
 
     <div v-if="loadingRem" class="py-8">
@@ -956,218 +1039,300 @@ const carrySectionLoading = computed(() => {
             </div>
           </UCard>
 
-          <UCard class="overflow-hidden md:sticky md:top-24 md:self-start">
-            <template #header>
-              <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    name="i-lucide-layout-dashboard"
-                    class="size-5 text-primary-600 dark:text-primary-400"
-                  />
-                  <h2 class="text-lg font-semibold">Resumen</h2>
+          <div ref="summarySectionRef">
+            <UCard class="overflow-hidden md:sticky md:top-24 md:self-start">
+              <template #header>
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2">
+                    <UIcon
+                      name="i-lucide-layout-dashboard"
+                      class="size-5 text-primary-600 dark:text-primary-400"
+                    />
+                    <h2 class="text-lg font-semibold">Resumen</h2>
+                  </div>
+                  <p class="text-sm text-neutral-500">
+                    Acá ves el impacto nominal y real del escenario mientras cargás los datos.
+                  </p>
                 </div>
-                <p class="text-sm text-neutral-500">
-                  Acá ves el impacto nominal y real del escenario mientras cargás los datos.
-                </p>
-              </div>
-            </template>
+              </template>
 
-            <div class="space-y-4">
-              <div
-                class="rounded-2xl border p-4"
-                :class="
-                  recommendation === 'cuotas'
-                    ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/30'
-                    : recommendation === 'contado'
-                      ? 'border-rose-200 bg-rose-50 dark:border-rose-900 dark:bg-rose-950/30'
-                      : 'border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30'
-                "
-              >
-                <div class="flex items-start justify-between gap-3">
-                  <div>
-                    <p class="text-xs uppercase tracking-wide text-neutral-500">Resultado</p>
-                    <p class="mt-1 text-xl font-bold text-neutral-900 dark:text-white">
+              <div class="space-y-4">
+                <div
+                  class="rounded-2xl border p-4"
+                  :class="
+                    recommendation === 'cuotas'
+                      ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/30'
+                      : recommendation === 'contado'
+                        ? 'border-rose-200 bg-rose-50 dark:border-rose-900 dark:bg-rose-950/30'
+                        : 'border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30'
+                  "
+                >
+                  <div class="flex items-start justify-between gap-3">
+                    <div>
+                      <p class="text-xs uppercase tracking-wide text-neutral-500">Resultado</p>
+                      <p class="mt-1 text-xl font-bold text-neutral-900 dark:text-white">
+                        {{
+                          recommendation === 'cuotas'
+                            ? 'Convienen las cuotas'
+                            : recommendation === 'contado'
+                              ? 'Conviene el contado'
+                              : 'Muy parejo'
+                        }}
+                      </p>
+                    </div>
+                    <UBadge :color="recommendationColor" variant="soft" size="lg">
                       {{
                         recommendation === 'cuotas'
-                          ? 'Convienen las cuotas'
+                          ? 'Cuotas'
                           : recommendation === 'contado'
-                            ? 'Conviene el contado'
-                            : 'Muy parejo'
+                            ? 'Contado'
+                            : 'Empate'
                       }}
-                    </p>
+                    </UBadge>
                   </div>
-                  <UBadge :color="recommendationColor" variant="soft" size="lg">
-                    {{
-                      recommendation === 'cuotas'
-                        ? 'Cuotas'
-                        : recommendation === 'contado'
-                          ? 'Contado'
-                          : 'Empate'
-                    }}
-                  </UBadge>
-                </div>
-                <p class="mt-3 text-sm text-neutral-700 dark:text-neutral-300">
-                  {{ explanationText }}
-                </p>
-              </div>
+                  <p class="mt-3 text-sm text-neutral-700 dark:text-neutral-300">
+                    {{ explanationText }}
+                  </p>
+                  <div
+                    v-if="selectedProductScenario"
+                    class="mt-4 overflow-hidden rounded-2xl border border-white/70 bg-white/80 dark:border-white/10 dark:bg-white/5"
+                  >
+                    <div class="flex items-stretch">
+                      <div
+                        class="flex h-24 w-28 shrink-0 items-center justify-center bg-white p-2 dark:bg-white"
+                      >
+                        <img
+                          v-if="selectedProductScenario.imageUrl"
+                          :src="selectedProductScenario.imageUrl"
+                          :alt="selectedProductScenario.name"
+                          class="h-full w-full object-contain"
+                          loading="lazy"
+                        />
+                        <div
+                          v-else
+                          class="flex h-full w-full items-center justify-center text-neutral-400"
+                        >
+                          <UIcon name="i-lucide-image" class="size-8" />
+                        </div>
+                      </div>
 
-              <div class="grid gap-4 xl:grid-cols-2">
+                      <div class="min-w-0 flex-1 space-y-2 p-3">
+                        <div class="space-y-1">
+                          <div class="flex flex-wrap items-center gap-2">
+                            <p
+                              v-if="selectedProductScenario.merchant"
+                              class="text-xs text-neutral-500 dark:text-neutral-400"
+                            >
+                              {{ selectedProductScenario.merchant }}
+                            </p>
+                          </div>
+                          <p
+                            class="line-clamp-2 text-sm font-semibold text-neutral-900 dark:text-white"
+                          >
+                            {{ selectedProductScenario.name }}
+                          </p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-1.5">
+                          <UBadge color="neutral" variant="outline" size="sm">
+                            {{
+                              selectedProductScenario.priceLabel ||
+                              formatCurrency(selectedProductScenario.cashPrice)
+                            }}
+                          </UBadge>
+                          <UBadge
+                            :color="
+                              isSamePriceInstallmentLabel(selectedProductScenario.installmentLabel)
+                                ? 'success'
+                                : 'neutral'
+                            "
+                            :variant="
+                              isSamePriceInstallmentLabel(selectedProductScenario.installmentLabel)
+                                ? 'soft'
+                                : 'outline'
+                            "
+                            size="sm"
+                          >
+                            {{
+                              selectedProductScenario.installmentLabel ||
+                              `${selectedProductScenario.installmentCount} cuotas`
+                            }}
+                          </UBadge>
+                        </div>
+
+                        <UButton
+                          :to="selectedProductScenario.affiliateUrl"
+                          external
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          size="xs"
+                          color="neutral"
+                          icon="i-lucide-arrow-up-right"
+                        >
+                          Ver producto
+                        </UButton>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid gap-4 xl:grid-cols-2">
+                  <div
+                    class="space-y-3 rounded-2xl border border-neutral-200 bg-neutral-50/40 p-3 dark:border-neutral-800 dark:bg-neutral-900/30"
+                  >
+                    <div class="flex items-center gap-2">
+                      <UIcon
+                        name="i-lucide-banknote"
+                        class="size-4 text-primary-600 dark:text-primary-400"
+                      />
+                      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
+                        Contado
+                      </p>
+                    </div>
+
+                    <div
+                      class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+                    >
+                      <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                        Pagás hoy
+                      </p>
+                      <p class="mt-1 text-2xl font-semibold">{{ formatCurrency(cashPrice) }}</p>
+                    </div>
+
+                    <div
+                      class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+                    >
+                      <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                        Referencia
+                      </p>
+                      <p class="mt-1 text-2xl font-semibold">100%</p>
+                      <p class="mt-1 text-xs text-neutral-500">
+                        Base de comparación frente a cualquier esquema financiado.
+                      </p>
+                    </div>
+
+                    <div
+                      class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+                    >
+                      <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                        Ahorro / pérdida
+                      </p>
+                      <p class="mt-1 text-2xl font-semibold">
+                        {{ formatSignedCurrency(comparison?.ahorroVsContado) }}
+                      </p>
+                      <p class="mt-1 text-xs text-neutral-500">
+                        {{ formatPercentFromFraction(comparison?.ahorroVsContadoFraction) }} del
+                        contado.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    class="space-y-3 rounded-2xl border border-neutral-200 bg-neutral-50/40 p-3 dark:border-neutral-800 dark:bg-neutral-900/30"
+                  >
+                    <div class="flex items-center gap-2">
+                      <UIcon
+                        name="i-lucide-credit-card"
+                        class="size-4 text-primary-600 dark:text-primary-400"
+                      />
+                      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
+                        Cuotas
+                      </p>
+                    </div>
+
+                    <div class="grid gap-3 lg:grid-cols-2">
+                      <div
+                        class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+                      >
+                        <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                          Cuota
+                        </p>
+                        <p class="mt-1 text-2xl font-semibold">
+                          {{ formatCurrency(installmentAmount) }}
+                        </p>
+                      </div>
+                      <div
+                        class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+                      >
+                        <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                          Total financiado
+                        </p>
+                        <p class="mt-1 text-2xl font-semibold">
+                          {{ formatCurrency(financedTotal) }}
+                        </p>
+                      </div>
+                      <div
+                        class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+                      >
+                        <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                          {{ scenarioNominalLabel }}
+                        </p>
+                        <p class="mt-1 text-2xl font-semibold">
+                          {{ formatPercentFromFraction(scenarioNominalValue) }}
+                        </p>
+                      </div>
+                      <div
+                        class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+                      >
+                        <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                          Tasa implícita
+                        </p>
+                        <p class="mt-1 text-2xl font-semibold">
+                          {{ formatPercentFromFraction(comparison?.implicitTea) }} TEA
+                        </p>
+                      </div>
+                      <div
+                        class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+                      >
+                        <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                          Valor presente
+                        </p>
+                        <p class="mt-1 text-2xl font-semibold">
+                          {{ formatCurrency(comparison?.presentValueAtInflation) }}
+                        </p>
+                      </div>
+                      <div
+                        class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
+                      >
+                        <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                          Cuota de equilibrio
+                        </p>
+                        <p class="mt-1 text-2xl font-semibold">
+                          {{ formatCurrency(comparison?.cuotaEquilibrio) }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div
-                  class="space-y-3 rounded-2xl border border-neutral-200 bg-neutral-50/40 p-3 dark:border-neutral-800 dark:bg-neutral-900/30"
+                  class="rounded-xl border border-neutral-200 bg-neutral-50/80 p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
                 >
-                  <div class="flex items-center gap-2">
-                    <UIcon
-                      name="i-lucide-banknote"
-                      class="size-4 text-primary-600 dark:text-primary-400"
-                    />
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
-                      Contado
-                    </p>
-                  </div>
-
-                  <div
-                    class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-                  >
-                    <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                      Pagás hoy
-                    </p>
-                    <p class="mt-1 text-2xl font-semibold">{{ formatCurrency(cashPrice) }}</p>
-                  </div>
-
-                  <div
-                    class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-                  >
-                    <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                      Referencia
-                    </p>
-                    <p class="mt-1 text-2xl font-semibold">100%</p>
-                    <p class="mt-1 text-xs text-neutral-500">
-                      Base de comparación frente a cualquier esquema financiado.
-                    </p>
-                  </div>
-
-                  <div
-                    class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-                  >
-                    <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                      Ahorro / pérdida
-                    </p>
-                    <p class="mt-1 text-2xl font-semibold">
-                      {{ formatSignedCurrency(comparison?.ahorroVsContado) }}
-                    </p>
-                    <p class="mt-1 text-xs text-neutral-500">
-                      {{ formatPercentFromFraction(comparison?.ahorroVsContadoFraction) }} del
-                      contado.
-                    </p>
-                  </div>
-                </div>
-
-                <div
-                  class="space-y-3 rounded-2xl border border-neutral-200 bg-neutral-50/40 p-3 dark:border-neutral-800 dark:bg-neutral-900/30"
-                >
-                  <div class="flex items-center gap-2">
-                    <UIcon
-                      name="i-lucide-credit-card"
-                      class="size-4 text-primary-600 dark:text-primary-400"
-                    />
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
-                      Cuotas
-                    </p>
-                  </div>
-
-                  <div class="grid gap-3 lg:grid-cols-2">
-                    <div
-                      class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-                    >
+                  <div class="grid gap-3 sm:grid-cols-2">
+                    <div>
                       <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                        Cuota
+                        REM 12 meses
                       </p>
                       <p class="mt-1 text-2xl font-semibold">
-                        {{ formatCurrency(installmentAmount) }}
+                        {{ formatPercentFromFraction(remExpectedAnnual) }}
                       </p>
                     </div>
-                    <div
-                      class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-                    >
+                    <div>
                       <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                        Total financiado
-                      </p>
-                      <p class="mt-1 text-2xl font-semibold">{{ formatCurrency(financedTotal) }}</p>
-                    </div>
-                    <div
-                      class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-                    >
-                      <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                        {{ scenarioNominalLabel }}
+                        REM mensual
                       </p>
                       <p class="mt-1 text-2xl font-semibold">
-                        {{ formatPercentFromFraction(scenarioNominalValue) }}
-                      </p>
-                    </div>
-                    <div
-                      class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-                    >
-                      <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                        Tasa implícita
-                      </p>
-                      <p class="mt-1 text-2xl font-semibold">
-                        {{ formatPercentFromFraction(comparison?.implicitTea) }} TEA
-                      </p>
-                    </div>
-                    <div
-                      class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-                    >
-                      <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                        Valor presente
-                      </p>
-                      <p class="mt-1 text-2xl font-semibold">
-                        {{ formatCurrency(comparison?.presentValueAtInflation) }}
-                      </p>
-                    </div>
-                    <div
-                      class="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-                    >
-                      <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                        Cuota de equilibrio
-                      </p>
-                      <p class="mt-1 text-2xl font-semibold">
-                        {{ formatCurrency(comparison?.cuotaEquilibrio) }}
+                        {{ formatPercentFromFraction(remExpectedMonthlyAvg) }}
                       </p>
                     </div>
                   </div>
+                  <p v-if="remInformeLabel" class="mt-2 text-xs text-neutral-500">
+                    Informe {{ remInformeLabel }}
+                  </p>
                 </div>
               </div>
-
-              <div
-                class="rounded-xl border border-neutral-200 bg-neutral-50/80 p-3 dark:border-neutral-800 dark:bg-neutral-900/70"
-              >
-                <div class="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                      REM 12 meses
-                    </p>
-                    <p class="mt-1 text-2xl font-semibold">
-                      {{ formatPercentFromFraction(remExpectedAnnual) }}
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-                      REM mensual
-                    </p>
-                    <p class="mt-1 text-2xl font-semibold">
-                      {{ formatPercentFromFraction(remExpectedMonthlyAvg) }}
-                    </p>
-                  </div>
-                </div>
-                <p
-                  v-if="remInformeLabel"
-                  class="mt-2 text-xs text-neutral-500"
-                >
-                  Informe {{ remInformeLabel }}
-                </p>
-              </div>
-            </div>
-          </UCard>
+            </UCard>
+          </div>
         </div>
 
         <UCard class="overflow-visible">
@@ -1458,7 +1623,7 @@ const carrySectionLoading = computed(() => {
           </div>
         </UCard>
 
-        <div class="grid gap-4 2xl:grid-cols-2">
+        <div class="grid gap-4 2xl:grid-cols-2 pb-12">
           <UCard>
             <template #header>
               <div class="space-y-1">

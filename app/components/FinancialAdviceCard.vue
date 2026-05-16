@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <UCard class="max-w-3xl mx-auto">
+  <UCard data-financial-advice-card class="max-w-3xl mx-auto">
     <template #header>
       <h2 class="text-lg font-bold">¿Necesitás asesoramiento financiero?</h2>
     </template>

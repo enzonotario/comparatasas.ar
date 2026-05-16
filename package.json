@@ -16,6 +16,7 @@
     "initial-sync-analytics": "tsx scripts/initial-sync-analytics.ts",
     "generate-analytics-api": "tsx scripts/generate-analytics-api.ts",
     "preview-og": "tsx scripts/preview-og.ts",
+    "import-meli-products": "tsx scripts/import-meli-products.ts --file productos.json",
     "test": "vitest run",
     "test:scripts": "vitest run scripts/"
   },

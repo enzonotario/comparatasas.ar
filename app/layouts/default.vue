@@ -52,6 +52,10 @@ const isProviderHistoryPage = computed(() => {
 
 const pageTitle = computed(() => route.meta.pageTitle as string | undefined)
 const pageDescription = computed(() => route.meta.pageDescription as string | undefined)
+
+const showProductScenariosRail = computed(() => {
+  return !isSumarsePage.value && !isProviderHistoryPage.value && route.name !== 'contado-cuotas'
+})
 </script>
 
 <template>
@@ -144,6 +148,13 @@ const pageDescription = computed(() => route.meta.pageDescription as string | un
           }"
         >
           <slot />
+
+          <ProductScenariosRail
+            v-if="showProductScenariosRail"
+            subtitle="Elegí un producto para simular Contado vs Cuotas."
+            action-label="Ver en simulación"
+            navigate-on-select
+          />
         </UContainer>
 
         <UContainer v-if="!isProviderHistoryPage" class="w-full max-w-3xl mx-auto space-y-6">

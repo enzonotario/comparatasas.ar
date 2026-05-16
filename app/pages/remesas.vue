@@ -161,16 +161,8 @@ function renderDetailPopover(detail: string | null | undefined) {
         ),
       content: () =>
         h('div', { class: 'space-y-1' }, [
-          h(
-            'p',
-            { class: 'text-xs font-semibold text-neutral-900 dark:text-white' },
-            'Detalle',
-          ),
-          h(
-            'p',
-            { class: 'text-xs leading-5 text-neutral-600 dark:text-neutral-300' },
-            detail,
-          ),
+          h('p', { class: 'text-xs font-semibold text-neutral-900 dark:text-white' }, 'Detalle'),
+          h('p', { class: 'text-xs leading-5 text-neutral-600 dark:text-neutral-300' }, detail),
         ]),
     },
   )
@@ -426,7 +418,10 @@ const sortableColumns = [
   { id: 'displayName', label: 'Nombre' },
 ]
 
-const activeSortColumn = ref(sortableColumns.find((c) => c.id === (sorting.value[0]?.id ?? 'retiroArsSort')) ?? sortableColumns[0]!)
+const activeSortColumn = ref(
+  sortableColumns.find((c) => c.id === (sorting.value[0]?.id ?? 'retiroArsSort')) ??
+    sortableColumns[0]!,
+)
 const activeSortDesc = ref(sorting.value[0]?.desc ?? false)
 
 watch(activeSortColumn, (col) => {
@@ -797,7 +792,9 @@ const columns: TableColumn<RemesaRow>[] = [
               size="sm"
               color="neutral"
               variant="outline"
-              :icon="activeSortDesc ? 'i-lucide-arrow-down-narrow-wide' : 'i-lucide-arrow-up-narrow-wide'"
+              :icon="
+                activeSortDesc ? 'i-lucide-arrow-down-narrow-wide' : 'i-lucide-arrow-up-narrow-wide'
+              "
               @click="activeSortDesc = !activeSortDesc"
             />
           </div>
@@ -838,7 +835,9 @@ const columns: TableColumn<RemesaRow>[] = [
               </div>
 
               <div class="grid grid-cols-2 gap-2 text-sm">
-                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                <div
+                  class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
+                >
                   <span class="text-neutral-500">Cuenta propia</span>
                   <span class="ml-auto" />
                   <UBadge :color="row.cuentaPropia ? 'success' : 'error'" variant="soft" size="sm">
@@ -849,7 +848,9 @@ const columns: TableColumn<RemesaRow>[] = [
                     class="ml-1"
                   />
                 </div>
-                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                <div
+                  class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
+                >
                   <span class="text-neutral-500">Inversiones</span>
                   <span class="ml-auto" />
                   <UBadge :color="row.inversiones ? 'success' : 'error'" variant="soft" size="sm">
@@ -860,7 +861,9 @@ const columns: TableColumn<RemesaRow>[] = [
                     class="ml-1"
                   />
                 </div>
-                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                <div
+                  class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
+                >
                   <span class="text-neutral-500">Tarjeta EEUU</span>
                   <span class="ml-auto" />
                   <UBadge :color="row.tarjetaUsa ? 'success' : 'error'" variant="soft" size="sm">
@@ -871,10 +874,16 @@ const columns: TableColumn<RemesaRow>[] = [
                     class="ml-1"
                   />
                 </div>
-                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                <div
+                  class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
+                >
                   <span class="text-neutral-500">Recibir pagos</span>
                   <span class="ml-auto" />
-                  <UBadge :color="row.zeroReceiveCost ? 'success' : 'error'" variant="soft" size="sm">
+                  <UBadge
+                    :color="row.zeroReceiveCost ? 'success' : 'error'"
+                    variant="soft"
+                    size="sm"
+                  >
                     {{ row.costoRecibirPagos ?? 'N/A' }}
                   </UBadge>
                   <component
@@ -882,10 +891,16 @@ const columns: TableColumn<RemesaRow>[] = [
                     class="ml-1"
                   />
                 </div>
-                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                <div
+                  class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
+                >
                   <span class="text-neutral-500">Retiro ARS</span>
                   <span class="ml-auto" />
-                  <UBadge :color="row.zeroArsWithdrawal ? 'success' : 'error'" variant="soft" size="sm">
+                  <UBadge
+                    :color="row.zeroArsWithdrawal ? 'success' : 'error'"
+                    variant="soft"
+                    size="sm"
+                  >
                     {{ row.retiroArs ?? 'N/A' }}
                   </UBadge>
                   <component
@@ -893,7 +908,9 @@ const columns: TableColumn<RemesaRow>[] = [
                     class="ml-1"
                   />
                 </div>
-                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                <div
+                  class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
+                >
                   <span class="text-neutral-500">Mant. tarjeta</span>
                   <span class="ml-auto" />
                   <UBadge color="neutral" variant="soft" size="sm">
@@ -904,7 +921,9 @@ const columns: TableColumn<RemesaRow>[] = [
                     class="ml-1"
                   />
                 </div>
-                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                <div
+                  class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
+                >
                   <span class="text-neutral-500">Uso tarjeta</span>
                   <span class="ml-auto" />
                   <UBadge color="neutral" variant="soft" size="sm">
@@ -915,7 +934,9 @@ const columns: TableColumn<RemesaRow>[] = [
                     class="ml-1"
                   />
                 </div>
-                <div class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800">
+                <div
+                  class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
+                >
                   <span class="text-neutral-500">Rating</span>
                   <span class="ml-auto" />
                   <span class="text-xs">{{ row.averageRatingLabel }}</span>
