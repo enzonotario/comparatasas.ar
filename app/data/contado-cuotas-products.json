@@ -14,6 +14,20 @@
     "financedTotal": 254149
   },
   {
+    "id": "smart-tv-noblex-50-pulgadas-4k-vidaa-hdr-220v-mla66824520",
+    "name": "Smart Tv Noblex 50 Pulgadas 4k Vidaa Hdr 220v",
+    "merchant": "Mercado Libre",
+    "imageUrl": "https://http2.mlstatic.com/D_Q_NP_2X_944987-MLA109029459575_032026-V.webp",
+    "affiliateUrl": "https://meli.la/1U6pnnC",
+    "priceLabel": "Ahora: $499.999",
+    "installmentLabel": "Mismo precio · 3 cuotas de $166.666",
+    "cashPrice": 499999,
+    "installmentCount": 3,
+    "inputMode": "installment",
+    "installmentAmount": 166666,
+    "financedTotal": 499999
+  },
+  {
     "id": "hidrolavadora-electrica-alta-presion-trent-hlt307-1400w-1600-psi-110-bar-con-accesorios-amarillo-50-hz-mla26994482",
     "name": "Hidrolavadora Electrica Alta Presion Trent Hlt307 1400w 1600 Psi 110 Bar Con Accesorios Amarillo 50 Hz",
     "merchant": "TRENT",
@@ -40,33 +54,5 @@
     "inputMode": "installment",
     "installmentAmount": 385999,
     "financedTotal": 1157999
-  },
-  {
-    "id": "samsung-galaxy-a16-4g-128gb-4-gb-ram-negro-mla45806032",
-    "name": "Samsung Galaxy A16 4g 128gb 4 Gb Ram Negro",
-    "merchant": "CPT Oficina",
-    "imageUrl": "https://http2.mlstatic.com/D_Q_NP_2X_790939-MLA99551674904_122025-V.webp",
-    "affiliateUrl": "https://meli.la/2yPkb94",
-    "priceLabel": "Ahora: $250.099",
-    "installmentLabel": "Mismo precio · 6 cuotas de $41.683",
-    "cashPrice": 250099,
-    "installmentCount": 6,
-    "inputMode": "installment",
-    "installmentAmount": 41683,
-    "financedTotal": 250099
-  },
-  {
-    "id": "secador-pelo-daewoo-2100w-frio-calor-con-difusor-dhd7007-negro-mla22138728",
-    "name": "Secador Pelo Daewoo 2100w Frio Calor Con Difusor Dhd7007 Negro",
-    "merchant": "Tienda lo Quiero Aca",
-    "imageUrl": "https://http2.mlstatic.com/D_Q_NP_2X_872804-MLA99453742720_112025-V.webp",
-    "affiliateUrl": "https://meli.la/1iWWacH",
-    "priceLabel": "Ahora: $35.699",
-    "installmentLabel": "6 cuotas de $10.798",
-    "cashPrice": 35699,
-    "installmentCount": 6,
-    "inputMode": "installment",
-    "installmentAmount": 10798,
-    "financedTotal": 64788
   }
 ]
