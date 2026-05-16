@@ -24,6 +24,48 @@ const {
   fetchCriptos,
   data: cryptoData,
 } = cryptoStore
+const PRIORITY_PROVIDER = 'Lune.fi'
+
+const maxYieldByCrypto = computed(
+  () => new Map(cryptosByMaxYield.value.map(({ crypto, maxYield }) => [crypto, maxYield])),
+)
+
+const providerTopYieldCounts = computed(() => {
+  const counts = new Map<string, number>()
+
+  for (const entity of cryptoYields.value) {
+    const topCount = entity.rendimientos.reduce((count, rendimiento) => {
+      const maxYield = maxYieldByCrypto.value.get(rendimiento.moneda)
+      return maxYield && rendimiento.apy === maxYield ? count + 1 : count
+    }, 0)
+
+    counts.set(entity.entidad, topCount)
+  }
+
+  return counts
+})
+
+const orderedCryptoYields = computed(() => {
+  return [...cryptoYields.value].sort((a, b) => {
+    const aShortName = getInstitutionShortName(a.entidad)
+    const bShortName = getInstitutionShortName(b.entidad)
+    const aIsPriority = aShortName === PRIORITY_PROVIDER
+    const bIsPriority = bShortName === PRIORITY_PROVIDER
+
+    if (aIsPriority !== bIsPriority) {
+      return aIsPriority ? -1 : 1
+    }
+
+    const aTopCount = providerTopYieldCounts.value.get(a.entidad) ?? 0
+    const bTopCount = providerTopYieldCounts.value.get(b.entidad) ?? 0
+
+    if (aTopCount !== bTopCount) {
+      return bTopCount - aTopCount
+    }
+
+    return aShortName.localeCompare(bShortName)
+  })
+})
 
 function handleExchangeClick(entidad: string, crypto?: string) {
   const url = getInstitutionUrl(entidad)
@@ -107,7 +149,7 @@ useHead({
                 <tr class="border-b border-gray-200 dark:border-gray-700">
                   <th class="text-left p-4 font-medium">Criptomoneda</th>
                   <th
-                    v-for="entity in cryptoYields"
+                    v-for="entity in orderedCryptoYields"
                     :key="entity.entidad"
                     class="text-center p-4 font-medium"
                   >
@@ -134,7 +176,11 @@ useHead({
                       <span class="font-medium">{{ getCryptoName(crypto) }}</span>
                     </div>
                   </td>
-                  <td v-for="entity in cryptoYields" :key="entity.entidad" class="p-4 text-center">
+                  <td
+                    v-for="entity in orderedCryptoYields"
+                    :key="entity.entidad"
+                    class="p-4 text-center"
+                  >
                     <template v-if="entity.rendimientos.find((r) => r.moneda === crypto)">
                       <UButton
                         :color="
@@ -171,7 +217,7 @@ useHead({
       <!-- Mobile and tablet card view -->
       <div class="sm:hidden flex flex-col space-y-3">
         <UCard
-          v-for="entity in cryptoYields"
+          v-for="entity in orderedCryptoYields"
           :key="entity.entidad"
           :ui="{
             body: '!p-0',
