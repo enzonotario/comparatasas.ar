@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const nuxtApp = useNuxtApp()
+
 const { fetch: fetchFunds } = useFunds()
 const { fetch: fetchAccounts } = useAccounts()
 const { fetch: fetchFciVariablesUltimo } = useFciVariablesUltimo()
@@ -54,6 +56,7 @@ const pageDescription = computed(() => route.meta.pageDescription as string | un
 
 <template>
   <UApp>
+    <GlobalSearch />
     <div class="bg-neutral-50 dark:bg-neutral-950">
       <LayoutBackground />
 
@@ -86,6 +89,28 @@ const pageDescription = computed(() => route.meta.pageDescription as string | un
         </template>
 
         <template #right>
+          <UButton
+            class="hidden h-7 sm:inline-flex"
+            color="neutral"
+            variant="outline"
+            icon="i-lucide-search"
+            label="Buscar"
+            @click="() => nuxtApp.hooks.callHook('dashboard:search:toggle')"
+          >
+            <template #trailing>
+              <UKbd value="meta" variant="subtle" />
+              <UKbd value="k" variant="subtle" />
+            </template>
+          </UButton>
+          <UButton
+            class="inline-flex h-7 sm:hidden"
+            color="neutral"
+            variant="ghost"
+            square
+            icon="i-lucide-search"
+            aria-label="Buscar"
+            @click="() => nuxtApp.hooks.callHook('dashboard:search:toggle')"
+          />
           <UColorModeSwitch />
         </template>
 
