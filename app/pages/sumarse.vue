@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
 
+type EndpointTab =
+  | 'plazos-fijos'
+  | 'fondos-comunes'
+  | 'cuentas-billeteras'
+  | 'criptopesos'
+  | 'criptomonedas'
+  | 'remesas'
+
 definePageMeta({
   pageTitle: 'Integrar tu servicio',
   pageDescription:
@@ -43,25 +51,56 @@ useHead({
 const endpointTabs: TabsItem[] = [
   {
     label: 'Plazos Fijos',
+    value: 'plazos-fijos',
     slot: 'plazos-fijos' as const,
   },
   {
     label: 'Fondos Comunes',
+    value: 'fondos-comunes',
     slot: 'fondos-comunes' as const,
   },
   {
     label: 'Cuentas y Billeteras',
+    value: 'cuentas-billeteras',
     slot: 'cuentas-billeteras' as const,
   },
   {
     label: 'Criptopesos',
+    value: 'criptopesos',
     slot: 'criptopesos' as const,
   },
   {
     label: 'Criptomonedas',
+    value: 'criptomonedas',
     slot: 'criptomonedas' as const,
   },
+  {
+    label: 'Remesas',
+    value: 'remesas',
+    slot: 'remesas' as const,
+  },
 ]
+
+const validEndpointTabs = new Set<EndpointTab>([
+  'plazos-fijos',
+  'fondos-comunes',
+  'cuentas-billeteras',
+  'criptopesos',
+  'criptomonedas',
+  'remesas',
+])
+
+const endpointTabQuery = useRouteQuery<EndpointTab>('tab', 'plazos-fijos')
+
+const selectedEndpointTab = computed<EndpointTab>({
+  get: () =>
+    validEndpointTabs.has(endpointTabQuery.value as EndpointTab)
+      ? (endpointTabQuery.value as EndpointTab)
+      : 'plazos-fijos',
+  set: (value) => {
+    endpointTabQuery.value = value
+  },
+})
 </script>
 
 <template>
@@ -94,7 +133,17 @@ const endpointTabs: TabsItem[] = [
             que utilizamos para obtener las tasas de interés:
           </p>
 
-          <UTabs :items="endpointTabs" variant="link" class="w-full">
+          <UTabs
+            v-model="selectedEndpointTab"
+            :items="endpointTabs"
+            variant="link"
+            class="w-full"
+            :ui="{
+              list: 'flex-nowrap overflow-x-auto overflow-y-hidden',
+              indicator: 'hidden',
+              trigger: 'whitespace-nowrap shrink-0',
+            }"
+          >
             <template #plazos-fijos>
               <div class="bg-zinc-900 dark:bg-zinc-950 rounded-lg p-4 overflow-x-auto mt-4">
                 <pre class="text-sm text-zinc-100"><code>[
@@ -169,6 +218,72 @@ const endpointTabs: TabsItem[] = [
     ]
   }
 ]</code></pre>
+              </div>
+            </template>
+
+            <template #remesas>
+              <div class="space-y-4 mt-4">
+                <div class="bg-zinc-900 dark:bg-zinc-950 rounded-lg p-4 overflow-x-auto">
+                  <pre class="text-sm text-zinc-100"><code>[
+  {
+    "compania": "Proveedor XYZ",
+    "cuentaPropia": true,
+    "moneda": "FIAT",
+    "inversiones": true,
+    "tarjetaUsa": false,
+    "costoRecibirPagos": "0%",
+    "costoMantenimientoTarjeta": "0 USD",
+    "costoTarjeta": "0%",
+    "retiroArs": "0%",
+    "detalles": {
+      "cuentaPropia": "CBU propio a nombre del usuario",
+      "moneda": "También permite saldo en USD",
+      "inversiones": "Solo para residentes en Argentina",
+      "costoRecibirPagos": "Sin costo vía ACH",
+      "retiroArs": "Puede variar según banco o método"
+    }
+  }
+]</code></pre>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div class="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
+                    <h3 class="font-semibold text-zinc-900 dark:text-white mb-2">
+                      Campos esperados
+                    </h3>
+                    <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+                      <li><code>compania</code>: nombre del proveedor</li>
+                      <li>
+                        <code>cuentaPropia</code>, <code>inversiones</code>,
+                        <code>tarjetaUsa</code>: booleanos
+                      </li>
+                      <li>
+                        <code>moneda</code>: texto, por ejemplo <code>FIAT</code> o
+                        <code>CRIPTO</code>
+                      </li>
+                      <li>
+                        <code>costoRecibirPagos</code>, <code>costoMantenimientoTarjeta</code>,
+                        <code>costoTarjeta</code>, <code>retiroArs</code>: texto libre
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div class="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
+                    <h3 class="font-semibold text-zinc-900 dark:text-white mb-2">
+                      Detalles opcionales
+                    </h3>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                      Podés enviar un objeto <code>detalles</code> con aclaraciones por columna. Hoy
+                      se contemplan detalles para:
+                    </p>
+                    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                      <code>cuentaPropia</code>, <code>moneda</code>, <code>inversiones</code>,
+                      <code>tarjetaUsa</code>, <code>costoRecibirPagos</code>,
+                      <code>costoMantenimientoTarjeta</code>, <code>costoTarjeta</code>,
+                      <code>retiroArs</code>.
+                    </p>
+                  </div>
+                </div>
               </div>
             </template>
           </UTabs>
