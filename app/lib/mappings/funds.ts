@@ -141,6 +141,7 @@ const fundMappings: FundMapping[] = [
         showInUsdFunds: false,
         showInStockFunds: false,
         showInUsdMoneyMarket: false,
+        fundUrl: 'https://www.invertironline.com/productos/iol-cash-management?ref=comparatasas',
       },
     ],
   },
@@ -312,6 +313,20 @@ const fundMappings: FundMapping[] = [
     institutions: [
       {
         institution: 'uala',
+        displayName: 'Ualá',
+        showInAccounts: true,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+      },
+    ],
+  },
+  {
+    fundName: 'Ualintec Pesos Plus - Clase A',
+    institutions: [
+      {
+        institution: 'UALA',
         displayName: 'Ualá',
         showInAccounts: true,
         showInFunds: true,
