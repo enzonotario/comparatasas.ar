@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
+import { getPaginationRowModel } from '@tanstack/vue-table'
 import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn } from '@nuxt/ui'
 import { ogUpdatedAtDate, top3Funds } from '~/utils/og-data'
@@ -95,7 +96,7 @@ interface FundWithPrevious extends FundRaw {
   vcpAnterior?: number
   ccpAnterior?: number
   patrimonioAnterior?: number
-  tipoFondo?: 'rentaFija' | 'mercadoDinero' | 'rentaMixta' | 'rentaVariable'
+  tipoFondo?: 'rentaFija' | 'mercadoDinero' | 'rentaMixta' | 'rentaVariable' | 'retornoTotal'
 }
 
 const loading = ref(true)
@@ -221,12 +222,94 @@ async function getLatestAndPreviousRentaFija() {
   return { latest, previous }
 }
 
+async function getRetornoTotalPreviousData(targetDate: Date, retriesLeft = 7): Promise<FundRaw[]> {
+  if (retriesLeft <= 0) return []
+
+  const dateCopy = new Date(targetDate)
+  const isoString = dateCopy.toISOString().split('T')[0]
+  if (!isoString) return []
+
+  const targetDateString = isoString.replace(/-/g, '/')
+
+  try {
+    const response = await $fetch<FundRaw[]>(
+      `https://api.argentinadatos.com/v1/finanzas/fci/retornoTotal/${targetDateString}`,
+    )
+
+    if (!response || response.length === 0) {
+      throw new Error(`No data for date ${targetDateString}`)
+    }
+
+    return response
+  } catch {
+    const newDate = new Date(targetDate)
+    newDate.setDate(newDate.getDate() - 1)
+    return await getRetornoTotalPreviousData(newDate, retriesLeft - 1)
+  }
+}
+
+async function getLatestAndPreviousRetornoTotal() {
+  const latest = await $fetch<FundRaw[]>(
+    'https://api.argentinadatos.com/v1/finanzas/fci/retornoTotal/ultimo',
+  ).catch(() => [] as FundRaw[])
+
+  const responses: Record<string, FundRaw[]> = {}
+  const previous: FundRaw[] = []
+
+  for (const fund of latest) {
+    if (!fund.fecha) continue
+
+    const today = new Date()
+    const todayString = today.toISOString().split('T')[0]
+    if (!todayString) continue
+
+    const daysDiff = daysBetween(fund.fecha, todayString)
+    if (daysDiff > 30) continue
+
+    const fundName = fund.fondo
+    const targetDate = new Date(fund.fecha)
+    targetDate.setDate(targetDate.getDate() - 30)
+    const targetDateString = targetDate.toISOString().split('T')[0]?.replace(/-/g, '/')
+    if (!targetDateString) continue
+
+    let fundPrevious = responses[targetDateString]
+    if (!fundPrevious) {
+      try {
+        fundPrevious = await getRetornoTotalPreviousData(new Date(targetDate))
+        responses[targetDateString] = fundPrevious
+      } catch (e) {
+        console.warn(`No data for date ${targetDateString}`, fund.fondo, e)
+        fundPrevious = []
+        responses[targetDateString] = fundPrevious
+      }
+    }
+
+    if (fundPrevious && fundPrevious.length > 0) {
+      const sortedPrevious = fundPrevious
+        .filter((f) => f.fondo === fundName && f.fecha && new Date(f.fecha) <= targetDate)
+        .sort((a, b) => {
+          const dateA = a.fecha ? new Date(a.fecha).getTime() : 0
+          const dateB = b.fecha ? new Date(b.fecha).getTime() : 0
+          return dateB - dateA
+        })
+
+      if (sortedPrevious.length > 0 && sortedPrevious[0]) {
+        previous.push(sortedPrevious[0])
+      }
+    }
+  }
+
+  return { latest, previous }
+}
+
 // Obtener datos directamente de la API (actuales y anteriores)
 async function fetchFunds() {
   loading.value = true
   error.value = null
 
   try {
+    const retornoTotalDataPromise = getLatestAndPreviousRetornoTotal()
+
     // Obtener datos actuales y anteriores de cada categoría
     const [
       rentaFijaData,
@@ -236,6 +319,8 @@ async function fetchFunds() {
       rentaMixtaPrevious,
       rentaVariableLatest,
       rentaVariablePrevious,
+      retornoTotalLatest,
+      retornoTotalPrevious,
     ] = await Promise.all([
       getLatestAndPreviousRentaFija(),
       $fetch<FundRaw[]>(
@@ -256,13 +341,15 @@ async function fetchFunds() {
       $fetch<FundRaw[]>(
         'https://api.argentinadatos.com/v1/finanzas/fci/rentaVariable/penultimo',
       ).catch(() => [] as FundRaw[]),
+      retornoTotalDataPromise.then((data) => data.latest),
+      retornoTotalDataPromise.then((data) => data.previous),
     ])
 
     // Combinar datos actuales con anteriores
     const combineWithPrevious = (
       latest: FundRaw[],
       previous: FundRaw[],
-      tipoFondo: 'rentaFija' | 'mercadoDinero' | 'rentaMixta' | 'rentaVariable',
+      tipoFondo: 'rentaFija' | 'mercadoDinero' | 'rentaMixta' | 'rentaVariable' | 'retornoTotal',
     ): FundWithPrevious[] => {
       return latest.map((fund) => {
         const previousFund = previous.find((p) => p.fondo === fund.fondo)
@@ -282,6 +369,7 @@ async function fetchFunds() {
       ...combineWithPrevious(mercadoDineroLatest, mercadoDineroPrevious, 'mercadoDinero'),
       ...combineWithPrevious(rentaMixtaLatest, rentaMixtaPrevious, 'rentaMixta'),
       ...combineWithPrevious(rentaVariableLatest, rentaVariablePrevious, 'rentaVariable'),
+      ...combineWithPrevious(retornoTotalLatest, retornoTotalPrevious, 'retornoTotal'),
     ]
 
     allFunds.value = combinedFunds
@@ -302,6 +390,36 @@ const searchQuery = useRouteQuery('q', '')
 const debouncedSearchQuery = refDebounced(searchQuery, 300)
 const selectedTipo = useRouteQuery<string | undefined>('tipo', undefined)
 const selectedHorizonte = useRouteQuery<string | undefined>('horizonte', undefined)
+const pageQuery = useRouteQuery('page', '1')
+const pageSizeQuery = useRouteQuery('pageSize', '100')
+
+const pageSizeOptions = [
+  { label: '50 por página', value: 50 },
+  { label: '100 por página', value: 100 },
+  { label: '200 por página', value: 200 },
+]
+
+const currentPage = computed<number>({
+  get: () => {
+    const parsed = Number.parseInt(pageQuery.value, 10)
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
+  },
+  set: (value) => {
+    pageQuery.value = String(Math.max(1, Math.round(value)))
+  },
+})
+
+const pageSize = computed<number>({
+  get: () => {
+    const parsed = Number.parseInt(pageSizeQuery.value, 10)
+    const allowed = pageSizeOptions.map((option) => option.value)
+    return allowed.includes(parsed) ? parsed : 100
+  },
+  set: (value) => {
+    const allowed = pageSizeOptions.map((option) => option.value)
+    pageSizeQuery.value = String(allowed.includes(value) ? value : 100)
+  },
+})
 
 // Obtener tipos únicos para el filtro
 const tiposDisponibles = computed(() => {
@@ -339,6 +457,7 @@ const tipoItems = computed(() => {
       mercadoDinero: 'Mercado Dinero',
       rentaMixta: 'Renta Mixta',
       rentaVariable: 'Renta Variable',
+      retornoTotal: 'Retorno Total',
     }
     items.push({
       label: tipoLabels[tipo] || tipo,
@@ -396,6 +515,49 @@ const filteredFunds = computed(() => {
   return funds
 })
 
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(filteredFunds.value.length / pageSize.value)),
+)
+
+watch([debouncedSearchQuery, selectedTipo, selectedHorizonte], () => {
+  currentPage.value = 1
+})
+
+watch(pageSize, () => {
+  currentPage.value = 1
+})
+
+watch(totalPages, (value) => {
+  if (currentPage.value > value) {
+    currentPage.value = value
+  }
+})
+
+const pagination = computed({
+  get: () => ({
+    pageIndex: currentPage.value - 1,
+    pageSize: pageSize.value,
+  }),
+  set: (value: { pageIndex?: number; pageSize?: number }) => {
+    currentPage.value = (value.pageIndex ?? 0) + 1
+
+    if (typeof value.pageSize === 'number') {
+      pageSize.value = value.pageSize
+    }
+  },
+})
+
+const pageRange = computed(() => {
+  if (!filteredFunds.value.length) {
+    return { from: 0, to: 0 }
+  }
+
+  const from = (currentPage.value - 1) * pageSize.value + 1
+  const to = Math.min(currentPage.value * pageSize.value, filteredFunds.value.length)
+
+  return { from, to }
+})
+
 // Función helper para crear headers ordenables
 function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = 'left') {
   return ({ column }: { column: any }) => {
@@ -444,6 +606,7 @@ const columns: TableColumn<FundWithPrevious>[] = [
         mercadoDinero: 'Mercado Dinero',
         rentaMixta: 'Renta Mixta',
         rentaVariable: 'Renta Variable',
+        retornoTotal: 'Retorno Total',
       }
       const label = tipoLabels[tipoFondo] || tipoFondo
       return h('div', { class: 'text-sm' }, label)
@@ -848,11 +1011,34 @@ const sorting = useRouteQuery(
       </div>
 
       <!-- Información de resultados -->
-      <div class="flex items-center justify-between text-sm text-muted">
-        <span> Mostrando {{ filteredFunds.length }} de {{ allFunds.length }} fondos </span>
-        <span v-if="searchQuery || selectedTipo || selectedHorizonte" class="text-primary">
-          Filtros activos
-        </span>
+      <div
+        class="flex flex-col gap-3 text-sm text-muted md:flex-row md:items-center md:justify-between"
+      >
+        <div class="flex flex-wrap items-center gap-3">
+          <span>
+            Mostrando {{ pageRange.from }}-{{ pageRange.to }} de {{ filteredFunds.length }} fondos
+          </span>
+          <span class="hidden md:inline">·</span>
+          <span>Total cargados: {{ allFunds.length }}</span>
+          <span v-if="searchQuery || selectedTipo || selectedHorizonte" class="text-primary">
+            Filtros activos
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs uppercase tracking-wide text-muted">Filas</span>
+          <USelect
+            v-model="pageSize"
+            :items="pageSizeOptions"
+            value-key="value"
+            class="w-36"
+            size="sm"
+          >
+            <template #item-label="{ item }">
+              {{ item.label }}
+            </template>
+          </USelect>
+        </div>
       </div>
 
       <!-- Error -->
@@ -862,13 +1048,53 @@ const sorting = useRouteQuery(
 
       <!-- Tabla -->
       <div class="border border-default rounded-lg overflow-hidden">
+        <div v-if="loading" class="overflow-hidden">
+          <div
+            class="grid grid-cols-4 gap-3 border-b border-default bg-elevated/50 px-4 py-3 text-sm font-medium text-muted lg:grid-cols-6 xl:grid-cols-12"
+          >
+            <span>Fondo</span>
+            <span>Tipo</span>
+            <span>Horizonte</span>
+            <span>Último Cierre</span>
+            <span class="hidden xl:block">Cierre Base</span>
+            <span class="hidden xl:block text-center">Días</span>
+            <span class="text-right">Variación VCP</span>
+            <span class="hidden lg:block text-right">TNA Estimada</span>
+            <span class="hidden xl:block text-right">VCP Último Cierre</span>
+            <span class="hidden xl:block text-right">VCP Cierre Base</span>
+            <span class="hidden xl:block text-right">CCP Último Cierre</span>
+            <span class="hidden xl:block text-right">Patrimonio Último Cierre</span>
+          </div>
+
+          <div class="space-y-3 p-4">
+            <div
+              v-for="row in 12"
+              :key="`row-${row}`"
+              class="grid grid-cols-4 gap-3 lg:grid-cols-6 xl:grid-cols-12"
+            >
+              <USkeleton class="h-10 w-full" />
+              <USkeleton class="h-10 w-full" />
+              <USkeleton class="h-10 w-full" />
+              <USkeleton class="h-10 w-full" />
+              <USkeleton class="hidden h-10 w-full xl:block" />
+              <USkeleton class="hidden h-10 w-full xl:block" />
+              <USkeleton class="h-10 w-full" />
+              <USkeleton class="hidden h-10 w-full lg:block" />
+              <USkeleton class="hidden h-10 w-full xl:block" />
+              <USkeleton class="hidden h-10 w-full xl:block" />
+              <USkeleton class="hidden h-10 w-full xl:block" />
+              <USkeleton class="hidden h-10 w-full xl:block" />
+            </div>
+          </div>
+        </div>
+
         <UTable
+          v-else
           v-model:sorting="sorting"
+          v-model:pagination="pagination"
           :data="filteredFunds"
           :columns="columns"
-          :loading="loading"
-          virtualize
-          class="h-[600px]"
+          :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
         >
           <template #empty>
             <div class="py-12 text-center">
@@ -884,6 +1110,25 @@ const sorting = useRouteQuery(
             </div>
           </template>
         </UTable>
+      </div>
+
+      <div
+        v-if="!loading && filteredFunds.length > pageSize"
+        class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+      >
+        <p class="text-sm text-muted">
+          Página {{ currentPage }} de {{ totalPages }} · {{ filteredFunds.length }} fondos
+          encontrados
+        </p>
+
+        <UPagination
+          v-model:page="currentPage"
+          :items-per-page="pageSize"
+          :total="filteredFunds.length"
+          :sibling-count="1"
+          show-edges
+          size="sm"
+        />
       </div>
 
       <div class="text-center text-xs text-muted pt-4 border-t border-default">
@@ -944,6 +1189,10 @@ const sorting = useRouteQuery(
             <li>
               <strong>Renta Variable:</strong> Invierten en acciones de empresas, ofreciendo mayor
               potencial de ganancia a cambio de un mayor riesgo.
+            </li>
+            <li>
+              <strong>Retorno Total:</strong> Buscan maximizar el rendimiento total combinando
+              instrumentos de renta fija, cobertura, duration y manejo más flexible de la cartera.
             </li>
           </ul>
         </div>
