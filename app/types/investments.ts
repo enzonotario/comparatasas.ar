@@ -18,6 +18,7 @@ export interface ProcessedFund {
     showInUsdFunds?: boolean
     showInStockFunds?: boolean
     showInUsdMoneyMarket?: boolean
+    showInUsdHighRisk?: boolean
   }
 }
 

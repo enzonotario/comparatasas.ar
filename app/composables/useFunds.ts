@@ -77,20 +77,25 @@ function getFundsMap(latest: FundRaw[], previous: FundRaw[]) {
       url: getInstitutionUrl(inst.institution),
       type: inst.showInUsdMoneyMarket
         ? 'mercadoDineroUsd'
-        : inst.showInUsdFunds
-          ? 'rentaFijaUsd'
-          : undefined,
+        : inst.showInUsdHighRisk
+          ? 'rentaFijaUsdHighRisk'
+          : inst.showInUsdFunds
+            ? 'rentaFijaUsd'
+            : undefined,
       typeLabel: inst.showInUsdMoneyMarket
         ? 'Money Market'
-        : inst.showInUsdFunds
+        : inst.showInUsdHighRisk
           ? 'Renta Fija'
-          : undefined,
+          : inst.showInUsdFunds
+            ? 'Renta Fija'
+            : undefined,
       meta: {
         showInFunds: inst.showInFunds || false,
         showInAccounts: inst.showInAccounts || false,
         showInUsdFunds: inst.showInUsdFunds || false,
         showInStockFunds: inst.showInStockFunds || false,
         showInUsdMoneyMarket: inst.showInUsdMoneyMarket || false,
+        showInUsdHighRisk: inst.showInUsdHighRisk || false,
       },
     }))
   })

@@ -8,6 +8,7 @@ export interface FundInstitution {
   showInUsdFunds: boolean
   showInStockFunds: boolean
   showInUsdMoneyMarket: boolean
+  showInUsdHighRisk?: boolean
 }
 
 export interface FundMapping {
@@ -358,6 +359,21 @@ const fundMappings: FundMapping[] = [
         showInUsdFunds: true,
         showInStockFunds: false,
         showInUsdMoneyMarket: false,
+      },
+    ],
+  },
+  {
+    fundName: 'IEB Estratégico II - Clase A',
+    institutions: [
+      {
+        institution: 'ieb',
+        displayName: 'IEB+',
+        showInAccounts: false,
+        showInFunds: false,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+        showInUsdHighRisk: true,
       },
     ],
   },

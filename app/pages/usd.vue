@@ -110,13 +110,18 @@ const usdYields = ref<
   Array<{ entidad: string; rendimientos: Array<{ moneda: string; apy: number }> }>
 >([])
 
-// Obtener todos los fondos USD (renta fija + mercado de dinero)
+// Obtener todos los fondos USD (renta fija + mercado de dinero + retorno total)
 const allUsdFunds = computed(() => {
-  const rentaFija = data.value.rentaFija.filter((i) => i?.meta?.showInUsdFunds)
+  const rentaFija = data.value.rentaFija.filter(
+    (i) => i?.meta?.showInUsdFunds || i?.meta?.showInUsdHighRisk,
+  )
   const mercadoDinero = data.value.mercadoDinero.filter((i) => i?.meta?.showInUsdMoneyMarket)
   const allRentaFija = data.value.rentaFija.filter((i) => i?.meta?.showInUsdMoneyMarket)
+  const retornoTotal = data.value.retornoTotal.filter(
+    (i) => i?.meta?.showInUsdFunds || i?.meta?.showInUsdMoneyMarket || i?.meta?.showInUsdHighRisk,
+  )
 
-  return [...rentaFija, ...mercadoDinero, ...allRentaFija]
+  return [...rentaFija, ...mercadoDinero, ...allRentaFija, ...retornoTotal]
 })
 
 // Transformar las cuentas USD de la API para usar con FundsList
@@ -178,6 +183,7 @@ const fundsByRisk = computed(() => {
   const grouped: Record<string, any[]> = {
     'Riesgo bajo': [],
     'Riesgo moderado': [],
+    'Riesgo alto': [],
   }
 
   // Agregar fondos USD
@@ -189,6 +195,10 @@ const fundsByRisk = computed(() => {
     // Renta Fija USD → Riesgo moderado
     else if (fund.meta?.showInUsdFunds) {
       grouped['Riesgo moderado']!.push(fund)
+    }
+    // Renta Fija USD → Riesgo alto
+    else if (fund.meta?.showInUsdHighRisk) {
+      grouped['Riesgo alto']!.push(fund)
     }
   })
 
