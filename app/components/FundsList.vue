@@ -113,7 +113,7 @@ function handleProviderClick(item: any) {
                   </span>
 
                   <div
-                    v-if="item.condicionesCorto && item.condicionesCorto !== 'null"
+                    v-if="item.condicionesCorto && item.condicionesCorto !== 'null'"
                     class="text-sm text-neutral max-w-sm"
                   >
                     {{ item.condicionesCorto }}
@@ -280,7 +280,7 @@ function handleProviderClick(item: any) {
                   </span>
 
                   <div
-                    v-if="item.condicionesCorto && item.condicionesCorto !== 'null"
+                    v-if="item.condicionesCorto && item.condicionesCorto !== 'null'"
                     class="text-sm text-neutral max-w-sm"
                   >
                     {{ item.condicionesCorto }}
