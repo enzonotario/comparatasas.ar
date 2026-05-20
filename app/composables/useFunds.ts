@@ -85,7 +85,7 @@ function getFundsMap(latest: FundRaw[], previous: FundRaw[]) {
       typeLabel: inst.showInUsdMoneyMarket
         ? 'Money Market'
         : inst.showInUsdHighRisk
-          ? 'Renta Fija'
+          ? 'Retorno Total'
           : inst.showInUsdFunds
             ? 'Renta Fija'
             : undefined,
