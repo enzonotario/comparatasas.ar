@@ -9,6 +9,7 @@ export interface FundInstitution {
   showInStockFunds: boolean
   showInUsdMoneyMarket: boolean
   showInUsdHighRisk?: boolean
+  fundUrl?: string
 }
 
 export interface FundMapping {
@@ -367,13 +368,14 @@ const fundMappings: FundMapping[] = [
     institutions: [
       {
         institution: 'ieb',
-        displayName: 'IEB+',
+        displayName: 'IEB+ Ciclo Nova',
         showInAccounts: false,
         showInFunds: false,
         showInUsdFunds: false,
         showInStockFunds: false,
         showInUsdMoneyMarket: false,
         showInUsdHighRisk: true,
+        fundUrl: 'https://fondociclonova.com.ar/?ref=comparatasas',
       },
     ],
   },

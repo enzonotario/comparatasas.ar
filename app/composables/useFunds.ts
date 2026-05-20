@@ -74,7 +74,7 @@ function getFundsMap(latest: FundRaw[], previous: FundRaw[]) {
       dias: d,
       patrimonio: l.patrimonio,
       logo: getLogoForEntity(inst.institution) || getInstitutionLogo(inst.institution),
-      url: getInstitutionUrl(inst.institution),
+      url: inst.fundUrl || getInstitutionUrl(inst.institution),
       type: inst.showInUsdMoneyMarket
         ? 'mercadoDineroUsd'
         : inst.showInUsdHighRisk
