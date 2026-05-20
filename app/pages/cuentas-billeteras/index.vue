@@ -89,6 +89,7 @@ const specialAccountsWithSimulation = calculateResults(specialAccounts, allFunds
 const fundsByRisk = computed(() => {
   const grouped: Record<string, typeof resolvedFundsAccounts.value> = {
     'Riesgo muy bajo': [],
+    'Riesgo bajo': [],
     'Riesgo moderado': [],
   }
 
@@ -96,7 +97,9 @@ const fundsByRisk = computed(() => {
     const t = fund.type || ''
     if (t === 'mercadoDinero' || t === 'fciVariablesUltimo') {
       grouped['Riesgo muy bajo'].push(fund)
-    } else if (['rentaFija', 'rentaMixta', 'retornoTotal'].includes(t)) {
+    } else if (t === 'rentaFija') {
+      grouped['Riesgo bajo'].push(fund)
+    } else if (['rentaMixta', 'retornoTotal'].includes(t)) {
       grouped['Riesgo moderado'].push(fund)
     } else {
       grouped['Riesgo muy bajo'].push(fund)
