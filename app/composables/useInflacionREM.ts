@@ -4,7 +4,7 @@ export interface InflacionREMData {
   valor: number
 }
 
-/** Fila del endpoint https://api.argentinadatos.com/v1/rems/ultimo */
+/** Fila del endpoint https://api.argentinadatos.com/v1/finanzas/rems/ultimo */
 interface RemUltimoRow {
   muestra: string
   indicador: string
@@ -104,7 +104,7 @@ export function useInflacionREM() {
     error.value = null
 
     try {
-      const response = await $fetch<RemUltimoRow[]>('https://api.argentinadatos.com/v1/rems/ultimo')
+      const response = await $fetch<RemUltimoRow[]>('https://api.argentinadatos.com/v1/finanzas/rems/ultimo')
       data.value = buildInflacionRemFromRemUltimo(response)
       informeDate.value = response[0]?.informe ?? null
     } catch (err) {
