@@ -39,6 +39,7 @@ const isWideLayout = computed(() => {
     'creditos-hipotecarios-uva',
     'contado-cuotas',
     'fondos',
+    'fondos-nombre',
     'remesas',
     'cuentas-billeteras-graficos',
     'lecaps',
@@ -53,8 +54,25 @@ const isProviderHistoryPage = computed(() => {
 const pageTitle = computed(() => route.meta.pageTitle as string | undefined)
 const pageDescription = computed(() => route.meta.pageDescription as string | undefined)
 
+const productScenarioRailPaths = new Set([
+  '/',
+  '/plazos-fijos',
+  '/cuentas-billeteras',
+  '/fondos',
+  '/usd',
+  '/criptomonedas',
+  '/remesas',
+  '/creditos-hipotecarios-uva',
+  '/lecaps',
+  '/bonos-cer',
+])
+
 const showProductScenariosRail = computed(() => {
-  return !isSumarsePage.value && !isProviderHistoryPage.value && route.name !== 'contado-cuotas'
+  if (isSumarsePage.value || isProviderHistoryPage.value || route.name === 'contado-cuotas') {
+    return false
+  }
+
+  return productScenarioRailPaths.has(route.path)
 })
 </script>
 

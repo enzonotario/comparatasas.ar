@@ -367,6 +367,7 @@ onMounted(async () => {
                 key-prop="fondo"
                 mode="detailed"
                 :show-simulation="isSimulating"
+                show-fund-detail-link
               />
             </div>
           </div>

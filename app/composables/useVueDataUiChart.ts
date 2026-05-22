@@ -6,6 +6,7 @@ export type VueDataUiLazyChart =
   | 'VueUiXy'
   | 'VueUiHorizontalBar'
   | 'VueUiCirclePack'
+  | 'VueUiDonut'
 
 const chartLoaders = {
   VueUiXy: () => import('vue-data-ui/vue-ui-xy').then((m) => m.VueUiXy),
@@ -14,6 +15,7 @@ const chartLoaders = {
   VueUiHorizontalBar: () =>
     import('vue-data-ui/vue-ui-horizontal-bar').then((m) => m.VueUiHorizontalBar),
   VueUiCirclePack: () => import('vue-data-ui/vue-ui-circle-pack').then((m) => m.VueUiCirclePack),
+  VueUiDonut: () => import('vue-data-ui/vue-ui-donut').then((m) => m.VueUiDonut),
 } satisfies Record<VueDataUiLazyChart, () => Promise<Component>>
 
 /**

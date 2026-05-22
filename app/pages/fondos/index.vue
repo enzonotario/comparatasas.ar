@@ -4,6 +4,7 @@ import { getPaginationRowModel } from '@tanstack/vue-table'
 import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn } from '@nuxt/ui'
 import { ogUpdatedAtDate, top3Funds } from '~/utils/og-data'
+import { getFundDetailPath } from '~/lib/funds-detail'
 
 definePageMeta({
   pageTitle: 'Fondos Comunes de Inversión (FCI)',
@@ -586,6 +587,13 @@ function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = '
   }
 }
 
+function handleFundRowSelect(row: any) {
+  const fundName = row?.original?.fondo
+  if (!fundName) return
+
+  navigateTo(getFundDetailPath(fundName))
+}
+
 // Columnas de la tabla
 const columns: TableColumn<FundWithPrevious>[] = [
   {
@@ -1095,6 +1103,8 @@ const sorting = useRouteQuery(
           :data="filteredFunds"
           :columns="columns"
           :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
+          :on-select="handleFundRowSelect"
+          :ui="{ tr: 'cursor-pointer' }"
         >
           <template #empty>
             <div class="py-12 text-center">

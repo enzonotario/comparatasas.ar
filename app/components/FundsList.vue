@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getProviderSlug, getProviderApiName, hasHistory } from '~/composables/useAccountHistory'
 import { useAnalytics } from '~/composables/useAnalytics'
+import { getFundDetailPath } from '~/lib/funds-detail'
 
 const { trackProviderClick } = useAnalytics()
 
@@ -12,6 +13,7 @@ const props = defineProps<{
   showHistoryLink?: boolean
   /** Días actuales del simulador (p. ej. PF UVA fuera de rango). */
   simulatorDays?: number
+  showFundDetailLink?: boolean
 }>()
 
 function isUvaSimulationOutOfRange(item: any): boolean {
@@ -21,6 +23,13 @@ function isUvaSimulationOutOfRange(item: any): boolean {
 function formatPlazoRange(item: any): string {
   if (item.plazoMaxDias == null) return `desde ${item.plazoMinDias} días`
   return `${item.plazoMinDias}–${item.plazoMaxDias} días`
+}
+
+function getFundDetailUrl(item: any): string | null {
+  if (!props.showFundDetailLink) return null
+  if (!item?.fondo || typeof item.fondo !== 'string') return null
+
+  return getFundDetailPath(item.fondo)
 }
 
 function getHistoryUrl(item: any): string | null {
@@ -84,7 +93,10 @@ function handleProviderClick(item: any) {
       v-for="(item, index) in items"
       :key="keyProp ? `${item[keyProp]}-${index}` : `item-${index}`"
     >
-      <NuxtLink v-if="getHistoryUrl(item)" :to="getHistoryUrl(item)!">
+      <NuxtLink
+        v-if="getFundDetailUrl(item) || getHistoryUrl(item)"
+        :to="getFundDetailUrl(item) || getHistoryUrl(item)!"
+      >
         <UCard
           :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }"
           :class="isUvaSimulationOutOfRange(item) ? 'opacity-50 saturate-50' : ''"

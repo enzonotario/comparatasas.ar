@@ -19,8 +19,6 @@ defineOgImage('ComparaTasas.takumi', {
   updatedAt: ogUpdatedAtDate(),
 })
 
-const route = useRoute()
-
 useSeoMeta({
   title: 'Cuentas Remuneradas y Billeteras',
   description:
@@ -246,6 +244,7 @@ const fundsByRiskWithSimulation = computed(() => {
                   key-prop="fondo"
                   mode="detailed"
                   :show-simulation="isSimulating"
+                  show-fund-detail-link
                 />
               </div>
             </div>
