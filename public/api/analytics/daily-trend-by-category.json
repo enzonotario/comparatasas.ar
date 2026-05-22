@@ -1,23 +1,44 @@
 [
   {
+    "date": "20260522",
+    "categories": {
+      "Otro": 24,
+      "Página Amiga": 8,
+      "Plazo Fijo": 49,
+      "Cuenta Remunerada": 24,
+      "Money Market": 24,
+      "Billetera": 28,
+      "Billetera USD": 6,
+      "PF UVA pago periódico": 3,
+      "PF UVA precancelable": 3,
+      "Renta Fija": 10,
+      "Retorno Total": 3,
+      "Retorno total": 2,
+      "General": 26,
+      "Criptomonedas": 5
+    },
+    "total": 215
+  },
+  {
     "date": "20260521",
     "categories": {
-      "Página Amiga": 11,
-      "Money Market": 66,
-      "Plazo Fijo": 43,
-      "Cuenta Remunerada": 37,
-      "Otro": 19,
-      "Billetera": 26,
-      "Billetera USD": 8,
-      "PF UVA pago periódico": 3,
-      "PF UVA precancelable": 2,
-      "Renta Fija": 26,
-      "Renta Mixta": 1,
-      "Retorno total": 4,
-      "General": 16,
-      "Criptomonedas": 10
+      "Página Amiga": 26,
+      "Money Market": 134,
+      "Plazo Fijo": 118,
+      "Cuenta Remunerada": 89,
+      "Otro": 57,
+      "Billetera": 70,
+      "Billetera USD": 17,
+      "PF UVA pago periódico": 4,
+      "PF UVA precancelable": 3,
+      "Renta Fija": 45,
+      "Renta Mixta": 3,
+      "Retorno Total": 2,
+      "Retorno total": 6,
+      "General": 28,
+      "Criptomonedas": 19
     },
-    "total": 272
+    "total": 621
   },
   {
     "date": "20260520",
@@ -46,33 +67,13 @@
       "Otro": 123,
       "Página Amiga": 50,
       "Money Market": 86,
-      "Plazo Fijo": 176,
+      "Plazo Fijo": 156,
       "Cuenta Remunerada": 86,
       "Billetera": 122,
       "Billetera USD": 25,
       "PF UVA pago periódico": 2,
-      "PF UVA precancelable": 4,
-      "Renta Fija": 32,
-      "Renta Mixta": 1,
-      "Retorno total": 4,
-      "General": 38,
-      "Criptomonedas": 34
+      "PF UVA precancelable": 4
     },
-    "total": 783
-  },
-  {
-    "date": "20260518",
-    "categories": {
-      "Otro": 84,
-      "Página Amiga": 20,
-      "Billetera": 111,
-      "Money Market": 88,
-      "Plazo Fijo": 87,
-      "Cuenta Remunerada": 84,
-      "Criptomonedas": 1,
-      "Billetera USD": 25,
-      "PF UVA pago periódico": 7
-    },
-    "total": 507
+    "total": 654
   }
 ]
