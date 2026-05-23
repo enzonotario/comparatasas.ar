@@ -193,21 +193,6 @@ const comparaDolarQuotesByKey = computed(() => {
   )
 })
 
-const spreadMappingRows = computed(() => {
-  return remesas.value.map((item) => {
-    const mapping = getRemesaComparaDolarMapping(item.compania)
-    const displayName = displayCompanyName(item.compania)
-
-    return {
-      remesasProvider: displayName,
-      comparadolarSource: mapping
-        ? `/${mapping.asset}/${mapping.slug}`
-        : 'Sin cotización compatible',
-      hasMapping: Boolean(mapping),
-    }
-  })
-})
-
 const hasHover = useMediaQuery('(hover: hover)')
 const isMobile = useMediaQuery('(max-width: 1023px)')
 

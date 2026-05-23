@@ -104,7 +104,9 @@ export function useInflacionREM() {
     error.value = null
 
     try {
-      const response = await $fetch<RemUltimoRow[]>('https://api.argentinadatos.com/v1/finanzas/rems/ultimo')
+      const response = await $fetch<RemUltimoRow[]>(
+        'https://api.argentinadatos.com/v1/finanzas/rems/ultimo',
+      )
       data.value = buildInflacionRemFromRemUltimo(response)
       informeDate.value = response[0]?.informe ?? null
     } catch (err) {
