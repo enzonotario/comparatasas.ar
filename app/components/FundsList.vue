@@ -2,6 +2,7 @@
 import { getProviderSlug, getProviderApiName, hasHistory } from '~/composables/useAccountHistory'
 import { useAnalytics } from '~/composables/useAnalytics'
 import { getFundDetailPath } from '~/lib/funds-detail'
+import { fetchFciFundsCatalog } from '~/composables/useFciFundDetails'
 
 const { trackProviderClick } = useAnalytics()
 
@@ -16,6 +17,19 @@ const props = defineProps<{
   showFundDetailLink?: boolean
 }>()
 
+const { data: availableFundDetailSlugs } = await useAsyncData(
+  'fci-fund-detail-slugs',
+  async () => {
+    const response = await fetchFciFundsCatalog()
+    return (response.fondos ?? []).map((fund) => getFundDetailPath(fund.nombre))
+  },
+  {
+    default: () => [],
+  },
+)
+
+const availableFundDetailPathSet = computed(() => new Set(availableFundDetailSlugs.value ?? []))
+
 function isUvaSimulationOutOfRange(item: any): boolean {
   return !!(props.showSimulation && item.simulationDisabled)
 }
@@ -29,7 +43,8 @@ function getFundDetailUrl(item: any): string | null {
   if (!props.showFundDetailLink) return null
   if (!item?.fondo || typeof item.fondo !== 'string') return null
 
-  return getFundDetailPath(item.fondo)
+  const detailPath = getFundDetailPath(item.fondo)
+  return availableFundDetailPathSet.value.has(detailPath) ? detailPath : null
 }
 
 function getHistoryUrl(item: any): string | null {

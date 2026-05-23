@@ -92,6 +92,12 @@ export interface FciFundsDetailsResponse {
   fondos: FciFundDetail[]
 }
 
+export async function fetchFciFundsCatalog() {
+  return await $fetch<FciFundsDetailsResponse>(
+    'https://api.argentinadatos.com/v1/finanzas/fci/fondos',
+  )
+}
+
 export async function fetchFciFundDetail(slug: string) {
   return await $fetch<FciFundDetail>(
     `https://api.argentinadatos.com/v1/finanzas/fci/fondos/${slug}`,
