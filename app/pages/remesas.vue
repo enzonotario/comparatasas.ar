@@ -3,6 +3,7 @@ import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { useMediaQuery } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
+import type { ComparaDolarAsset } from '~/composables/useComparaDolarQuotes'
 import { getInstitutionLogo } from '~/lib/mappings/institutions'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { RemesaDetalles, RemesaOption } from '~/composables/useRemesas'
@@ -22,6 +23,7 @@ const companyDisplayNames: Record<string, string> = {
   wallbit: 'Wallbit',
   arq: 'ARQ',
   astropay: 'AstroPay',
+  cocos: 'Cocos',
   grabrfi: 'GrabrFi',
   takenos: 'Takenos',
   payoneer: 'Payoneer',
@@ -30,8 +32,32 @@ const companyDisplayNames: Record<string, string> = {
   wise: 'Wise',
 }
 
-const { remesas, fechaActualizacion, loading, error, fetch } = useRemesas()
-await fetch()
+interface RemesaComparaDolarMapping {
+  asset: ComparaDolarAsset
+  slug: string
+}
+
+const remesaComparaDolarProviderMap: Record<string, RemesaComparaDolarMapping | null> = {
+  wallbit: { asset: 'usd', slug: 'wallbit' },
+  astropay: { asset: 'usd', slug: 'astropay' },
+  cocos: { asset: 'usd', slug: 'cocos' },
+  arq: { asset: 'usdc', slug: 'arq' },
+  lemon: { asset: 'usdc', slug: 'lemoncash' },
+  takenos: null,
+  airtm: null,
+  grabrfi: null,
+  payoneer: null,
+  wise: null,
+}
+
+const { remesas, fechaActualizacion, loading, error, fetch: fetchRemesas } = useRemesas()
+const {
+  quotes: comparaDolarQuotes,
+  error: comparaDolarError,
+  fetch: fetchComparaDolarQuotes,
+} = useComparaDolarQuotes()
+
+await Promise.all([fetchRemesas(), fetchComparaDolarQuotes()])
 
 interface RemesaRow extends RemesaOption {
   displayName: string
@@ -47,6 +73,13 @@ interface RemesaRow extends RemesaOption {
   cuentaPropiaLabel: string
   inversionesLabel: string
   tarjetaUsaLabel: string
+  fxSpread: number | null
+  fxSpreadLabel: string
+  fxSpreadSort: number
+  fxSpreadAsset: ComparaDolarAsset | null
+  fxSpreadSlug: string | null
+  fxSpreadSourceLabel: string | null
+  fxSpreadDetail: string | null
   zeroReceiveCost: boolean
   zeroArsWithdrawal: boolean
 }
@@ -60,8 +93,12 @@ function normalizeText(value: string | null): string {
     .trim()
 }
 
+function normalizeProviderKey(value: string | null): string {
+  return normalizeText(value).replace(/[\s_-]+/g, '')
+}
+
 function displayCompanyName(compania: string): string {
-  const mapped = companyDisplayNames[compania]
+  const mapped = companyDisplayNames[normalizeProviderKey(compania)]
   if (mapped) return mapped
 
   return compania
@@ -113,6 +150,24 @@ function formatOgRating(value: number): string {
   return value.toFixed(2)
 }
 
+function formatSpread(value: number | null): string {
+  if (value === null || !Number.isFinite(value)) return '—'
+
+  return new Intl.NumberFormat('es-AR', {
+    style: 'percent',
+    signDisplay: 'always',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
+function formatFxNumber(value: number): string {
+  return new Intl.NumberFormat('es-AR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
 function formatUpdatedAt(value: string | null): string {
   if (!value) return ogUpdatedAtDate()
 
@@ -128,9 +183,33 @@ function getDetail(details: RemesaDetalles | null | undefined, key: keyof Remesa
   return details?.[key] ?? ''
 }
 
+function getRemesaComparaDolarMapping(compania: string): RemesaComparaDolarMapping | null {
+  return remesaComparaDolarProviderMap[normalizeProviderKey(compania)] ?? null
+}
+
+const comparaDolarQuotesByKey = computed(() => {
+  return new Map(
+    comparaDolarQuotes.value.map((quote) => [`${quote.asset}:${quote.slug}`, quote] as const),
+  )
+})
+
+const spreadMappingRows = computed(() => {
+  return remesas.value.map((item) => {
+    const mapping = getRemesaComparaDolarMapping(item.compania)
+    const displayName = displayCompanyName(item.compania)
+
+    return {
+      remesasProvider: displayName,
+      comparadolarSource: mapping
+        ? `/${mapping.asset}/${mapping.slug}`
+        : 'Sin cotización compatible',
+      hasMapping: Boolean(mapping),
+    }
+  })
+})
+
 const hasHover = useMediaQuery('(hover: hover)')
 const isMobile = useMediaQuery('(max-width: 1023px)')
-const sortDirection = ref(false)
 
 function renderDetailPopover(detail: string | null | undefined) {
   if (!detail) return null
@@ -303,6 +382,76 @@ function renderCostCell(value: string | null, detail?: string) {
   ])
 }
 
+function renderFxSpreadCell(row: RemesaRow) {
+  const spread = row.fxSpread
+  const tone =
+    spread === null
+      ? 'neutral'
+      : Math.abs(spread) <= 0.01
+        ? 'success'
+        : Math.abs(spread) <= 0.03
+          ? 'warning'
+          : 'error'
+
+  return h('div', { class: 'min-w-0' }, [
+    h('div', { class: 'flex items-center gap-2' }, [
+      h(
+        UBadge,
+        {
+          color: tone,
+          variant: tone === 'neutral' ? 'outline' : 'soft',
+          size: 'md',
+          class: 'font-semibold',
+        },
+        {
+          default: () => row.fxSpreadLabel,
+        },
+      ),
+      row.fxSpreadDetail
+        ? h(
+            UPopover,
+            {
+              mode: hasHover.value ? 'hover' : 'click',
+              openDelay: 80,
+              closeDelay: 300,
+              content: {
+                side: 'top',
+                sideOffset: 8,
+              },
+              ui: {
+                content: 'max-w-sm whitespace-normal text-left p-3',
+              },
+            },
+            {
+              default: () =>
+                h(
+                  'span',
+                  {
+                    class:
+                      'inline-flex cursor-help items-center gap-1 rounded-full border border-neutral-200 p-0.5 text-[11px] font-medium text-neutral-500 dark:border-neutral-800 dark:text-neutral-400',
+                  },
+                  [h(UIcon, { name: 'i-lucide-info', class: 'size-3' })],
+                ),
+              content: () =>
+                h('div', { class: 'space-y-1' }, [
+                  h(
+                    'p',
+                    { class: 'text-xs font-semibold text-neutral-900 dark:text-white' },
+                    'Spread',
+                  ),
+                  h(
+                    'p',
+                    { class: 'text-xs leading-5 text-neutral-600 dark:text-neutral-300' },
+                    row.fxSpreadDetail,
+                  ),
+                ]),
+            },
+          )
+        : null,
+    ]),
+  ])
+}
+
 const rows = computed<RemesaRow[]>(() => {
   return remesas.value
     .map((item) => {
@@ -312,6 +461,11 @@ const rows = computed<RemesaRow[]>(() => {
       const ratingCount =
         (item.calificacionAndroid !== null ? 1 : 0) + (item.calificacionIos !== null ? 1 : 0)
       const averageRating = ratingCount > 0 ? (androidRating + iosRating) / ratingCount : 0
+      const mapping = getRemesaComparaDolarMapping(item.compania)
+      const quote = mapping
+        ? comparaDolarQuotesByKey.value.get(`${mapping.asset}:${mapping.slug}`)
+        : undefined
+      const fxSpread = quote ? quote.bid / quote.ask - 1 : null
 
       return {
         ...item,
@@ -329,6 +483,18 @@ const rows = computed<RemesaRow[]>(() => {
         cuentaPropiaLabel: item.cuentaPropia ? 'Sí' : 'No',
         inversionesLabel: item.inversiones ? 'Sí' : 'No',
         tarjetaUsaLabel: item.tarjetaUsa ? 'Sí' : 'No',
+        fxSpread,
+        fxSpreadLabel: formatSpread(fxSpread),
+        fxSpreadSort: fxSpread === null ? Number.POSITIVE_INFINITY : Math.abs(fxSpread),
+        fxSpreadAsset: mapping?.asset ?? null,
+        fxSpreadSlug: mapping?.slug ?? null,
+        fxSpreadSourceLabel: mapping ? `/${mapping.asset}/${mapping.slug}` : null,
+        fxSpreadDetail:
+          quote && mapping
+            ? `comparadolar.ar${`/${mapping.asset}`} · ${quote.prettyName} · compra ${formatFxNumber(quote.bid)} / venta ${formatFxNumber(quote.ask)}`
+            : mapping
+              ? `Hoy no devolvió cotización en comparadolar.ar`
+              : 'No hay un proveedor/mercado equivalente en comparadolar.ar para calcular el spread FX',
         zeroReceiveCost: isZeroLike(item.costoRecibirPagos),
         zeroArsWithdrawal: isZeroLike(item.retiroArs),
       }
@@ -411,6 +577,7 @@ const sortedFilteredRows = computed(() => {
 
 const sortableColumns = [
   { id: 'retiroArsSort', label: 'Retiro ARS' },
+  { id: 'fxSpreadSort', label: 'Spread FX' },
   { id: 'costoRecibirPagosSort', label: 'Recibir pagos' },
   { id: 'costoMantenimientoTarjetaSort', label: 'Mant. tarjeta' },
   { id: 'costoTarjetaSort', label: 'Uso tarjeta' },
@@ -612,6 +779,11 @@ const columns: TableColumn<RemesaRow>[] = [
       renderCostCell(row.original.retiroArs, getDetail(row.original.detalles, 'retiroArs')),
   },
   {
+    accessorKey: 'fxSpreadSort',
+    header: createSortableHeader('Spread fx'),
+    cell: ({ row }) => renderFxSpreadCell(row.original),
+  },
+  {
     accessorKey: 'costoMantenimientoTarjetaSort',
     header: createSortableHeader('Mant. tarjeta'),
     cell: ({ row }) =>
@@ -659,6 +831,14 @@ const columns: TableColumn<RemesaRow>[] = [
       variant="soft"
       title="No se pudieron cargar las remesas"
       description="Probá recargar en unos minutos."
+    />
+
+    <UAlert
+      v-if="comparaDolarError"
+      color="warning"
+      variant="soft"
+      title="No se pudo cargar Comparar Dólar"
+      description="La tabla sigue mostrando remesas, pero la columna Spread fx puede quedar incompleta."
     />
 
     <div v-if="loading && rows.length === 0" class="py-8">
@@ -907,6 +1087,28 @@ const columns: TableColumn<RemesaRow>[] = [
                     :is="renderDetailPopover(getDetail(row.detalles, 'retiroArs'))"
                     class="ml-1"
                   />
+                </div>
+                <div
+                  class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
+                >
+                  <span class="text-neutral-500">Spread fx</span>
+                  <span class="ml-auto" />
+                  <UBadge
+                    :color="
+                      row.fxSpread === null
+                        ? 'neutral'
+                        : Math.abs(row.fxSpread) <= 0.01
+                          ? 'success'
+                          : Math.abs(row.fxSpread) <= 0.03
+                            ? 'warning'
+                            : 'error'
+                    "
+                    :variant="row.fxSpread === null ? 'outline' : 'soft'"
+                    size="sm"
+                  >
+                    {{ row.fxSpreadLabel }}
+                  </UBadge>
+                  <component :is="renderDetailPopover(row.fxSpreadDetail)" class="ml-1" />
                 </div>
                 <div
                   class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
