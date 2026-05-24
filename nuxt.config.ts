@@ -149,8 +149,27 @@ export default defineNuxtConfig({
   },
 
   sitemap: {
-    urls: () => {
-      return ['https://comparatasas.ar/']
+    urls: async () => {
+      const base = 'https://comparatasas.ar'
+      const urls: string[] = [base + '/']
+
+      const slugify = (name: string): string =>
+        name
+          .normalize('NFD')
+          .replace(/\p{Diacritic}/gu, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+
+      try {
+        const res = await fetch('https://api.argentinadatos.com/v1/finanzas/fci/fondos')
+        const data = (await res.json()) as { fondos: Array<{ nombre: string }> }
+        for (const fondo of data.fondos) {
+          urls.push(`${base}/fondos/${slugify(fondo.nombre)}`)
+        }
+      } catch {}
+
+      return urls
     },
   },
 })
