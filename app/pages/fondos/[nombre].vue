@@ -93,7 +93,7 @@ useSeoMeta({
   <div class="space-y-6">
     <div class="flex items-center gap-3">
       <UButton icon="i-lucide-arrow-left" variant="ghost" color="neutral" @click="goBack">
-        Volver a fondos
+        Volver
       </UButton>
       <UBadge color="neutral" variant="outline">FCI</UBadge>
     </div>
