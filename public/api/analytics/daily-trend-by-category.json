@@ -1,23 +1,40 @@
 [
   {
-    "date": "20260523",
+    "date": "20260524",
     "categories": {
-      "Money Market": 20,
-      "Billetera": 19,
-      "Plazo Fijo": 49,
-      "Cuenta Remunerada": 11,
-      "Otro": 17,
-      "Página Amiga": 4,
-      "Billetera USD": 2,
-      "Cuenta Remunerada USD": 1,
-      "PF UVA pago periódico": 1,
-      "PF UVA precancelable": 2,
-      "Renta Fija": 9,
+      "Plazo Fijo": 32,
+      "Cuenta Remunerada": 14,
+      "Otro": 13,
+      "Money Market": 1,
+      "Página Amiga": 2,
+      "Billetera": 13,
+      "Billetera USD": 7,
+      "PF UVA pago periódico": 2,
       "Retorno total": 1,
       "General": 13,
-      "Criptomonedas": 10
+      "Criptomonedas": 2
     },
-    "total": 159
+    "total": 100
+  },
+  {
+    "date": "20260523",
+    "categories": {
+      "Money Market": 34,
+      "Billetera": 46,
+      "Plazo Fijo": 111,
+      "Cuenta Remunerada": 30,
+      "Otro": 53,
+      "Página Amiga": 9,
+      "Billetera USD": 5,
+      "Cuenta Remunerada USD": 1,
+      "PF UVA pago periódico": 2,
+      "PF UVA precancelable": 3,
+      "Renta Fija": 9,
+      "Retorno total": 1,
+      "General": 18,
+      "Criptomonedas": 14
+    },
+    "total": 336
   },
   {
     "date": "20260522",
@@ -63,33 +80,13 @@
   {
     "date": "20260520",
     "categories": {
-      "Billetera": 83,
-      "Money Market": 69,
-      "Plazo Fijo": 126,
-      "Cuenta Remunerada": 56,
-      "Página Amiga": 25,
-      "Otro": 69,
-      "Billetera USD": 19,
-      "Cuenta Remunerada USD": 2,
-      "PF UVA pago periódico": 3,
-      "PF UVA precancelable": 3,
-      "Renta Fija": 26,
-      "Renta Mixta": 1,
-      "Retorno total": 6,
-      "General": 36,
-      "Criptomonedas": 15
+      "Billetera": 41,
+      "Money Market": 38,
+      "Plazo Fijo": 55,
+      "Cuenta Remunerada": 35,
+      "Página Amiga": 21,
+      "Otro": 60
     },
-    "total": 539
-  },
-  {
-    "date": "20260519",
-    "categories": {
-      "Otro": 1,
-      "Página Amiga": 14,
-      "Money Market": 11,
-      "Plazo Fijo": 10,
-      "Cuenta Remunerada": 12
-    },
-    "total": 48
+    "total": 250
   }
 ]
