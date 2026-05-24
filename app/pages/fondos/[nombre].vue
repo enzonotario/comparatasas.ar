@@ -5,7 +5,21 @@ import FciFundHistoryTab from '~/components/funds/detail/FciFundHistoryTab.vue'
 import FciFundSummaryTab from '~/components/funds/detail/FciFundSummaryTab.vue'
 
 const route = useRoute()
+const router = useRouter()
 const slug = computed(() => String(route.params.nombre || ''))
+
+function goBack() {
+  if (window.history.length > 1 && document.referrer) {
+    try {
+      const referrerHost = new URL(document.referrer).hostname
+      if (referrerHost === window.location.hostname) {
+        router.back()
+        return
+      }
+    } catch {}
+  }
+  router.push('/fondos')
+}
 const selectedDetailTab = ref('resumen')
 
 const detailTabs: TabsItem[] = [
@@ -78,7 +92,7 @@ useSeoMeta({
 <template>
   <div class="space-y-6">
     <div class="flex items-center gap-3">
-      <UButton to="/fondos" icon="i-lucide-arrow-left" variant="ghost" color="neutral">
+      <UButton icon="i-lucide-arrow-left" variant="ghost" color="neutral" @click="goBack">
         Volver a fondos
       </UButton>
       <UBadge color="neutral" variant="outline">FCI</UBadge>
