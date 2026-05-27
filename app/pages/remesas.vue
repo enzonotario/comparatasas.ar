@@ -450,7 +450,7 @@ const rows = computed<RemesaRow[]>(() => {
       const quote = mapping
         ? comparaDolarQuotesByKey.value.get(`${mapping.asset}:${mapping.slug}`)
         : undefined
-      const fxSpread = quote ? quote.bid / quote.ask - 1 : null
+      const fxSpread = quote ? quote.ask / quote.bid - 1 : null
 
       return {
         ...item,
