@@ -155,7 +155,6 @@ function formatSpread(value: number | null): string {
 
   return (
     new Intl.NumberFormat('es-AR', {
-      signDisplay: 'always',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value) + ' %'
