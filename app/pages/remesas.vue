@@ -153,12 +153,13 @@ function formatOgRating(value: number): string {
 function formatSpread(value: number | null): string {
   if (value === null || !Number.isFinite(value)) return '—'
 
-  return new Intl.NumberFormat('es-AR', {
-    style: 'percent',
-    signDisplay: 'always',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value)
+  return (
+    new Intl.NumberFormat('es-AR', {
+      signDisplay: 'always',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value) + ' %'
+  )
 }
 
 function formatFxNumber(value: number): string {
@@ -372,9 +373,9 @@ function renderFxSpreadCell(row: RemesaRow) {
   const tone =
     spread === null
       ? 'neutral'
-      : Math.abs(spread) <= 0.01
+      : Math.abs(spread) <= 1
         ? 'success'
-        : Math.abs(spread) <= 0.03
+        : Math.abs(spread) <= 3
           ? 'warning'
           : 'error'
 
@@ -450,7 +451,7 @@ const rows = computed<RemesaRow[]>(() => {
       const quote = mapping
         ? comparaDolarQuotesByKey.value.get(`${mapping.asset}:${mapping.slug}`)
         : undefined
-      const fxSpread = quote ? quote.ask / quote.bid - 1 : null
+      const fxSpread = quote ? ((quote.ask - quote.bid) / quote.bid) * 100 : null
 
       return {
         ...item,
@@ -1082,9 +1083,9 @@ const columns: TableColumn<RemesaRow>[] = [
                     :color="
                       row.fxSpread === null
                         ? 'neutral'
-                        : Math.abs(row.fxSpread) <= 0.01
+                        : Math.abs(row.fxSpread) <= 1
                           ? 'success'
-                          : Math.abs(row.fxSpread) <= 0.03
+                          : Math.abs(row.fxSpread) <= 3
                             ? 'warning'
                             : 'error'
                     "
