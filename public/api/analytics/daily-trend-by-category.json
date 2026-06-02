@@ -1,21 +1,41 @@
 [
   {
+    "date": "20260602",
+    "categories": {
+      "Página Amiga": 34,
+      "Billetera": 24,
+      "Plazo Fijo": 81,
+      "Cuenta Remunerada": 27,
+      "Otro": 36,
+      "Criptomonedas": 15,
+      "Billetera USD": 9,
+      "PF UVA pago periódico": 2,
+      "PF UVA precancelable": 1,
+      "Renta Fija": 3,
+      "General": 28,
+      "wARS": 5
+    },
+    "total": 265
+  },
+  {
     "date": "20260601",
     "categories": {
-      "Billetera": 47,
-      "Plazo Fijo": 80,
-      "Cuenta Remunerada": 38,
-      "Otro": 45,
-      "Página Amiga": 6,
-      "Criptomonedas": 19,
-      "Billetera USD": 18,
-      "PF UVA pago periódico": 6,
-      "PF UVA precancelable": 1,
+      "Billetera": 115,
+      "Plazo Fijo": 174,
+      "Cuenta Remunerada": 99,
+      "Otro": 114,
+      "Página Amiga": 21,
+      "Criptomonedas": 26,
+      "Money Market": 1,
+      "Billetera USD": 27,
+      "Cuenta Remunerada USD": 1,
+      "PF UVA pago periódico": 10,
+      "PF UVA precancelable": 2,
       "Renta Fija": 1,
-      "General": 35,
-      "wARS": 11
+      "General": 49,
+      "wARS": 13
     },
-    "total": 307
+    "total": 653
   },
   {
     "date": "20260531",
@@ -59,38 +79,15 @@
     "categories": {
       "Otro": 130,
       "Billetera": 84,
-      "Plazo Fijo": 197,
+      "Plazo Fijo": 144,
       "Cuenta Remunerada": 90,
       "Página Amiga": 29,
       "Money Market": 3,
       "Billetera USD": 17,
       "Cuenta Remunerada USD": 2,
       "PF UVA pago periódico": 10,
-      "PF UVA precancelable": 3,
-      "Renta Fija": 3,
-      "General": 42,
-      "Criptomonedas": 26,
-      "wARS": 9
+      "PF UVA precancelable": 3
     },
-    "total": 645
-  },
-  {
-    "date": "20260528",
-    "categories": {
-      "Página Amiga": 19,
-      "Billetera": 83,
-      "Plazo Fijo": 195,
-      "Cuenta Remunerada": 67,
-      "Otro": 86,
-      "Criptomonedas": 13,
-      "Billetera USD": 20,
-      "Cuenta Remunerada USD": 1,
-      "Money Market": 1,
-      "PF UVA pago periódico": 7,
-      "PF UVA precancelable": 1,
-      "Renta Fija": 1,
-      "General": 41
-    },
-    "total": 535
+    "total": 512
   }
 ]
