@@ -1,22 +1,37 @@
 [
   {
+    "date": "20260607",
+    "categories": {
+      "Billetera": 16,
+      "Plazo Fijo": 29,
+      "Cuenta Remunerada": 19,
+      "Otro": 15,
+      "Página Amiga": 4,
+      "Billetera USD": 6,
+      "General": 21,
+      "Criptomonedas": 4,
+      "wARS": 1
+    },
+    "total": 115
+  },
+  {
     "date": "20260606",
     "categories": {
-      "Billetera": 10,
-      "Plazo Fijo": 39,
-      "Cuenta Remunerada": 19,
-      "Otro": 19,
-      "Página Amiga": 1,
-      "Billetera USD": 2,
-      "Money Market": 2,
-      "PF UVA pago periódico": 3,
-      "PF UVA precancelable": 2,
+      "Billetera": 32,
+      "Plazo Fijo": 82,
+      "Cuenta Remunerada": 55,
+      "Otro": 51,
+      "Página Amiga": 2,
+      "Billetera USD": 8,
+      "Money Market": 4,
+      "PF UVA pago periódico": 5,
+      "PF UVA precancelable": 4,
       "Renta Fija": 1,
-      "General": 8,
-      "Criptomonedas": 4,
+      "General": 18,
+      "Criptomonedas": 10,
       "wARS": 6
     },
-    "total": 116
+    "total": 278
   },
   {
     "date": "20260605",
@@ -78,13 +93,10 @@
   {
     "date": "20260602",
     "categories": {
-      "Página Amiga": 95,
-      "Billetera": 67,
-      "Plazo Fijo": 85,
-      "Cuenta Remunerada": 55,
-      "Otro": 71,
-      "Criptomonedas": 3
+      "Página Amiga": 2,
+      "Billetera": 7,
+      "Plazo Fijo": 4
     },
-    "total": 376
+    "total": 13
   }
 ]
