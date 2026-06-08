@@ -1,122 +1,362 @@
 [
   {
-    "date": "20260607",
+    "date": "20260608",
+    "provider": "Banco Voii",
+    "clicks": 28
+  },
+  {
+    "date": "20260608",
     "provider": "Fiwind",
     "clicks": 19
   },
   {
+    "date": "20260608",
+    "provider": "AstroPay",
+    "clicks": 19
+  },
+  {
+    "date": "20260608",
+    "provider": "Banco Nación",
+    "clicks": 17
+  },
+  {
+    "date": "20260608",
+    "provider": "Crédito Regional",
+    "clicks": 11
+  },
+  {
+    "date": "20260608",
+    "provider": "CapyFi",
+    "clicks": 11
+  },
+  {
+    "date": "20260608",
+    "provider": "Nexo",
+    "clicks": 8
+  },
+  {
+    "date": "20260608",
+    "provider": "Ualá",
+    "clicks": 7
+  },
+  {
+    "date": "20260608",
+    "provider": "BBVA",
+    "clicks": 6
+  },
+  {
+    "date": "20260608",
+    "provider": "Arqfinance",
+    "clicks": 5
+  },
+  {
+    "date": "20260608",
+    "provider": "Banco CMF",
+    "clicks": 5
+  },
+  {
+    "date": "20260608",
+    "provider": "comparadolar.ar",
+    "clicks": 4
+  },
+  {
+    "date": "20260608",
+    "provider": "dolarito.ar",
+    "clicks": 3
+  },
+  {
+    "date": "20260608",
+    "provider": "Carrefour Banco",
+    "clicks": 3
+  },
+  {
+    "date": "20260608",
+    "provider": "Lune.fi",
+    "clicks": 3
+  },
+  {
+    "date": "20260608",
+    "provider": "Ripio",
+    "clicks": 3
+  },
+  {
+    "date": "20260608",
+    "provider": "X Salinas",
+    "clicks": 2
+  },
+  {
+    "date": "20260608",
+    "provider": "SatoshiTango",
+    "clicks": 2
+  },
+  {
+    "date": "20260608",
+    "provider": "LucaMoney",
+    "clicks": 2
+  },
+  {
+    "date": "20260608",
+    "provider": "Banco Hipotecario",
+    "clicks": 2
+  },
+  {
+    "date": "20260608",
+    "provider": "dolarya.info",
+    "clicks": 2
+  },
+  {
+    "date": "20260608",
+    "provider": "Mercado Pago",
+    "clicks": 2
+  },
+  {
+    "date": "20260608",
+    "provider": "Banco Mariva",
+    "clicks": 2
+  },
+  {
+    "date": "20260608",
+    "provider": "GitHub",
+    "clicks": 2
+  },
+  {
+    "date": "20260608",
+    "provider": "Banco Meridian",
+    "clicks": 2
+  },
+  {
+    "date": "20260608",
+    "provider": "Ripio",
+    "clicks": 2
+  },
+  {
+    "date": "20260608",
+    "provider": "Supervielle",
+    "clicks": 1
+  },
+  {
+    "date": "20260608",
+    "provider": "Banco Macro",
+    "clicks": 1
+  },
+  {
+    "date": "20260608",
+    "provider": "ICBC",
+    "clicks": 1
+  },
+  {
+    "date": "20260608",
+    "provider": "Banco Galicia",
+    "clicks": 1
+  },
+  {
+    "date": "20260608",
+    "provider": "CAFCI",
+    "clicks": 1
+  },
+  {
+    "date": "20260608",
+    "provider": "BTF",
+    "clicks": 1
+  },
+  {
+    "date": "20260608",
+    "provider": "Banco Provincia",
+    "clicks": 1
+  },
+  {
+    "date": "20260608",
+    "provider": "Meli.la",
+    "clicks": 1
+  },
+  {
+    "date": "20260608",
+    "provider": "Meli.la",
+    "clicks": 1
+  },
+  {
+    "date": "20260608",
+    "provider": "argentinadatos.com",
+    "clicks": 1
+  },
+  {
+    "date": "20260607",
+    "provider": "Fiwind",
+    "clicks": 36
+  },
+  {
     "date": "20260607",
     "provider": "Banco Voii",
-    "clicks": 18
-  },
-  {
-    "date": "20260607",
-    "provider": "Ualá",
-    "clicks": 14
-  },
-  {
-    "date": "20260607",
-    "provider": "AstroPay",
-    "clicks": 11
+    "clicks": 35
   },
   {
     "date": "20260607",
     "provider": "Carrefour Banco",
-    "clicks": 10
-  },
-  {
-    "date": "20260607",
-    "provider": "Lune.fi",
-    "clicks": 9
+    "clicks": 25
   },
   {
     "date": "20260607",
     "provider": "Banco Nación",
-    "clicks": 7
+    "clicks": 25
+  },
+  {
+    "date": "20260607",
+    "provider": "AstroPay",
+    "clicks": 22
+  },
+  {
+    "date": "20260607",
+    "provider": "Ualá",
+    "clicks": 21
+  },
+  {
+    "date": "20260607",
+    "provider": "Lune.fi",
+    "clicks": 21
   },
   {
     "date": "20260607",
     "provider": "Arqfinance",
+    "clicks": 16
+  },
+  {
+    "date": "20260607",
+    "provider": "Banco Provincia",
+    "clicks": 6
+  },
+  {
+    "date": "20260607",
+    "provider": "Nexo",
+    "clicks": 6
+  },
+  {
+    "date": "20260607",
+    "provider": "Banco Macro",
+    "clicks": 5
+  },
+  {
+    "date": "20260607",
+    "provider": "comparadolar.ar",
+    "clicks": 5
+  },
+  {
+    "date": "20260607",
+    "provider": "CapyFi",
+    "clicks": 5
+  },
+  {
+    "date": "20260607",
+    "provider": "Banco BICA",
     "clicks": 5
   },
   {
     "date": "20260607",
     "provider": "Banco Santander",
-    "clicks": 2
-  },
-  {
-    "date": "20260607",
-    "provider": "Banco Macro",
-    "clicks": 2
-  },
-  {
-    "date": "20260607",
-    "provider": "Bancoformosa",
-    "clicks": 2
-  },
-  {
-    "date": "20260607",
-    "provider": "Nexo",
-    "clicks": 2
-  },
-  {
-    "date": "20260607",
-    "provider": "CapyFi",
-    "clicks": 2
-  },
-  {
-    "date": "20260607",
-    "provider": "Banco Meridian",
-    "clicks": 2
-  },
-  {
-    "date": "20260607",
-    "provider": "X Salinas",
-    "clicks": 1
+    "clicks": 4
   },
   {
     "date": "20260607",
     "provider": "impuestito.org",
-    "clicks": 1
-  },
-  {
-    "date": "20260607",
-    "provider": "ICBC",
-    "clicks": 1
-  },
-  {
-    "date": "20260607",
-    "provider": "Bancor",
-    "clicks": 1
-  },
-  {
-    "date": "20260607",
-    "provider": "enqueinvierto.ar",
-    "clicks": 1
+    "clicks": 4
   },
   {
     "date": "20260607",
     "provider": "Crédito Regional",
-    "clicks": 1
-  },
-  {
-    "date": "20260607",
-    "provider": "comparapix.ar",
-    "clicks": 1
-  },
-  {
-    "date": "20260607",
-    "provider": "comparadolar.ar",
-    "clicks": 1
-  },
-  {
-    "date": "20260607",
-    "provider": "Banco BICA",
-    "clicks": 1
+    "clicks": 4
   },
   {
     "date": "20260607",
     "provider": "Ripio",
+    "clicks": 4
+  },
+  {
+    "date": "20260607",
+    "provider": "Ripio",
+    "clicks": 4
+  },
+  {
+    "date": "20260607",
+    "provider": "Bancoformosa",
+    "clicks": 3
+  },
+  {
+    "date": "20260607",
+    "provider": "enqueinvierto.ar",
+    "clicks": 3
+  },
+  {
+    "date": "20260607",
+    "provider": "comparapix.ar",
+    "clicks": 3
+  },
+  {
+    "date": "20260607",
+    "provider": "Bibank",
+    "clicks": 3
+  },
+  {
+    "date": "20260607",
+    "provider": "Banco Meridian",
+    "clicks": 3
+  },
+  {
+    "date": "20260607",
+    "provider": "X Salinas",
+    "clicks": 2
+  },
+  {
+    "date": "20260607",
+    "provider": "ICBC",
+    "clicks": 2
+  },
+  {
+    "date": "20260607",
+    "provider": "Banco Comafi",
+    "clicks": 2
+  },
+  {
+    "date": "20260607",
+    "provider": "Bancor",
+    "clicks": 2
+  },
+  {
+    "date": "20260607",
+    "provider": "Reba",
+    "clicks": 2
+  },
+  {
+    "date": "20260607",
+    "provider": "LB",
+    "clicks": 2
+  },
+  {
+    "date": "20260607",
+    "provider": "Banco del Sol",
+    "clicks": 2
+  },
+  {
+    "date": "20260607",
+    "provider": "Banco CMF",
+    "clicks": 2
+  },
+  {
+    "date": "20260607",
+    "provider": "Banco Ciudad",
+    "clicks": 2
+  },
+  {
+    "date": "20260607",
+    "provider": "argentinadatos.com",
+    "clicks": 2
+  },
+  {
+    "date": "20260607",
+    "provider": "icons.com.ar",
+    "clicks": 1
+  },
+  {
+    "date": "20260607",
+    "provider": "Data912.apidocs",
     "clicks": 1
   },
   {
