@@ -1,21 +1,38 @@
 [
   {
+    "date": "20260612",
+    "categories": {
+      "Página Amiga": 20,
+      "Billetera": 15,
+      "Plazo Fijo": 31,
+      "Cuenta Remunerada": 12,
+      "Otro": 19,
+      "Billetera USD": 5,
+      "Money Market": 2,
+      "PF UVA pago periódico": 1,
+      "General": 13,
+      "Criptomonedas": 8,
+      "wARS": 3
+    },
+    "total": 129
+  },
+  {
     "date": "20260611",
     "categories": {
-      "Otro": 30,
-      "Billetera": 18,
-      "Plazo Fijo": 59,
-      "Página Amiga": 14,
-      "Cuenta Remunerada": 31,
-      "Billetera USD": 10,
+      "Otro": 70,
+      "Billetera": 51,
+      "Plazo Fijo": 112,
+      "Página Amiga": 33,
+      "Cuenta Remunerada": 72,
+      "Billetera USD": 17,
       "Cuenta Remunerada USD": 1,
-      "PF UVA pago periódico": 3,
-      "PF UVA precancelable": 2,
-      "General": 19,
-      "Criptomonedas": 8,
-      "wARS": 4
+      "PF UVA pago periódico": 5,
+      "PF UVA precancelable": 6,
+      "General": 25,
+      "Criptomonedas": 15,
+      "wARS": 8
     },
-    "total": 199
+    "total": 415
   },
   {
     "date": "20260610",
@@ -62,42 +79,14 @@
       "Plazo Fijo": 153,
       "Cuenta Remunerada": 61,
       "Otro": 67,
-      "Criptomonedas": 16,
+      "Criptomonedas": 15,
       "Billetera USD": 20,
       "Cuenta Remunerada USD": 2,
       "Money Market": 2,
       "PF UVA pago periódico": 2,
       "PF UVA precancelable": 1,
-      "General": 25,
-      "wARS": 9
+      "General": 25
     },
-    "total": 447
-  },
-  {
-    "date": "20260607",
-    "categories": {
-      "Billetera": 40,
-      "Plazo Fijo": 80,
-      "Cuenta Remunerada": 52,
-      "Otro": 42,
-      "Página Amiga": 18,
-      "Billetera USD": 10,
-      "PF UVA pago periódico": 2,
-      "General": 30,
-      "Criptomonedas": 10,
-      "wARS": 6
-    },
-    "total": 290
-  },
-  {
-    "date": "20260606",
-    "categories": {
-      "Billetera": 2,
-      "Plazo Fijo": 2,
-      "Cuenta Remunerada": 13,
-      "Otro": 9,
-      "Página Amiga": 1
-    },
-    "total": 27
+    "total": 437
   }
 ]
