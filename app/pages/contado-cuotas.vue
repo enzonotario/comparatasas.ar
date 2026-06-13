@@ -212,7 +212,7 @@ const selectedCarryOptionIds = computed<string[]>({
   },
 })
 
-const { productScenarios, isSamePriceInstallmentLabel } = useProductScenarios()
+const { productScenarios, showProductScenarios, isSamePriceInstallmentLabel } = useProductScenarios()
 const summarySectionRef = ref<HTMLElement | null>(null)
 const productPanelReservedSpace = ref(220)
 
@@ -839,7 +839,12 @@ const carrySectionLoading = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-6" :style="{ paddingBottom: `${productPanelReservedSpace}px` }">
+  <div
+    class="space-y-6"
+    :style="
+      showProductScenarios ? { paddingBottom: `${productPanelReservedSpace}px` } : undefined
+    "
+  >
     <UAlert
       v-if="errorRem"
       color="warning"
@@ -857,7 +862,7 @@ const carrySectionLoading = computed(() => {
     />
 
     <ProductScenariosRail
-      v-if="productScenarios.length"
+      v-if="showProductScenarios && productScenarios.length"
       floating
       minimizable
       :selected-product-id="selectedProductScenarioId"
@@ -1094,7 +1099,7 @@ const carrySectionLoading = computed(() => {
                     {{ explanationText }}
                   </p>
                   <div
-                    v-if="selectedProductScenario"
+                    v-if="showProductScenarios && selectedProductScenario"
                     class="mt-4 overflow-hidden rounded-2xl border border-white/70 bg-white/80 dark:border-white/10 dark:bg-white/5"
                   >
                     <div class="flex items-stretch">

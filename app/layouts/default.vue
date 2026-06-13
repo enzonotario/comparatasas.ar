@@ -12,6 +12,7 @@ const { fetch: fetchCriptopesos } = useCriptopesos()
 const { initialize } = useHotjar()
 
 const route = useRoute()
+const { showProductScenarios } = useProductScenarios()
 
 const isSumarsePage = computed(() => route.path === '/sumarse')
 
@@ -68,6 +69,8 @@ const productScenarioRailPaths = new Set([
 ])
 
 const showProductScenariosRail = computed(() => {
+  if (!showProductScenarios.value) return false
+
   if (isSumarsePage.value || isProviderHistoryPage.value || route.name === 'contado-cuotas') {
     return false
   }

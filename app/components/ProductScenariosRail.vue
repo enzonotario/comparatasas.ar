@@ -25,7 +25,7 @@ const emit = defineEmits<{
   heightChange: [height: number]
 }>()
 
-const { productScenarios, isSamePriceInstallmentLabel } = useProductScenarios()
+const { productScenarios, showProductScenarios, isSamePriceInstallmentLabel } = useProductScenarios()
 const route = useRoute()
 
 const panelMode = ref<'expanded' | 'minimized'>('expanded')
@@ -127,7 +127,7 @@ watch(
 
 <template>
   <div
-    v-if="productScenarios.length"
+    v-if="showProductScenarios && productScenarios.length"
     :class="floating ? 'sticky z-40 h-0 px-3 pointer-events-none' : 'w-full'"
     :style="floating ? { top: stickyTop } : undefined"
   >
