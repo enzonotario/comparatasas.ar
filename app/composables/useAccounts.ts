@@ -84,7 +84,17 @@ export function useAccounts() {
   }
 
   const accounts = computed<AccountItem[]>((): AccountItem[] => {
-    return filterAndMapAccounts(['CARREFOUR BANCO', 'NARANJA X', 'UALA', 'BELO', 'FIWIND'])
+    return filterAndMapAccounts([
+      'CARREFOUR BANCO',
+      'NARANJA X',
+      'UALA',
+      'BELO',
+      'FIWIND',
+      'BICA CUENTA POSITIVA 1',
+      'BICA CUENTA POSITIVA 2',
+      'BICA CUENTA POSITIVA 3',
+      'BICA CUENTA POSITIVA 4',
+    ])
   })
 
   const specialAccounts = computed<AccountItem[]>((): AccountItem[] => {
@@ -94,10 +104,6 @@ export function useAccounts() {
       'UALA PLUS',
       'UALA PLUS 1',
       'UALA PLUS 2',
-      'BICA CUENTA POSITIVA 1',
-      'BICA CUENTA POSITIVA 2',
-      'BICA CUENTA POSITIVA 3',
-      'BICA CUENTA POSITIVA 4',
       'BNA',
       'SUPERVIELLE HIT IOL',
     ])
