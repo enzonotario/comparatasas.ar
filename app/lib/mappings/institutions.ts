@@ -245,6 +245,30 @@ export const institutions: Array<{
     url: 'https://bancobica.com.ar/?ref=comparatasas',
   },
   {
+    names: ['BICA CUENTA POSITIVA 1'],
+    logo: 'https://api.argentinadatos.com/static/logos/banco-bica.svg',
+    shortName: 'Banco BICA Cuenta Positiva 1',
+    url: 'https://www.bancobica.com.ar/soluciones/cuentaspositivas.aspx?ref=comparatasas#C+1',
+  },
+  {
+    names: ['BICA CUENTA POSITIVA 2'],
+    logo: 'https://api.argentinadatos.com/static/logos/banco-bica.svg',
+    shortName: 'Banco BICA Cuenta Positiva 2',
+    url: 'https://www.bancobica.com.ar/soluciones/cuentaspositivas.aspx?ref=comparatasas#C+1',
+  },
+  {
+    names: ['BICA CUENTA POSITIVA 3'],
+    logo: 'https://api.argentinadatos.com/static/logos/banco-bica.svg',
+    shortName: 'Banco BICA Cuenta Positiva 3',
+    url: 'https://www.bancobica.com.ar/soluciones/cuentaspositivas.aspx?ref=comparatasas#C+1',
+  },
+  {
+    names: ['BICA CUENTA POSITIVA 4'],
+    logo: 'https://api.argentinadatos.com/static/logos/banco-bica.svg',
+    shortName: 'Banco BICA Cuenta Positiva 4',
+    url: 'https://www.bancobica.com.ar/soluciones/cuentaspositivas.aspx?ref=comparatasas#C+1',
+  },
+  {
     names: ['CRÉDITO REGIONAL COMPAÑÍA FINANCIERA S.A.U.', 'Crédito Regional', 'CREDITO REGIONAL'],
     logo: 'https://api.argentinadatos.com/static/logos/credito-regional.jpg',
     shortName: 'Crédito Regional',

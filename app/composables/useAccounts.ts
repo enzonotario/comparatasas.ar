@@ -91,6 +91,10 @@ export function useAccounts() {
       'UALA PLUS',
       'UALA PLUS 1',
       'UALA PLUS 2',
+      'BICA CUENTA POSITIVA 1',
+      'BICA CUENTA POSITIVA 2',
+      'BICA CUENTA POSITIVA 3',
+      'BICA CUENTA POSITIVA 4',
       'BNA',
       'SUPERVIELLE HIT IOL',
     ])
