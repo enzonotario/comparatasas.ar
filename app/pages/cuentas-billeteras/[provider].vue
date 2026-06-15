@@ -241,7 +241,7 @@ useSeoMeta({
 
           <div class="text-right shrink-0">
             <div class="text-primary-600 dark:text-primary-400 font-semibold text-2xl">
-              {{ accountSummary.tna.toFixed(2) }}%
+              {{ (accountSummary.tna * 100).toFixed(2) }}%
             </div>
             <div class="text-xs text-neutral-500 dark:text-neutral-400">
               TNA
