@@ -1,22 +1,22 @@
 {
-  "total_records": 18014,
-  "total_clicks": 88482,
-  "unique_providers": 158,
-  "days_tracked": 137,
+  "total_records": 18114,
+  "total_clicks": 88774,
+  "unique_providers": 160,
+  "days_tracked": 138,
   "first_date": "20260129",
-  "last_date": "20260614",
+  "last_date": "20260615",
   "by_event_type": [
     {
       "event_type": "click",
-      "total_clicks": 56759
+      "total_clicks": 56949
     },
     {
       "event_type": "provider_click",
-      "total_clicks": 29585
+      "total_clicks": 29677
     },
     {
       "event_type": "sponsor_click",
-      "total_clicks": 2138
+      "total_clicks": 2148
     }
   ],
   "top_providers": [
@@ -27,24 +27,24 @@
     },
     {
       "provider": "Banco Nación",
-      "total_clicks": 5745,
-      "days_active": 117
+      "total_clicks": 5765,
+      "days_active": 118
     },
     {
       "provider": "IOL",
-      "total_clicks": 5336,
+      "total_clicks": 5340,
       "days_active": 85
     },
     {
       "provider": "Carrefour Banco",
-      "total_clicks": 5229,
-      "days_active": 137
+      "total_clicks": 5250,
+      "days_active": 138
     },
     {
       "provider": "AstroPay",
-      "total_clicks": 5173,
-      "days_active": 117
+      "total_clicks": 5193,
+      "days_active": 118
     }
   ],
-  "generated_at": "2026-06-14T22:57:22.449Z"
+  "generated_at": "2026-06-15T23:27:16.843Z"
 }
