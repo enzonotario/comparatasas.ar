@@ -3,10 +3,27 @@ import type { TabsItem } from '@nuxt/ui'
 import FciFundHeaderCard from '~/components/funds/detail/FciFundHeaderCard.vue'
 import FciFundHistoryTab from '~/components/funds/detail/FciFundHistoryTab.vue'
 import FciFundSummaryTab from '~/components/funds/detail/FciFundSummaryTab.vue'
+import { getInstitutionUrl } from '~/lib/mappings/institutions'
+import { getFundMappingBySlug } from '~/lib/mappings/funds'
 
 const route = useRoute()
 const router = useRouter()
 const slug = computed(() => String(route.params.nombre || ''))
+const fundMapping = computed(() => getFundMappingBySlug(slug.value))
+const mappedFundInstitution = computed(
+  () =>
+    fundMapping.value?.institutions.find(
+      (item) => item.fundUrl || item.url || getInstitutionUrl(item.institution),
+    ) || null,
+)
+
+const mappedFundUrl = computed(() => {
+  const institution = mappedFundInstitution.value
+  if (!institution) return null
+
+  const url = institution.fundUrl || institution.url || getInstitutionUrl(institution.institution)
+  return url || null
+})
 
 function goBack() {
   if (window.history.length > 1 && document.referrer) {
@@ -16,7 +33,9 @@ function goBack() {
         router.back()
         return
       }
-    } catch {}
+    } catch (error) {
+      console.warn('Invalid referrer while going back from fond detail', error)
+    }
   }
   router.push('/fondos')
 }
@@ -34,6 +53,13 @@ const detailTabs: TabsItem[] = [
     slot: 'historico' as const,
   },
 ]
+
+const mappedFundLabel = computed(() => {
+  const institution = mappedFundInstitution.value
+  if (!institution) return 'Ver sitio del fondo'
+
+  return `Ir a ${institution.displayName}` || 'Ver sitio del fondo'
+})
 
 const { fundDetail, fundHistory, status, error, historyStatus, historyError, ensureHistoryLoaded } =
   await useFciFundDetailPage(slug)
@@ -96,6 +122,17 @@ useSeoMeta({
         Volver
       </UButton>
       <UBadge color="neutral" variant="outline">FCI</UBadge>
+      <UButton
+        v-if="mappedFundUrl"
+        :to="mappedFundUrl"
+        external
+        target="_blank"
+        rel="noopener noreferrer"
+        color="neutral"
+        icon="i-lucide-external-link"
+        :label="mappedFundLabel"
+        class="ml-auto"
+      />
     </div>
 
     <FundsLoading v-if="status === 'pending' && !fundDetail" />
