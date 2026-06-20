@@ -25,6 +25,12 @@ const mappedFundUrl = computed(() => {
   return url || null
 })
 
+const cafciUrl = computed(() => {
+  if (!fundDetail.value) return null
+
+  return `https://estadisticas.cafci.org.ar/fondos/${fundDetail.value.fondoId}?clase=${fundDetail.value.claseId}`
+})
+
 function goBack() {
   if (window.history.length > 1 && document.referrer) {
     try {
@@ -58,7 +64,7 @@ const mappedFundLabel = computed(() => {
   const institution = mappedFundInstitution.value
   if (!institution) return 'Ver sitio del fondo'
 
-  return `Ir a ${institution.displayName}` || 'Ver sitio del fondo'
+  return institution.displayName ? `Ir a ${institution.displayName}` : 'Ver sitio del fondo'
 })
 
 const { fundDetail, fundHistory, status, error, historyStatus, historyError, ensureHistoryLoaded } =
@@ -122,17 +128,30 @@ useSeoMeta({
         Volver
       </UButton>
       <UBadge color="neutral" variant="outline">FCI</UBadge>
-      <UButton
-        v-if="mappedFundUrl"
-        :to="mappedFundUrl"
-        external
-        target="_blank"
-        rel="noopener noreferrer"
-        color="neutral"
-        icon="i-lucide-external-link"
-        :label="mappedFundLabel"
-        class="ml-auto"
-      />
+      <div class="ml-auto flex items-center gap-2">
+        <UButton
+          v-if="mappedFundUrl"
+          :to="mappedFundUrl"
+          external
+          target="_blank"
+          rel="noopener noreferrer"
+          color="neutral"
+          icon="i-lucide-external-link"
+          :label="mappedFundLabel"
+        />
+
+        <UButton
+          v-if="cafciUrl"
+          :to="cafciUrl"
+          external
+          target="_blank"
+          rel="noopener noreferrer"
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-external-link"
+          label="Ver en CAFCI"
+        />
+      </div>
     </div>
 
     <FundsLoading v-if="status === 'pending' && !fundDetail" />
