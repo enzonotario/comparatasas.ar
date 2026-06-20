@@ -6,6 +6,7 @@ import {
   formatDecimal,
   normalizeCurrencyCode,
 } from '~/lib/fci-fund-formatters'
+import { getFundTypeInfo } from '~/lib/mappings/funds'
 
 const props = defineProps<{
   fundDetail: FciFundDetail
@@ -66,6 +67,10 @@ const patrimonioLabel = computed(() => {
 const valorCuotaparteLabel = computed(() => {
   return formatDecimal(props.fundDetail.rendimientos?.valorCuotaparte)
 })
+
+const tipoRentaLabel = computed(() => {
+  return getFundTypeInfo(props.fundDetail.tipoRenta)?.typeLabel || props.fundDetail.tipoRenta || '—'
+})
 </script>
 
 <template>
@@ -82,7 +87,7 @@ const valorCuotaparteLabel = computed(() => {
               <FciFundMetaBadge
                 v-if="props.fundDetail.tipoRenta"
                 label="Tipo"
-                :value="props.fundDetail.tipoRenta"
+                :value="tipoRentaLabel"
               />
               <FciFundMetaBadge
                 v-if="props.fundDetail.horizonte"

@@ -14,9 +14,11 @@ definePageMeta({
 
 const UButton = resolveComponent('UButton')
 
+// Create single useFunds instance for both OG and page data
+const { allFundsCache, data: fundsData, fetch: fetchPageFunds, fetchFundsSeriesLatest } = useFunds()
+
 const { data: ogItems } = await useAsyncData('og-fondos', async () => {
-  const { allFundsCache, data: fundsData, fetch: fetchFunds } = useFunds()
-  await fetchFunds()
+  await fetchPageFunds({ forceBySeries: true })
   const accountsFunds = allFundsCache.value.filter((i) => i?.meta?.showInAccounts)
   const mercadoDineroFunds = (fundsData.value?.mercadoDinero ?? []).filter(
     (i) => i?.meta?.showInFunds,
@@ -83,26 +85,26 @@ useHead({
   ],
 })
 
-interface FundRaw {
+interface FundSeriesRow {
   fondo: string
   horizonte: string
   fecha: string
   vcp: number
   ccp: number
   patrimonio: number
-}
-
-interface FundWithPrevious extends FundRaw {
+  displayName?: string
+  institution?: string
   fechaAnterior?: string
   vcpAnterior?: number
   ccpAnterior?: number
   patrimonioAnterior?: number
   tipoFondo?: 'rentaFija' | 'mercadoDinero' | 'rentaMixta' | 'rentaVariable' | 'retornoTotal'
+  typeLabel?: string
 }
 
 const loading = ref(true)
 const error = ref<unknown>(null)
-const allFunds = ref<FundWithPrevious[]>([])
+const allFunds = ref<FundSeriesRow[]>([])
 
 // Función helper para calcular días entre fechas
 function daysBetween(a: string, b: string) {
@@ -141,239 +143,12 @@ function calculateTNA(newerVCP: number, olderVCP: number, daysBetween: number): 
   return tna
 }
 
-// Obtener datos anteriores de RentaFija para una fecha específica
-async function getRentaFijaPreviousData(targetDate: Date): Promise<FundRaw[]> {
-  const dateCopy = new Date(targetDate)
-  const isoString = dateCopy.toISOString().split('T')[0]
-  if (!isoString) {
-    throw new Error('Invalid date')
-  }
-  const targetDateString = isoString.replace(/-/g, '/')
-
-  try {
-    const response = await $fetch<FundRaw[]>(
-      `https://api.argentinadatos.com/v1/finanzas/fci/rentaFija/${targetDateString}`,
-    )
-
-    if (!response || response.length === 0) {
-      throw new Error(`No data for date ${targetDateString}`)
-    }
-
-    return response
-  } catch {
-    const newDate = new Date(targetDate)
-    newDate.setDate(newDate.getDate() - 1)
-    return await getRentaFijaPreviousData(newDate)
-  }
-}
-
-// Obtener datos anteriores de RentaFija (30 días antes o la fecha más cercana disponible)
-async function getLatestAndPreviousRentaFija() {
-  const latest = await $fetch<FundRaw[]>(
-    'https://api.argentinadatos.com/v1/finanzas/fci/rentaFija/ultimo',
-  ).catch(() => [] as FundRaw[])
-
-  const responses: Record<string, FundRaw[]> = {}
-  const previous: FundRaw[] = []
-
-  for (const fund of latest) {
-    if (!fund.fecha) continue
-
-    const today = new Date()
-    const todayString = today.toISOString().split('T')[0]
-    if (!todayString) continue
-
-    const daysDiff = daysBetween(fund.fecha, todayString)
-    if (daysDiff > 30) continue
-
-    const fundName = fund.fondo
-    const targetDate = new Date(fund.fecha)
-    targetDate.setDate(targetDate.getDate() - 30)
-    const targetDateString = targetDate.toISOString().split('T')[0]?.replace(/-/g, '/')
-    if (!targetDateString) continue
-
-    let fundPrevious = responses[targetDateString]
-    if (!fundPrevious) {
-      try {
-        fundPrevious = await getRentaFijaPreviousData(new Date(targetDate))
-        responses[targetDateString] = fundPrevious
-      } catch (e) {
-        console.warn(`No data for date ${targetDateString}`, fund.fondo, e)
-        fundPrevious = []
-        responses[targetDateString] = fundPrevious
-      }
-    }
-
-    if (fundPrevious && fundPrevious.length > 0) {
-      // find the closest date before or equal to target date
-      const sortedPrevious = fundPrevious
-        .filter((f) => f.fondo === fundName && f.fecha && new Date(f.fecha) <= targetDate)
-        .sort((a, b) => {
-          const dateA = a.fecha ? new Date(a.fecha).getTime() : 0
-          const dateB = b.fecha ? new Date(b.fecha).getTime() : 0
-          return dateB - dateA
-        })
-
-      if (sortedPrevious.length > 0 && sortedPrevious[0]) {
-        previous.push(sortedPrevious[0])
-      }
-    }
-  }
-
-  return { latest, previous }
-}
-
-async function getRetornoTotalPreviousData(targetDate: Date, retriesLeft = 7): Promise<FundRaw[]> {
-  if (retriesLeft <= 0) return []
-
-  const dateCopy = new Date(targetDate)
-  const isoString = dateCopy.toISOString().split('T')[0]
-  if (!isoString) return []
-
-  const targetDateString = isoString.replace(/-/g, '/')
-
-  try {
-    const response = await $fetch<FundRaw[]>(
-      `https://api.argentinadatos.com/v1/finanzas/fci/retornoTotal/${targetDateString}`,
-    )
-
-    if (!response || response.length === 0) {
-      throw new Error(`No data for date ${targetDateString}`)
-    }
-
-    return response
-  } catch {
-    const newDate = new Date(targetDate)
-    newDate.setDate(newDate.getDate() - 1)
-    return await getRetornoTotalPreviousData(newDate, retriesLeft - 1)
-  }
-}
-
-async function getLatestAndPreviousRetornoTotal() {
-  const latest = await $fetch<FundRaw[]>(
-    'https://api.argentinadatos.com/v1/finanzas/fci/retornoTotal/ultimo',
-  ).catch(() => [] as FundRaw[])
-
-  const responses: Record<string, FundRaw[]> = {}
-  const previous: FundRaw[] = []
-
-  for (const fund of latest) {
-    if (!fund.fecha) continue
-
-    const today = new Date()
-    const todayString = today.toISOString().split('T')[0]
-    if (!todayString) continue
-
-    const daysDiff = daysBetween(fund.fecha, todayString)
-    if (daysDiff > 30) continue
-
-    const fundName = fund.fondo
-    const targetDate = new Date(fund.fecha)
-    targetDate.setDate(targetDate.getDate() - 30)
-    const targetDateString = targetDate.toISOString().split('T')[0]?.replace(/-/g, '/')
-    if (!targetDateString) continue
-
-    let fundPrevious = responses[targetDateString]
-    if (!fundPrevious) {
-      try {
-        fundPrevious = await getRetornoTotalPreviousData(new Date(targetDate))
-        responses[targetDateString] = fundPrevious
-      } catch (e) {
-        console.warn(`No data for date ${targetDateString}`, fund.fondo, e)
-        fundPrevious = []
-        responses[targetDateString] = fundPrevious
-      }
-    }
-
-    if (fundPrevious && fundPrevious.length > 0) {
-      const sortedPrevious = fundPrevious
-        .filter((f) => f.fondo === fundName && f.fecha && new Date(f.fecha) <= targetDate)
-        .sort((a, b) => {
-          const dateA = a.fecha ? new Date(a.fecha).getTime() : 0
-          const dateB = b.fecha ? new Date(b.fecha).getTime() : 0
-          return dateB - dateA
-        })
-
-      if (sortedPrevious.length > 0 && sortedPrevious[0]) {
-        previous.push(sortedPrevious[0])
-      }
-    }
-  }
-
-  return { latest, previous }
-}
-
-// Obtener datos directamente de la API (actuales y anteriores)
-async function fetchFunds() {
+async function fetchFundsBySeries() {
   loading.value = true
   error.value = null
 
   try {
-    const retornoTotalDataPromise = getLatestAndPreviousRetornoTotal()
-
-    // Obtener datos actuales y anteriores de cada categoría
-    const [
-      rentaFijaData,
-      mercadoDineroLatest,
-      mercadoDineroPrevious,
-      rentaMixtaLatest,
-      rentaMixtaPrevious,
-      rentaVariableLatest,
-      rentaVariablePrevious,
-      retornoTotalLatest,
-      retornoTotalPrevious,
-    ] = await Promise.all([
-      getLatestAndPreviousRentaFija(),
-      $fetch<FundRaw[]>(
-        'https://api.argentinadatos.com/v1/finanzas/fci/mercadoDinero/ultimo',
-      ).catch(() => [] as FundRaw[]),
-      $fetch<FundRaw[]>(
-        'https://api.argentinadatos.com/v1/finanzas/fci/mercadoDinero/penultimo',
-      ).catch(() => [] as FundRaw[]),
-      $fetch<FundRaw[]>('https://api.argentinadatos.com/v1/finanzas/fci/rentaMixta/ultimo').catch(
-        () => [] as FundRaw[],
-      ),
-      $fetch<FundRaw[]>(
-        'https://api.argentinadatos.com/v1/finanzas/fci/rentaMixta/penultimo',
-      ).catch(() => [] as FundRaw[]),
-      $fetch<FundRaw[]>(
-        'https://api.argentinadatos.com/v1/finanzas/fci/rentaVariable/ultimo',
-      ).catch(() => [] as FundRaw[]),
-      $fetch<FundRaw[]>(
-        'https://api.argentinadatos.com/v1/finanzas/fci/rentaVariable/penultimo',
-      ).catch(() => [] as FundRaw[]),
-      retornoTotalDataPromise.then((data) => data.latest),
-      retornoTotalDataPromise.then((data) => data.previous),
-    ])
-
-    // Combinar datos actuales con anteriores
-    const combineWithPrevious = (
-      latest: FundRaw[],
-      previous: FundRaw[],
-      tipoFondo: 'rentaFija' | 'mercadoDinero' | 'rentaMixta' | 'rentaVariable' | 'retornoTotal',
-    ): FundWithPrevious[] => {
-      return latest.map((fund) => {
-        const previousFund = previous.find((p) => p.fondo === fund.fondo)
-        return {
-          ...fund,
-          fechaAnterior: previousFund?.fecha,
-          vcpAnterior: previousFund?.vcp,
-          ccpAnterior: previousFund?.ccp,
-          patrimonioAnterior: previousFund?.patrimonio,
-          tipoFondo,
-        }
-      })
-    }
-
-    const combinedFunds = [
-      ...combineWithPrevious(rentaFijaData.latest, rentaFijaData.previous, 'rentaFija'),
-      ...combineWithPrevious(mercadoDineroLatest, mercadoDineroPrevious, 'mercadoDinero'),
-      ...combineWithPrevious(rentaMixtaLatest, rentaMixtaPrevious, 'rentaMixta'),
-      ...combineWithPrevious(rentaVariableLatest, rentaVariablePrevious, 'rentaVariable'),
-      ...combineWithPrevious(retornoTotalLatest, retornoTotalPrevious, 'retornoTotal'),
-    ]
-
-    allFunds.value = combinedFunds
+    allFunds.value = await fetchFundsSeriesLatest()
   } catch (e) {
     error.value = e
   } finally {
@@ -381,9 +156,8 @@ async function fetchFunds() {
   }
 }
 
-// Cargar datos al montar
-onMounted(() => {
-  fetchFunds()
+onMounted(async () => {
+  await fetchFundsBySeries()
 })
 
 // Filtros
@@ -500,7 +274,11 @@ const filteredFunds = computed(() => {
   // Filtro por búsqueda
   if (debouncedSearchQuery.value) {
     const query = String(debouncedSearchQuery.value).toLowerCase()
-    funds = funds.filter((fund) => fund.fondo.toLowerCase().includes(query))
+    funds = funds.filter((fund) => {
+      const byFundName = fund.fondo.toLowerCase().includes(query)
+      const byDisplayName = (fund.displayName ?? '').toLowerCase().includes(query)
+      return byFundName || byDisplayName
+    })
   }
 
   // Filtro por tipo
@@ -595,12 +373,22 @@ function handleFundRowSelect(row: any) {
 }
 
 // Columnas de la tabla
-const columns: TableColumn<FundWithPrevious>[] = [
+const columns: TableColumn<FundSeriesRow>[] = [
   {
     accessorKey: 'fondo',
     header: getSortableHeader('Fondo'),
     cell: ({ row }) => {
-      return h('div', { class: 'font-medium' }, row.getValue('fondo'))
+      const displayName = row.original.displayName
+      const fundName = String(row.getValue('fondo') ?? '')
+
+      if (displayName && displayName !== fundName) {
+        return h('div', { class: 'space-y-0.5' }, [
+          h('div', { class: 'font-medium' }, fundName),
+          h('div', { class: 'text-xs text-muted' }, displayName),
+        ])
+      }
+
+      return h('div', { class: 'font-medium' }, fundName)
     },
   },
   {
@@ -608,15 +396,16 @@ const columns: TableColumn<FundWithPrevious>[] = [
     header: getSortableHeader('Tipo'),
     cell: ({ row }) => {
       const tipoFondo = row.original.tipoFondo
+      const typeLabel = row.original.typeLabel
       if (!tipoFondo) return h('span', { class: 'text-muted' }, '-')
       const tipoLabels: Record<string, string> = {
         rentaFija: 'Renta Fija',
-        mercadoDinero: 'Mercado Dinero',
+        mercadoDinero: 'Money Market',
         rentaMixta: 'Renta Mixta',
         rentaVariable: 'Renta Variable',
         retornoTotal: 'Retorno Total',
       }
-      const label = tipoLabels[tipoFondo] || tipoFondo
+      const label = typeLabel || tipoLabels[tipoFondo] || tipoFondo
       return h('div', { class: 'text-sm' }, label)
     },
   },
@@ -650,7 +439,7 @@ const columns: TableColumn<FundWithPrevious>[] = [
   },
   {
     id: 'dias',
-    accessorFn: (row: FundWithPrevious) => {
+    accessorFn: (row: FundSeriesRow) => {
       const fecha = row.fecha
       const fechaAnterior = row.fechaAnterior
       if (!fecha || !fechaAnterior) return null
@@ -695,7 +484,7 @@ const columns: TableColumn<FundWithPrevious>[] = [
   },
   {
     id: 'rendimientoEfectivo',
-    accessorFn: (row: FundWithPrevious) => {
+    accessorFn: (row: FundSeriesRow) => {
       const vcp = Number.parseFloat(String(row.vcp))
       const vcpAnterior = row.vcpAnterior
       if (vcpAnterior === undefined || Number.isNaN(vcp) || Number.isNaN(vcpAnterior)) {
@@ -734,7 +523,7 @@ const columns: TableColumn<FundWithPrevious>[] = [
 
       return h('div', { class: `text-right font-medium text-sm ${colorClass}` }, formatted)
     },
-    sortingFn: (rowA: { original: FundWithPrevious }, rowB: { original: FundWithPrevious }) => {
+    sortingFn: (rowA: { original: FundSeriesRow }, rowB: { original: FundSeriesRow }) => {
       const vcpA = Number.parseFloat(String(rowA.original.vcp))
       const vcpAnteriorA = rowA.original.vcpAnterior
       const vcpB = Number.parseFloat(String(rowB.original.vcp))
@@ -758,7 +547,7 @@ const columns: TableColumn<FundWithPrevious>[] = [
   },
   {
     id: 'tna',
-    accessorFn: (row: FundWithPrevious) => {
+    accessorFn: (row: FundSeriesRow) => {
       const fecha = row.fecha
       const fechaAnterior = row.fechaAnterior
       const vcp = Number.parseFloat(String(row.vcp))
@@ -817,7 +606,7 @@ const columns: TableColumn<FundWithPrevious>[] = [
 
       return h('div', { class: `text-right font-medium text-sm ${colorClass}` }, formatted)
     },
-    sortingFn: (rowA: { original: FundWithPrevious }, rowB: { original: FundWithPrevious }) => {
+    sortingFn: (rowA: { original: FundSeriesRow }, rowB: { original: FundSeriesRow }) => {
       const fechaA = rowA.original.fecha
       const fechaAnteriorA = rowA.original.fechaAnterior
       const vcpA = Number.parseFloat(String(rowA.original.vcp))

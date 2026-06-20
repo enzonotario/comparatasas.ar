@@ -12,6 +12,7 @@ export interface ProcessedFund {
   type?: string
   typeLabel?: string
   url?: string
+  valorCuotaparte?: number
   meta?: {
     showInFunds?: boolean
     showInAccounts?: boolean

@@ -17,6 +17,82 @@ export interface FundMapping {
   institutions: FundInstitution[]
 }
 
+export type FundType =
+  | 'rentaFija'
+  | 'mercadoDinero'
+  | 'rentaMixta'
+  | 'rentaVariable'
+  | 'retornoTotal'
+
+export interface FundTypeInfo {
+  type: FundType
+  typeLabel: string
+}
+
+function slugifyFundName(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function normalizeFundType(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+export function getFundTypeInfo(
+  tipoRenta?: string | null,
+  fallback?: FundType,
+): FundTypeInfo | undefined {
+  const normalized = normalizeFundType(tipoRenta || '')
+
+  if (
+    normalized === 'mercado de dinero' ||
+    normalized === 'money market' ||
+    normalized === 'moneymarket'
+  ) {
+    return { type: 'mercadoDinero', typeLabel: 'Money Market' }
+  }
+
+  if (normalized === 'renta fija' || normalized === 'rentafija') {
+    return { type: 'rentaFija', typeLabel: 'Renta Fija' }
+  }
+
+  if (normalized === 'renta mixta' || normalized === 'rentamixta') {
+    return { type: 'rentaMixta', typeLabel: 'Renta Mixta' }
+  }
+
+  if (normalized === 'renta variable' || normalized === 'rentavariable') {
+    return { type: 'rentaVariable', typeLabel: 'Renta Variable' }
+  }
+
+  if (normalized === 'retorno total' || normalized === 'retornototal') {
+    return { type: 'retornoTotal', typeLabel: 'Retorno Total' }
+  }
+
+  if (!fallback) return undefined
+
+  const fallbackLabels: Record<FundType, string> = {
+    rentaFija: 'Renta Fija',
+    mercadoDinero: 'Money Market',
+    rentaMixta: 'Renta Mixta',
+    rentaVariable: 'Renta Variable',
+    retornoTotal: 'Retorno Total',
+  }
+
+  return {
+    type: fallback,
+    typeLabel: fallbackLabels[fallback],
+  }
+}
+
 const fundMappings: FundMapping[] = [
   {
     fundName: 'Mercado Fondo - Clase A',
@@ -763,3 +839,69 @@ const fundMappings: FundMapping[] = [
 export function getFundMapping(fundName: string): FundMapping | undefined {
   return fundMappings.find((m) => m.fundName === fundName)
 }
+
+export function getFundMappingBySlug(fundSlug: string): FundMapping | undefined {
+  return fundMappings.find((m) => slugifyFundName(m.fundName) === fundSlug)
+}
+
+export function getAllMappedFundNames(): string[] {
+  return fundMappings.map((m) => m.fundName)
+}
+
+export const comparatasasFondosArs = [
+  'adcap-ahorro-pesos-fondo-de-dinero-clase-a',
+  'allaria-ahorro-clase-e',
+  'alpha-pesos-clase-a',
+  'balanz-acciones-clase-a',
+  'balanz-capital-money-market-clase-a',
+  'cocos-acciones-clase-a',
+  'cocos-ahorro-clase-a',
+  'cocos-pesos-plus-clase-a',
+  'cocos-rendimiento-clase-a',
+  'crecer-acciones-clase-a',
+  'delta-pesos-clase-a',
+  'delta-pesos-clase-x',
+  'fima-premium-clase-a',
+  'fima-premium-clase-p',
+  'ieb-ahorro-clase-a',
+  'ieb-value-clase-a',
+  'iol-cash-management-clase-a',
+  'mercado-fondo-clase-a',
+  'pionero-acciones',
+  'pionero-pesos-clase-a',
+  'premier-renta-cp-en-pesos-clase-a',
+  'sbs-acciones-argentina-clase-a',
+  'sbs-ahorro-pesos-clase-a',
+  'st-zero-clase-d',
+  'toronto-trust-ahorro-clase-a',
+  'toronto-trust-multimercado-clase-a',
+  'ualintec-ahorro-pesos-clase-a',
+  'ualintec-pesos-plus-clase-a',
+  'ualintec-renta-variable-pesos-clase-a',
+]
+
+export const comparatasasFondosUsd = [
+  'adcap-ahorro-dolares-clase-c',
+  'allaria-dolar-ahorro-clase-a',
+  'balanz-ahorro-en-dolares-clase-a',
+  'balanz-money-market-usd-clase-a',
+  'cocos-ahorro-dolares-clase-a',
+  'cocos-dolares-plus-clase-a',
+  'crecer-renta-dolar-clase-a',
+  'fima-premium-dolares-clase-a',
+  'fima-renta-fija-dolares-clase-a',
+  'gainvest-renta-fija-dolares-clase-a',
+  'iam-retorno-dolares-clase-a',
+  'ieb-corto-plazo-dolar-clase-a',
+  'ieb-estrategico-clase-a',
+  'ieb-estrategico-ii-clase-a',
+  'iol-dolar-ahorro-plus-clase-d',
+  'pionero-money-market-dolar-clase-a',
+  'sbs-liquidez-usd-clase-a',
+  'superfondo-ahorro-en-dolares-clase-a',
+  'toronto-trust-money-market-dolar-clase-a',
+  'toronto-trust-renta-dolar-clase-a',
+  'ualintec-renta-dolares-clase-a',
+]
+
+export const comparatasasFondos = [...comparatasasFondosArs, ...comparatasasFondosUsd]
