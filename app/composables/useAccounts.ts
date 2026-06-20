@@ -75,10 +75,7 @@ export function useAccounts() {
 
   function filterAndMapAccounts(fundNames: string[]): AccountItem[] {
     return (data.value ?? [])
-      .filter(
-        (a) =>
-          fundNames.includes(a.fondo) && !isBlacklisted(a.fondo) && a.tna > 0,
-      )
+      .filter((a) => fundNames.includes(a.fondo) && !isBlacklisted(a.fondo) && a.tna > 0)
       .map((a) => mapApiAccountToAccountItem(a))
       .sort((a, b) => b.tna - a.tna)
   }

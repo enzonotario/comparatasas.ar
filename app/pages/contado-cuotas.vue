@@ -212,7 +212,8 @@ const selectedCarryOptionIds = computed<string[]>({
   },
 })
 
-const { productScenarios, showProductScenarios, isSamePriceInstallmentLabel } = useProductScenarios()
+const { productScenarios, showProductScenarios, isSamePriceInstallmentLabel } =
+  useProductScenarios()
 const summarySectionRef = ref<HTMLElement | null>(null)
 const productPanelReservedSpace = ref(220)
 
@@ -841,9 +842,7 @@ const carrySectionLoading = computed(() => {
 <template>
   <div
     class="space-y-6"
-    :style="
-      showProductScenarios ? { paddingBottom: `${productPanelReservedSpace}px` } : undefined
-    "
+    :style="showProductScenarios ? { paddingBottom: `${productPanelReservedSpace}px` } : undefined"
   >
     <UAlert
       v-if="errorRem"

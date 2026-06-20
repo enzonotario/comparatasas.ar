@@ -93,7 +93,10 @@ const fundsByRisk = computed(() => {
 
   resolvedFundsAccounts.value.forEach((fund) => {
     const t = fund.type || ''
-    if (fund.fondo === 'Cocos Rendimiento - Clase A' || fund.fondo === 'Cocos Pesos Plus - Clase A') {
+    if (
+      fund.fondo === 'Cocos Rendimiento - Clase A' ||
+      fund.fondo === 'Cocos Pesos Plus - Clase A'
+    ) {
       grouped['Riesgo bajo'].push(fund)
     } else if (t === 'mercadoDinero' || t === 'fciVariablesUltimo') {
       grouped['Riesgo muy bajo'].push(fund)

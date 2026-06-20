@@ -25,7 +25,8 @@ const emit = defineEmits<{
   heightChange: [height: number]
 }>()
 
-const { productScenarios, showProductScenarios, isSamePriceInstallmentLabel } = useProductScenarios()
+const { productScenarios, showProductScenarios, isSamePriceInstallmentLabel } =
+  useProductScenarios()
 const route = useRoute()
 
 const panelMode = ref<'expanded' | 'minimized'>('expanded')

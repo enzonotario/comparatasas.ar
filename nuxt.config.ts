@@ -105,13 +105,13 @@ export default defineNuxtConfig({
     name: 'comparatasas.ar',
   },
 
-  compatibilityDate: '2025-07-15',
-
   runtimeConfig: {
     public: {
       showProductScenarios: false,
     },
   },
+
+  compatibilityDate: '2025-07-15',
 
   nitro: {
     preset: 'cloudflare_pages',
