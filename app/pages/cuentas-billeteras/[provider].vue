@@ -43,6 +43,7 @@ const slugToApiName: Record<string, string> = {
   'naranja-x': 'NARANJA X',
   cresium: 'CRESIUM',
   supervielle: 'SUPERVIELLE',
+  'supervielle-hit-iol': 'SUPERVIELLE HIT IOL',
   bna: 'BNA',
   capyfi: 'CAPYFI',
 }

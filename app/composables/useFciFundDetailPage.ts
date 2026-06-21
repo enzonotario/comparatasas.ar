@@ -1,23 +1,15 @@
 import { toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
+import { FetchError } from 'ofetch'
 import { fetchFciFundDetail, fetchFciFundHistory } from '~/composables/useFciFundDetails'
 
 async function fetchFundDetailSafe(slug: string) {
   try {
     return await fetchFciFundDetail(slug)
-  } catch (error: unknown) {
-    const statusCode =
-      typeof error === 'object' &&
-      error !== null &&
-      'statusCode' in error &&
-      typeof error.statusCode === 'number'
-        ? error.statusCode
-        : undefined
-
-    if (statusCode === 404) {
+  } catch (error) {
+    if (error instanceof FetchError && error.statusCode === 404) {
       return null
     }
-
     throw error
   }
 }

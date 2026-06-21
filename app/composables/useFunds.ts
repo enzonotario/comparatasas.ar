@@ -38,6 +38,22 @@ function getProcessedFundTypeInfo(
   return getFundTypeInfo(fondo.tipoRenta)
 }
 
+function getFundTypeInfoFromRaw(l: FundRaw, inst: FundInstitution) {
+  if (inst.showInUsdMoneyMarket) {
+    return { type: 'mercadoDineroUsd' as const, typeLabel: 'Money Market' }
+  }
+
+  if (inst.showInUsdHighRisk) {
+    return { type: 'rentaFijaUsdHighRisk' as const, typeLabel: 'Retorno Total' }
+  }
+
+  if (inst.showInUsdFunds) {
+    return { type: 'rentaFijaUsd' as const, typeLabel: 'Renta Fija' }
+  }
+
+  return getFundTypeInfo(l.tipoRenta)
+}
+
 interface FundRaw {
   fondo: string
   horizonte: string
@@ -161,7 +177,7 @@ function getFundsMap(latest: FundRaw[], previous: FundRaw[]) {
       patrimonio: l.patrimonio,
       logo: getLogoForEntity(inst.institution) || getInstitutionLogo(inst.institution),
       url: inst.fundUrl || getInstitutionUrl(inst.institution),
-      ...(getProcessedFundTypeInfo(fondo, inst) ?? {}),
+      ...(getFundTypeInfoFromRaw(l, inst) ?? {}),
       meta: {
         showInFunds: inst.showInFunds || false,
         showInAccounts: inst.showInAccounts || false,

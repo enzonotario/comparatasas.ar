@@ -266,7 +266,7 @@ const chartConfig = computed<any>(() => ({
         show: true,
         color: textColor.value,
         backgroundColor: '#FFFFFF',
-        fontSize: 14,
+        fontSize: BAR_DATA_FS,
         customFormat: ({ datapoint }: { datapoint: { name?: string; value?: number } }) => {
           const name = datapoint?.name ?? ''
           const p = datapoint?.value != null ? formatCurrency(Number(datapoint.value)) : ''
@@ -291,7 +291,6 @@ const chartConfig = computed<any>(() => ({
         roundingPercentage: 0,
         prefix: '',
         suffix: '',
-        fontSize: BAR_DATA_FS,
       },
     },
   },

@@ -62,6 +62,7 @@ export function getProviderSlug(providerName: string): string {
     NARANJA: 'naranja-x',
     CRESIUM: 'cresium',
     SUPERVIELLE: 'supervielle',
+    'SUPERVIELLE HIT IOL': 'supervielle-hit-iol',
     BNA: 'bna',
     'BANCO NACIÓN ARGENTINA': 'bna',
     'BANCO NACION': 'bna',
@@ -89,6 +90,7 @@ export const ACCOUNT_HISTORY_PROVIDER_SLUGS = [
   'naranja-x',
   'cresium',
   'supervielle',
+  'supervielle-hit-iol',
   'bna',
   'brubank',
   'montemar-pay',
@@ -105,12 +107,16 @@ export function useAccountHistory(providerSlug: MaybeRefOrGetter<string>) {
   } = useAsyncData(
     () => `account-history:${slug.value}`,
     async () => {
-      const response = await $fetch<AccountHistoryItem[]>(
-        `https://api.argentinadatos.com/v1/finanzas/fci/otros/${slug.value}/`,
-      )
-      return response.sort(
-        (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime(),
-      )
+      try {
+        const response = await $fetch<AccountHistoryItem[]>(
+          `https://api.argentinadatos.com/v1/finanzas/fci/otros/${slug.value}/`,
+        )
+        return response.sort(
+          (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime(),
+        )
+      } catch {
+        return []
+      }
     },
     {
       watch: [slug],

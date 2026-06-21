@@ -87,7 +87,7 @@ const {
 watch(
   selectedDetailTab,
   async (tab) => {
-    if (tab !== 'historico') return
+    if (tab !== 'historico' || !fundDetail.value) return
     await ensureHistoryLoaded()
   },
   { immediate: true },
