@@ -68,7 +68,7 @@ const mappedFundLabel = computed(() => {
 })
 
 const { fundDetail, fundHistory, status, error, historyStatus, historyError, ensureHistoryLoaded } =
-  await useFciFundDetailPage(slug)
+  useFciFundDetailPage(slug)
 
 const showNotFound = computed(() => !fundDetail.value && status.value === 'success')
 

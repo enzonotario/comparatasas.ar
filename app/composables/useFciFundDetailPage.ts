@@ -22,10 +22,10 @@ async function fetchFundHistorySafe(slug: string) {
   }
 }
 
-export async function useFciFundDetailPage(slugSource: MaybeRefOrGetter<string>) {
+export function useFciFundDetailPage(slugSource: MaybeRefOrGetter<string>) {
   const slug = computed(() => String(toValue(slugSource) || ''))
 
-  const { data, status, error } = await useAsyncData(
+  const { data, status, error } = useAsyncData(
     () => `fci-fund-detail:${slug.value}`,
     async () => fetchFundDetailSafe(slug.value),
   )
@@ -35,7 +35,7 @@ export async function useFciFundDetailPage(slugSource: MaybeRefOrGetter<string>)
     status: historyStatus,
     error: historyError,
     refresh: loadHistory,
-  } = await useAsyncData(
+  } = useAsyncData(
     () => `fci-fund-history:${slug.value}`,
     async () => {
       if (!data.value) return null
