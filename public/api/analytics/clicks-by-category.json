@@ -1,16 +1,16 @@
 [
   {
     "category": "Plazo Fijo",
-    "total_clicks": 20530,
+    "total_clicks": 20585,
     "provider_count": 35,
     "top_providers": [
       {
         "provider": "Banco Voii",
-        "clicks": 4271
+        "clicks": 4277
       },
       {
         "provider": "Crédito Regional",
-        "clicks": 1965
+        "clicks": 1966
       },
       {
         "provider": "Banco CMF",
@@ -18,17 +18,17 @@
       },
       {
         "provider": "Banco Galicia",
-        "clicks": 1345
+        "clicks": 1346
       },
       {
         "provider": "Banco Meridian",
-        "clicks": 1207
+        "clicks": 1230
       }
     ]
   },
   {
     "category": "Otro",
-    "total_clicks": 16360,
+    "total_clicks": 16404,
     "provider_count": 36,
     "top_providers": [
       {
@@ -37,11 +37,11 @@
       },
       {
         "provider": "Arqfinance",
-        "clicks": 3099
+        "clicks": 3107
       },
       {
         "provider": "Nexo",
-        "clicks": 2149
+        "clicks": 2153
       },
       {
         "provider": "DolarApp",
@@ -55,7 +55,7 @@
   },
   {
     "category": "Money Market",
-    "total_clicks": 11381,
+    "total_clicks": 11383,
     "provider_count": 24,
     "top_providers": [
       {
@@ -64,7 +64,7 @@
       },
       {
         "provider": "Cocos",
-        "clicks": 2015
+        "clicks": 2016
       },
       {
         "provider": "Mercado Pago",
@@ -82,39 +82,39 @@
   },
   {
     "category": "Cuenta Remunerada",
-    "total_clicks": 11282,
+    "total_clicks": 11306,
     "provider_count": 7,
     "top_providers": [
       {
         "provider": "Banco Nación",
-        "clicks": 4533
+        "clicks": 4544
       },
       {
         "provider": "Carrefour Banco",
-        "clicks": 3141
+        "clicks": 3144
       },
       {
         "provider": "Ualá",
-        "clicks": 2111
+        "clicks": 2116
       },
       {
         "provider": "Reba",
-        "clicks": 874
+        "clicks": 877
       },
       {
         "provider": "Supervielle",
-        "clicks": 449
+        "clicks": 451
       }
     ]
   },
   {
     "category": "Billetera",
-    "total_clicks": 8829,
+    "total_clicks": 8855,
     "provider_count": 11,
     "top_providers": [
       {
         "provider": "AstroPay",
-        "clicks": 3263
+        "clicks": 3275
       },
       {
         "provider": "Mercado Pago",
@@ -122,7 +122,7 @@
       },
       {
         "provider": "Fiwind",
-        "clicks": 1448
+        "clicks": 1456
       },
       {
         "provider": "Lemon",
@@ -130,13 +130,13 @@
       },
       {
         "provider": "Prex",
-        "clicks": 512
+        "clicks": 515
       }
     ]
   },
   {
     "category": "Renta Fija",
-    "total_clicks": 5231,
+    "total_clicks": 5232,
     "provider_count": 10,
     "top_providers": [
       {
@@ -163,12 +163,12 @@
   },
   {
     "category": "Página Amiga",
-    "total_clicks": 4658,
+    "total_clicks": 4660,
     "provider_count": 9,
     "top_providers": [
       {
         "provider": "comparadolar.ar",
-        "clicks": 1717
+        "clicks": 1718
       },
       {
         "provider": "dolarito.ar",
@@ -176,7 +176,7 @@
       },
       {
         "provider": "enqueinvierto.ar",
-        "clicks": 495
+        "clicks": 496
       },
       {
         "provider": "betece.app",
@@ -190,20 +190,20 @@
   },
   {
     "category": "General",
-    "total_clicks": 3872,
+    "total_clicks": 3888,
     "provider_count": 10,
     "top_providers": [
       {
         "provider": "Carrefour Banco",
-        "clicks": 2138
+        "clicks": 2141
       },
       {
         "provider": "Fiwind",
-        "clicks": 787
+        "clicks": 795
       },
       {
         "provider": "Ualá",
-        "clicks": 416
+        "clicks": 417
       },
       {
         "provider": "Dub.link",
@@ -217,12 +217,12 @@
   },
   {
     "category": "Criptomonedas",
-    "total_clicks": 2971,
+    "total_clicks": 2977,
     "provider_count": 12,
     "top_providers": [
       {
         "provider": "Nexo",
-        "clicks": 1428
+        "clicks": 1430
       },
       {
         "provider": "Vesseo",
@@ -230,7 +230,7 @@
       },
       {
         "provider": "Lune.fi",
-        "clicks": 294
+        "clicks": 298
       },
       {
         "provider": "Dub.link",
@@ -244,12 +244,12 @@
   },
   {
     "category": "Billetera USD",
-    "total_clicks": 2650,
+    "total_clicks": 2657,
     "provider_count": 3,
     "top_providers": [
       {
         "provider": "AstroPay",
-        "clicks": 2056
+        "clicks": 2062
       },
       {
         "provider": "Dub.link",
@@ -257,18 +257,18 @@
       },
       {
         "provider": "LB",
-        "clicks": 217
+        "clicks": 218
       }
     ]
   },
   {
     "category": "PF UVA pago periódico",
-    "total_clicks": 1035,
+    "total_clicks": 1039,
     "provider_count": 1,
     "top_providers": [
       {
         "provider": "Banco Nación",
-        "clicks": 1035
+        "clicks": 1039
       }
     ]
   },
@@ -289,7 +289,7 @@
   },
   {
     "category": "Cuenta Remunerada USD",
-    "total_clicks": 443,
+    "total_clicks": 445,
     "provider_count": 5,
     "top_providers": [
       {
@@ -298,11 +298,11 @@
       },
       {
         "provider": "Supervielle",
-        "clicks": 134
+        "clicks": 135
       },
       {
         "provider": "Banco Nación",
-        "clicks": 88
+        "clicks": 89
       },
       {
         "provider": "Dub.link",
@@ -327,12 +327,12 @@
   },
   {
     "category": "wARS",
-    "total_clicks": 221,
+    "total_clicks": 222,
     "provider_count": 2,
     "top_providers": [
       {
         "provider": "Ripio",
-        "clicks": 112
+        "clicks": 113
       },
       {
         "provider": "CapyFi",
