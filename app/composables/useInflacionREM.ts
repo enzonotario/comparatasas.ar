@@ -89,45 +89,34 @@ function buildInflacionRemFromRemUltimo(rows: RemUltimoRow[]): InflacionREMData[
   return out
 }
 
-const data = ref<InflacionREMData[] | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-const informeDate = ref<string | null>(null)
-
 export function useInflacionREM() {
-  async function fetch() {
-    if (data.value) {
-      return
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('inflacion-rem', async () => {
+    const response = await $fetch<RemUltimoRow[]>(
+      'https://api.argentinadatos.com/v1/finanzas/rem/ultimo',
+    )
+    return {
+      inflacionREM: buildInflacionRemFromRemUltimo(response),
+      informeDate: response[0]?.informe ?? null,
     }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<RemUltimoRow[]>(
-        'https://api.argentinadatos.com/v1/finanzas/rem/ultimo',
-      )
-      data.value = buildInflacionRemFromRemUltimo(response)
-      informeDate.value = response[0]?.informe ?? null
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  const inflacionREM = computed(() => {
-    return data.value ?? []
   })
+
+  const inflacionREM = computed(() => data.value?.inflacionREM ?? [])
 
   const inflacionREMPorFecha = computed(() => {
     const map = new Map<string, number>()
-    ;(data.value ?? []).forEach((item) => {
+    inflacionREM.value.forEach((item) => {
       const fechaKey = item.fecha.substring(0, 7)
       map.set(fechaKey, item.valor)
     })
     return map
   })
+
+  const informeDate = computed(() => data.value?.informeDate ?? null)
 
   return {
     inflacionREM,

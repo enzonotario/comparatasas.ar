@@ -26,38 +26,25 @@ export interface PlazoFijoPrecancelableItem {
   modalidad: string | null
 }
 
-const data = ref<PlazoFijoPrecancelable[] | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-
 function formatPlazo(plazoMinDias: number, plazoMaxDias: number | null): string {
   if (plazoMaxDias == null) return `Plazo mínimo: ${plazoMinDias} días`
   return `Plazo: ${plazoMinDias} a ${plazoMaxDias} días`
 }
 
 export function usePlazosFijosPrecancelables() {
-  async function fetch() {
-    if (data.value) {
-      return
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<PlazoFijoPrecancelable[]>(
-        'https://api.argentinadatos.com/v1/finanzas/tasas/plazoFijoPrecancelable',
-      )
-      data.value = response
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-  }
+  const {
+    data: plazosFijosPrecancelables,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('plazos-fijos-precancelables', () =>
+    $fetch<PlazoFijoPrecancelable[]>(
+      'https://api.argentinadatos.com/v1/finanzas/tasas/plazoFijoPrecancelable',
+    ),
+  )
 
   const items = computed((): PlazoFijoPrecancelableItem[] => {
-    return (data.value ?? [])
+    return (plazosFijosPrecancelables.value ?? [])
       .map((plazoFijo) => ({
         institution: getPlazoFijoShortName(plazoFijo.entidad) || plazoFijo.entidad,
         logo: getPlazoFijoLogo(plazoFijo.entidad) || plazoFijo.logo,
@@ -89,7 +76,7 @@ export function usePlazosFijosPrecancelables() {
   })
 
   return {
-    plazosFijosPrecancelables: data,
+    plazosFijosPrecancelables,
     plazosFijosPrecancelablesItems: items,
     loading,
     error,

@@ -68,26 +68,22 @@ const {
   hipotecariosUVA,
   loading: loadingHipotecarios,
   error: errorHipotecarios,
-  fetch: fetchHipotecarios,
 } = useHipotecariosUVA()
 const {
   inflacionHistorica,
   loading: loadingInflacion,
   error: errorInflacion,
-  fetch: fetchInflacion,
 } = useInflacion()
 const {
   inflacionREM,
   loading: loadingInflacionREM,
   error: errorInflacionREM,
-  fetch: fetchInflacionREM,
 } = useInflacionREM()
-const { ultimoUVA, uvaHistorica, loading: loadingUVA, error: errorUVA, fetch: fetchUVA } = useUVA()
+const { ultimoUVA, uvaHistorica, loading: loadingUVA, error: errorUVA } = useUVA()
 const {
   tipoCambioVenta,
   loading: loadingTipoCambio,
   error: errorTipoCambio,
-  fetch: fetchTipoCambio,
 } = useTipoCambio()
 
 const montoPropiedad = ref(100000)
@@ -101,16 +97,6 @@ const uvaInicial = computed(() => {
 
 const tipoCambio = computed(() => {
   return tipoCambioVenta.value
-})
-
-onMounted(async () => {
-  await Promise.all([
-    fetchHipotecarios(),
-    fetchInflacion(),
-    fetchInflacionREM(),
-    fetchUVA(),
-    fetchTipoCambio(),
-  ])
 })
 
 const inflacionOrdenada = computed(() => {

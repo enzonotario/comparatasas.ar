@@ -25,10 +25,6 @@ export type FciVariableUltimoFund = ProcessedFund & {
   condicionesCorto?: string
 }
 
-const data = ref<FciVariableUltimoRow[] | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-
 function variableEntityKey(row: FciVariableUltimoRow): string {
   return row.nombre?.trim() || row.fondo?.trim() || ''
 }
@@ -62,25 +58,16 @@ function mapRow(row: FciVariableUltimoRow): FciVariableUltimoFund {
 }
 
 export function useFciVariablesUltimo() {
-  async function fetch() {
-    if (data.value) {
-      return
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<FciVariableUltimoRow[]>(
-        'https://api.argentinadatos.com/v1/finanzas/fci/variables/ultimo',
-      )
-      data.value = response
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-  }
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('fci-variables-ultimo', () =>
+    $fetch<FciVariableUltimoRow[]>(
+      'https://api.argentinadatos.com/v1/finanzas/fci/variables/ultimo',
+    ),
+  )
 
   const funds = computed<FciVariableUltimoFund[]>(() => {
     return (data.value ?? [])

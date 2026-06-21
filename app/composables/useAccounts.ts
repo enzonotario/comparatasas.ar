@@ -30,30 +30,15 @@ export interface AccountItem {
   url?: string
 }
 
-const data = ref<ApiAccount[] | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-
 export function useAccounts() {
-  async function fetch() {
-    if (data.value) {
-      return
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<ApiAccount[]>(
-        'https://api.argentinadatos.com/v1/finanzas/fci/otros/ultimo',
-      )
-      data.value = response
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-  }
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('accounts', () =>
+    $fetch<ApiAccount[]>('https://api.argentinadatos.com/v1/finanzas/fci/otros/ultimo'),
+  )
 
   function mapApiAccountToAccountItem(a: ApiAccount): AccountItem {
     return {

@@ -24,30 +24,15 @@ export interface CriptopesoItem {
   url?: string
 }
 
-const data = ref<ApiCriptopeso[] | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-
 export function useCriptopesos() {
-  async function fetch() {
-    if (data.value) {
-      return
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<ApiCriptopeso[]>(
-        'https://api.argentinadatos.com/v1/finanzas/criptopesos/',
-      )
-      data.value = response
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-  }
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('criptopesos', () =>
+    $fetch<ApiCriptopeso[]>('https://api.argentinadatos.com/v1/finanzas/criptopesos/'),
+  )
 
   function mapApiCriptopesoToItem(a: ApiCriptopeso): CriptopesoItem {
     return {

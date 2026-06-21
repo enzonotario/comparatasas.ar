@@ -70,12 +70,7 @@ const mappedFundLabel = computed(() => {
 const { fundDetail, fundHistory, status, error, historyStatus, historyError, ensureHistoryLoaded } =
   await useFciFundDetailPage(slug)
 
-if (error.value?.statusCode === 404) {
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'Fondo no encontrado',
-  })
-}
+const showNotFound = computed(() => !fundDetail.value && status.value === 'success')
 
 const {
   historyRows,
@@ -155,6 +150,14 @@ useSeoMeta({
     </div>
 
     <FundsLoading v-if="status === 'pending' && !fundDetail" />
+
+    <UAlert
+      v-else-if="showNotFound"
+      color="warning"
+      variant="soft"
+      title="Fondo no encontrado"
+      description="No encontramos información para este fondo. Volvé al listado para explorar otros FCI."
+    />
 
     <UAlert
       v-else-if="error"

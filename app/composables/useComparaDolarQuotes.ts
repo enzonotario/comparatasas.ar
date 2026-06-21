@@ -32,52 +32,43 @@ export interface ComparaDolarQuote {
   logoUrl?: string
 }
 
-const quotes = ref<ComparaDolarQuote[]>([])
-const loading = ref(false)
-const error = ref<unknown>(null)
+async function fetchComparaDolarQuotes(): Promise<ComparaDolarQuote[]> {
+  const [usdQuotes, usdcQuotes] = await Promise.all([
+    $fetch<ComparaDolarUsdQuoteResponseItem[]>('https://api.comparadolar.ar/usd'),
+    $fetch<ComparaDolarStableQuoteResponseItem[]>('https://api.comparadolar.ar/usdc'),
+  ])
+
+  return [
+    ...(usdQuotes ?? []).map((item) => ({
+      asset: 'usd' as const,
+      slug: item.slug,
+      prettyName: item.prettyName || item.name || item.slug,
+      bid: item.bid,
+      ask: item.ask,
+      url: item.url,
+      logoUrl: item.logoUrl,
+    })),
+    ...(usdcQuotes ?? []).map((item) => ({
+      asset: 'usdc' as const,
+      slug: item.slug,
+      prettyName: item.prettyName || item.id || item.slug,
+      bid: item.bid,
+      ask: item.ask,
+      url: item.url,
+      logoUrl: item.logo,
+    })),
+  ]
+}
 
 export function useComparaDolarQuotes() {
-  async function fetch(force = false): Promise<ComparaDolarQuote[]> {
-    if (loading.value) return quotes.value
-    if (!force && quotes.value.length > 0) return quotes.value
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const [usdQuotes, usdcQuotes] = await Promise.all([
-        $fetch<ComparaDolarUsdQuoteResponseItem[]>('https://api.comparadolar.ar/usd'),
-        $fetch<ComparaDolarStableQuoteResponseItem[]>('https://api.comparadolar.ar/usdc'),
-      ])
-
-      quotes.value = [
-        ...(usdQuotes ?? []).map((item) => ({
-          asset: 'usd' as const,
-          slug: item.slug,
-          prettyName: item.prettyName || item.name || item.slug,
-          bid: item.bid,
-          ask: item.ask,
-          url: item.url,
-          logoUrl: item.logoUrl,
-        })),
-        ...(usdcQuotes ?? []).map((item) => ({
-          asset: 'usdc' as const,
-          slug: item.slug,
-          prettyName: item.prettyName || item.id || item.slug,
-          bid: item.bid,
-          ask: item.ask,
-          url: item.url,
-          logoUrl: item.logo,
-        })),
-      ]
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-
-    return quotes.value
-  }
+  const {
+    data: quotes,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('comparadolar-quotes', fetchComparaDolarQuotes, {
+    default: () => [] as ComparaDolarQuote[],
+  })
 
   return {
     quotes,

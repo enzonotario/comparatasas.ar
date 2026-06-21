@@ -18,35 +18,22 @@ export interface PlazoFijoUvaPagoPeriodicoItem {
   plazoMaxDias: number
 }
 
-const data = ref<ProveedorPlazoFijoUvaPagoPeriodico[] | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-
 export function usePlazosFijosUvaPagoPeriodico() {
-  async function fetch() {
-    if (data.value) {
-      return
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<ProveedorPlazoFijoUvaPagoPeriodico[]>(
-        'https://api.argentinadatos.com/v1/finanzas/tasas/plazoFijoUvaPagoPeriodico',
-      )
-      data.value = response
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-  }
+  const {
+    data: proveedores,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('plazos-fijos-uva-pago-periodico', () =>
+    $fetch<ProveedorPlazoFijoUvaPagoPeriodico[]>(
+      'https://api.argentinadatos.com/v1/finanzas/tasas/plazoFijoUvaPagoPeriodico',
+    ),
+  )
 
   const items = computed((): PlazoFijoUvaPagoPeriodicoItem[] => {
     const rows: PlazoFijoUvaPagoPeriodicoItem[] = []
 
-    for (const prov of data.value ?? []) {
+    for (const prov of proveedores.value ?? []) {
       for (const t of prov.tasas) {
         rows.push({
           rowKey: `${prov.entidad} [${t.plazoMinDias}-${t.plazoMaxDias}]`,
@@ -67,7 +54,7 @@ export function usePlazosFijosUvaPagoPeriodico() {
   })
 
   return {
-    proveedores: data,
+    proveedores,
     plazosFijosUvaPagoPeriodicoItems: items,
     loading,
     error,

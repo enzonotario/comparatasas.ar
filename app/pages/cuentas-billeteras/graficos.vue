@@ -58,12 +58,10 @@ const {
   data: fundsData,
   loading: loadingFunds,
   error: fundsError,
-  fetch: fetchFunds,
 } = useFunds()
 const {
   funds: fciVariablesFunds,
   loading: loadingFciVariables,
-  fetch: fetchFciVariablesUltimo,
 } = useFciVariablesUltimo()
 
 const isMounted = ref(false)
@@ -98,17 +96,8 @@ const hasFundsData = computed(() => {
   return variableReturnFunds.value.length > 0 && !loadingFunds.value && !loadingFciVariables.value
 })
 
-const { fetch: fetchAccounts } = useAccounts()
-
 onMounted(() => {
   isMounted.value = true
-  if (accounts.value.length === 0 && !loadingAccounts.value) {
-    fetchAccounts()
-  }
-  if (allFundsCache.value.length === 0 && !loadingFunds.value) {
-    fetchFunds()
-  }
-  fetchFciVariablesUltimo()
 })
 </script>
 

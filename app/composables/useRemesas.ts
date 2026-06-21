@@ -28,33 +28,24 @@ interface RemesasResponse {
   remesas: RemesaOption[]
 }
 
-const remesas = ref<RemesaOption[]>([])
-const fechaActualizacion = ref<string | null>(null)
-const loading = ref(false)
-const error = ref<unknown>(null)
-
 export function useRemesas() {
-  async function fetch(force = false): Promise<RemesaOption[]> {
-    if (loading.value) return remesas.value
-    if (!force && remesas.value.length > 0) return remesas.value
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<RemesasResponse>(
-        'https://api.argentinadatos.com/v1/finanzas/remesas',
-      )
-      remesas.value = response.remesas ?? []
-      fechaActualizacion.value = response.fechaActualizacion ?? null
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('remesas', async () => {
+    const response = await $fetch<RemesasResponse>(
+      'https://api.argentinadatos.com/v1/finanzas/remesas',
+    )
+    return {
+      remesas: response.remesas ?? [],
+      fechaActualizacion: response.fechaActualizacion ?? null,
     }
+  })
 
-    return remesas.value
-  }
+  const remesas = computed(() => data.value?.remesas ?? [])
+  const fechaActualizacion = computed(() => data.value?.fechaActualizacion ?? null)
 
   return {
     remesas,

@@ -3,30 +3,15 @@ export interface UVAData {
   valor: number
 }
 
-const data = ref<UVAData[] | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-
 export function useUVA() {
-  async function fetch() {
-    if (data.value) {
-      return
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<UVAData[]>(
-        'https://api.argentinadatos.com/v1/finanzas/indices/uva/',
-      )
-      data.value = response
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-  }
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('uva', () =>
+    $fetch<UVAData[]>('https://api.argentinadatos.com/v1/finanzas/indices/uva/'),
+  )
 
   const uvaHistorica = computed(() => {
     return data.value ?? []

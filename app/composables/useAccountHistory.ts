@@ -1,3 +1,5 @@
+import { toValue, type MaybeRefOrGetter } from 'vue'
+
 export interface AccountHistoryItem {
   tna: number
   tea: number
@@ -72,30 +74,48 @@ export function getProviderSlug(providerName: string): string {
   return mapping[normalized] || normalized.toLowerCase()
 }
 
-export function useAccountHistory() {
-  const data = ref<AccountHistoryItem[] | null>(null)
-  const loading = ref(false)
-  const error = ref<unknown>(null)
+export const ACCOUNT_HISTORY_PROVIDER_SLUGS = [
+  'uala',
+  'uala-plus',
+  'uala-plus-1',
+  'uala-plus-2',
+  'bica-cuenta-positiva-1',
+  'bica-cuenta-positiva-2',
+  'bica-cuenta-positiva-3',
+  'bica-cuenta-positiva-4',
+  'fiwind',
+  'belo',
+  'carrefour-banco',
+  'naranja-x',
+  'cresium',
+  'supervielle',
+  'bna',
+  'brubank',
+  'montemar-pay',
+] as const
 
-  async function fetch(providerSlug: string) {
-    loading.value = true
-    error.value = null
+export function useAccountHistory(providerSlug: MaybeRefOrGetter<string>) {
+  const slug = computed(() => toValue(providerSlug))
 
-    try {
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData(
+    () => `account-history:${slug.value}`,
+    async () => {
       const response = await $fetch<AccountHistoryItem[]>(
-        `https://api.argentinadatos.com/v1/finanzas/fci/otros/${providerSlug}/`,
+        `https://api.argentinadatos.com/v1/finanzas/fci/otros/${slug.value}/`,
       )
-      // Ordenar por fecha de más antiguo a más reciente
-      data.value = response.sort(
+      return response.sort(
         (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime(),
       )
-    } catch (err) {
-      error.value = err
-      data.value = null
-    } finally {
-      loading.value = false
-    }
-  }
+    },
+    {
+      watch: [slug],
+    },
+  )
 
   return { data, loading, error, fetch }
 }

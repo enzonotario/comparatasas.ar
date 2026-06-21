@@ -18,8 +18,6 @@ const MONTH_CODES: Record<string, number> = {
 
 function parseTickerMaturity(ticker: string): string | undefined {
   if (ticker.length < 5) return undefined
-  // S para LECAP, T para BONCAP
-  // Algunos tickers pueden tener sufijos como D o C (e.g. S2Y6D), los ignoramos para el parseo de fecha
   const baseTicker = ticker.substring(0, 5)
   const type = baseTicker[0]
   if (type !== 'S' && type !== 'T') return undefined
@@ -34,13 +32,10 @@ function parseTickerMaturity(ticker: string): string | undefined {
 
   if (isNaN(day) || month === undefined || isNaN(yearLastDigit)) return undefined
 
-  // Determinar el año completo de forma genérica
   const currentYear = new Date().getFullYear()
   const currentDecade = Math.floor(currentYear / 10) * 10
   let year = currentDecade + yearLastDigit
 
-  // Si el año resultante ya pasó por más de 1 año (considerando instrumentos recientes),
-  // saltamos a la siguiente década.
   if (year < currentYear - 1) {
     year += 10
   }
@@ -59,85 +54,83 @@ interface LicitacionData {
   vpv: number
 }
 
-const data = ref<Lecap[] | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-const settlementDate = ref<Date | null>(null)
+interface LecapsPayload {
+  items: Lecap[]
+  settlementDate: string
+}
+
+async function fetchLecapsPayload(getSettlementDate: (from: Date) => Promise<Date>) {
+  const settlementDate = await getSettlementDate(new Date())
+  const [notes, bonds, licitaciones] = await Promise.all([
+    $fetch<any[]>('https://data912.com/live/arg_notes'),
+    $fetch<any[]>('https://data912.com/live/arg_bonds'),
+    $fetch<LicitacionData[]>('https://api.argentinadatos.com/v1/finanzas/letras'),
+  ])
+
+  const licitacionesMap = new Map<string, LicitacionData>()
+  for (const lic of licitaciones) {
+    licitacionesMap.set(lic.ticker, lic)
+  }
+
+  const result: Lecap[] = []
+
+  const processItems = (items: any[]) => {
+    if (!Array.isArray(items)) return
+    for (const item of items) {
+      const symbol = item.symbol as string
+      if (!symbol.startsWith('S') && !symbol.startsWith('T')) continue
+      if (symbol.startsWith('X') || symbol.startsWith('B') || symbol.startsWith('M')) continue
+
+      const price = parseFloat(item.c) || 0
+      if (price <= 0) continue
+
+      const licData = licitacionesMap.get(symbol)
+      const maturity = licData?.fechaVencimiento || parseTickerMaturity(symbol)
+      const finalPayment = licData?.vpv || 0
+
+      if (!finalPayment) continue
+
+      result.push({
+        symbol,
+        price,
+        bid: parseFloat(item.px_bid) || 0,
+        ask: parseFloat(item.px_ask) || 0,
+        type: symbol.startsWith('T') ? 'BONCAP' : 'LECAP',
+        finalPayment,
+        maturity,
+      })
+    }
+  }
+
+  processItems(notes)
+  processItems(bonds)
+
+  return {
+    items: result,
+    settlementDate: settlementDate.toISOString(),
+  } satisfies LecapsPayload
+}
 
 export function useLecaps() {
   const { getSettlementDate } = useHolidays()
 
-  async function fetch() {
-    if (data.value && settlementDate.value) {
-      return
-    }
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('lecaps', () => fetchLecapsPayload(getSettlementDate))
 
-    loading.value = true
-    error.value = null
+  const settlementDate = computed(() => {
+    if (!data.value?.settlementDate) return null
+    return new Date(data.value.settlementDate)
+  })
 
-    try {
-      if (!settlementDate.value) {
-        settlementDate.value = await getSettlementDate(new Date())
-      }
-      const [notes, bonds, licitaciones] = await Promise.all([
-        $fetch<any[]>('https://data912.com/live/arg_notes'),
-        $fetch<any[]>('https://data912.com/live/arg_bonds'),
-        $fetch<LicitacionData[]>('https://api.argentinadatos.com/v1/finanzas/letras'),
-      ])
-
-      const licitacionesMap = new Map<string, LicitacionData>()
-      for (const lic of licitaciones) {
-        licitacionesMap.set(lic.ticker, lic)
-      }
-
-      const result: Lecap[] = []
-
-      const processItems = (items: any[]) => {
-        if (!Array.isArray(items)) return
-        for (const item of items) {
-          const symbol = item.symbol as string
-          // Filtrar por prefijo S (LECAP) o T (BONCAP)
-          if (!symbol.startsWith('S') && !symbol.startsWith('T')) continue
-          // Evitar tickers ajustables por CER (X) o Badlar (B/M) si se colaron
-          if (symbol.startsWith('X') || symbol.startsWith('B') || symbol.startsWith('M')) continue
-
-          const price = parseFloat(item.c) || 0
-          if (price <= 0) continue
-
-          const licData = licitacionesMap.get(symbol)
-          const maturity = licData?.fechaVencimiento || parseTickerMaturity(symbol)
-
-          const finalPayment = licData?.vpv || 0
-
-          // Si no tenemos un pago final definido para este ticker, lo ignoramos
-          if (!finalPayment) continue
-
-          result.push({
-            symbol,
-            price,
-            bid: parseFloat(item.px_bid) || 0,
-            ask: parseFloat(item.px_ask) || 0,
-            type: symbol.startsWith('T') ? 'BONCAP' : 'LECAP',
-            finalPayment,
-            maturity,
-          })
-        }
-      }
-
-      processItems(notes)
-      processItems(bonds)
-
-      data.value = result
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-  }
+  const lecaps = computed(() => data.value?.items ?? [])
 
   const lecapsItems = computed(() => {
     const sDate = settlementDate.value ?? new Date()
-    return (data.value ?? []).map((lecap) => {
+    return lecaps.value.map((lecap) => {
       let days = 0
       let tir = 0
       let tna = 0
@@ -145,15 +138,11 @@ export function useLecaps() {
       if (lecap.maturity) {
         const maturityDate = new Date(lecap.maturity)
         const diffTime = maturityDate.getTime() - sDate.getTime()
-        // El cálculo de días debe ser exacto según lo esperado (ej. 23 días para S17A6 el 22/03)
-        // Redondeamos hacia arriba para considerar días parciales como un día completo al vencimiento
         days = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
 
         if (days > 0 && lecap.finalPayment && lecap.price > 0) {
           const ganancia = lecap.finalPayment / lecap.price
-          // TNA lineal: (Pago Final / Precio - 1) * (365 / días)
           tna = (ganancia - 1) * (365 / days)
-          // TIR exponencial: (Pago Final / Precio)^(365 / días) - 1
           tir = Math.pow(ganancia, 365 / days) - 1
         }
       }
@@ -177,7 +166,7 @@ export function useLecaps() {
   })
 
   return {
-    lecaps: data,
+    lecaps,
     lecapsItems,
     loading,
     error,

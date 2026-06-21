@@ -5,6 +5,7 @@ import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn } from '@nuxt/ui'
 import { ogUpdatedAtDate, top3Funds } from '~/utils/og-data'
 import { getFundDetailPath } from '~/lib/funds-detail'
+import { fetchFundsSeriesLatest } from '~/composables/useFunds'
 
 definePageMeta({
   pageTitle: 'Fondos Comunes de Inversión (FCI)',
@@ -14,8 +15,33 @@ definePageMeta({
 
 const UButton = resolveComponent('UButton')
 
+interface FundSeriesRow {
+  fondo: string
+  horizonte: string
+  fecha: string
+  vcp: number
+  ccp: number
+  patrimonio: number
+  displayName?: string
+  institution?: string
+  fechaAnterior?: string
+  vcpAnterior?: number
+  ccpAnterior?: number
+  patrimonioAnterior?: number
+  tipoFondo?: 'rentaFija' | 'mercadoDinero' | 'rentaMixta' | 'rentaVariable' | 'retornoTotal'
+  typeLabel?: string
+}
+
 // Create single useFunds instance for both OG and page data
-const { allFundsCache, data: fundsData, fetch: fetchPageFunds, fetchFundsSeriesLatest } = useFunds()
+const { allFundsCache, data: fundsData, fetch: fetchPageFunds } = useFunds()
+
+const {
+  data: allFunds,
+  pending: loading,
+  error,
+} = await useAsyncData('funds-series-latest', () => fetchFundsSeriesLatest(), {
+  default: () => [] as FundSeriesRow[],
+})
 
 const { data: ogItems } = await useAsyncData('og-fondos', async () => {
   await fetchPageFunds({ forceBySeries: true })
@@ -85,27 +111,6 @@ useHead({
   ],
 })
 
-interface FundSeriesRow {
-  fondo: string
-  horizonte: string
-  fecha: string
-  vcp: number
-  ccp: number
-  patrimonio: number
-  displayName?: string
-  institution?: string
-  fechaAnterior?: string
-  vcpAnterior?: number
-  ccpAnterior?: number
-  patrimonioAnterior?: number
-  tipoFondo?: 'rentaFija' | 'mercadoDinero' | 'rentaMixta' | 'rentaVariable' | 'retornoTotal'
-  typeLabel?: string
-}
-
-const loading = ref(true)
-const error = ref<unknown>(null)
-const allFunds = ref<FundSeriesRow[]>([])
-
 // Función helper para calcular días entre fechas
 function daysBetween(a: string, b: string) {
   const d1 = new Date(a)
@@ -142,23 +147,6 @@ function calculateTNA(newerVCP: number, olderVCP: number, daysBetween: number): 
   const tna = dailyReturn * 365
   return tna
 }
-
-async function fetchFundsBySeries() {
-  loading.value = true
-  error.value = null
-
-  try {
-    allFunds.value = await fetchFundsSeriesLatest()
-  } catch (e) {
-    error.value = e
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(async () => {
-  await fetchFundsBySeries()
-})
 
 // Filtros
 const searchQuery = useRouteQuery('q', '')

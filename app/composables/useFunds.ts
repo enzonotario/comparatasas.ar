@@ -110,17 +110,13 @@ interface Funds {
   retornoTotal: ProcessedFund[]
 }
 
-const data: Ref<Funds> = ref({
+const defaultFundsData = (): Funds => ({
   rentaFija: [],
   mercadoDinero: [],
   rentaMixta: [],
   rentaVariable: [],
   retornoTotal: [],
 })
-
-const allFundsCache: Ref<ProcessedFund[]> = ref([])
-const loading = ref(true)
-const error = ref<unknown>(null)
 
 function calculateReturns(newerVCP: number, olderVCP: number, daysBetween: number) {
   if (daysBetween <= 0 || olderVCP <= 0) return { tna: 0, tea: 0 }
@@ -193,14 +189,6 @@ async function getLatestAndPreviousFundData(options?: FetchFundsOptions) {
     const rentaMixtaResponses = await getRentaMixta()
     const rentaVariableResponses = await getRentaVariable()
     const retornoTotalResponses = await getRetornoTotal()
-
-    allFundsCache.value = [
-      ...rentaFijaResponses,
-      ...mercadoDineroResponses,
-      ...rentaMixtaResponses,
-      ...rentaVariableResponses,
-      ...retornoTotalResponses,
-    ]
 
     return {
       rentaFija: rentaFijaResponses,
@@ -335,7 +323,6 @@ async function getComparatasasFundsData() {
     }
 
     const funds = await transformComparatasasData(response.fondos)
-    allFundsCache.value = funds
 
     return categorizeFunds(funds)
   } catch (error) {
@@ -512,8 +499,7 @@ async function getLatestAndPreviousRentaFija() {
   return await getLatestAndPreviousBySeries('rentaFija')
 }
 
-export function useFunds() {
-  async function fetchFundsSeriesLatest(): Promise<FundSeriesLatestRow[]> {
+export async function fetchFundsSeriesLatest(): Promise<FundSeriesLatestRow[]> {
     const [rentaFija, mercadoDinero, rentaMixta, rentaVariable, retornoTotal] = await Promise.all([
       $fetch<FundRaw[]>('https://api.argentinadatos.com/v1/finanzas/fci/rentaFija/ultimo').catch(
         () => [],
@@ -551,26 +537,31 @@ export function useFunds() {
       ...mapSeries(rentaVariable, 'rentaVariable'),
       ...mapSeries(retornoTotal, 'retornoTotal'),
     ]
-  }
+}
+
+export function useFunds() {
+  const {
+    data,
+    pending: loading,
+    error,
+  } = useAsyncData('funds', () => getLatestAndPreviousFundData(), {
+    default: defaultFundsData,
+  })
+
+  const allFundsCache = computed(() => [
+    ...(data.value?.rentaFija ?? []),
+    ...(data.value?.mercadoDinero ?? []),
+    ...(data.value?.rentaMixta ?? []),
+    ...(data.value?.rentaVariable ?? []),
+    ...(data.value?.retornoTotal ?? []),
+  ])
 
   async function fetch(options?: FetchFundsOptions) {
-    const hasCache =
-      data.value.rentaFija.length > 0 ||
-      data.value.mercadoDinero.length > 0 ||
-      data.value.rentaMixta.length > 0 ||
-      data.value.rentaVariable.length > 0 ||
-      data.value.retornoTotal.length > 0
-
-    const shouldForceBySeries = options?.forceBySeries === true
-
-    if (!hasCache || shouldForceBySeries) {
-      loading.value = true
-      const newData = await getLatestAndPreviousFundData(options)
-      data.value = newData
-      loading.value = false
+    if (options?.forceBySeries) {
+      data.value = await getLatestAndPreviousFundData(options)
     }
 
-    return data.value
+    return data.value ?? defaultFundsData()
   }
 
   return { data, allFundsCache, loading, error, fetch, fetchFundsSeriesLatest }

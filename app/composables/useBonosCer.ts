@@ -34,26 +34,15 @@ export interface BonosCerPayload {
   errorExtraccion?: string
 }
 
-const data = ref<BonosCerPayload | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-
 export function useBonosCer() {
-  async function fetchData() {
-    if (data.value) return
-
-    loading.value = true
-    error.value = null
-    try {
-      data.value = await $fetch<BonosCerPayload>(
-        'https://api.argentinadatos.com/v1/finanzas/bonos-cer',
-      )
-    } catch (e) {
-      error.value = e
-    } finally {
-      loading.value = false
-    }
-  }
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('bonos-cer', () =>
+    $fetch<BonosCerPayload>('https://api.argentinadatos.com/v1/finanzas/bonos-cer'),
+  )
 
   const bonds = computed(() => data.value?.bonos ?? [])
 
@@ -62,6 +51,6 @@ export function useBonosCer() {
     bonds,
     loading,
     error,
-    fetch: fetchData,
+    fetch,
   }
 }

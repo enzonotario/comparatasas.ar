@@ -3,30 +3,15 @@ export interface InflacionData {
   valor: number
 }
 
-const data = ref<InflacionData[] | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-
 export function useInflacion() {
-  async function fetch() {
-    if (data.value) {
-      return
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<InflacionData[]>(
-        'https://api.argentinadatos.com/v1/finanzas/indices/inflacion/',
-      )
-      data.value = response
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-  }
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('inflacion', () =>
+    $fetch<InflacionData[]>('https://api.argentinadatos.com/v1/finanzas/indices/inflacion/'),
+  )
 
   const inflacionHistorica = computed(() => {
     return data.value ?? []

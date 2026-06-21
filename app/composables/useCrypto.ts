@@ -54,6 +54,36 @@ function normalizeEntities(entities: CryptoEntity[]): CryptoEntity[] {
     .sort((a, b) => a.entidad.localeCompare(b.entidad))
 }
 
+function processFilteredEntities(
+  responseArray: CryptoEntity[],
+  filterFn: (rendimiento: CryptoYield) => boolean,
+): CryptoEntity[] {
+  return normalizeEntities(
+    responseArray
+      .map((entity) => {
+        const validRendimientos = entity.rendimientos.filter(filterFn)
+
+        const consolidatedRendimientos = new Map<string, number>()
+        validRendimientos.forEach((rendimiento) => {
+          const currentMax = consolidatedRendimientos.get(rendimiento.moneda) || 0
+          if (rendimiento.apy > currentMax) {
+            consolidatedRendimientos.set(rendimiento.moneda, rendimiento.apy)
+          }
+        })
+
+        const consolidated = Array.from(consolidatedRendimientos.entries()).map(
+          ([moneda, apy]) => ({ moneda, apy }),
+        )
+
+        return {
+          entidad: entity.entidad,
+          rendimientos: consolidated,
+        }
+      })
+      .filter((entity) => entity.rendimientos.length > 0),
+  )
+}
+
 async function fetchDataFromAPI(): Promise<CryptoEntity[]> {
   const response = await $fetch<CryptoEntity[]>(
     'https://api.argentinadatos.com/v1/finanzas/rendimientos',
@@ -62,120 +92,44 @@ async function fetchDataFromAPI(): Promise<CryptoEntity[]> {
 }
 
 export function useCrypto() {
-  const data = useState<CryptoEntity[]>('crypto:data', () => [])
-  const dataProcessed = useState<CryptoEntity[]>('crypto:dataProcessed', () => [])
-  const dataAll = useState<CryptoEntity[]>('crypto:dataAll', () => [])
-  const dataAllProcessed = useState<CryptoEntity[]>('crypto:dataAllProcessed', () => [])
-  const loading = useState<boolean>('crypto:loading', () => false)
-  const error = useState<unknown>('crypto:error', () => null)
+  const {
+    data,
+    pending: loading,
+    error,
+    refresh: refreshCrypto,
+  } = useAsyncData('crypto-rendimientos', fetchDataFromAPI, {
+    default: () => [] as CryptoEntity[],
+  })
+
+  const dataProcessed = computed(() =>
+    processFilteredEntities(
+      data.value,
+      (rendimiento) =>
+        shouldShowCrypto(rendimiento.moneda) &&
+        rendimiento.apy > 0 &&
+        !isBlacklistedCrypto(rendimiento.moneda),
+    ),
+  )
+
+  const dataAllProcessed = computed(() =>
+    processFilteredEntities(
+      data.value,
+      (rendimiento) => rendimiento.apy > 0 && !isBlacklistedCrypto(rendimiento.moneda),
+    ),
+  )
 
   async function fetchCriptos() {
-    if (data.value.length > 0) {
-      return data.value // Return cached data if available
+    if (!data.value.length) {
+      await refreshCrypto()
     }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const responseArray = await fetchDataFromAPI()
-
-      data.value = responseArray
-
-      // Filtra criptomonedas válidas y consolida tokens duplicados por entidad (toma el máximo APY)
-      dataProcessed.value = normalizeEntities(
-        responseArray
-          .map((entity) => {
-            const validRendimientos = entity.rendimientos.filter(
-              (rendimiento) =>
-                shouldShowCrypto(rendimiento.moneda) &&
-                rendimiento.apy > 0 &&
-                !isBlacklistedCrypto(rendimiento.moneda),
-            )
-
-            // Consolida tokens duplicados tomando el máximo APY
-            const consolidatedRendimientos = new Map<string, number>()
-            validRendimientos.forEach((rendimiento) => {
-              const currentMax = consolidatedRendimientos.get(rendimiento.moneda) || 0
-              if (rendimiento.apy > currentMax) {
-                consolidatedRendimientos.set(rendimiento.moneda, rendimiento.apy)
-              }
-            })
-
-            const consolidated = Array.from(consolidatedRendimientos.entries()).map(
-              ([moneda, apy]) => ({ moneda, apy }),
-            )
-
-            return {
-              entidad: entity.entidad,
-              rendimientos: consolidated,
-            }
-          })
-          .filter((entity) => entity.rendimientos.length > 0),
-      )
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-
     return data.value
   }
 
   async function fetchAll() {
-    if (dataAllProcessed.value.length > 0) {
-      return dataAllProcessed.value // Return cached processed data if available
+    if (!dataAllProcessed.value.length) {
+      await refreshCrypto()
     }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const responseArray = await fetchDataFromAPI()
-
-      // Almacena todos los datos sin filtrar BLACKLISTED
-      dataAll.value = responseArray
-
-      // Procesa los datos sin filtrar por BLACKLISTED, solo filtra por APY > 0
-      // y consolida tokens duplicados por entidad (toma el máximo APY)
-      const processed = normalizeEntities(
-        responseArray
-          .map((entity) => {
-            const validRendimientos = entity.rendimientos.filter(
-              (rendimiento) => rendimiento.apy > 0 && !isBlacklistedCrypto(rendimiento.moneda),
-            )
-
-            // Consolida tokens duplicados tomando el máximo APY
-            const consolidatedRendimientos = new Map<string, number>()
-            validRendimientos.forEach((rendimiento) => {
-              const currentMax = consolidatedRendimientos.get(rendimiento.moneda) || 0
-              if (rendimiento.apy > currentMax) {
-                consolidatedRendimientos.set(rendimiento.moneda, rendimiento.apy)
-              }
-            })
-
-            const consolidated = Array.from(consolidatedRendimientos.entries()).map(
-              ([moneda, apy]) => ({ moneda, apy }),
-            )
-
-            return {
-              entidad: entity.entidad,
-              rendimientos: consolidated,
-            }
-          })
-          .filter((entity) => entity.rendimientos.length > 0),
-      )
-
-      // Almacena los datos procesados
-      dataAllProcessed.value = processed
-
-      return processed
-    } catch (err) {
-      error.value = err
-      return []
-    } finally {
-      loading.value = false
-    }
+    return dataAllProcessed.value
   }
 
   const cryptosByMaxYield = computed(() => {
@@ -190,7 +144,7 @@ export function useCrypto() {
   return {
     data,
     dataProcessed,
-    dataAll,
+    dataAll: data,
     dataAllProcessed,
     loading,
     error,

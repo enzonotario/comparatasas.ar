@@ -87,7 +87,6 @@ useHead({
 })
 
 const { data, loading: fundsLoading, error: fundsError } = useFunds()
-const { fetchAll, loading: cryptoLoading, error: cryptoError } = useCrypto()
 
 const loading = computed(() => fundsLoading.value || cryptoLoading.value)
 const error = computed(() => fundsError.value || cryptoError.value)
@@ -101,14 +100,28 @@ interface UsdAccount {
   tope: number
 }
 
-const usdAccounts = ref<UsdAccount[]>([])
-const loadingAccounts = ref(false)
-const errorAccounts = ref<unknown>(null)
+const { data: usdAccounts, pending: loadingAccounts, error: errorAccounts } =
+  await useAsyncData('usd-cuentas-remuneradas', () =>
+    $fetch<UsdAccount[]>('https://api.argentinadatos.com/v1/finanzas/cuentas-remuneradas-usd/'),
+  )
 
-// Rendimientos en USD que no son criptos
-const usdYields = ref<
-  Array<{ entidad: string; rendimientos: Array<{ moneda: string; apy: number }> }>
->([])
+const { dataAllProcessed, loading: cryptoLoading, error: cryptoError } = useCrypto()
+
+const usdYields = computed(() =>
+  (dataAllProcessed.value ?? [])
+    .map((entity) => {
+      const usdRendimientos = entity.rendimientos.filter(
+        (rendimiento) =>
+          rendimiento.moneda.toUpperCase() === 'USD' && !isCrypto(rendimiento.moneda),
+      )
+
+      return {
+        entidad: entity.entidad,
+        rendimientos: usdRendimientos,
+      }
+    })
+    .filter((entity) => entity.rendimientos.length > 0),
+)
 
 // Obtener todos los fondos USD (renta fija + mercado de dinero + retorno total)
 const allUsdFunds = computed(() => {
@@ -126,7 +139,7 @@ const allUsdFunds = computed(() => {
 
 // Transformar las cuentas USD de la API para usar con FundsList
 const usdAccountsForFundsList = computed(() => {
-  return usdAccounts.value
+  return (usdAccounts.value ?? [])
     .map((account) => {
       const logo = getInstitutionLogo(account.entidad)
       const url = getInstitutionUrl(account.entidad)
@@ -220,46 +233,6 @@ const fundsByRiskWithSimulation = computed(() => {
   })
 
   return result
-})
-
-// Cargar cuentas remuneradas en USD
-async function fetchUsdAccounts() {
-  loadingAccounts.value = true
-  errorAccounts.value = null
-
-  try {
-    const response = await $fetch<UsdAccount[]>(
-      'https://api.argentinadatos.com/v1/finanzas/cuentas-remuneradas-usd/',
-    )
-    usdAccounts.value = response
-  } catch (err) {
-    errorAccounts.value = err
-  } finally {
-    loadingAccounts.value = false
-  }
-}
-
-// Cargar rendimientos en USD al montar
-onMounted(async () => {
-  const allYields = await fetchAll()
-
-  // Filtrar solo rendimientos en USD que NO sean criptos
-  usdYields.value = allYields
-    .map((entity) => {
-      const usdRendimientos = entity.rendimientos.filter(
-        (rendimiento) =>
-          rendimiento.moneda.toUpperCase() === 'USD' && !isCrypto(rendimiento.moneda),
-      )
-
-      return {
-        entidad: entity.entidad,
-        rendimientos: usdRendimientos,
-      }
-    })
-    .filter((entity) => entity.rendimientos.length > 0)
-
-  // Cargar cuentas USD
-  await fetchUsdAccounts()
 })
 </script>
 

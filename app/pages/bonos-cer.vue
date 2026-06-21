@@ -48,7 +48,7 @@ defineOgImage('BonosCerCurve.takumi', {
   updatedAt: textoActualizacionOg(ogBonosCer.value?.fechaActualizacion),
 })
 
-const { bonds, loading, error, fetch, data } = useBonosCer()
+const { bonds, loading, error, data } = useBonosCer()
 
 const sorting = ref([
   {
@@ -56,10 +56,6 @@ const sorting = ref([
     desc: false,
   },
 ])
-
-onMounted(() => {
-  fetch()
-})
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('es-AR', {

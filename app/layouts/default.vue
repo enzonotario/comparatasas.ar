@@ -1,14 +1,14 @@
 <script setup lang="ts">
 const nuxtApp = useNuxtApp()
 
-const { fetch: fetchFunds } = useFunds()
-const { fetch: fetchAccounts } = useAccounts()
-const { fetch: fetchFciVariablesUltimo } = useFciVariablesUltimo()
-const { fetchCriptos: fetchCrypto } = useCrypto()
-const { fetch: fetchPlazosFijos } = usePlazosFijos()
-const { fetch: fetchPlazosFijosUvaPagoPeriodico } = usePlazosFijosUvaPagoPeriodico()
-const { fetch: fetchPlazosFijosPrecancelables } = usePlazosFijosPrecancelables()
-const { fetch: fetchCriptopesos } = useCriptopesos()
+useFunds()
+useAccounts()
+useFciVariablesUltimo()
+useCrypto()
+usePlazosFijos()
+usePlazosFijosUvaPagoPeriodico()
+usePlazosFijosPrecancelables()
+useCriptopesos()
 const { initialize } = useHotjar()
 
 const route = useRoute()
@@ -23,14 +23,6 @@ const useSponsorBanner = computed(() => {
 })
 
 onMounted(() => {
-  fetchAccounts()
-  fetchFunds()
-  fetchFciVariablesUltimo()
-  fetchCrypto()
-  fetchPlazosFijos()
-  fetchPlazosFijosUvaPagoPeriodico()
-  fetchPlazosFijosPrecancelables()
-  fetchCriptopesos()
   initialize()
 })
 

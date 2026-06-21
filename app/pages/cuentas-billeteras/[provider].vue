@@ -56,8 +56,8 @@ const logo = computed(() => getInstitutionLogo(providerApiName.value))
 const providerUrl = computed(() => getInstitutionUrl(providerApiName.value))
 const providerSlug = computed(() => providerParam.toLowerCase())
 
-const { data: history, loading, error, fetch } = useAccountHistory()
-const { accounts, specialAccounts, fetch: fetchAccounts } = useAccounts()
+const { data: history, loading, error } = useAccountHistory(providerSlug)
+const { accounts, specialAccounts } = useAccounts()
 
 const currentAccount = computed<AccountItem | null>(() => {
   const name = displayName.value
@@ -137,11 +137,6 @@ function handleProviderClick() {
     })
   }
 }
-
-onMounted(() => {
-  fetch(providerSlug.value)
-  fetchAccounts()
-})
 
 useSeoMeta({
   title: `${displayName.value} - Historial de TNA y Tope - comparatasas.ar`,

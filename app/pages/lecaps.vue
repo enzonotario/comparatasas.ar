@@ -27,25 +27,17 @@ useHead({
 })
 
 const { lecapsItems, loading, error, fetch } = useLecaps()
+await fetch()
+
 const { amount, days, calculateCompoundInterest, isSimulating } = useInvestmentSimulator()
 
 // Por defecto en LECAPs: iniciar el simulador con 1M (y el horizonte por defecto 180d).
 amount.value = 1000000
 days.value = 180
 
-// Datos para la imagen OG
-const { data: ogData } = await useAsyncData('og-lecaps', async () => {
-  // Intentar usar los datos si ya existen (aunque en SSR inicial estarán vacíos)
-  if (lecapsItems.value.length > 0) return lecapsItems.value
-
-  // Si no hay datos, forzar un fetch
-  await fetch()
-  return lecapsItems.value
-})
-
 defineOgImage('LecapsCurve.takumi', {
   title: 'LECAPs y BONCAPs',
-  lecaps: ogData.value ?? [],
+  lecaps: lecapsItems.value ?? [],
   updatedAt: ogUpdatedAtDate(),
 })
 
@@ -211,10 +203,6 @@ const simulationColumns: TableColumn<any>[] = [
 const columns = computed(() =>
   isSimulating.value ? [...baseColumns, ...simulationColumns] : baseColumns,
 )
-
-onMounted(() => {
-  fetch()
-})
 
 function formatCurrency(value: number): string {
   if (!value) return '-'

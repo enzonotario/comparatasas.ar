@@ -98,7 +98,7 @@ const {
   error: errorPrecancelables,
 } = usePlazosFijosPrecancelables()
 
-const { uvaHistorica, loading: loadingUVA, error: errorUVA, fetch: fetchUVA } = useUVA()
+const { uvaHistorica, loading: loadingUVA, error: errorUVA } = useUVA()
 
 const { amount, calculateResults, isSimulating, days } = useInvestmentSimulator()
 const plazosFijosPrecancelablesWithSimulation = calculateResults(plazosFijosPrecancelablesItems)
@@ -136,10 +136,9 @@ const institutionSelectItems = computed(() =>
   })),
 )
 
-onMounted(async () => {
+onMounted(() => {
   if (days.value < PF_UVA_PRE_DIAS_MIN) days.value = 180
   if (days.value > PF_UVA_PRE_DIAS_MAX) days.value = PF_UVA_PRE_DIAS_MAX
-  await fetchUVA()
 })
 
 function formatPercent(value: number | null): string {

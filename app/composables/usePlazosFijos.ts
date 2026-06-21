@@ -5,33 +5,18 @@ import {
 } from '../lib/mappings/plazo-fijo'
 import type { PlazoFijo } from '../types/investments'
 
-const data = ref<PlazoFijo[] | null>(null)
-const loading = ref(true)
-const error = ref<unknown>(null)
-
 export function usePlazosFijos() {
-  async function fetch() {
-    if (data.value) {
-      return
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<PlazoFijo[]>(
-        'https://api.argentinadatos.com/v1/finanzas/tasas/plazoFijo',
-      )
-      data.value = response
-    } catch (err) {
-      error.value = err
-    } finally {
-      loading.value = false
-    }
-  }
+  const {
+    data: plazosFijos,
+    pending: loading,
+    error,
+    refresh: fetch,
+  } = useAsyncData('plazos-fijos', () =>
+    $fetch<PlazoFijo[]>('https://api.argentinadatos.com/v1/finanzas/tasas/plazoFijo'),
+  )
 
   const plazosFijosItems = computed(() => {
-    return (data.value ?? [])
+    return (plazosFijos.value ?? [])
       .map((plazoFijo) => ({
         ...plazoFijo,
         tna: plazoFijo.tnaClientes || plazoFijo.tnaNoClientes || 0,
@@ -52,7 +37,7 @@ export function usePlazosFijos() {
   })
 
   return {
-    plazosFijos: data,
+    plazosFijos,
     plazosFijosItems,
     loading,
     error,

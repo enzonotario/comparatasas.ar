@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { getPrerenderRoutes } from './app/lib/prerender-routes'
+
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
@@ -113,20 +115,38 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-07-15',
 
+  hooks: {
+    async 'nitro:config'(nitroConfig) {
+      nitroConfig.prerender = nitroConfig.prerender || {}
+      const existing = Array.isArray(nitroConfig.prerender.routes)
+        ? nitroConfig.prerender.routes
+        : []
+      nitroConfig.prerender.routes = [...new Set([...existing, ...(await getPrerenderRoutes())])]
+    },
+  },
+
   nitro: {
     preset: 'cloudflare_pages',
     prerender: {
       crawlLinks: true,
+      failOnError: false,
       routes: [
         '/',
         '/cuentas-billeteras',
-        '/fondos',
+        '/cuentas-billeteras/graficos',
         '/plazos-fijos',
+        '/plazos-fijos/uva-pago-periodico',
+        '/plazos-fijos/uva-precancelable',
+        '/fondos',
         '/usd',
         '/criptomonedas',
         '/criptopesos',
         '/creditos-hipotecarios-uva',
-        '/cuentas-billeteras/graficos',
+        '/contado-cuotas',
+        '/remesas',
+        '/lecaps',
+        '/bonos-cer',
+        '/sumarse',
       ],
     },
     minify: true,
