@@ -4,22 +4,13 @@ import { plazosFijosNavTabs } from '~/lib/plazos-fijos-nav'
 const open = ref(false)
 const searchTerm = ref('')
 
-const subpages = [
-  ...plazosFijosNavTabs.map((tab) => ({
-    id: `plazos-fijos-${tab.to.replace(/^\/plazos-fijos\/?/, '') || 'tradicional'}`,
-    label: `Plazo Fijo / ${tab.label}`,
-    suffix: 'Plazos Fijos',
-    icon: tab.icon,
-    to: tab.to,
-  })),
-  {
-    id: 'cuentas-billeteras-graficos',
-    label: 'Evolución de Cuentas y Billeteras',
-    suffix: 'Cuentas y Billeteras',
-    icon: 'i-lucide-chart-line',
-    to: '/cuentas-billeteras/graficos',
-  },
-]
+const subpages = plazosFijosNavTabs.map((tab) => ({
+  id: `plazos-fijos-${tab.to.replace(/^\/plazos-fijos\/?/, '') || 'tradicional'}`,
+  label: `Plazo Fijo / ${tab.label}`,
+  suffix: 'Plazos Fijos',
+  icon: tab.icon,
+  to: tab.to,
+}))
 
 const groups = [
   {
