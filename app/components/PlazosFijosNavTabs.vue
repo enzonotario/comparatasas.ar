@@ -1,19 +1,9 @@
 <script setup lang="ts">
+import { plazosFijosNavTabs } from '~/lib/plazos-fijos-nav'
+
 const route = useRoute()
 
-const tabs = [
-  { to: '/plazos-fijos', label: 'Tradicional (30 días)', icon: 'i-lucide-clock' as const },
-  {
-    to: '/plazos-fijos/uva-pago-periodico',
-    label: 'UVA pago periódico',
-    icon: 'i-lucide-calendar-range' as const,
-  },
-  {
-    to: '/plazos-fijos/uva-precancelable',
-    label: 'UVA precancelable',
-    icon: 'i-lucide-calendar-clock' as const,
-  },
-]
+const tabs = plazosFijosNavTabs
 
 function isActive(tabTo: string): boolean {
   const p = route.path.replace(/\/$/, '') || '/'
