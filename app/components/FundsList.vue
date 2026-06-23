@@ -123,7 +123,7 @@ function handleProviderClick(item: any) {
                   <UAvatar
                     v-if="item.logo"
                     :src="item.logo"
-                    :alt="keyProp ? item[keyProp] : item.institution"
+                    :alt="item.institution"
                     referrerpolicy="no-referrer"
                     :ui="{
                       image: 'object-contain',
@@ -133,7 +133,7 @@ function handleProviderClick(item: any) {
 
                 <div class="flex flex-col gap-1 flex-1">
                   <div class="font-medium">
-                    {{ keyProp ? item[keyProp] : item.institution }}
+                    {{ item.institution }}
                   </div>
                   <span v-if="item.displayName" class="text-sm">
                     {{ item.displayName }}
@@ -290,7 +290,7 @@ function handleProviderClick(item: any) {
                   <UAvatar
                     v-if="item.logo"
                     :src="item.logo"
-                    :alt="keyProp ? item[keyProp] : item.institution"
+                    :alt="item.institution"
                     referrerpolicy="no-referrer"
                     :ui="{
                       image: 'object-contain',
@@ -300,7 +300,7 @@ function handleProviderClick(item: any) {
 
                 <div class="flex flex-col gap-1 flex-1">
                   <div class="font-medium">
-                    {{ keyProp ? item[keyProp] : item.institution }}
+                    {{ item.institution }}
                   </div>
                   <span v-if="item.displayName" class="text-sm">
                     {{ item.displayName }}

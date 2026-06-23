@@ -44,9 +44,20 @@ export function top3Accounts(data: Array<{ fondo: string; tna: number }>): OgTop
 }
 
 export function top3PlazosFijos(
-  data: Array<{ entidad: string; tnaClientes: number }>,
+  data: Array<{
+    entidad: string
+    tnaClientes: number
+    tasas?: Array<{ tna: number }>
+  }>,
 ): OgTopItem[] {
-  return data
+  const flat = data.flatMap((item) => {
+    if (item.tasas?.length) {
+      return item.tasas.map((tasa) => ({ entidad: item.entidad, tnaClientes: tasa.tna }))
+    }
+    return [{ entidad: item.entidad, tnaClientes: item.tnaClientes }]
+  })
+
+  return flat
     .filter((a) => a.tnaClientes > 0)
     .sort((a, b) => b.tnaClientes - a.tnaClientes)
     .slice(0, 3)

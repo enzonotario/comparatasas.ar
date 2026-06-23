@@ -41,6 +41,9 @@ export function useInvestmentSimulator() {
       fondo?: string
       plazoMinDias?: number
       plazoMaxDias?: number | null
+      montoMinimo?: number | null
+      montoMaximo?: number | null
+      tieredRate?: boolean
     },
   >(
     itemsRef: Ref<T[]> | ComputedRef<T[]>,
@@ -58,16 +61,20 @@ export function useInvestmentSimulator() {
         const isFiwind = item.fondo === 'Fiwind' && hasLimit && exceedsLimit && deltaPesosFund
 
         const isPlazoFijo = item.type === 'plazoFijo30d'
+        const isPlazoFijoTiered = isPlazoFijo && item.tieredRate
         const isUvaPagoPeriodico = item.type === 'plazoFijoUvaPagoPeriodico'
         const isUvaPrecancelable = item.type === 'plazoFijoPrecancelable'
-        const effectiveDays = isPlazoFijo ? 30 : days.value
+        const effectiveDays = isPlazoFijo && !isPlazoFijoTiered ? 30 : days.value
 
         const uvaPlazoMin = item.plazoMinDias
         const uvaPlazoMax = item.plazoMaxDias
         const simulationDisabled =
-          (isUvaPagoPeriodico || isUvaPrecancelable) &&
-          ((uvaPlazoMin !== undefined && days.value < uvaPlazoMin) ||
-            (uvaPlazoMax != null && days.value > uvaPlazoMax))
+          ((isUvaPagoPeriodico || isUvaPrecancelable || isPlazoFijoTiered) &&
+            ((uvaPlazoMin !== undefined && days.value < uvaPlazoMin) ||
+              (uvaPlazoMax != null && days.value > uvaPlazoMax))) ||
+          (isPlazoFijoTiered &&
+            ((item.montoMinimo != null && amount.value < item.montoMinimo) ||
+              (item.montoMaximo != null && amount.value > item.montoMaximo)))
 
         let result: { finalAmount: number; earned: number }
         let effectiveAmount = amount.value
@@ -100,7 +107,7 @@ export function useInvestmentSimulator() {
           const tnaValue =
             isPlazoFijo || isUvaPagoPeriodico || isUvaPrecancelable ? item.tna / 100 : item.tna
 
-          result = isPlazoFijo
+          result = isPlazoFijo || isPlazoFijoTiered
             ? calculateSimpleInterest(effectiveAmount, tnaValue, effectiveDays)
             : calculateCompoundInterest(effectiveAmount, tnaValue, effectiveDays)
         }

@@ -23,6 +23,16 @@ export interface ProcessedFund {
   }
 }
 
+/** Tramo de tasa informado por un proveedor de plazo fijo tradicional. */
+export interface TasaPlazoFijo {
+  montoMinimo: number | null
+  montoMaximo: number | null
+  plazoMinDias: number
+  plazoMaxDias: number | null
+  tna: number
+}
+
+/** Respuesta de `/v1/finanzas/tasas/plazoFijo` (ArgentinaDatos). */
 export interface PlazoFijo {
   entidad: string
   logo?: string
@@ -31,8 +41,28 @@ export interface PlazoFijo {
   enlace: string | null
   fecha?: string
   fechaAnterior?: string
+  tasas?: TasaPlazoFijo[]
+  condiciones?: string | null
+  condicionesCorto?: string | null
+}
+
+export interface PlazoFijoItem {
+  rowKey: string
+  institution: string
+  logo: string
+  tna: number
+  url: string
   type: 'plazoFijo30d'
   typeLabel: string
+  displayName?: string
+  condicionesCorto?: string
+  plazoMinDias?: number
+  plazoMaxDias?: number | null
+  montoMinimo?: number | null
+  montoMaximo?: number | null
+  tieredRate?: boolean
+  fecha?: string
+  fechaAnterior?: string
 }
 
 /** Respuesta de `/v1/finanzas/tasas/plazoFijoUvaPagoPeriodico` (ArgentinaDatos). */

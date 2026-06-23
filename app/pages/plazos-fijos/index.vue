@@ -53,8 +53,8 @@ useHead({
   ],
 })
 
-const { plazosFijosItems, loading, error } = usePlazosFijos()
-const { calculateResults, isSimulating } = useInvestmentSimulator()
+const { plazosFijosItems, plazosFijosChartItems, loading, error } = usePlazosFijos()
+const { calculateResults, isSimulating, days } = useInvestmentSimulator()
 const plazosFijosWithSimulation = calculateResults(plazosFijosItems)
 </script>
 
@@ -78,6 +78,8 @@ const plazosFijosWithSimulation = calculateResults(plazosFijosItems)
         :items="plazosFijosWithSimulation"
         mode="simple"
         :show-simulation="isSimulating"
+        :simulator-days="days"
+        key-prop="rowKey"
       />
 
       <div v-if="!loading && !plazosFijosItems.length" class="text-center py-8">
@@ -98,7 +100,7 @@ const plazosFijosWithSimulation = calculateResults(plazosFijosItems)
             <h3 class="font-semibold text-lg">TNA por entidad (30 días, clientes)</h3>
           </div>
         </template>
-        <PlazosFijosTnaBarChart :items="plazosFijosItems" />
+        <PlazosFijosTnaBarChart :items="plazosFijosChartItems" />
       </UCard>
     </div>
 
