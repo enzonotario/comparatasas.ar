@@ -94,12 +94,6 @@ export const useNavigationPages = () => {
           icon: 'i-lucide-trending-up',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
         },
-        {
-          to: '/creditos-hipotecarios-uva',
-          label: 'Créditos Hipotecarios UVA',
-          icon: 'i-lucide-home',
-          image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-hipotecario.png',
-        },
       ],
     },
     {
