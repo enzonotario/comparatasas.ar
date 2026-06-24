@@ -109,6 +109,20 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
+    fundName: 'MP Ahorro - Clase A',
+    institutions: [
+      {
+        institution: 'Mercado Pago',
+        displayName: 'Mercado Pago / Bonos, plazos fijos y más',
+        showInAccounts: true,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+      },
+    ],
+  },
+  {
     fundName: 'Delta Pesos - Clase X',
     institutions: [
       {
@@ -867,6 +881,7 @@ export const comparatasasFondosArs = [
   'ieb-value-clase-a',
   'iol-cash-management-clase-a',
   'mercado-fondo-clase-a',
+  'mp-ahorro-clase-a',
   'pionero-acciones',
   'pionero-pesos-clase-a',
   'premier-renta-cp-en-pesos-clase-a',
