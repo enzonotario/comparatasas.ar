@@ -27,10 +27,6 @@ function formatPlazoRange(plazoMinDias: number, plazoMaxDias: number | null): st
   return `${plazoMinDias}-${plazoMaxDias} días`
 }
 
-function buildTierRowKey(entidad: string, index: number): string {
-  return `${entidad}#${index}`
-}
-
 function buildTierDisplayName(tasa: TasaPlazoFijo): string {
   const parts = [formatMontoRange(tasa.montoMinimo, tasa.montoMaximo)]
     .concat(formatPlazoRange(tasa.plazoMinDias, tasa.plazoMaxDias))
@@ -48,7 +44,7 @@ function mapTierToItem(plazoFijo: PlazoFijo, tasa: TasaPlazoFijo, index: number)
       : undefined
 
   return {
-    rowKey: buildTierRowKey(plazoFijo.entidad, index),
+    rowKey: plazoFijo.entidad,
     logo: getPlazoFijoLogo(plazoFijo.entidad) || plazoFijo.logo || '',
     institution,
     tna: tasa.tna * 100,
@@ -121,7 +117,9 @@ export function usePlazosFijos() {
 
   const plazosFijosChartItems = computed(() =>
     plazosFijosItems.value.map((item) => ({
-      institution: item.displayName ? `${item.institution} · ${item.displayName}` : item.institution,
+      institution: item.displayName
+        ? `${item.institution} · ${item.displayName}`
+        : item.institution,
       tna: item.tna,
       logo: item.logo,
       typeLabel: item.typeLabel,
