@@ -4,7 +4,7 @@ import type { TableColumn } from '@nuxt/ui'
 import { useMediaQuery } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 import type { ComparaDolarAsset } from '~/composables/useComparaDolarQuotes'
-import { getInstitutionLogo } from '~/lib/mappings/institutions'
+import { getInstitutionLogo, getInstitutionUrl } from '~/lib/mappings/institutions'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { RemesaDetalles, RemesaOption } from '~/composables/useRemesas'
 
@@ -30,6 +30,7 @@ const companyDisplayNames: Record<string, string> = {
   airtm: 'Airtm',
   lemon: 'Lemon',
   wise: 'Wise',
+  global66: 'Global66',
 }
 
 interface RemesaComparaDolarMapping {
@@ -50,6 +51,7 @@ const remesaComparaDolarProviderMap: Record<string, RemesaComparaDolarMapping | 
   wise: null,
 }
 
+const { trackProviderClick } = useAnalytics()
 const { remesas, fechaActualizacion, loading, error, fetch: fetchRemesas } = useRemesas()
 const {
   quotes: comparaDolarQuotes,
@@ -63,6 +65,7 @@ interface RemesaRow extends RemesaOption {
   displayName: string
   initials: string
   logo?: string
+  providerUrl?: string
   averageRating: number
   averageRatingLabel: string
   costoRecibirPagosSort: number
@@ -185,6 +188,16 @@ function getDetail(details: RemesaDetalles | null | undefined, key: keyof Remesa
 
 function getRemesaComparaDolarMapping(compania: string): RemesaComparaDolarMapping | null {
   return remesaComparaDolarProviderMap[normalizeProviderKey(compania)] ?? null
+}
+
+function handleProviderClick(row: RemesaRow) {
+  if (!row.providerUrl) return
+
+  trackProviderClick({
+    providerName: row.displayName,
+    providerUrl: row.providerUrl,
+    section: 'remesas',
+  })
 }
 
 const comparaDolarQuotesByKey = computed(() => {
@@ -457,6 +470,7 @@ const rows = computed<RemesaRow[]>(() => {
         displayName,
         initials: getInitials(displayName),
         logo: getInstitutionLogo(item.compania) || getInstitutionLogo(displayName),
+        providerUrl: getInstitutionUrl(item.compania),
         averageRating,
         averageRatingLabel: ratingCount > 0 ? `${formatRating(averageRating)}★` : '—',
         costoRecibirPagosSort: getSortableNumericValue(item.costoRecibirPagos),
@@ -694,38 +708,61 @@ useHead({
   ],
 })
 
+function renderProviderCell(row: RemesaRow) {
+  const avatar = row.logo
+    ? h('img', {
+        src: row.logo,
+        alt: `${row.displayName} logo`,
+        class: 'size-9 rounded-full object-contain',
+        loading: 'lazy',
+      })
+    : h(
+        'div',
+        {
+          class:
+            'flex size-9 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200',
+        },
+        row.initials,
+      )
+
+  const content = h('div', { class: 'min-w-0' }, [
+    h(
+      'p',
+      {
+        class: row.providerUrl
+          ? 'font-medium text-primary-600 group-hover:underline dark:text-primary-400'
+          : 'font-medium text-neutral-900 dark:text-white',
+      },
+      row.displayName,
+    ),
+    h('div', { class: 'mt-1 flex flex-wrap items-center gap-2' }, [
+      h('p', { class: 'text-xs text-neutral-500' }, row.monedaLabel),
+    ]),
+  ])
+
+  if (row.providerUrl) {
+    return h(
+      'a',
+      {
+        href: row.providerUrl,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        class:
+          'group -m-1 flex items-center gap-3 rounded-lg p-1 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800/50',
+        onClick: () => handleProviderClick(row),
+      },
+      [avatar, content],
+    )
+  }
+
+  return h('div', { class: 'flex items-center gap-3' }, [avatar, content])
+}
+
 const columns: TableColumn<RemesaRow>[] = [
   {
     accessorKey: 'displayName',
     header: createSortableHeader('Plataforma'),
-    cell: ({ row }) =>
-      h('div', { class: 'flex items-center gap-3' }, [
-        row.original.logo
-          ? h('img', {
-              src: row.original.logo,
-              alt: `${row.original.displayName} logo`,
-              class: 'size-9 rounded-full object-contain',
-              loading: 'lazy',
-            })
-          : h(
-              'div',
-              {
-                class:
-                  'flex size-9 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200',
-              },
-              row.original.initials,
-            ),
-        h('div', { class: 'min-w-0' }, [
-          h(
-            'p',
-            { class: 'font-medium text-neutral-900 dark:text-white' },
-            row.getValue('displayName'),
-          ),
-          h('div', { class: 'mt-1 flex flex-wrap items-center gap-2' }, [
-            h('p', { class: 'text-xs text-neutral-500' }, row.original.monedaLabel),
-          ]),
-        ]),
-      ]),
+    cell: ({ row }) => renderProviderCell(row.original),
   },
   {
     accessorKey: 'cuentaPropia',
@@ -971,28 +1008,62 @@ const columns: TableColumn<RemesaRow>[] = [
               class="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
             >
               <div class="flex items-center gap-3 mb-3">
-                <img
-                  v-if="row.logo"
-                  :src="row.logo"
-                  :alt="`${row.displayName} logo`"
-                  class="size-10 rounded-full object-contain"
-                  loading="lazy"
-                />
-                <div
-                  v-else
-                  class="flex size-10 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                <a
+                  v-if="row.providerUrl"
+                  :href="row.providerUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="group flex min-w-0 flex-1 items-center gap-3 rounded-lg -m-1 p-1 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
+                  @click="handleProviderClick(row)"
                 >
-                  {{ row.initials }}
-                </div>
-                <div>
-                  <p class="font-medium text-neutral-900 dark:text-white">
-                    {{ row.displayName }}
-                  </p>
-                  <p class="text-xs text-neutral-500">
-                    {{ row.monedaLabel }}
-                  </p>
-                </div>
-                <div class="ml-auto">
+                  <img
+                    v-if="row.logo"
+                    :src="row.logo"
+                    :alt="`${row.displayName} logo`"
+                    class="size-10 rounded-full object-contain"
+                    loading="lazy"
+                  />
+                  <div
+                    v-else
+                    class="flex size-10 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                  >
+                    {{ row.initials }}
+                  </div>
+                  <div class="min-w-0">
+                    <p
+                      class="font-medium text-primary-600 group-hover:underline dark:text-primary-400"
+                    >
+                      {{ row.displayName }}
+                    </p>
+                    <p class="text-xs text-neutral-500">
+                      {{ row.monedaLabel }}
+                    </p>
+                  </div>
+                </a>
+                <template v-else>
+                  <img
+                    v-if="row.logo"
+                    :src="row.logo"
+                    :alt="`${row.displayName} logo`"
+                    class="size-10 rounded-full object-contain"
+                    loading="lazy"
+                  />
+                  <div
+                    v-else
+                    class="flex size-10 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                  >
+                    {{ row.initials }}
+                  </div>
+                  <div>
+                    <p class="font-medium text-neutral-900 dark:text-white">
+                      {{ row.displayName }}
+                    </p>
+                    <p class="text-xs text-neutral-500">
+                      {{ row.monedaLabel }}
+                    </p>
+                  </div>
+                </template>
+                <div class="ml-auto shrink-0">
                   <UBadge color="neutral" variant="outline" size="sm">
                     {{ row.averageRatingLabel }}
                   </UBadge>
