@@ -65,6 +65,25 @@ export interface PlazoFijoItem {
   fechaAnterior?: string
 }
 
+export interface PlazoFijoTableRow {
+  rowKey: string
+  institution: string
+  logo: string
+  url: string
+  condicionesCorto?: string
+  fecha?: string
+  fechaAnterior?: string
+  tasas?: TasaPlazoFijo[]
+  rootTna?: number
+  ratesByPlazo: Record<string, Array<{ tna: number; label?: string }>>
+  /** Mejor TNA publicada entre todos los plazos. */
+  sortTna: number
+  /** Máxima TNA por columna estándar; usada para ordenar la tabla. */
+  sortTnaByPlazo: Record<string, number>
+  /** TNA aplicable a 30 días; define el orden por defecto de la tabla. */
+  sortTna30d: number
+}
+
 /** Respuesta de `/v1/finanzas/tasas/plazoFijoUvaPagoPeriodico` (ArgentinaDatos). */
 export interface TasaPlazoFijoUvaPagoPeriodico {
   nombre: string

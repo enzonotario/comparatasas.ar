@@ -5,7 +5,7 @@ export interface PlazosFijosNavTab {
 }
 
 export const plazosFijosNavTabs: PlazosFijosNavTab[] = [
-  { to: '/plazos-fijos', label: 'Tradicional (30 días)', icon: 'i-lucide-clock' },
+  { to: '/plazos-fijos', label: 'Tradicional (30+ días)', icon: 'i-lucide-clock' },
   {
     to: '/plazos-fijos/uva-pago-periodico',
     label: 'UVA pago periódico',

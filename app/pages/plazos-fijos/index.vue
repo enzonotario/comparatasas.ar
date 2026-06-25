@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PlazosFijosRatesTable from '~/components/PlazosFijosRatesTable.vue'
 import PlazosFijosTnaBarChart from '~/components/charts/PlazosFijosTnaBarChart.vue'
 import { ogUpdatedAtDate, top3PlazosFijos } from '~/utils/og-data'
 
@@ -53,36 +54,56 @@ useHead({
   ],
 })
 
-const { plazosFijosItems, plazosFijosChartItems, loading, error } = usePlazosFijos()
-const { calculateResults, isSimulating, days } = useInvestmentSimulator()
-const plazosFijosWithSimulation = calculateResults(plazosFijosItems)
+const { plazosFijosTableRows, plazosFijosPlazoColumns, chartItemsForDays, loading, error } =
+  usePlazosFijos()
+
+const { amount, days, isSimulating } = useInvestmentSimulator()
+
+const plazosFijosChartItems = computed(() => chartItemsForDays(days.value))
 </script>
 
 <template>
-  <div class="space-y-6">
-    <InvestmentSimulator :fixed-days="30" />
+  <div class="flex flex-col space-y-6 max-w-4xl mx-auto">
+    <InvestmentSimulator
+      :default-days="30"
+      :preset-days="[
+        { value: 30, label: '30d' },
+        { value: 60, label: '60d' },
+        { value: 90, label: '90d' },
+        { value: 180, label: '180d' },
+        { value: 365, label: '365d' },
+      ]"
+      days-field-description="Elegí un plazo para resaltar la columna correspondiente y simular la ganancia con interés simple."
+    />
 
-    <div class="flex items-center justify-between mb-2">
+    <div class="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-2">
       <h2 id="plazos-fijos" class="text-lg font-medium scroll-mt-16">Plazos Fijos</h2>
     </div>
 
     <PlazosFijosNavTabs />
 
-    <div class="space-y-4 mt-6">
+    <div class="space-y-4">
+      <p
+        class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-sm text-neutral-600 dark:text-neutral-400"
+      >
+        Tasas nominales anuales (TNA) por plazo informadas por cada entidad. Algunas entidades
+        publican tramos por monto o rango de días distintos dentro de la misma columna.
+      </p>
+
       <UAlert v-if="error" color="error" variant="soft" title="Error cargando plazos fijos" />
 
-      <FundsLoading v-if="loading && !plazosFijosItems.length" />
+      <FundsLoading v-if="loading && !plazosFijosTableRows.length" />
 
-      <FundsList
-        v-else
-        :items="plazosFijosWithSimulation"
-        mode="simple"
+      <PlazosFijosRatesTable
+        v-else-if="plazosFijosTableRows.length"
+        :rows="plazosFijosTableRows"
+        :columns="plazosFijosPlazoColumns"
         :show-simulation="isSimulating"
         :simulator-days="days"
-        key-prop="rowKey"
+        :amount="amount"
       />
 
-      <div v-if="!loading && !plazosFijosItems.length" class="text-center py-8">
+      <div v-if="!loading && !plazosFijosTableRows.length" class="text-center py-8">
         <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 text-muted mx-auto mb-4" />
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
           No se encontraron plazos fijos
@@ -90,17 +111,20 @@ const plazosFijosWithSimulation = calculateResults(plazosFijosItems)
         <p class="text-muted">No hay plazos fijos disponibles en este momento.</p>
       </div>
 
-      <UCard v-if="!loading && plazosFijosItems.length > 0">
+      <UCard v-if="!loading && plazosFijosChartItems.length > 0">
         <template #header>
           <div class="flex items-center gap-2">
             <UIcon
               name="i-lucide-bar-chart-3"
               class="size-5 text-primary-600 dark:text-primary-400"
             />
-            <h3 class="font-semibold text-lg">TNA por entidad (30 días, clientes)</h3>
+            <h3 class="font-semibold text-lg">TNA por entidad ({{ days }} días)</h3>
           </div>
         </template>
-        <PlazosFijosTnaBarChart :items="plazosFijosChartItems" />
+        <PlazosFijosTnaBarChart
+          :items="plazosFijosChartItems"
+          :parent-group-name="`Plazo fijo tradicional · ${days} días`"
+        />
       </UCard>
     </div>
 

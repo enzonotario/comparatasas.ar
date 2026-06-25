@@ -1,89 +1,93 @@
 import {
+  findMatchingTasa,
+  getDisplayPlazoKey,
+  getMaxTnaForPlazoKey,
+  getRootTnaDecimal,
+  groupRatesByPlazoKey,
+  mergeRootTnaFor30d,
+  STANDARD_PLAZO_COLUMNS,
+} from '../lib/plazo-fijo-rates'
+import {
   getPlazoFijoShortName,
   getPlazoFijoLogo,
   getPlazoFijoUrl,
 } from '../lib/mappings/plazo-fijo'
-import type { PlazoFijo, PlazoFijoItem, TasaPlazoFijo } from '../types/investments'
+import type { PlazoFijo, PlazoFijoTableRow } from '../types/investments'
 
-function formatMontoCompact(value: number): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    notation: 'compact',
-    maximumFractionDigits: 1,
-  }).format(value)
-}
-
-function formatMontoRange(montoMinimo: number | null, montoMaximo: number | null): string {
-  if (montoMinimo == null && montoMaximo == null) return ''
-  if (montoMinimo == null && montoMaximo != null) return `Hasta ${formatMontoCompact(montoMaximo)}`
-  if (montoMinimo != null && montoMaximo == null) return `Desde ${formatMontoCompact(montoMinimo)}`
-  return `${formatMontoCompact(montoMinimo)}-${formatMontoCompact(montoMaximo)}`
-}
-
-function formatPlazoRange(plazoMinDias: number, plazoMaxDias: number | null): string {
-  if (plazoMaxDias == null) return `desde ${plazoMinDias} días`
-  if (plazoMinDias === plazoMaxDias) return `${plazoMinDias} días`
-  return `${plazoMinDias}-${plazoMaxDias} días`
-}
-
-function buildTierDisplayName(tasa: TasaPlazoFijo): string {
-  const parts = [formatMontoRange(tasa.montoMinimo, tasa.montoMaximo)]
-    .concat(formatPlazoRange(tasa.plazoMinDias, tasa.plazoMaxDias))
-    .filter(Boolean)
-  return parts.join(' · ')
-}
-
-function mapTierToItem(plazoFijo: PlazoFijo, tasa: TasaPlazoFijo, index: number): PlazoFijoItem {
+function mapEntityToTableRow(plazoFijo: PlazoFijo): PlazoFijoTableRow | null {
   const institution = getPlazoFijoShortName(plazoFijo.entidad)
-  const displayName = buildTierDisplayName(tasa)
-  const hasMultipleTiers = (plazoFijo.tasas?.length ?? 0) > 1
-  const providerCondiciones =
-    plazoFijo.condicionesCorto && plazoFijo.condicionesCorto !== 'null'
-      ? plazoFijo.condicionesCorto
-      : undefined
+  const rootTnaDecimal = getRootTnaDecimal(plazoFijo)
+  const hasTieredRates = (plazoFijo.tasas?.length ?? 0) > 0
+
+  if (!hasTieredRates && rootTnaDecimal <= 0) return null
+
+  const ratesByPlazo = mergeRootTnaFor30d(
+    hasTieredRates ? groupRatesByPlazoKey(plazoFijo.tasas!) : {},
+    rootTnaDecimal,
+  )
+
+  if (Object.keys(ratesByPlazo).length === 0) return null
+
+  const sortTnaByPlazo = Object.fromEntries(
+    STANDARD_PLAZO_COLUMNS.map((column) => [
+      column.key,
+      getMaxTnaForPlazoKey(ratesByPlazo, column.key),
+    ]),
+  )
+
+  const sortTna = Math.max(
+    ...Object.values(ratesByPlazo).flatMap((cells) => cells.map((cell) => cell.tna)),
+    0,
+  )
 
   return {
     rowKey: plazoFijo.entidad,
-    logo: getPlazoFijoLogo(plazoFijo.entidad) || plazoFijo.logo || '',
     institution,
-    tna: tasa.tna * 100,
+    logo: getPlazoFijoLogo(plazoFijo.entidad) || plazoFijo.logo || '',
     url: plazoFijo.enlace || getPlazoFijoUrl(plazoFijo.entidad) || '#',
     fecha: plazoFijo.fecha,
     fechaAnterior: plazoFijo.fechaAnterior,
-    type: 'plazoFijo30d',
-    typeLabel: 'Plazo Fijo 30 días',
-    displayName,
-    condicionesCorto: hasMultipleTiers ? undefined : providerCondiciones,
-    plazoMinDias: tasa.plazoMinDias,
-    plazoMaxDias: tasa.plazoMaxDias,
-    montoMinimo: tasa.montoMinimo,
-    montoMaximo: tasa.montoMaximo,
-    tieredRate: true,
-  }
-}
-
-function mapLegacyToItem(plazoFijo: PlazoFijo): PlazoFijoItem | null {
-  const tna = plazoFijo.tnaClientes || plazoFijo.tnaNoClientes || 0
-  if (tna <= 0) return null
-
-  const institution = getPlazoFijoShortName(plazoFijo.entidad)
-
-  return {
-    rowKey: plazoFijo.entidad,
-    logo: getPlazoFijoLogo(plazoFijo.entidad) || plazoFijo.logo || '',
-    institution,
-    tna: tna * 100,
-    url: plazoFijo.enlace || getPlazoFijoUrl(plazoFijo.entidad) || '#',
-    fecha: plazoFijo.fecha,
-    fechaAnterior: plazoFijo.fechaAnterior,
-    type: 'plazoFijo30d',
-    typeLabel: 'Plazo Fijo 30 días',
     condicionesCorto:
       plazoFijo.condicionesCorto && plazoFijo.condicionesCorto !== 'null'
         ? plazoFijo.condicionesCorto
         : undefined,
+    tasas: plazoFijo.tasas,
+    rootTna: rootTnaDecimal > 0 ? rootTnaDecimal * 100 : undefined,
+    ratesByPlazo,
+    sortTna,
+    sortTnaByPlazo,
+    sortTna30d: sortTnaByPlazo['30'] ?? 0,
   }
+}
+
+export function resolvePlazoFijoRateAtDays(
+  row: PlazoFijoTableRow,
+  days: number,
+  amount?: number,
+): { tna: number; plazoKey?: string } | null {
+  if (amount != null) {
+    const matchingTasa = findMatchingTasa(row.tasas, days, amount)
+    if (matchingTasa) {
+      return {
+        tna: matchingTasa.tna * 100,
+        plazoKey: getDisplayPlazoKey(matchingTasa) ?? undefined,
+      }
+    }
+  }
+
+  if (row.rootTna && row.rootTna > 0 && days >= 30 && days <= 44) {
+    return { tna: row.rootTna, plazoKey: '30' }
+  }
+
+  const matchingTasa = findMatchingTasa(row.tasas, days, amount)
+  if (matchingTasa) {
+    return {
+      tna: matchingTasa.tna * 100,
+      plazoKey: getDisplayPlazoKey(matchingTasa) ?? undefined,
+    }
+  }
+
+  return null
 }
 
 export function usePlazosFijos() {
@@ -96,40 +100,46 @@ export function usePlazosFijos() {
     $fetch<PlazoFijo[]>('https://api.argentinadatos.com/v1/finanzas/tasas/plazoFijo'),
   )
 
-  const plazosFijosItems = computed((): PlazoFijoItem[] => {
-    const rows: PlazoFijoItem[] = []
-
-    for (const plazoFijo of plazosFijos.value ?? []) {
-      if (plazoFijo.tasas?.length) {
-        for (const [index, tasa] of plazoFijo.tasas.entries()) {
-          if (tasa.tna <= 0) continue
-          rows.push(mapTierToItem(plazoFijo, tasa, index))
-        }
-        continue
-      }
-
-      const legacy = mapLegacyToItem(plazoFijo)
-      if (legacy) rows.push(legacy)
-    }
-
-    return rows.sort((a, b) => b.tna - a.tna)
+  const plazosFijosTableRows = computed((): PlazoFijoTableRow[] => {
+    return (plazosFijos.value ?? [])
+      .map(mapEntityToTableRow)
+      .filter((row): row is PlazoFijoTableRow => row != null)
+      .sort((a, b) => b.sortTna30d - a.sortTna30d || b.sortTna - a.sortTna)
   })
 
+  const plazosFijosPlazoColumns = computed(() => STANDARD_PLAZO_COLUMNS)
+
   const plazosFijosChartItems = computed(() =>
-    plazosFijosItems.value.map((item) => ({
-      institution: item.displayName
-        ? `${item.institution} · ${item.displayName}`
-        : item.institution,
-      tna: item.tna,
+    plazosFijosTableRows.value.map((item) => ({
+      institution: item.institution,
+      tna: item.sortTna,
       logo: item.logo,
-      typeLabel: item.typeLabel,
+      typeLabel: 'Plazo fijo tradicional',
     })),
   )
 
+  function chartItemsForDays(days: number) {
+    return plazosFijosTableRows.value
+      .map((row) => {
+        const match = resolvePlazoFijoRateAtDays(row, days)
+        if (!match) return null
+        return {
+          institution: row.institution,
+          tna: match.tna,
+          logo: row.logo,
+          typeLabel: `Plazo fijo · ${days} días`,
+        }
+      })
+      .filter((item): item is NonNullable<typeof item> => item != null)
+      .sort((a, b) => b.tna - a.tna)
+  }
+
   return {
     plazosFijos,
-    plazosFijosItems,
+    plazosFijosTableRows,
+    plazosFijosPlazoColumns,
     plazosFijosChartItems,
+    chartItemsForDays,
     loading,
     error,
     fetch,

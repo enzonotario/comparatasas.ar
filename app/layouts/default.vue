@@ -27,6 +27,8 @@ onMounted(() => {
 })
 
 const isWideLayout = computed(() => {
+  if (route.path === '/plazos-fijos') return true
+
   return [
     'criptomonedas',
     'creditos-hipotecarios-uva',
