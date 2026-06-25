@@ -217,57 +217,6 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
     id: 'institution',
     accessorKey: 'institution',
     header: createSortableHeader('Entidad'),
-    cell: ({ row }) => {
-      const item = row.original as PlazoFijoTableRow & { simulationDisabled?: boolean }
-      return h('div', { class: `flex items-center gap-3 min-w-[12rem] ${item.simulationDisabled ? 'opacity-50' : ''}` }, [
-        item.logo
-          ? h(UAvatar, {
-              src: item.logo,
-              alt: item.institution,
-              referrerpolicy: 'no-referrer',
-              ui: { image: 'object-contain' },
-            })
-          : null,
-        h('div', { class: 'min-w-0' }, [
-          h('div', { class: 'font-medium text-neutral-900 dark:text-white flex items-center gap-1.5' }, [
-            item.institution,
-            item.url && item.url !== '#'
-              ? h(
-                  'a',
-                  {
-                    href: item.url,
-                    target: '_blank',
-                    rel: 'noopener noreferrer',
-                    class:
-                      'inline-flex text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300',
-                    title: `Abrir sitio de ${item.institution}`,
-                    onClick: (event: MouseEvent) => {
-                      event.stopPropagation()
-                      trackProviderClick({
-                        providerName: item.institution,
-                        providerUrl: item.url,
-                        section: 'plazos-fijos-rates-table',
-                        contentType: 'plazo fijo tradicional',
-                      })
-                    },
-                  },
-                  h('span', {
-                    class: 'i-lucide-external-link size-3.5',
-                    'aria-hidden': 'true',
-                  }),
-                )
-              : null,
-          ]),
-          item.condicionesCorto
-            ? h(
-                'p',
-                { class: 'text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 line-clamp-2' },
-                item.condicionesCorto,
-              )
-            : null,
-        ]),
-      ])
-    },
   }
 
   const plazoColumns: TableColumn<any>[] = props.columns.map((column) => ({
@@ -341,7 +290,7 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
 })
 
 function handleProviderClick(row: PlazoFijoTableRow) {
-  if (!row.url) return
+  if (!row.url || row.url === '#') return
   trackProviderClick({
     providerName: row.institution,
     providerUrl: row.url,
@@ -354,118 +303,180 @@ function handleProviderClick(row: PlazoFijoTableRow) {
 <template>
   <div>
     <div v-if="isDesktop" class="border border-default rounded-lg overflow-x-auto">
-      <UTable v-model:sorting="sorting" :data="rowsWithSimulation" :columns="tableColumns" />
-    </div>
-
-    <div v-else class="flex flex-col gap-3">
-      <a
-        v-for="row in rowsWithSimulation"
-        :key="row.rowKey"
-        :href="row.url"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="block"
-        @click="handleProviderClick(row)"
+      <UTable
+        v-model:sorting="sorting"
+        :data="rowsWithSimulation"
+        :columns="tableColumns"
+        :get-row-id="(row) => row.rowKey"
       >
-        <UCard
-          :ui="{ body: '!p-4', root: 'hover:ring-primary-500/60 dark:hover:ring-primary-400/60' }"
-          :class="row.simulationDisabled && showSimulation ? 'opacity-60' : ''"
-        >
-          <div class="flex items-start gap-3">
+        <template #institution-cell="{ row }">
+          <NuxtLink
+            v-if="row.original.url && row.original.url !== '#'"
+            :to="row.original.url"
+            external
+            target="_blank"
+            class="flex items-center gap-3 min-w-[12rem] hover:underline text-neutral-900 dark:text-white"
+            :class="row.original.simulationDisabled ? 'opacity-50' : ''"
+            @click="handleProviderClick(row.original)"
+          >
             <UAvatar
-              v-if="row.logo"
-              :src="row.logo"
-              :alt="row.institution"
+              v-if="row.original.logo"
+              :src="row.original.logo"
+              :alt="row.original.institution"
               referrerpolicy="no-referrer"
               :ui="{ image: 'object-contain' }"
             />
-            <div class="min-w-0 flex-1 space-y-3">
-              <div class="min-w-0">
-                <div class="font-medium text-neutral-900 dark:text-white">
-                  {{ row.institution }}
-                </div>
-                <p
-                  v-if="row.condicionesCorto"
-                  class="text-xs text-neutral-500 dark:text-neutral-400 mt-1"
-                >
-                  {{ row.condicionesCorto }}
-                </p>
+            <div class="min-w-0">
+              <div class="font-medium">
+                {{ row.original.institution }}
               </div>
-
-              <div class="grid grid-cols-2 gap-2">
-                <div
-                  v-for="column in columns"
-                  :key="`${row.rowKey}-${column.key}`"
-                  class="rounded-lg border px-3 py-2"
-                  :class="
-                    isActivePlazoColumn(column)
-                      ? 'border-primary-300 bg-primary-50/70 dark:border-primary-700 dark:bg-primary-950/30'
-                      : 'border-neutral-200 dark:border-neutral-800'
-                  "
-                >
-                  <div class="text-[11px] text-neutral-500 dark:text-neutral-400">
-                    {{ column.label }}
-                  </div>
-                  <div
-                    v-if="getCellsForColumn(row, column.key).length"
-                    class="space-y-1"
-                    :title="cellTitle(getCellsForColumn(row, column.key))"
-                  >
-                    <div
-                      v-for="(cell, cellIndex) in getCellsForColumn(row, column.key)"
-                      :key="`${row.rowKey}-${column.key}-${cellIndex}`"
-                      class="leading-tight"
-                    >
-                      <div
-                        class="font-semibold tabular-nums"
-                        :class="[
-                          row.activePlazoKey === column.key &&
-                          showSimulation &&
-                          isActiveRateCell(cell, row.activeTna)
-                            ? 'text-primary-600 dark:text-primary-400 underline decoration-2 underline-offset-2'
-                            : isActivePlazoColumn(column)
-                              ? 'text-primary-600 dark:text-primary-400'
-                              : 'text-neutral-900 dark:text-white',
-                        ]"
-                      >
-                        {{ formatTna(cell.tna) }}
-                      </div>
-                      <div
-                        v-if="cell.label"
-                        class="text-[10px] text-neutral-500 dark:text-neutral-400"
-                      >
-                        {{ cell.label }}
-                      </div>
-                    </div>
-                  </div>
-                  <div v-else class="text-neutral-400">—</div>
-                </div>
-              </div>
-
-              <div
-                v-if="showSimulation && row.simulation"
-                class="rounded-lg bg-primary-50 dark:bg-primary-950/20 px-3 py-2"
+              <p
+                v-if="row.original.condicionesCorto"
+                class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 line-clamp-2 no-underline"
               >
-                <div class="text-xs text-neutral-500 dark:text-neutral-400">
-                  Ganancia estimada · {{ row.simulation.days }} días ·
-                  {{ formatTna(row.simulation.tna) }} TNA
-                </div>
-                <div class="font-bold text-primary-600 dark:text-primary-400 tabular-nums">
-                  {{ formatCurrency(row.simulation.earned) }}
-                </div>
+                {{ row.original.condicionesCorto }}
+              </p>
+            </div>
+          </NuxtLink>
+          <div
+            v-else
+            class="flex items-center gap-3 min-w-[12rem]"
+            :class="row.original.simulationDisabled ? 'opacity-50' : ''"
+          >
+            <UAvatar
+              v-if="row.original.logo"
+              :src="row.original.logo"
+              :alt="row.original.institution"
+              referrerpolicy="no-referrer"
+              :ui="{ image: 'object-contain' }"
+            />
+            <div class="min-w-0">
+              <div class="font-medium text-neutral-900 dark:text-white">
+                {{ row.original.institution }}
               </div>
-
-              <UBadge
-                v-else-if="showSimulation && row.simulationDisabled"
-                color="neutral"
-                variant="subtle"
+              <p
+                v-if="row.original.condicionesCorto"
+                class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 line-clamp-2"
               >
-                Fuera de rango para {{ simulatorDays }} días
-              </UBadge>
+                {{ row.original.condicionesCorto }}
+              </p>
             </div>
           </div>
-        </UCard>
-      </a>
+        </template>
+      </UTable>
+    </div>
+
+    <div v-else class="flex flex-col gap-3">
+      <UCard
+        v-for="row in rowsWithSimulation"
+        :key="row.rowKey"
+        :ui="{ body: '!p-4' }"
+        :class="row.simulationDisabled && showSimulation ? 'opacity-60' : ''"
+      >
+        <div class="flex items-start gap-3">
+          <UAvatar
+            v-if="row.logo"
+            :src="row.logo"
+            :alt="row.institution"
+            referrerpolicy="no-referrer"
+            :ui="{ image: 'object-contain' }"
+          />
+          <div class="min-w-0 flex-1 space-y-3">
+            <div class="min-w-0">
+              <NuxtLink
+                v-if="row.url && row.url !== '#'"
+                :to="row.url"
+                external
+                target="_blank"
+                class="font-medium text-neutral-900 dark:text-white hover:underline"
+                @click="handleProviderClick(row)"
+              >
+                {{ row.institution }}
+              </NuxtLink>
+              <div v-else class="font-medium text-neutral-900 dark:text-white">
+                {{ row.institution }}
+              </div>
+              <p
+                v-if="row.condicionesCorto"
+                class="text-xs text-neutral-500 dark:text-neutral-400 mt-1"
+              >
+                {{ row.condicionesCorto }}
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div
+                v-for="column in columns"
+                :key="`${row.rowKey}-${column.key}`"
+                class="rounded-lg border px-3 py-2"
+                :class="
+                  isActivePlazoColumn(column)
+                    ? 'border-primary-300 bg-primary-50/70 dark:border-primary-700 dark:bg-primary-950/30'
+                    : 'border-neutral-200 dark:border-neutral-800'
+                "
+              >
+                <div class="text-[11px] text-neutral-500 dark:text-neutral-400">
+                  {{ column.label }}
+                </div>
+                <div
+                  v-if="getCellsForColumn(row, column.key).length"
+                  class="space-y-1"
+                  :title="cellTitle(getCellsForColumn(row, column.key))"
+                >
+                  <div
+                    v-for="(cell, cellIndex) in getCellsForColumn(row, column.key)"
+                    :key="`${row.rowKey}-${column.key}-${cellIndex}`"
+                    class="leading-tight"
+                  >
+                    <div
+                      class="font-semibold tabular-nums"
+                      :class="[
+                        row.activePlazoKey === column.key &&
+                        showSimulation &&
+                        isActiveRateCell(cell, row.activeTna)
+                          ? 'text-primary-600 dark:text-primary-400 underline decoration-2 underline-offset-2'
+                          : isActivePlazoColumn(column)
+                            ? 'text-primary-600 dark:text-primary-400'
+                            : 'text-neutral-900 dark:text-white',
+                      ]"
+                    >
+                      {{ formatTna(cell.tna) }}
+                    </div>
+                    <div
+                      v-if="cell.label"
+                      class="text-[10px] text-neutral-500 dark:text-neutral-400"
+                    >
+                      {{ cell.label }}
+                    </div>
+                  </div>
+                </div>
+                <div v-else class="text-neutral-400">—</div>
+              </div>
+            </div>
+
+            <div
+              v-if="showSimulation && row.simulation"
+              class="rounded-lg bg-primary-50 dark:bg-primary-950/20 px-3 py-2"
+            >
+              <div class="text-xs text-neutral-500 dark:text-neutral-400">
+                Ganancia estimada · {{ row.simulation.days }} días ·
+                {{ formatTna(row.simulation.tna) }} TNA
+              </div>
+              <div class="font-bold text-primary-600 dark:text-primary-400 tabular-nums">
+                {{ formatCurrency(row.simulation.earned) }}
+              </div>
+            </div>
+
+            <UBadge
+              v-else-if="showSimulation && row.simulationDisabled"
+              color="neutral"
+              variant="subtle"
+            >
+              Fuera de rango para {{ simulatorDays }} días
+            </UBadge>
+          </div>
+        </div>
+      </UCard>
     </div>
   </div>
 </template>
