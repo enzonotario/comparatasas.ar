@@ -97,6 +97,8 @@ watch(
 
 const resolvedDaysMin = computed(() => props.daysMin ?? 1)
 const resolvedDaysMax = computed(() => props.daysMax)
+const amountMin = 1
+const amountStep = 1
 
 const isDesktop = useMediaQuery('(min-width: 1024px)')
 
@@ -167,7 +169,7 @@ const closeSimulator = () => {
 
           <div class="space-y-4">
             <UFormField label="Monto inicial" name="amount">
-              <UInputNumber v-model="amount" :min="1000" :step="1000" />
+              <UInputNumber v-model="amount" :min="amountMin" :step="amountStep" />
               <template #hint>
                 <div class="flex gap-1 mt-1.5">
                   <UButton
@@ -260,7 +262,7 @@ const closeSimulator = () => {
         <template #body>
           <div class="space-y-4">
             <UFormField label="Monto inicial" name="amount">
-              <UInputNumber v-model="amount" :min="1000" :step="1000" />
+              <UInputNumber v-model="amount" :min="amountMin" :step="amountStep" />
               <template #hint>
                 <div class="flex gap-1 mt-1.5">
                   <UButton
