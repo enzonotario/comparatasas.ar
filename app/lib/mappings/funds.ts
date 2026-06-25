@@ -165,7 +165,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'Fima Premium - Clase P',
+    fundName: 'Vinci Compass Liquidez - Clase F',
     institutions: [
       {
         institution: 'Lemon',
@@ -876,7 +876,7 @@ export const comparatasasFondosArs = [
   'delta-pesos-clase-a',
   'delta-pesos-clase-x',
   'fima-premium-clase-a',
-  'fima-premium-clase-p',
+  'vinci-compass-liquidez-clase-f',
   'ieb-ahorro-clase-a',
   'ieb-value-clase-a',
   'iol-cash-management-clase-a',
