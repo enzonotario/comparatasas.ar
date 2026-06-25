@@ -8,6 +8,10 @@ import {
 } from '../lib/mappings/funds'
 import { getInstitutionLogo, getInstitutionUrl } from '../lib/mappings/institutions'
 import { getLogoForEntity } from '../lib/mappings/logos'
+import {
+  getComparatasasReturnPercent,
+  getComparatasasTnaAndTea,
+} from '../lib/finance/fci-comparatasas-returns'
 import type { ProcessedFund } from '../types/investments'
 
 function generateSlug(name: string): string {
@@ -236,17 +240,18 @@ async function transformComparatasasData(
       }
 
       return institutions.map((inst: FundInstitution) => {
-        const unMes = fondo.rendimientos.unMes ?? 0
-        const unMesRate = unMes / 100
-        const tna = fondo.tipoRenta === 'Mercado de Dinero' ? unMesRate : unMesRate * (365 / 30)
-        const tea = Math.pow(1 + unMes / 100, 12) - 1
+        const returnPercent = getComparatasasReturnPercent(
+          fondo.rendimientos,
+          fondo.tipoRenta,
+        )
+        const { tna, tea } = getComparatasasTnaAndTea(returnPercent, fondo.tipoRenta)
 
         return {
           fondo: fondo.nombre,
           institution: inst.institution,
           displayName: inst.displayName,
-          tna: Number.isFinite(tna) ? tna : 0,
-          tea: Number.isFinite(tea) ? tea : 0,
+          tna,
+          tea,
           fecha: fondo.fecha,
           patrimonio: fondo.patrimonio,
           valorCuotaparte: fondo.rendimientos.valorCuotaparte,
