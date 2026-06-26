@@ -497,10 +497,16 @@ export const institutions: Array<{
     url: 'https://www.kucoin.com/',
   },
   {
-    names: ['Claro Pay'],
+    names: ['Claro Pay', 'CLARO PAY'],
     logo: 'https://api.argentinadatos.com/static/logos/claropay.svg',
     shortName: 'Claro Pay',
-    url: 'https://claropay.com.ar/',
+    url: 'https://claropay.com.ar/?ref=comparatasas',
+  },
+  {
+    names: ['CencoPay', 'CENCOPAY'],
+    logo: 'https://api.argentinadatos.com/static/logos/cencopay.svg',
+    shortName: 'CencoPay',
+    url: 'https://cencopay.ar/?ref=comparatasas',
   },
   {
     names: ['CARREFOUR BANCO'],

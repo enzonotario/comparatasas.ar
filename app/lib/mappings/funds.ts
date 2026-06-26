@@ -524,6 +524,15 @@ const fundMappings: FundMapping[] = [
         showInStockFunds: false,
         showInUsdMoneyMarket: false,
       },
+      {
+        institution: 'CENCOPAY',
+        displayName: 'CencoPay',
+        showInAccounts: true,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+      },
     ],
   },
   {
