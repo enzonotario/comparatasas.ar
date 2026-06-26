@@ -1,22 +1,43 @@
 [
   {
+    "date": "20260626",
+    "categories": {
+      "Página Amiga": 18,
+      "Billetera": 35,
+      "Cuenta Remunerada": 17,
+      "Otro": 36,
+      "Plazo Fijo": 12,
+      "Money Market": 1,
+      "Billetera USD": 9,
+      "PF UVA pago periódico": 2,
+      "PF UVA precancelable": 1,
+      "General": 20,
+      "Criptomonedas": 6,
+      "plazo fijo tradicional": 5,
+      "wARS": 4
+    },
+    "total": 166
+  },
+  {
     "date": "20260625",
     "categories": {
-      "Otro": 42,
-      "Página Amiga": 16,
-      "Billetera": 19,
-      "Plazo Fijo": 23,
-      "Cuenta Remunerada": 16,
-      "Billetera USD": 5,
-      "Cuenta Remunerada USD": 1,
-      "PF UVA pago periódico": 1,
+      "Otro": 110,
+      "Página Amiga": 42,
+      "Billetera": 54,
+      "Plazo Fijo": 55,
+      "Cuenta Remunerada": 47,
+      "Money Market": 1,
+      "ARGt": 1,
+      "Billetera USD": 14,
+      "Cuenta Remunerada USD": 3,
+      "PF UVA pago periódico": 7,
       "PF UVA precancelable": 1,
-      "General": 8,
-      "Criptomonedas": 7,
-      "plazo fijo tradicional": 17,
-      "wARS": 2
+      "General": 13,
+      "Criptomonedas": 13,
+      "plazo fijo tradicional": 19,
+      "wARS": 4
     },
-    "total": 158
+    "total": 384
   },
   {
     "date": "20260624",
@@ -60,34 +81,13 @@
   {
     "date": "20260622",
     "categories": {
-      "Billetera": 45,
-      "Plazo Fijo": 98,
-      "Cuenta Remunerada": 42,
-      "Otro": 50,
-      "Money Market": 8,
-      "Página Amiga": 37,
-      "ARGt": 1,
-      "Billetera USD": 14,
-      "PF UVA pago periódico": 6,
-      "PF UVA precancelable": 1,
-      "General": 17,
-      "Criptomonedas": 9,
-      "wARS": 10
+      "Billetera": 24,
+      "Plazo Fijo": 35,
+      "Cuenta Remunerada": 35,
+      "Otro": 24,
+      "Money Market": 3,
+      "Página Amiga": 28
     },
-    "total": 338
-  },
-  {
-    "date": "20260621",
-    "categories": {
-      "Billetera": 28,
-      "Plazo Fijo": 63,
-      "Cuenta Remunerada": 33,
-      "Página Amiga": 3,
-      "Otro": 41,
-      "Billetera USD": 12,
-      "PF UVA pago periódico": 1,
-      "General": 2
-    },
-    "total": 183
+    "total": 149
   }
 ]
