@@ -1,23 +1,42 @@
 [
   {
-    "date": "20260628",
+    "date": "20260629",
     "categories": {
-      "Página Amiga": 10,
-      "Billetera": 12,
-      "Cuenta Remunerada": 11,
+      "Página Amiga": 13,
+      "Billetera": 20,
+      "Cuenta Remunerada": 14,
       "Money Market": 1,
-      "Otro": 18,
-      "Plazo Fijo": 7,
-      "ARGt": 1,
-      "Billetera USD": 1,
-      "PF UVA pago periódico": 1,
-      "PF UVA precancelable": 3,
-      "General": 9,
-      "Criptomonedas": 1,
-      "plazo fijo tradicional": 3,
+      "Otro": 35,
+      "Plazo Fijo": 20,
+      "Criptomonedas": 9,
+      "Billetera USD": 8,
+      "PF UVA pago periódico": 4,
+      "PF UVA precancelable": 1,
+      "General": 12,
+      "plazo fijo tradicional": 20,
       "wARS": 2
     },
-    "total": 80
+    "total": 159
+  },
+  {
+    "date": "20260628",
+    "categories": {
+      "Página Amiga": 23,
+      "Billetera": 39,
+      "Cuenta Remunerada": 29,
+      "Money Market": 4,
+      "Otro": 57,
+      "Plazo Fijo": 24,
+      "ARGt": 2,
+      "Billetera USD": 8,
+      "PF UVA pago periódico": 1,
+      "PF UVA precancelable": 3,
+      "General": 11,
+      "Criptomonedas": 6,
+      "plazo fijo tradicional": 9,
+      "wARS": 4
+    },
+    "total": 220
   },
   {
     "date": "20260627",
@@ -79,32 +98,13 @@
   {
     "date": "20260624",
     "categories": {
-      "Página Amiga": 66,
-      "Billetera": 65,
-      "Plazo Fijo": 150,
-      "Cuenta Remunerada": 50,
-      "Otro": 87,
-      "Money Market": 5,
-      "ARGt": 1,
-      "Billetera USD": 15,
-      "PF UVA pago periódico": 5,
-      "PF UVA precancelable": 2,
-      "General": 23,
-      "Criptomonedas": 14,
-      "plazo fijo tradicional": 6,
-      "wARS": 7
+      "Página Amiga": 22,
+      "Billetera": 22,
+      "Plazo Fijo": 8,
+      "Cuenta Remunerada": 15,
+      "Otro": 26,
+      "Money Market": 2
     },
-    "total": 496
-  },
-  {
-    "date": "20260623",
-    "categories": {
-      "Billetera": 1,
-      "Plazo Fijo": 6,
-      "Página Amiga": 8,
-      "Cuenta Remunerada": 14,
-      "Otro": 14
-    },
-    "total": 43
+    "total": 95
   }
 ]
