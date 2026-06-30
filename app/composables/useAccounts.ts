@@ -76,6 +76,7 @@ export function useAccounts() {
       'BICA CUENTA POSITIVA 2',
       'BICA CUENTA POSITIVA 3',
       'BICA CUENTA POSITIVA 4',
+      'VOII',
     ])
   })
 

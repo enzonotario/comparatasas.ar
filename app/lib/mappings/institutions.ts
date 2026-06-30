@@ -281,7 +281,7 @@ export const institutions: Array<{
     url: 'https://bancomeridian.com.ar/?ref=comparatasas',
   },
   {
-    names: ['BANCO VOII S.A.', 'Banco Voii', 'BANCO VOII'],
+    names: ['BANCO VOII S.A.', 'Banco Voii', 'BANCO VOII', 'VOII'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-voii.jpg',
     shortName: 'Banco Voii',
     url: 'https://www.voii.com.ar/?ref=comparatasas',
