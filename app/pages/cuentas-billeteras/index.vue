@@ -61,7 +61,7 @@ const {
   error: fciVariablesError,
 } = useFciVariablesUltimo()
 
-const { calculateResults, isSimulating } = useInvestmentSimulator()
+const { calculateResults, isSimulating, days } = useInvestmentSimulator()
 
 const resolvedFundsAccounts = computed(() => {
   const accountsFunds = allFundsCache.value.filter((i) => i?.meta?.showInAccounts)
@@ -167,6 +167,7 @@ const fundsByRiskWithSimulation = computed(() => {
             key-prop="fondo"
             mode="detailed"
             :show-simulation="isSimulating"
+            :simulator-days="days"
             :show-history-link="true"
           />
         </div>
@@ -203,6 +204,7 @@ const fundsByRiskWithSimulation = computed(() => {
             key-prop="fondo"
             mode="detailed"
             :show-simulation="isSimulating"
+            :simulator-days="days"
             :show-history-link="true"
           />
         </div>

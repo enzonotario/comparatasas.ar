@@ -5,14 +5,24 @@ import {
 } from '~/lib/mappings/institutions'
 import { getLogoForEntity } from '~/lib/mappings/logos'
 import { isBlacklisted } from '~/lib/blacklist'
+import {
+  extractFrascosTiers,
+  isFrascosFondo,
+  type AccountPlazoTier,
+} from '~/lib/account-plazo-tiers'
+
+export type { AccountPlazoTier }
 
 export interface ApiAccount {
   fondo: string
   tna: number
+  tea?: number
   tope: number | null
   fecha?: string
   condiciones?: string
   condicionesCorto?: string
+  plazoMinDias?: number | null
+  plazoMaxDias?: number | null
 }
 
 export interface AccountItem {
@@ -28,6 +38,33 @@ export interface AccountItem {
   type?: string
   typeLabel?: string
   url?: string
+  plazoMinDias?: number
+  plazoMaxDias?: number | null
+  plazoTiers?: AccountPlazoTier[]
+}
+
+function buildFrascosAccountItem(frascosRaw: ApiAccount[]): AccountItem | null {
+  const tiers = extractFrascosTiers(frascosRaw)
+  if (!tiers.length) return null
+
+  const first = frascosRaw[0]!
+  const maxTna = Math.max(...tiers.map((t) => t.tna))
+  const bestTier = tiers.find((t) => t.tna === maxTna) ?? tiers[tiers.length - 1]!
+
+  return {
+    fondo: 'Frascos Naranja X',
+    tna: maxTna,
+    tea: bestTier.tea,
+    tope: first.tope,
+    fecha: first.fecha,
+    logo: getLogoForEntity('NARANJA X') || getInstitutionLogo('NARANJA X'),
+    type: 'cuentaRemunerada',
+    typeLabel: 'Frascos',
+    condiciones: first.condiciones,
+    condicionesCorto: 'Rendimiento según plazo elegido (7, 14 o 28 días)',
+    url: getInstitutionUrl('NARANJA X'),
+    plazoTiers: tiers,
+  }
 }
 
 export function useAccounts() {
@@ -44,7 +81,7 @@ export function useAccounts() {
     return {
       fondo: getInstitutionShortName(a.fondo) || a.fondo,
       tna: a.tna,
-      tea: 0,
+      tea: a.tea ?? 0,
       tope: a.tope,
       fecha: a.fecha,
       logo: getLogoForEntity(a.fondo) || getInstitutionLogo(a.fondo),
@@ -55,6 +92,8 @@ export function useAccounts() {
       condiciones: a.condiciones,
       condicionesCorto: a.condicionesCorto,
       url: getInstitutionUrl(a.fondo),
+      plazoMinDias: a.plazoMinDias ?? undefined,
+      plazoMaxDias: a.plazoMaxDias ?? undefined,
     }
   }
 
@@ -66,7 +105,13 @@ export function useAccounts() {
   }
 
   const accounts = computed<AccountItem[]>((): AccountItem[] => {
-    return filterAndMapAccounts([
+    const apiData = data.value ?? []
+    const frascosRaw = apiData.filter(
+      (a) => isFrascosFondo(a.fondo) && !isBlacklisted(a.fondo) && a.tna > 0,
+    )
+    const frascosItem = buildFrascosAccountItem(frascosRaw)
+
+    const base = filterAndMapAccounts([
       'CARREFOUR BANCO',
       'NARANJA X',
       'UALA',
@@ -78,6 +123,9 @@ export function useAccounts() {
       'BICA CUENTA POSITIVA 4',
       'VOII',
     ])
+
+    const result = frascosItem ? [...base, frascosItem] : base
+    return result.sort((a, b) => b.tna - a.tna)
   })
 
   const specialAccounts = computed<AccountItem[]>((): AccountItem[] => {

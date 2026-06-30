@@ -52,6 +52,7 @@ export function getLogoForEntity(entidad: string): string | undefined {
   const lower = entidad.toLowerCase()
   if (lower.includes('cocos')) return entityLogos.Cocos
   if (lower.includes('fiwind')) return entityLogos.Fiwind
+  if (lower.includes('naranja')) return entityLogos['Naranja X']
   if (lower.includes('cencopay')) return entityLogos.CencoPay
   if (lower.includes('mercado')) return entityLogos['Mercado Fondo']
   return undefined

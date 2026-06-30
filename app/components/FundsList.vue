@@ -3,6 +3,7 @@ import { getProviderSlug, getProviderApiName, hasHistory } from '~/composables/u
 import { useAnalytics } from '~/composables/useAnalytics'
 import { getFundDetailPath } from '~/lib/funds-detail'
 import { fetchFciFundsCatalog } from '~/composables/useFciFundDetails'
+import { formatPlazoTierTnaRange } from '~/lib/account-plazo-tiers'
 
 const { trackProviderClick } = useAnalytics()
 
@@ -16,6 +17,10 @@ const props = defineProps<{
   simulatorDays?: number
   showFundDetailLink?: boolean
 }>()
+
+const { days: simulatorDaysState } = useInvestmentSimulator()
+
+const resolvedSimulatorDays = computed(() => props.simulatorDays ?? simulatorDaysState.value)
 
 const { data: availableFundDetailSlugs } = await useAsyncData(
   'fci-fund-detail-slugs',
@@ -35,8 +40,31 @@ function isUvaSimulationOutOfRange(item: any): boolean {
 }
 
 function formatPlazoRange(item: any): string {
+  if (item.plazoTiers?.length) {
+    const min = Math.min(...item.plazoTiers.map((t: { plazoMinDias: number }) => t.plazoMinDias))
+    const max = Math.max(...item.plazoTiers.map((t: { plazoMaxDias: number }) => t.plazoMaxDias))
+    return `${min}–${max} días`
+  }
   if (item.plazoMaxDias == null) return `desde ${item.plazoMinDias} días`
   return `${item.plazoMinDias}–${item.plazoMaxDias} días`
+}
+
+function formatTnaValue(tna: number): string {
+  return props.mode === 'simple' ? tna.toFixed(2) : (tna * 100).toFixed(2)
+}
+
+function getItemTnaHeadline(item: any): string {
+  if (item.plazoTiers?.length && !(props.showSimulation && item.simulation)) {
+    return formatPlazoTierTnaRange(item.plazoTiers)
+  }
+  return `${formatTnaValue(item.tna)}%`
+}
+
+function getItemTnaSubline(item: any): string | null {
+  if (item.plazoTiers?.length && !(props.showSimulation && item.simulation)) {
+    return 'TNA según plazo'
+  }
+  return null
 }
 
 function getFundDetailUrl(item: any): string | null {
@@ -204,13 +232,13 @@ function handleProviderClick(item: any) {
                   </UBadge>
                   <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-snug">
                     <template v-if="simulatorDays != null">
-                      Con {{ simulatorDays }} días en el simulador esta fila no aplica (plazo
+                      Con {{ resolvedSimulatorDays }} días en el simulador esta fila no aplica (plazo
                       {{ formatPlazoRange(item) }}).
                     </template>
                     <template v-else> Plazo de esta tasa: {{ formatPlazoRange(item) }}. </template>
                   </p>
                   <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                    {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}% TNA
+                    {{ getItemTnaHeadline(item) }}
                   </div>
                 </div>
                 <div v-else-if="showSimulation && item.simulation" class="space-y-1">
@@ -249,25 +277,37 @@ function handleProviderClick(item: any) {
                 </div>
                 <div v-else>
                   <div class="text-primary-600 dark:text-primary-400 font-semibold">
-                    {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
+                    {{ getItemTnaHeadline(item) }}
                   </div>
                   <div class="text-xs text-neutral">
-                    TNA
-                    <div v-if="item.fechaAnterior && item.fecha">
-                      <span>Entre </span>
+                    <template v-if="getItemTnaSubline(item)">
+                      {{ getItemTnaSubline(item) }}
+                    </template>
+                    <template v-else>
+                      TNA
+                      <div v-if="item.fechaAnterior && item.fecha">
+                        <span>Entre </span>
 
-                      <span
-                        >{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span
-                      >
-                    </div>
-                    <div v-else-if="item.fecha">
-                      <span>TNA vigente desde el </span>
-                      <span>{{ formatDate(item.fecha) }}</span>
-                    </div>
+                        <span
+                          >{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span
+                        >
+                      </div>
+                      <div v-else-if="item.fecha">
+                        <span>TNA vigente desde el </span>
+                        <span>{{ formatDate(item.fecha) }}</span>
+                      </div>
+                    </template>
                   </div>
                 </div>
               </div>
             </div>
+
+            <AccountPlazoTnaBar
+              v-if="item.plazoTiers?.length"
+              :tiers="item.plazoTiers"
+              :selected-days="showSimulation ? resolvedSimulatorDays : undefined"
+            />
+
             <slot name="details" :item="item" />
           </div>
         </UCard>
@@ -371,13 +411,13 @@ function handleProviderClick(item: any) {
                   </UBadge>
                   <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-snug">
                     <template v-if="simulatorDays != null">
-                      Con {{ simulatorDays }} días en el simulador esta fila no aplica (plazo
+                      Con {{ resolvedSimulatorDays }} días en el simulador esta fila no aplica (plazo
                       {{ formatPlazoRange(item) }}).
                     </template>
                     <template v-else> Plazo de esta tasa: {{ formatPlazoRange(item) }}. </template>
                   </p>
                   <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                    {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}% TNA
+                    {{ getItemTnaHeadline(item) }}
                   </div>
                 </div>
                 <div v-else-if="showSimulation && item.simulation" class="space-y-1">
@@ -416,25 +456,37 @@ function handleProviderClick(item: any) {
                 </div>
                 <div v-else>
                   <div class="text-primary-600 dark:text-primary-400 font-semibold">
-                    {{ mode === 'simple' ? item.tna.toFixed(2) : (item.tna * 100).toFixed(2) }}%
+                    {{ getItemTnaHeadline(item) }}
                   </div>
                   <div class="text-xs text-neutral">
-                    TNA
-                    <div v-if="item.fechaAnterior && item.fecha">
-                      <span>Entre </span>
+                    <template v-if="getItemTnaSubline(item)">
+                      {{ getItemTnaSubline(item) }}
+                    </template>
+                    <template v-else>
+                      TNA
+                      <div v-if="item.fechaAnterior && item.fecha">
+                        <span>Entre </span>
 
-                      <span
-                        >{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span
-                      >
-                    </div>
-                    <div v-else-if="item.fecha">
-                      <span>TNA vigente desde el </span>
-                      <span>{{ formatDate(item.fecha) }}</span>
-                    </div>
+                        <span
+                          >{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span
+                        >
+                      </div>
+                      <div v-else-if="item.fecha">
+                        <span>TNA vigente desde el </span>
+                        <span>{{ formatDate(item.fecha) }}</span>
+                      </div>
+                    </template>
                   </div>
                 </div>
               </div>
             </div>
+
+            <AccountPlazoTnaBar
+              v-if="item.plazoTiers?.length"
+              :tiers="item.plazoTiers"
+              :selected-days="showSimulation ? resolvedSimulatorDays : undefined"
+            />
+
             <slot name="details" :item="item" />
           </div>
         </UCard>

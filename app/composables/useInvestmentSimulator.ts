@@ -1,3 +1,8 @@
+import {
+  findAccountPlazoTier,
+  type AccountPlazoTier,
+} from '~/lib/account-plazo-tiers'
+
 export function useInvestmentSimulator() {
   const amount = useState('simulator-amount', () => 100000)
   const days = useState('simulator-days', () => 30)
@@ -41,6 +46,7 @@ export function useInvestmentSimulator() {
       fondo?: string
       plazoMinDias?: number
       plazoMaxDias?: number | null
+      plazoTiers?: AccountPlazoTier[]
       montoMinimo?: number | null
       montoMaximo?: number | null
       tieredRate?: boolean
@@ -64,11 +70,16 @@ export function useInvestmentSimulator() {
         const isPlazoFijoTiered = isPlazoFijo && item.tieredRate
         const isUvaPagoPeriodico = item.type === 'plazoFijoUvaPagoPeriodico'
         const isUvaPrecancelable = item.type === 'plazoFijoPrecancelable'
-        const effectiveDays = isPlazoFijo && !isPlazoFijoTiered ? 30 : days.value
+        const hasPlazoTiers = (item.plazoTiers?.length ?? 0) > 0
+        const plazoTier = hasPlazoTiers
+          ? findAccountPlazoTier(item.plazoTiers!, days.value)
+          : null
+        let effectiveDays = isPlazoFijo && !isPlazoFijoTiered ? 30 : days.value
 
         const uvaPlazoMin = item.plazoMinDias
         const uvaPlazoMax = item.plazoMaxDias
         const simulationDisabled =
+          (hasPlazoTiers && !plazoTier) ||
           ((isUvaPagoPeriodico || isUvaPrecancelable || isPlazoFijoTiered) &&
             ((uvaPlazoMin !== undefined && days.value < uvaPlazoMin) ||
               (uvaPlazoMax != null && days.value > uvaPlazoMax))) ||
@@ -104,8 +115,13 @@ export function useInvestmentSimulator() {
           }
         } else {
           effectiveAmount = exceedsLimit ? item.tope! : amount.value
+          const itemTna = plazoTier?.tna ?? item.tna
           const tnaValue =
-            isPlazoFijo || isUvaPagoPeriodico || isUvaPrecancelable ? item.tna / 100 : item.tna
+            isPlazoFijo || isUvaPagoPeriodico || isUvaPrecancelable ? itemTna / 100 : itemTna
+
+          if (hasPlazoTiers && plazoTier) {
+            effectiveDays = days.value
+          }
 
           result = isPlazoFijo || isPlazoFijoTiered
             ? calculateSimpleInterest(effectiveAmount, tnaValue, effectiveDays)
@@ -114,6 +130,7 @@ export function useInvestmentSimulator() {
 
         return {
           ...item,
+          ...(plazoTier ? { tna: plazoTier.tna, tea: plazoTier.tea } : {}),
           simulationDisabled: false as const,
           simulation: {
             initialAmount: amount.value,
