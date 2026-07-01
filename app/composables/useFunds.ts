@@ -240,10 +240,7 @@ async function transformComparatasasData(
       }
 
       return institutions.map((inst: FundInstitution) => {
-        const returnPercent = getComparatasasReturnPercent(
-          fondo.rendimientos,
-          fondo.tipoRenta,
-        )
+        const returnPercent = getComparatasasReturnPercent(fondo.rendimientos, fondo.tipoRenta)
         const { tna, tea } = getComparatasasTnaAndTea(returnPercent, fondo.tipoRenta)
 
         return {
@@ -521,43 +518,43 @@ async function getLatestAndPreviousRentaFija() {
 }
 
 export async function fetchFundsSeriesLatest(): Promise<FundSeriesLatestRow[]> {
-    const [rentaFija, mercadoDinero, rentaMixta, rentaVariable, retornoTotal] = await Promise.all([
-      $fetch<FundRaw[]>('https://api.argentinadatos.com/v1/finanzas/fci/rentaFija/ultimo').catch(
-        () => [],
-      ),
-      $fetch<FundRaw[]>(
-        'https://api.argentinadatos.com/v1/finanzas/fci/mercadoDinero/ultimo',
-      ).catch(() => []),
-      $fetch<FundRaw[]>('https://api.argentinadatos.com/v1/finanzas/fci/rentaMixta/ultimo').catch(
-        () => [],
-      ),
-      $fetch<FundRaw[]>(
-        'https://api.argentinadatos.com/v1/finanzas/fci/rentaVariable/ultimo',
-      ).catch(() => []),
-      $fetch<FundRaw[]>('https://api.argentinadatos.com/v1/finanzas/fci/retornoTotal/ultimo').catch(
-        () => [],
-      ),
-    ])
+  const [rentaFija, mercadoDinero, rentaMixta, rentaVariable, retornoTotal] = await Promise.all([
+    $fetch<FundRaw[]>('https://api.argentinadatos.com/v1/finanzas/fci/rentaFija/ultimo').catch(
+      () => [],
+    ),
+    $fetch<FundRaw[]>('https://api.argentinadatos.com/v1/finanzas/fci/mercadoDinero/ultimo').catch(
+      () => [],
+    ),
+    $fetch<FundRaw[]>('https://api.argentinadatos.com/v1/finanzas/fci/rentaMixta/ultimo').catch(
+      () => [],
+    ),
+    $fetch<FundRaw[]>('https://api.argentinadatos.com/v1/finanzas/fci/rentaVariable/ultimo').catch(
+      () => [],
+    ),
+    $fetch<FundRaw[]>('https://api.argentinadatos.com/v1/finanzas/fci/retornoTotal/ultimo').catch(
+      () => [],
+    ),
+  ])
 
-    const mapSeries = (funds: FundRaw[], tipoFondo: FundSeriesType): FundSeriesLatestRow[] =>
-      funds.map((fund) => {
-        const typeInfo = getFundTypeInfo(fund.tipoRenta, tipoFondo)
+  const mapSeries = (funds: FundRaw[], tipoFondo: FundSeriesType): FundSeriesLatestRow[] =>
+    funds.map((fund) => {
+      const typeInfo = getFundTypeInfo(fund.tipoRenta, tipoFondo)
 
-        return {
-          ...fund,
-          tipoFondo,
-          type: typeInfo?.type,
-          typeLabel: typeInfo?.typeLabel,
-        }
-      })
+      return {
+        ...fund,
+        tipoFondo,
+        type: typeInfo?.type,
+        typeLabel: typeInfo?.typeLabel,
+      }
+    })
 
-    return [
-      ...mapSeries(rentaFija, 'rentaFija'),
-      ...mapSeries(mercadoDinero, 'mercadoDinero'),
-      ...mapSeries(rentaMixta, 'rentaMixta'),
-      ...mapSeries(rentaVariable, 'rentaVariable'),
-      ...mapSeries(retornoTotal, 'retornoTotal'),
-    ]
+  return [
+    ...mapSeries(rentaFija, 'rentaFija'),
+    ...mapSeries(mercadoDinero, 'mercadoDinero'),
+    ...mapSeries(rentaMixta, 'rentaMixta'),
+    ...mapSeries(rentaVariable, 'rentaVariable'),
+    ...mapSeries(retornoTotal, 'retornoTotal'),
+  ]
 }
 
 export function useFunds() {

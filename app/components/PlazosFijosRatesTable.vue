@@ -64,15 +64,14 @@ function getCellsForColumn(row: PlazoFijoTableRow, columnKey: string) {
 function isActivePlazoColumn(column: PlazoFijoPlazoColumn): boolean {
   if (!props.showSimulation || props.simulatorDays == null) return false
   const days = props.simulatorDays
-  return (
-    days >= column.plazoMinDias &&
-    (column.plazoMaxDias == null || days <= column.plazoMaxDias)
-  )
+  return days >= column.plazoMinDias && (column.plazoMaxDias == null || days <= column.plazoMaxDias)
 }
 
 function cellTitle(cells: Array<{ tna: number; label?: string }>): string | undefined {
   if (cells.length <= 1) return cells[0]?.label
-  return cells.map((cell) => `${cell.label ? `${cell.label}: ` : ''}${formatTna(cell.tna)}`).join(' · ')
+  return cells
+    .map((cell) => `${cell.label ? `${cell.label}: ` : ''}${formatTna(cell.tna)}`)
+    .join(' · ')
 }
 
 function isActiveRateCell(cell: { tna: number }, activeTna?: number): boolean {
@@ -97,10 +96,7 @@ function renderRateCells(
     return h(
       'div',
       {
-        class: [
-          'text-center leading-tight',
-          options.disabled ? 'opacity-50' : '',
-        ],
+        class: ['text-center leading-tight', options.disabled ? 'opacity-50' : ''],
         title: cell.label,
       },
       [
@@ -195,7 +191,11 @@ const rowsWithSimulation = computed((): PlazoFijoTableRowWithSimulation[] => {
 })
 
 function createSortableHeader(label: string) {
-  return ({ column }: { column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (asc?: boolean) => void } }) => {
+  return ({
+    column,
+  }: {
+    column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (asc?: boolean) => void }
+  }) => {
     const isSorted = column.getIsSorted()
     return h(UButton, {
       color: 'neutral',

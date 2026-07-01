@@ -1,35 +1,23 @@
 import { describe, expect, it } from 'vitest'
-import {
-  getComparatasasReturnPercent,
-  getComparatasasTnaAndTea,
-} from './fci-comparatasas-returns'
+import { getComparatasasReturnPercent, getComparatasasTnaAndTea } from './fci-comparatasas-returns'
 
 describe('getComparatasasReturnPercent', () => {
   it('uses unMes for money market when available', () => {
     expect(
-      getComparatasasReturnPercent(
-        { unMes: 16.5, ultimos7Dias: 18.4 },
-        'Mercado de Dinero',
-      ),
+      getComparatasasReturnPercent({ unMes: 16.5, ultimos7Dias: 18.4 }, 'Mercado de Dinero'),
     ).toBe(16.5)
   })
 
   it('falls back to ultimos7Dias for money market when unMes is null', () => {
     expect(
-      getComparatasasReturnPercent(
-        { unMes: null, ultimos7Dias: 18.4158 },
-        'Mercado de Dinero',
-      ),
+      getComparatasasReturnPercent({ unMes: null, ultimos7Dias: 18.4158 }, 'Mercado de Dinero'),
     ).toBe(18.4158)
   })
 
   it('does not fall back to ultimos7Dias for non money market funds', () => {
-    expect(
-      getComparatasasReturnPercent(
-        { unMes: null, ultimos7Dias: 18.4158 },
-        'Renta Fija',
-      ),
-    ).toBe(0)
+    expect(getComparatasasReturnPercent({ unMes: null, ultimos7Dias: 18.4158 }, 'Renta Fija')).toBe(
+      0,
+    )
   })
 })
 

@@ -111,9 +111,7 @@ export function useAccountHistory(providerSlug: MaybeRefOrGetter<string>) {
         const response = await $fetch<AccountHistoryItem[]>(
           `https://api.argentinadatos.com/v1/finanzas/fci/otros/${slug.value}/`,
         )
-        return response.sort(
-          (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime(),
-        )
+        return response.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
       } catch {
         return []
       }

@@ -69,22 +69,10 @@ const {
   loading: loadingHipotecarios,
   error: errorHipotecarios,
 } = useHipotecariosUVA()
-const {
-  inflacionHistorica,
-  loading: loadingInflacion,
-  error: errorInflacion,
-} = useInflacion()
-const {
-  inflacionREM,
-  loading: loadingInflacionREM,
-  error: errorInflacionREM,
-} = useInflacionREM()
+const { inflacionHistorica, loading: loadingInflacion, error: errorInflacion } = useInflacion()
+const { inflacionREM, loading: loadingInflacionREM, error: errorInflacionREM } = useInflacionREM()
 const { ultimoUVA, uvaHistorica, loading: loadingUVA, error: errorUVA } = useUVA()
-const {
-  tipoCambioVenta,
-  loading: loadingTipoCambio,
-  error: errorTipoCambio,
-} = useTipoCambio()
+const { tipoCambioVenta, loading: loadingTipoCambio, error: errorTipoCambio } = useTipoCambio()
 
 const montoPropiedad = ref(100000)
 const porcentajeFinanciacion = ref(75)

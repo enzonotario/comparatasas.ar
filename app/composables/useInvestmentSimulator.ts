@@ -1,7 +1,4 @@
-import {
-  findAccountPlazoTier,
-  type AccountPlazoTier,
-} from '~/lib/account-plazo-tiers'
+import { findAccountPlazoTier, type AccountPlazoTier } from '~/lib/account-plazo-tiers'
 
 export function useInvestmentSimulator() {
   const amount = useState('simulator-amount', () => 100000)
@@ -71,9 +68,7 @@ export function useInvestmentSimulator() {
         const isUvaPagoPeriodico = item.type === 'plazoFijoUvaPagoPeriodico'
         const isUvaPrecancelable = item.type === 'plazoFijoPrecancelable'
         const hasPlazoTiers = (item.plazoTiers?.length ?? 0) > 0
-        const plazoTier = hasPlazoTiers
-          ? findAccountPlazoTier(item.plazoTiers!, days.value)
-          : null
+        const plazoTier = hasPlazoTiers ? findAccountPlazoTier(item.plazoTiers!, days.value) : null
         let effectiveDays = isPlazoFijo && !isPlazoFijoTiered ? 30 : days.value
 
         const uvaPlazoMin = item.plazoMinDias
@@ -123,9 +118,10 @@ export function useInvestmentSimulator() {
             effectiveDays = days.value
           }
 
-          result = isPlazoFijo || isPlazoFijoTiered
-            ? calculateSimpleInterest(effectiveAmount, tnaValue, effectiveDays)
-            : calculateCompoundInterest(effectiveAmount, tnaValue, effectiveDays)
+          result =
+            isPlazoFijo || isPlazoFijoTiered
+              ? calculateSimpleInterest(effectiveAmount, tnaValue, effectiveDays)
+              : calculateCompoundInterest(effectiveAmount, tnaValue, effectiveDays)
         }
 
         return {

@@ -100,10 +100,13 @@ interface UsdAccount {
   tope: number
 }
 
-const { data: usdAccounts, pending: loadingAccounts, error: errorAccounts } =
-  await useAsyncData('usd-cuentas-remuneradas', () =>
-    $fetch<UsdAccount[]>('https://api.argentinadatos.com/v1/finanzas/cuentas-remuneradas-usd/'),
-  )
+const {
+  data: usdAccounts,
+  pending: loadingAccounts,
+  error: errorAccounts,
+} = await useAsyncData('usd-cuentas-remuneradas', () =>
+  $fetch<UsdAccount[]>('https://api.argentinadatos.com/v1/finanzas/cuentas-remuneradas-usd/'),
+)
 
 const { dataAllProcessed, loading: cryptoLoading, error: cryptoError } = useCrypto()
 

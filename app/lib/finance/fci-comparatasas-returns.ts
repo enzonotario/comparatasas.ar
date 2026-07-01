@@ -16,8 +16,7 @@ export function getComparatasasReturnPercent(
 
 export function getComparatasasTnaAndTea(returnPercent: number, tipoRenta: string) {
   const returnRate = returnPercent / 100
-  const tna =
-    tipoRenta === 'Mercado de Dinero' ? returnRate : returnRate * (365 / 30)
+  const tna = tipoRenta === 'Mercado de Dinero' ? returnRate : returnRate * (365 / 30)
   const tea = Math.pow(1 + returnPercent / 100, 12) - 1
 
   return {

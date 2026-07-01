@@ -23,10 +23,7 @@ export function extractFrascosTiers(accounts: AccountPlazoTierSource[]): Account
   return accounts
     .filter(
       (a) =>
-        isFrascosFondo(a.fondo) &&
-        a.tna > 0 &&
-        a.plazoMinDias != null &&
-        a.plazoMaxDias != null,
+        isFrascosFondo(a.fondo) && a.tna > 0 && a.plazoMinDias != null && a.plazoMaxDias != null,
     )
     .map((a) => ({
       plazoMinDias: a.plazoMinDias!,
@@ -41,9 +38,7 @@ export function findAccountPlazoTier(
   tiers: AccountPlazoTier[],
   days: number,
 ): AccountPlazoTier | null {
-  return (
-    tiers.find((t) => days >= t.plazoMinDias && days <= t.plazoMaxDias) ?? null
-  )
+  return tiers.find((t) => days >= t.plazoMinDias && days <= t.plazoMaxDias) ?? null
 }
 
 export function getPlazoTierBounds(tiers: AccountPlazoTier[]): {
@@ -61,10 +56,7 @@ export function formatPlazoTierRange(tiers: AccountPlazoTier[]): string {
   return `${minDias}–${maxDias} días`
 }
 
-export function formatPlazoTierTnaRange(
-  tiers: AccountPlazoTier[],
-  asDecimal = true,
-): string {
+export function formatPlazoTierTnaRange(tiers: AccountPlazoTier[], asDecimal = true): string {
   const values = [...new Set(tiers.map((t) => t.tna))].sort((a, b) => a - b)
   const fmt = (n: number) => {
     const pct = asDecimal ? n * 100 : n

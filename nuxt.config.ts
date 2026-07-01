@@ -115,16 +115,6 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-07-15',
 
-  hooks: {
-    async 'nitro:config'(nitroConfig) {
-      nitroConfig.prerender = nitroConfig.prerender || {}
-      const existing = Array.isArray(nitroConfig.prerender.routes)
-        ? nitroConfig.prerender.routes
-        : []
-      nitroConfig.prerender.routes = [...new Set([...existing, ...(await getPrerenderRoutes())])]
-    },
-  },
-
   nitro: {
     preset: 'cloudflare_pages',
     prerender: {
@@ -150,6 +140,16 @@ export default defineNuxtConfig({
       ],
     },
     minify: true,
+  },
+
+  hooks: {
+    async 'nitro:config'(nitroConfig) {
+      nitroConfig.prerender = nitroConfig.prerender || {}
+      const existing = Array.isArray(nitroConfig.prerender.routes)
+        ? nitroConfig.prerender.routes
+        : []
+      nitroConfig.prerender.routes = [...new Set([...existing, ...(await getPrerenderRoutes())])]
+    },
   },
 
   eslint: {

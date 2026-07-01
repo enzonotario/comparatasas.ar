@@ -232,8 +232,8 @@ function handleProviderClick(item: any) {
                   </UBadge>
                   <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-snug">
                     <template v-if="simulatorDays != null">
-                      Con {{ resolvedSimulatorDays }} días en el simulador esta fila no aplica (plazo
-                      {{ formatPlazoRange(item) }}).
+                      Con {{ resolvedSimulatorDays }} días en el simulador esta fila no aplica
+                      (plazo {{ formatPlazoRange(item) }}).
                     </template>
                     <template v-else> Plazo de esta tasa: {{ formatPlazoRange(item) }}. </template>
                   </p>
@@ -411,8 +411,8 @@ function handleProviderClick(item: any) {
                   </UBadge>
                   <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-snug">
                     <template v-if="simulatorDays != null">
-                      Con {{ resolvedSimulatorDays }} días en el simulador esta fila no aplica (plazo
-                      {{ formatPlazoRange(item) }}).
+                      Con {{ resolvedSimulatorDays }} días en el simulador esta fila no aplica
+                      (plazo {{ formatPlazoRange(item) }}).
                     </template>
                     <template v-else> Plazo de esta tasa: {{ formatPlazoRange(item) }}. </template>
                   </p>

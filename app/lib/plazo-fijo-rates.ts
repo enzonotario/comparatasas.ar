@@ -159,11 +159,7 @@ export function getMaxTnaForPlazoKey(
   return Math.max(...cells.map((cell) => cell.tna))
 }
 
-export function tasaMatchesDays(
-  tasa: TasaPlazoFijo,
-  days: number,
-  amount?: number,
-): boolean {
+export function tasaMatchesDays(tasa: TasaPlazoFijo, days: number, amount?: number): boolean {
   const withinPlazo =
     days >= tasa.plazoMinDias && (tasa.plazoMaxDias == null || days <= tasa.plazoMaxDias)
   if (!withinPlazo) return false
@@ -196,7 +192,7 @@ function mergePlazoBounds(
     plazoMinDias: Math.min(current.plazoMinDias, tasa.plazoMinDias),
     plazoMaxDias:
       current.plazoMaxDias == null || tasa.plazoMaxDias == null
-        ? current.plazoMaxDias ?? tasa.plazoMaxDias
+        ? (current.plazoMaxDias ?? tasa.plazoMaxDias)
         : Math.max(current.plazoMaxDias, tasa.plazoMaxDias),
   }
 }
@@ -211,22 +207,18 @@ export function buildPlazoColumns(tasas: TasaPlazoFijo[]): PlazoFijoPlazoColumn[
     boundsByKey.set(key, mergePlazoBounds(boundsByKey.get(key), tasa))
   }
 
-  return [...boundsByKey.keys()]
-    .sort(comparePlazoKeys)
-    .map((key) => {
-      const bounds = boundsByKey.get(key)!
-      return {
-        key,
-        label: getPlazoColumnLabel(key),
-        plazoMinDias: bounds.plazoMinDias,
-        plazoMaxDias: bounds.plazoMaxDias,
-      }
-    })
+  return [...boundsByKey.keys()].sort(comparePlazoKeys).map((key) => {
+    const bounds = boundsByKey.get(key)!
+    return {
+      key,
+      label: getPlazoColumnLabel(key),
+      plazoMinDias: bounds.plazoMinDias,
+      plazoMaxDias: bounds.plazoMaxDias,
+    }
+  })
 }
 
-export function groupRatesByPlazoKey(
-  tasas: TasaPlazoFijo[],
-): Record<string, PlazoFijoRateCell[]> {
+export function groupRatesByPlazoKey(tasas: TasaPlazoFijo[]): Record<string, PlazoFijoRateCell[]> {
   const grouped: Record<string, PlazoFijoRateCell[]> = {}
 
   for (const tasa of tasas) {

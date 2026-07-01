@@ -53,16 +53,8 @@ useHead({
 })
 
 const { accounts, loading: loadingAccounts, specialAccounts, error: accountsError } = useAccounts()
-const {
-  allFundsCache,
-  data: fundsData,
-  loading: loadingFunds,
-  error: fundsError,
-} = useFunds()
-const {
-  funds: fciVariablesFunds,
-  loading: loadingFciVariables,
-} = useFciVariablesUltimo()
+const { allFundsCache, data: fundsData, loading: loadingFunds, error: fundsError } = useFunds()
+const { funds: fciVariablesFunds, loading: loadingFciVariables } = useFciVariablesUltimo()
 
 const isMounted = ref(false)
 
