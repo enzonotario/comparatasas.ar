@@ -17,6 +17,7 @@ const STATIC_PRERENDER_ROUTES = [
   '/remesas',
   '/lecaps',
   '/bonos-cer',
+  '/metodologia',
   '/sumarse',
 ] as const
 

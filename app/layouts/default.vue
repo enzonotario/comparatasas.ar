@@ -39,6 +39,7 @@ const isWideLayout = computed(() => {
     'cuentas-billeteras-graficos',
     'lecaps',
     'bonos-cer',
+    'metodologia',
   ].includes(route.name as string)
 })
 
@@ -227,6 +228,12 @@ const showProductScenariosRail = computed(() => {
                     class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
                   >
                     Fondos
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/metodologia"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    Metodología de cálculos
                   </NuxtLink>
                   <NuxtLink
                     to="/sumarse"

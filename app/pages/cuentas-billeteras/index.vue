@@ -315,23 +315,31 @@ const fundsByRiskWithSimulation = computed(() => {
 
           <div class="space-y-3 text-sm text-blue-800 dark:text-blue-200">
             <p>
-              Los rendimientos mostrados en comparatasas.ar se calculan comparando los últimos dos
-              valores cuotaparte reportados por la Cámara Argentina de Fondos Comunes de Inversión
-              (CAFCI), y luego se anualiza el rendimiento diario entre ambas fechas.
+              En esta página no usamos un solo criterio para todas las filas. Las
+              <strong>cuentas remuneradas y billeteras con tasa garantizada</strong> muestran la TNA
+              (y TEA cuando está disponible) que cada plataforma publica oficialmente. Los productos
+              con <strong>rendimiento variable informado por la entidad</strong> también vienen con
+              esos valores tal como los reporta la fuente. Los
+              <strong>fondos comunes vinculados a billeteras</strong> se calculan a partir del
+              rendimiento del último mes según los datos de la CAFCI.
             </p>
             <p>
-              Las diferencias con otras aplicaciones (como Mercado Pago, Personal Pay, etc.) pueden
-              deberse a:
+              Por eso el número que ves en Mercado Pago, Personal Pay u otra app puede no coincidir
+              con el nuestro:
             </p>
             <ul class="list-disc list-inside space-y-1 ml-2">
-              <li>Muestran rendimientos estimados/esperados</li>
-              <li>Diferentes períodos de cálculo (últimos 7 días, 30 días, etc.)</li>
-              <li>Distintas fechas de referencia para los valores cuotaparte</li>
-              <li>Valores cuotaparte distintos a los reportados en CAFCI</li>
+              <li>La app suele mostrar una TNA estimada, proyectada o redondeada de otra forma</li>
+              <li>Períodos de referencia distintos (7 días, 30 días, último mes, etc.)</li>
+              <li>Topes, condiciones o plazos (ej. Frascos según los días que elijas)</li>
+              <li>Fecha de actualización distinta entre la app y nuestra fuente</li>
             </ul>
             <p class="text-xs text-blue-700 dark:text-blue-300 italic">
               Siempre verificá los rendimientos actuales directamente con cada plataforma antes de
               invertir.
+              <NuxtLink to="/metodologia" class="underline font-medium not-italic">
+                Ver cómo calculamos las tasas
+              </NuxtLink>
+              .
             </p>
           </div>
         </UCard>
