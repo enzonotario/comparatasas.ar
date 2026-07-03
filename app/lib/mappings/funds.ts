@@ -357,7 +357,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'IEB Ahorro - Clase A',
+    fundName: 'Ciclo Nova Ahorro - Clase A',
     institutions: [
       {
         institution: 'ieb',
@@ -455,7 +455,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'IEB Estratégico - Clase A',
+    fundName: 'Ciclo Nova Estratégico - Clase A',
     institutions: [
       {
         institution: 'ieb',
@@ -469,7 +469,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'IEB Estratégico II - Clase A',
+    fundName: 'Ciclo Nova Estratégico II - Clase A',
     institutions: [
       {
         institution: 'ieb',
@@ -550,7 +550,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'IEB Value - Clase A',
+    fundName: 'Ciclo Nova Value - Clase A',
     institutions: [
       {
         institution: 'ieb',
@@ -592,7 +592,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'IEB Corto Plazo Dólar - Clase A',
+    fundName: 'Ciclo Nova Corto Plazo Dólar - Clase A',
     institutions: [
       {
         institution: 'ieb',
@@ -886,8 +886,8 @@ export const comparatasasFondosArs = [
   'delta-pesos-clase-x',
   'fima-premium-clase-a',
   'vinci-compass-liquidez-clase-f',
-  'ieb-ahorro-clase-a',
-  'ieb-value-clase-a',
+  'ciclo-nova-ahorro-clase-a',
+  'ciclo-nova-value-clase-a',
   'iol-cash-management-clase-a',
   'mercado-fondo-clase-a',
   'mp-ahorro-clase-a',
@@ -916,9 +916,9 @@ export const comparatasasFondosUsd = [
   'fima-renta-fija-dolares-clase-a',
   'gainvest-renta-fija-dolares-clase-a',
   'iam-retorno-dolares-clase-a',
-  'ieb-corto-plazo-dolar-clase-a',
-  'ieb-estrategico-clase-a',
-  'ieb-estrategico-ii-clase-a',
+  'ciclo-nova-corto-plazo-dolar-clase-a',
+  'ciclo-nova-estrategico-clase-a',
+  'ciclo-nova-estrategico-ii-clase-a',
   'iol-dolar-ahorro-plus-clase-d',
   'pionero-money-market-dolar-clase-a',
   'sbs-liquidez-usd-clase-a',
