@@ -1,24 +1,45 @@
 [
   {
+    "date": "20260707",
+    "categories": {
+      "Página Amiga": 11,
+      "Billetera": 43,
+      "Cuenta Remunerada": 120,
+      "Otro": 69,
+      "Plazo Fijo": 38,
+      "Billetera USD": 12,
+      "Cuenta Remunerada USD": 4,
+      "Frascos": 42,
+      "PF UVA pago periódico": 9,
+      "PF UVA precancelable": 2,
+      "General": 35,
+      "Criptomonedas": 12,
+      "plazo fijo tradicional": 16,
+      "wARS": 8
+    },
+    "total": 421
+  },
+  {
     "date": "20260706",
     "categories": {
-      "Money Market": 1,
-      "Billetera": 21,
-      "Página Amiga": 13,
-      "Plazo Fijo": 44,
-      "Cuenta Remunerada": 70,
-      "Otro": 36,
-      "ARGt": 1,
-      "Billetera USD": 8,
-      "Cuenta Remunerada USD": 1,
-      "Frascos": 24,
-      "PF UVA pago periódico": 3,
-      "General": 11,
-      "Criptomonedas": 5,
-      "plazo fijo tradicional": 36,
-      "wARS": 3
+      "Money Market": 4,
+      "Billetera": 62,
+      "Página Amiga": 34,
+      "Plazo Fijo": 113,
+      "Cuenta Remunerada": 161,
+      "Otro": 117,
+      "ARGt": 2,
+      "Billetera USD": 21,
+      "Cuenta Remunerada USD": 5,
+      "Frascos": 40,
+      "PF UVA pago periódico": 6,
+      "PF UVA precancelable": 1,
+      "General": 16,
+      "Criptomonedas": 21,
+      "plazo fijo tradicional": 61,
+      "wARS": 11
     },
-    "total": 277
+    "total": 675
   },
   {
     "date": "20260705",
@@ -75,31 +96,9 @@
       "Frascos": 17,
       "PF UVA pago periódico": 4,
       "PF UVA precancelable": 1,
-      "General": 13,
-      "Criptomonedas": 8,
-      "plazo fijo tradicional": 27,
-      "wARS": 7
+      "General": 10,
+      "Criptomonedas": 5
     },
-    "total": 398
-  },
-  {
-    "date": "20260702",
-    "categories": {
-      "Otro": 107,
-      "Billetera": 62,
-      "Página Amiga": 28,
-      "Cuenta Remunerada": 155,
-      "Money Market": 4,
-      "Plazo Fijo": 93,
-      "ARGt": 1,
-      "Billetera USD": 14,
-      "Cuenta Remunerada USD": 2,
-      "Frascos": 51,
-      "PF UVA pago periódico": 7,
-      "PF UVA precancelable": 1,
-      "General": 21,
-      "Criptomonedas": 6
-    },
-    "total": 552
+    "total": 358
   }
 ]
