@@ -1,23 +1,44 @@
 [
   {
+    "date": "20260708",
+    "categories": {
+      "Plazo Fijo": 52,
+      "Cuenta Remunerada": 65,
+      "Otro": 71,
+      "Money Market": 2,
+      "Página Amiga": 16,
+      "Billetera": 12,
+      "Billetera USD": 4,
+      "Cuenta Remunerada USD": 1,
+      "Frascos": 21,
+      "PF UVA pago periódico": 6,
+      "PF UVA precancelable": 6,
+      "General": 19,
+      "Criptomonedas": 8,
+      "plazo fijo tradicional": 30
+    },
+    "total": 313
+  },
+  {
     "date": "20260707",
     "categories": {
-      "Página Amiga": 11,
-      "Billetera": 43,
-      "Cuenta Remunerada": 120,
-      "Otro": 69,
-      "Plazo Fijo": 38,
-      "Billetera USD": 12,
-      "Cuenta Remunerada USD": 4,
-      "Frascos": 42,
-      "PF UVA pago periódico": 9,
-      "PF UVA precancelable": 2,
-      "General": 35,
+      "Página Amiga": 29,
+      "Billetera": 76,
+      "Cuenta Remunerada": 189,
+      "Otro": 143,
+      "Plazo Fijo": 84,
+      "Money Market": 1,
+      "Billetera USD": 11,
+      "Cuenta Remunerada USD": 5,
+      "Frascos": 24,
+      "PF UVA pago periódico": 12,
+      "PF UVA precancelable": 4,
+      "General": 31,
       "Criptomonedas": 12,
-      "plazo fijo tradicional": 16,
-      "wARS": 8
+      "plazo fijo tradicional": 22,
+      "wARS": 7
     },
-    "total": 421
+    "total": 650
   },
   {
     "date": "20260706",
@@ -70,35 +91,14 @@
       "Cuenta Remunerada": 76,
       "Página Amiga": 18,
       "Plazo Fijo": 42,
-      "Criptomonedas": 12,
+      "Criptomonedas": 2,
       "Money Market": 1,
       "ARGt": 2,
       "Billetera USD": 14,
       "Frascos": 25,
       "PF UVA pago periódico": 2,
-      "General": 21,
-      "plazo fijo tradicional": 7,
-      "wARS": 7
+      "General": 11
     },
-    "total": 355
-  },
-  {
-    "date": "20260703",
-    "categories": {
-      "Otro": 70,
-      "Página Amiga": 48,
-      "Billetera": 47,
-      "Money Market": 2,
-      "Cuenta Remunerada": 80,
-      "Plazo Fijo": 60,
-      "Billetera USD": 13,
-      "Cuenta Remunerada USD": 1,
-      "Frascos": 17,
-      "PF UVA pago periódico": 4,
-      "PF UVA precancelable": 1,
-      "General": 10,
-      "Criptomonedas": 5
-    },
-    "total": 358
+    "total": 321
   }
 ]
