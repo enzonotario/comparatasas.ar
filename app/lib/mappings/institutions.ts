@@ -550,6 +550,12 @@ export const institutions: Array<{
     shortName: 'Lune.fi',
     url: 'https://lune.fi/investments?ref=comparatasas',
   },
+  {
+    names: ['berry', 'Berry', 'BERRY'],
+    logo: 'https://api.argentinadatos.com/static/logos/berry.svg',
+    shortName: 'Berry',
+    url: 'https://berryinvesting.com/',
+  },
 ]
 
 export function getInstitutionLogo(name: string): string | undefined {
