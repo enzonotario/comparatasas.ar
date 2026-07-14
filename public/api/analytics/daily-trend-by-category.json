@@ -1,22 +1,44 @@
 [
   {
+    "date": "20260714",
+    "categories": {
+      "Otro": 66,
+      "Billetera": 26,
+      "Plazo Fijo": 29,
+      "Cuenta Remunerada": 46,
+      "Money Market": 4,
+      "Página Amiga": 16,
+      "ARGt": 7,
+      "Billetera USD": 15,
+      "Frascos": 15,
+      "PF UVA pago periódico": 2,
+      "PF UVA precancelable": 4,
+      "General": 8,
+      "Criptomonedas": 17,
+      "plazo fijo tradicional": 15,
+      "wARS": 18
+    },
+    "total": 288
+  },
+  {
     "date": "20260713",
     "categories": {
-      "Página Amiga": 17,
-      "Billetera": 16,
-      "Cuenta Remunerada": 38,
-      "Otro": 34,
-      "Plazo Fijo": 24,
-      "Billetera USD": 5,
-      "Frascos": 10,
+      "Página Amiga": 41,
+      "Billetera": 51,
+      "Cuenta Remunerada": 104,
+      "Otro": 112,
+      "Plazo Fijo": 82,
+      "Money Market": 1,
+      "Billetera USD": 15,
+      "Frascos": 24,
       "PF UVA pago periódico": 1,
       "PF UVA precancelable": 2,
-      "General": 18,
-      "Criptomonedas": 8,
-      "plazo fijo tradicional": 24,
-      "wARS": 6
+      "General": 27,
+      "Criptomonedas": 15,
+      "plazo fijo tradicional": 43,
+      "wARS": 12
     },
-    "total": 203
+    "total": 530
   },
   {
     "date": "20260712",
@@ -82,34 +104,12 @@
   {
     "date": "20260709",
     "categories": {
-      "Página Amiga": 19,
-      "Billetera": 50,
-      "Cuenta Remunerada": 67,
-      "Otro": 86,
-      "Money Market": 7,
-      "Criptomonedas": 25,
-      "Plazo Fijo": 35,
-      "ARGt": 1,
-      "Billetera USD": 20,
-      "Cuenta Remunerada USD": 1,
-      "Frascos": 25,
-      "PF UVA pago periódico": 3,
-      "General": 17,
-      "plazo fijo tradicional": 15,
-      "wARS": 8
+      "Página Amiga": 3,
+      "Billetera": 4,
+      "Cuenta Remunerada": 6,
+      "Otro": 19,
+      "Money Market": 2
     },
-    "total": 379
-  },
-  {
-    "date": "20260708",
-    "categories": {
-      "Plazo Fijo": 3,
-      "Cuenta Remunerada": 15,
-      "Otro": 20,
-      "Money Market": 2,
-      "Página Amiga": 9,
-      "Billetera": 6
-    },
-    "total": 55
+    "total": 34
   }
 ]
