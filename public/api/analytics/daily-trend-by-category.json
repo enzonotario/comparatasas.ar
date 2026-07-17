@@ -1,21 +1,41 @@
 [
   {
+    "date": "20260717",
+    "categories": {
+      "Página Amiga": 14,
+      "Cuenta Remunerada": 21,
+      "Otro": 30,
+      "Billetera": 18,
+      "Plazo Fijo": 13,
+      "Billetera USD": 11,
+      "Cuenta Remunerada USD": 2,
+      "Frascos": 8,
+      "PF UVA pago periódico": 2,
+      "General": 6,
+      "Criptomonedas": 4,
+      "plazo fijo tradicional": 18,
+      "wARS": 1
+    },
+    "total": 148
+  },
+  {
     "date": "20260716",
     "categories": {
-      "Página Amiga": 15,
-      "Billetera": 11,
-      "Cuenta Remunerada": 25,
-      "Otro": 21,
-      "Plazo Fijo": 6,
-      "Billetera USD": 8,
-      "Frascos": 13,
-      "PF UVA pago periódico": 2,
-      "General": 4,
-      "Criptomonedas": 2,
-      "plazo fijo tradicional": 18,
-      "wARS": 3
+      "Página Amiga": 41,
+      "Billetera": 28,
+      "Cuenta Remunerada": 62,
+      "Otro": 59,
+      "Plazo Fijo": 17,
+      "Criptomonedas": 13,
+      "Billetera USD": 7,
+      "Frascos": 18,
+      "PF UVA pago periódico": 3,
+      "PF UVA precancelable": 1,
+      "General": 8,
+      "plazo fijo tradicional": 23,
+      "wARS": 5
     },
-    "total": 128
+    "total": 285
   },
   {
     "date": "20260715",
@@ -74,38 +94,8 @@
       "PF UVA precancelable": 2,
       "General": 27,
       "Criptomonedas": 15,
-      "plazo fijo tradicional": 43,
-      "wARS": 12
+      "plazo fijo tradicional": 25
     },
-    "total": 530
-  },
-  {
-    "date": "20260712",
-    "categories": {
-      "Cuenta Remunerada": 55,
-      "Otro": 46,
-      "Página Amiga": 14,
-      "Billetera": 23,
-      "Plazo Fijo": 21,
-      "Billetera USD": 9,
-      "Cuenta Remunerada USD": 2,
-      "Frascos": 10,
-      "PF UVA pago periódico": 6,
-      "PF UVA precancelable": 1,
-      "General": 14,
-      "Criptomonedas": 8,
-      "plazo fijo tradicional": 19,
-      "wARS": 2
-    },
-    "total": 230
-  },
-  {
-    "date": "20260711",
-    "categories": {
-      "Página Amiga": 2,
-      "Otro": 1,
-      "Billetera": 2
-    },
-    "total": 5
+    "total": 500
   }
 ]
