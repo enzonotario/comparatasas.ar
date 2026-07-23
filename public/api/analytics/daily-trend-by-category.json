@@ -1,22 +1,43 @@
 [
   {
+    "date": "20260723",
+    "categories": {
+      "Página Amiga": 8,
+      "Billetera": 18,
+      "Plazo Fijo": 22,
+      "Cuenta Remunerada": 36,
+      "Otro": 42,
+      "ARGt": 1,
+      "Billetera USD": 10,
+      "Frascos": 12,
+      "PF UVA pago periódico": 4,
+      "PF UVA precancelable": 1,
+      "General": 20,
+      "Criptomonedas": 6,
+      "plazo fijo tradicional": 16,
+      "wARS": 3
+    },
+    "total": 199
+  },
+  {
     "date": "20260722",
     "categories": {
-      "Página Amiga": 10,
-      "Otro": 27,
-      "Cuenta Remunerada": 44,
-      "Billetera": 12,
-      "Criptomonedas": 9,
-      "Plazo Fijo": 16,
+      "Página Amiga": 30,
+      "Otro": 78,
+      "Cuenta Remunerada": 95,
+      "Billetera": 33,
+      "Criptomonedas": 22,
+      "Plazo Fijo": 38,
+      "Money Market": 1,
       "ARGt": 1,
-      "Billetera USD": 5,
-      "Frascos": 13,
-      "PF UVA pago periódico": 3,
-      "General": 5,
-      "plazo fijo tradicional": 12,
-      "wARS": 5
+      "Billetera USD": 8,
+      "Frascos": 17,
+      "PF UVA pago periódico": 5,
+      "General": 10,
+      "plazo fijo tradicional": 15,
+      "wARS": 9
     },
-    "total": 162
+    "total": 362
   },
   {
     "date": "20260721",
@@ -81,32 +102,11 @@
   {
     "date": "20260718",
     "categories": {
-      "Otro": 37,
-      "Billetera": 32,
-      "Plazo Fijo": 16,
-      "Cuenta Remunerada": 23,
-      "Money Market": 2,
-      "Página Amiga": 2,
-      "Criptomonedas": 12,
-      "ARGt": 1,
-      "Billetera USD": 8,
-      "Frascos": 3,
-      "PF UVA pago periódico": 7,
-      "General": 10,
-      "plazo fijo tradicional": 8,
-      "wARS": 4
+      "Otro": 12,
+      "Billetera": 13,
+      "Plazo Fijo": 4,
+      "Cuenta Remunerada": 4
     },
-    "total": 165
-  },
-  {
-    "date": "20260717",
-    "categories": {
-      "Página Amiga": 27,
-      "Cuenta Remunerada": 62,
-      "Otro": 76,
-      "Billetera": 43,
-      "Plazo Fijo": 27
-    },
-    "total": 235
+    "total": 33
   }
 ]
