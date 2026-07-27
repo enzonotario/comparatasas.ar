@@ -1,21 +1,44 @@
 [
   {
-    "date": "20260726",
+    "date": "20260727",
     "categories": {
-      "Página Amiga": 3,
-      "Cuenta Remunerada": 13,
-      "Otro": 18,
-      "Billetera": 6,
-      "Plazo Fijo": 7,
-      "Money Market": 1,
-      "Billetera USD": 7,
-      "Frascos": 4,
-      "General": 4,
-      "Criptomonedas": 4,
-      "plazo fijo tradicional": 8,
+      "Página Amiga": 12,
+      "Plazo Fijo": 22,
+      "Cuenta Remunerada": 30,
+      "Money Market": 3,
+      "Otro": 33,
+      "Billetera": 18,
+      "ARGt": 1,
+      "Billetera USD": 9,
+      "Frascos": 16,
+      "PF UVA pago periódico": 3,
+      "PF UVA precancelable": 1,
+      "General": 10,
+      "Criptomonedas": 8,
+      "plazo fijo tradicional": 23,
       "wARS": 1
     },
-    "total": 76
+    "total": 190
+  },
+  {
+    "date": "20260726",
+    "categories": {
+      "Página Amiga": 8,
+      "Cuenta Remunerada": 36,
+      "Otro": 53,
+      "Billetera": 15,
+      "Plazo Fijo": 23,
+      "Money Market": 3,
+      "Billetera USD": 8,
+      "Frascos": 8,
+      "PF UVA pago periódico": 1,
+      "PF UVA precancelable": 1,
+      "General": 12,
+      "Criptomonedas": 7,
+      "plazo fijo tradicional": 14,
+      "wARS": 2
+    },
+    "total": 191
   },
   {
     "date": "20260725",
@@ -81,33 +104,13 @@
   {
     "date": "20260722",
     "categories": {
-      "Página Amiga": 30,
-      "Otro": 78,
-      "Cuenta Remunerada": 95,
-      "Billetera": 33,
-      "Criptomonedas": 22,
-      "Plazo Fijo": 38,
-      "Money Market": 1,
-      "ARGt": 1,
-      "Billetera USD": 8,
-      "Frascos": 17,
-      "PF UVA pago periódico": 5,
-      "General": 10,
-      "plazo fijo tradicional": 15,
-      "wARS": 9
-    },
-    "total": 362
-  },
-  {
-    "date": "20260721",
-    "categories": {
-      "Otro": 30,
-      "Página Amiga": 9,
+      "Página Amiga": 10,
+      "Otro": 27,
+      "Cuenta Remunerada": 39,
       "Billetera": 12,
-      "Cuenta Remunerada": 13,
-      "Money Market": 1,
-      "Plazo Fijo": 9
+      "Criptomonedas": 1,
+      "Plazo Fijo": 12
     },
-    "total": 74
+    "total": 101
   }
 ]
