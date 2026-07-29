@@ -309,10 +309,20 @@ const uvaDolarSenalCopy = computed(() => {
                 </ul>
               </div>
 
-              <UvaDolarPoderCompraChart
-                :series="uvaDolarPoderCompra"
-                :dolar-label="dolarCasaLabel"
-              />
+              <div class="space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                  <p class="text-sm font-medium text-neutral-900 dark:text-white">
+                    Poder de compra del dólar en UVA
+                  </p>
+                  <UBadge color="primary" variant="soft" size="md">
+                    Simulando con Dólar {{ dolarCasaLabel }}
+                  </UBadge>
+                </div>
+                <UvaDolarPoderCompraChart
+                  :series="uvaDolarPoderCompra"
+                  :dolar-label="dolarCasaLabel"
+                />
+              </div>
             </template>
           </div>
         </UCard>
