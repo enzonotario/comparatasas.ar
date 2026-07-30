@@ -52,6 +52,8 @@ const EXTRA_URL_TO_PROVIDER: Record<string, string> = {
   'https://enqueinvierto.ar': 'enqueinvierto.ar',
   'https://betece.app/': 'betece.app',
   'https://betece.app': 'betece.app',
+  'https://www.comparatiendas.com.ar/': 'comparatiendas.com.ar',
+  'https://www.comparatiendas.com.ar': 'comparatiendas.com.ar',
   'https://www.dolarya.info/?ref=comparatasas': 'dolarya.info',
   'https://argentinadatos.com/?ref=comparatasas': 'argentinadatos.com',
   'https://www.dolarito.ar/?ref=comparatasas': 'dolarito.ar',
@@ -75,6 +77,7 @@ const FRIENDLY_PAGES = new Set([
   'impuestito.org',
   'enqueinvierto.ar',
   'betece.app',
+  'comparatiendas.com.ar',
 ])
 
 // Combinar ambos mapas
@@ -159,6 +162,7 @@ const PROVIDER_TO_CATEGORY: Record<string, string> = {
   'impuestito.org': 'Página Amiga',
   'enqueinvierto.ar': 'Página Amiga',
   'betece.app': 'Página Amiga',
+  'comparatiendas.com.ar': 'Página Amiga',
   // Otro (sponsors, recursos externos, redirects, etc.)
   CAFCI: 'Otro',
   GitHub: 'Otro',
@@ -267,6 +271,7 @@ const HOSTNAME_TO_PROVIDER: Record<string, string> = {
   'icons.com.ar': 'icons.com.ar',
   'enqueinvierto.ar': 'enqueinvierto.ar',
   'betece.app': 'betece.app',
+  'comparatiendas.com.ar': 'comparatiendas.com.ar',
   'dolarito.ar': 'dolarito.ar',
   'impuestito.org': 'impuestito.org',
   'argentinadatos.com': 'argentinadatos.com',

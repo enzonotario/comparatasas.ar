@@ -36,6 +36,10 @@ const friendlyPages = [
     label: 'betece.app',
     to: 'https://betece.app',
   },
+  {
+    label: 'comparatiendas.com.ar',
+    to: 'https://www.comparatiendas.com.ar/',
+  },
 ]
 </script>
 
