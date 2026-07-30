@@ -46,14 +46,14 @@ const EXTRA_URL_TO_PROVIDER: Record<string, string> = {
   'https://comparadolar.ar': 'comparadolar.ar',
   'https://comparapix.ar/': 'comparapix.ar',
   'https://comparapix.ar': 'comparapix.ar',
+  'https://www.comparatiendas.com.ar/': 'comparatiendas.com.ar',
+  'https://www.comparatiendas.com.ar': 'comparatiendas.com.ar',
   'https://icons.com.ar/': 'icons.com.ar',
   'https://icons.com.ar': 'icons.com.ar',
   'https://enqueinvierto.ar/': 'enqueinvierto.ar',
   'https://enqueinvierto.ar': 'enqueinvierto.ar',
   'https://betece.app/': 'betece.app',
   'https://betece.app': 'betece.app',
-  'https://www.comparatiendas.com.ar/': 'comparatiendas.com.ar',
-  'https://www.comparatiendas.com.ar': 'comparatiendas.com.ar',
   'https://www.dolarya.info/?ref=comparatasas': 'dolarya.info',
   'https://argentinadatos.com/?ref=comparatasas': 'argentinadatos.com',
   'https://www.dolarito.ar/?ref=comparatasas': 'dolarito.ar',
@@ -70,6 +70,7 @@ const EXTRA_URL_TO_PROVIDER: Record<string, string> = {
 const FRIENDLY_PAGES = new Set([
   'comparadolar.ar',
   'comparapix.ar',
+  'comparatiendas.com.ar',
   'icons.com.ar',
   'dolarya.info',
   'argentinadatos.com',
@@ -77,7 +78,6 @@ const FRIENDLY_PAGES = new Set([
   'impuestito.org',
   'enqueinvierto.ar',
   'betece.app',
-  'comparatiendas.com.ar',
 ])
 
 // Combinar ambos mapas
@@ -155,6 +155,7 @@ const PROVIDER_TO_CATEGORY: Record<string, string> = {
   // Páginas Amigas (friendlyPages)
   'comparadolar.ar': 'Página Amiga',
   'comparapix.ar': 'Página Amiga',
+  'comparatiendas.com.ar': 'Página Amiga',
   'icons.com.ar': 'Página Amiga',
   'dolarya.info': 'Página Amiga',
   'argentinadatos.com': 'Página Amiga',
@@ -162,7 +163,6 @@ const PROVIDER_TO_CATEGORY: Record<string, string> = {
   'impuestito.org': 'Página Amiga',
   'enqueinvierto.ar': 'Página Amiga',
   'betece.app': 'Página Amiga',
-  'comparatiendas.com.ar': 'Página Amiga',
   // Otro (sponsors, recursos externos, redirects, etc.)
   CAFCI: 'Otro',
   GitHub: 'Otro',
@@ -268,10 +268,10 @@ const HOSTNAME_TO_PROVIDER: Record<string, string> = {
   'dolarya.info': 'dolarya.info',
   'comparadolar.ar': 'comparadolar.ar',
   'comparapix.ar': 'comparapix.ar',
+  'comparatiendas.com.ar': 'comparatiendas.com.ar',
   'icons.com.ar': 'icons.com.ar',
   'enqueinvierto.ar': 'enqueinvierto.ar',
   'betece.app': 'betece.app',
-  'comparatiendas.com.ar': 'comparatiendas.com.ar',
   'dolarito.ar': 'dolarito.ar',
   'impuestito.org': 'impuestito.org',
   'argentinadatos.com': 'argentinadatos.com',
