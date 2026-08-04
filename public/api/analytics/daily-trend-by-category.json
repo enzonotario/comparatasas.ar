@@ -1,21 +1,45 @@
 [
   {
+    "date": "20260804",
+    "categories": {
+      "Otro": 39,
+      "Página Amiga": 24,
+      "Billetera": 22,
+      "Money Market": 4,
+      "Cuenta Remunerada": 26,
+      "Plazo Fijo": 11,
+      "Billetera USD": 20,
+      "Cuenta Remunerada USD": 1,
+      "Frascos": 8,
+      "PF UVA pago periódico": 2,
+      "PF UVA precancelable": 1,
+      "General": 17,
+      "Criptomonedas": 2,
+      "plazo fijo tradicional": 15,
+      "wARS": 7
+    },
+    "total": 199
+  },
+  {
     "date": "20260803",
     "categories": {
-      "Página Amiga": 8,
-      "Billetera": 18,
-      "Cuenta Remunerada": 41,
-      "Otro": 50,
-      "Plazo Fijo": 22,
-      "Criptomonedas": 5,
-      "Money Market": 2,
-      "Billetera USD": 8,
-      "Frascos": 8,
-      "General": 12,
-      "plazo fijo tradicional": 18,
-      "wARS": 5
+      "Página Amiga": 23,
+      "Billetera": 52,
+      "Cuenta Remunerada": 114,
+      "Otro": 133,
+      "Plazo Fijo": 67,
+      "Criptomonedas": 9,
+      "Money Market": 4,
+      "ARGt": 1,
+      "Billetera USD": 13,
+      "Cuenta Remunerada USD": 1,
+      "Frascos": 19,
+      "PF UVA pago periódico": 2,
+      "General": 23,
+      "plazo fijo tradicional": 39,
+      "wARS": 18
     },
-    "total": 197
+    "total": 518
   },
   {
     "date": "20260802",
@@ -73,29 +97,8 @@
       "PF UVA precancelable": 1,
       "General": 20,
       "Criptomonedas": 16,
-      "plazo fijo tradicional": 36,
-      "wARS": 7
+      "plazo fijo tradicional": 3
     },
-    "total": 515
-  },
-  {
-    "date": "20260730",
-    "categories": {
-      "Página Amiga": 26,
-      "Cuenta Remunerada": 108,
-      "Otro": 99,
-      "Billetera": 31,
-      "Plazo Fijo": 83,
-      "Money Market": 4,
-      "Billetera USD": 14,
-      "Cuenta Remunerada USD": 2,
-      "Frascos": 16,
-      "PF UVA pago periódico": 1,
-      "PF UVA precancelable": 4,
-      "General": 18,
-      "Criptomonedas": 7,
-      "plazo fijo tradicional": 33
-    },
-    "total": 446
+    "total": 475
   }
 ]
