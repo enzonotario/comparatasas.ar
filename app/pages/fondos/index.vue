@@ -723,23 +723,37 @@ const columns: TableColumn<FundSeriesRow>[] = [
 ]
 
 // Estado de ordenamiento
-const sorting = useRouteQuery(
-  'sort',
-  [
-    {
-      id: 'fondo',
-      desc: false,
-    },
-  ],
-  {
-    transform: (value: any) => {
-      try {
-        return typeof value === 'string' ? JSON.parse(value) : value
-      } catch {
-        return value
-      }
-    },
+const sortQuery = useRouteQuery<string>('sort', '[{"id":"fondo","desc":false}]')
+
+type SortingState = Array<{ id: string; desc: boolean }>
+
+function parseSorting(value: string): SortingState {
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return [{ id: 'fondo', desc: false }]
+  }
+}
+
+const sorting = ref<SortingState>(parseSorting(sortQuery.value))
+
+watch(sortQuery, (value) => {
+  const next = parseSorting(value)
+  if (JSON.stringify(next) !== JSON.stringify(sorting.value)) {
+    sorting.value = next
+  }
+})
+
+watch(
+  sorting,
+  (value) => {
+    const serialized = JSON.stringify(value ?? [])
+    if (sortQuery.value !== serialized) {
+      sortQuery.value = serialized
+    }
   },
+  { deep: true },
 )
 </script>
 
