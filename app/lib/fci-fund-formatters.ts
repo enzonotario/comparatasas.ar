@@ -62,13 +62,13 @@ export function formatDecimal(value: number | null | undefined, digits = 4) {
   }).format(value)
 }
 
+/** Formats values already expressed as percentage points (e.g. 0.815 → "0,82%"). */
 export function formatPercentAuto(value: number | null | undefined, digits = 2) {
   if (value == null || !Number.isFinite(value)) return '—'
-  const normalized = Math.abs(value) <= 1 ? value * 100 : value
   return `${new Intl.NumberFormat('es-AR', {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
-  }).format(normalized)}%`
+  }).format(value)}%`
 }
 
 export function metricTone(value: number | null | undefined) {
