@@ -13,6 +13,7 @@ const STATIC_PRERENDER_ROUTES = [
   '/criptomonedas',
   '/criptopesos',
   '/creditos-hipotecarios-uva',
+  '/prestamos-personales',
   '/contado-cuotas',
   '/remesas',
   '/lecaps',

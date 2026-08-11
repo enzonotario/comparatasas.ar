@@ -12,6 +12,7 @@ export const institutions: Array<{
   {
     names: [
       'bna',
+      'BNA',
       'banco nacion',
       'Banco de la Nación Argentina',
       'banco de la nacion argentina',
@@ -23,13 +24,13 @@ export const institutions: Array<{
     url: 'https://bna.com.ar/Personas?ref=comparatasas',
   },
   {
-    names: ['BANCO SANTANDER ARGENTINA S.A.', 'Banco Santander', 'Santander', 'santander'],
+    names: ['BANCO SANTANDER ARGENTINA S.A.', 'Banco Santander', 'Santander', 'santander', 'SANTANDER'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-santander.png',
     shortName: 'Banco Santander',
     url: 'https://www.santander.com.ar/personas?ref=comparatasas',
   },
   {
-    names: ['BANCO DE GALICIA Y BUENOS AIRES S.A.U.', 'Banco Galicia', 'Galicia', 'galicia'],
+    names: ['BANCO DE GALICIA Y BUENOS AIRES S.A.U.', 'Banco Galicia', 'Galicia', 'galicia', 'GALICIA'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-galicia.png',
     shortName: 'Banco Galicia',
     url: 'https://www.galicia.ar/personas?ref=comparatasas',
@@ -47,7 +48,7 @@ export const institutions: Array<{
     url: 'https://www.bbva.com.ar/?ref=comparatasas',
   },
   {
-    names: ['BANCO MACRO S.A.', 'Banco Macro'],
+    names: ['BANCO MACRO S.A.', 'Banco Macro', 'Macro', 'MACRO'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-macro.png',
     shortName: 'Banco Macro',
     url: 'https://www.macro.com.ar/home-page?ref=comparatasas',
@@ -71,7 +72,7 @@ export const institutions: Array<{
     url: 'https://www.icbc.com.ar/personas?ref=comparatasas',
   },
   {
-    names: ['BANCO DE LA CIUDAD DE BUENOS AIRES', 'Banco Ciudad'],
+    names: ['BANCO DE LA CIUDAD DE BUENOS AIRES', 'Banco Ciudad', 'CIUDAD'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-ciudad.png',
     shortName: 'Banco Ciudad',
     url: 'https://bancociudad.com.ar/institucional/?ref=comparatasas',
@@ -107,7 +108,7 @@ export const institutions: Array<{
     url: 'https://www.naranjax.com/?ref=comparatasas',
   },
   {
-    names: ['Mercado Fondo', 'Mercado Pago', 'MERCADO PAGO'],
+    names: ['Mercado Fondo', 'Mercado Pago', 'MERCADO PAGO', 'MERCADOPAGO', 'mercadopago'],
     logo: 'https://api.argentinadatos.com/static/logos/mercado-pago.png',
     shortName: 'Mercado Pago',
     url: 'https://mercadopago.com.ar/?ref=comparatasas',
@@ -167,7 +168,7 @@ export const institutions: Array<{
     url: 'https://www.prexcard.com.ar/?ref=comparatasas',
   },
   {
-    names: ['Supervielle', 'BANCO SUPERVIELLE', 'supervielle'],
+    names: ['Supervielle', 'BANCO SUPERVIELLE', 'supervielle', 'SUPERVIELLE'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-supervielle.png',
     shortName: 'Supervielle',
     url: 'https://www.supervielle.com.ar/?ref=comparatasas',
@@ -227,7 +228,7 @@ export const institutions: Array<{
     url: 'https://www.bancor.com.ar/?ref=comparatasas',
   },
   {
-    names: ['BANCO HIPOTECARIO S.A.', 'Banco Hipotecario', 'BHIP'],
+    names: ['BANCO HIPOTECARIO S.A.', 'Banco Hipotecario', 'BHIP', 'HIPOTECARIO'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-hipotecario.svg',
     shortName: 'Banco Hipotecario',
     url: 'https://www.hipotecario.com.ar/?ref=comparatasas',

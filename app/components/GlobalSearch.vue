@@ -61,6 +61,13 @@ const groups = [
         to: '/creditos-hipotecarios-uva',
       },
       {
+        id: 'prestamos-personales',
+        label: 'Préstamos Personales',
+        suffix: 'Comparador',
+        icon: 'i-lucide-banknote',
+        to: '/prestamos-personales',
+      },
+      {
         id: 'bonos-cer',
         label: 'Bonos CER',
         suffix: 'Comparador',

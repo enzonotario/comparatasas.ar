@@ -49,7 +49,7 @@ export const useNavigationPages = () => {
       id: 'ars',
       label: 'ARS',
       ariaLabel:
-        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, contado vs cuotas, LECAPs, bonos CER y créditos hipotecarios UVA',
+        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, contado vs cuotas, LECAPs, bonos CER, créditos hipotecarios UVA y préstamos personales',
       icon: 'flag-ars',
       pages: [
         {
@@ -75,6 +75,12 @@ export const useNavigationPages = () => {
           label: 'Créditos Hipotecarios UVA',
           icon: 'i-lucide-home',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-hipotecario.png',
+        },
+        {
+          to: '/prestamos-personales',
+          label: 'Préstamos Personales',
+          icon: 'i-lucide-banknote',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-personal.png',
         },
         {
           to: '/contado-cuotas',

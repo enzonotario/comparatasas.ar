@@ -297,6 +297,62 @@ export const methodologySections: MethodologySection[] = [
     ],
   },
   {
+    id: 'prestamos-personales',
+    title: 'Préstamos personales',
+    category: 'otros',
+    categoryLabel: 'Otros productos',
+    blocks: [
+      {
+        type: 'p',
+        text: 'Relevamos TNA, TEA y CFT TEA desde las landings oficiales de cada entidad, junto con condiciones (cliente, paquete, plan sueldo, etc.) y, cuando se publica, afectación de ingresos o un rango de tasas según evaluación crediticia.',
+      },
+      {
+        type: 'p',
+        text: 'El simulador estima la cuota con sistema francés: tasa mensual = TNA/12. También muestra una cuota de referencia usando la tasa mensual efectiva del CFT TEA, que incorpora IVA y cargos. Si cargás ingresos y hay afectación publicada, marcamos cuando la cuota supera ese tope.',
+      },
+      {
+        type: 'p',
+        text: 'Comparamos el CFT TEA de la mejor oferta con la mediana de inflación esperada a 12 meses del REM (BCRA), vía Argentina Datos (/v1/finanzas/rem/ultimo). El múltiplo CFT÷REM dimensiona cuánto más cara es la financiación respecto de la inflación esperada.',
+      },
+      {
+        type: 'formula',
+        text: 'múltiplo = CFT TEA ÷ REM mediana (próx. 12 meses)',
+      },
+      {
+        type: 'formula',
+        text: 'r = TNA / 12',
+      },
+      {
+        type: 'formula',
+        text: 'cuota = P × [r × (1+r)^n] / [(1+r)^n − 1]',
+      },
+      {
+        type: 'p',
+        text: 'Opcionalmente podés cargar ingresos netos mensuales del hogar para ver la relación cuota/ingreso y el ingreso mínimo requerido para no superar el tope orientativo del BCRA (~30%). Bandas: menos de 20% óptimo, 20–30% aceptable, 30–40% alerta, más de 40% riesgo.',
+      },
+      {
+        type: 'formula',
+        text: 'relación = cuota ÷ ingreso neto × 100',
+      },
+      {
+        type: 'formula',
+        text: 'ingreso requerido ≈ cuota ÷ 0,30',
+      },
+      {
+        type: 'p',
+        text: 'También es opcional el aumento salarial esperado (anual, semestral o trimestral) para proyectar esa relación año a año con cuota fija en pesos. El escenario de estrés deja el ingreso sin aumentos. Si hay REM, deflactamos la cuota a poder de compra de hoy para comparar.',
+      },
+      {
+        type: 'p',
+        text: 'Además mostramos techos BCRA (TEA/CFT máximos del CSV PERSONALES) solo para entidades del ranking, priorizando territorio nacional y productos generales. Son máximos regulatorios, no las tasas publicitadas del listado principal.',
+      },
+      {
+        type: 'p',
+        text: 'Es un dato informativo sujeto a aprobación crediticia; el banco puede usar otra amortización, seguros o comisiones no reflejadas en la TNA publicada.',
+      },
+    ],
+  },
+  {
     id: 'contado-cuotas',
     title: 'Contado vs cuotas',
     category: 'otros',

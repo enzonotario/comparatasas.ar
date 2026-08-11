@@ -32,6 +32,7 @@ const isWideLayout = computed(() => {
   return [
     'criptomonedas',
     'creditos-hipotecarios-uva',
+    'prestamos-personales',
     'contado-cuotas',
     'fondos',
     'fondos-nombre',
@@ -59,6 +60,7 @@ const productScenarioRailPaths = new Set([
   '/criptomonedas',
   '/remesas',
   '/creditos-hipotecarios-uva',
+  '/prestamos-personales',
   '/lecaps',
   '/bonos-cer',
 ])

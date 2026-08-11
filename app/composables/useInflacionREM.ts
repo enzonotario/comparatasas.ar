@@ -1,3 +1,11 @@
+import {
+  extractRemProximos12Meses,
+  type RemInflacionAnualEsperada,
+  type RemUltimoRowLike,
+} from '~/lib/finance/rem'
+
+export type { RemInflacionAnualEsperada }
+
 export interface InflacionREMData {
   tipo: string
   fecha: string
@@ -5,15 +13,7 @@ export interface InflacionREMData {
 }
 
 /** Fila del endpoint https://api.argentinadatos.com/v1/finanzas/rem/ultimo */
-interface RemUltimoRow {
-  muestra: string
-  indicador: string
-  periodo: string
-  periodoTipo: string
-  periodoDesde: string | null
-  promedio: number
-  informe?: string
-}
+type RemUltimoRow = RemUltimoRowLike
 
 const IPC_NIVEL_GENERAL = 'IPC nivel general'
 
@@ -35,13 +35,16 @@ function iterMonthKeys(fromYm: string, toYm: string): string[] {
   return out
 }
 
-function buildInflacionRemFromRemUltimo(rows: RemUltimoRow[]): InflacionREMData[] {
-  const ipcTodos = rows.filter(
-    (r) =>
-      r.muestra === 'todos' &&
-      typeof r.indicador === 'string' &&
-      r.indicador.includes(IPC_NIVEL_GENERAL),
+function isIpcNivelGeneralTodos(row: RemUltimoRow): boolean {
+  return (
+    row.muestra === 'todos' &&
+    typeof row.indicador === 'string' &&
+    row.indicador.includes(IPC_NIVEL_GENERAL)
   )
+}
+
+function buildInflacionRemFromRemUltimo(rows: RemUltimoRow[]): InflacionREMData[] {
+  const ipcTodos = rows.filter(isIpcNivelGeneralTodos)
 
   const mensualPorMes = new Map<string, number>()
   for (const r of ipcTodos) {
@@ -101,6 +104,7 @@ export function useInflacionREM() {
     )
     return {
       inflacionREM: buildInflacionRemFromRemUltimo(response),
+      remProximos12Meses: extractRemProximos12Meses(response),
       informeDate: response[0]?.informe ?? null,
     }
   })
@@ -116,11 +120,18 @@ export function useInflacionREM() {
     return map
   })
 
+  const remProximos12Meses = computed(() => data.value?.remProximos12Meses ?? null)
+
+  /** Mediana REM % i.a. a 12 meses (referencia principal). */
+  const remInflacionAnualPercent = computed(() => remProximos12Meses.value?.medianaPercent ?? null)
+
   const informeDate = computed(() => data.value?.informeDate ?? null)
 
   return {
     inflacionREM,
     inflacionREMPorFecha,
+    remProximos12Meses,
+    remInflacionAnualPercent,
     loading,
     error,
     fetch,
