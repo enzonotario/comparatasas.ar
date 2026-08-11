@@ -8,7 +8,7 @@ type PrestamosTab = 'plazo' | 'bcra'
 definePageMeta({
   pageTitle: 'Préstamos Personales',
   pageDescription:
-    'Compará TNA, TEA y CFT TEA de préstamos personales con tasas por plazo (Bancor, BBVA, Ciudad, Galicia, Hipotecario, Macro, Santander)',
+    'Compará TNA, TEA y CFT TEA de préstamos personales con tasas por plazo (Bancor, BBVA, Ciudad, Galicia, Hipotecario, Macro, Patagonia, Santander)',
 })
 
 const { prestamosPersonales, loading, error } = usePrestamosPersonales()
@@ -126,7 +126,7 @@ defineOgImage('ComparaTasas.takumi', {
 useSeoMeta({
   title: 'Préstamos Personales',
   description:
-    'Compará tasas de préstamos personales en Argentina con tablas por plazo: TNA, TEA y CFT TEA de Bancor, BBVA, Ciudad, Galicia, Hipotecario, Macro y Santander.',
+    'Compará tasas de préstamos personales en Argentina con tablas por plazo: TNA, TEA y CFT TEA de Bancor, BBVA, Ciudad, Galicia, Hipotecario, Macro, Patagonia y Santander.',
   ogTitle: 'Préstamos Personales - Compara Tasas Argentina',
   ogDescription: 'Compará préstamos personales por CFT TEA con tasas por tramo de plazo.',
 })
@@ -369,10 +369,10 @@ useHead({
           <p>
             El simulador estima la cuota con sistema francés sobre la TNA y una referencia con CFT
             TEA, usando la tasa del tramo de plazo publicado por el banco (Bancor, BBVA, Ciudad,
-            Galicia, Hipotecario, Macro y Santander). Si cargás ingresos (opcional), muestra la
-            relación cuota/ingreso y una proyección con aumentos salariales o escenario de estrés.
-            Algunas ofertas exigen ser cliente. Las tasas son de referencia y están sujetas a
-            aprobación crediticia.
+            Galicia, Hipotecario, Macro, Patagonia y Santander). Si cargás ingresos (opcional),
+            muestra la relación cuota/ingreso y una proyección con aumentos salariales o escenario
+            de estrés. Algunas ofertas exigen ser cliente. Las tasas son de referencia y están
+            sujetas a aprobación crediticia.
           </p>
           <p>
             Los <strong>techos BCRA</strong> son máximos regulatorios por producto/entidad: sirven

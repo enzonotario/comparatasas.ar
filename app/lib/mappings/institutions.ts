@@ -522,7 +522,7 @@ export const institutions: Array<{
     url: 'https://www.lucamoney.com/?ref=comparatasas',
   },
   {
-    names: ['BANCO PATAGONIA S.A.', 'Banco Patagonia', 'Patagonia'],
+    names: ['BANCO PATAGONIA S.A.', 'Banco Patagonia', 'Patagonia', 'PATAGONIA'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-patagonia.svg',
     shortName: 'Banco Patagonia',
     url: 'https://www.bancopatagonia.com.ar/?ref=comparatasas.ar',
