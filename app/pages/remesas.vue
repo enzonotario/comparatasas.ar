@@ -31,6 +31,8 @@ const companyDisplayNames: Record<string, string> = {
   lemon: 'Lemon',
   wise: 'Wise',
   global66: 'Global66',
+  belo: 'Belo',
+  ripio: 'Ripio',
 }
 
 interface RemesaComparaDolarMapping {
@@ -44,6 +46,9 @@ const remesaComparaDolarProviderMap: Record<string, RemesaComparaDolarMapping | 
   cocos: { asset: 'usd', slug: 'cocos' },
   arq: { asset: 'usdc', slug: 'arq' },
   lemon: { asset: 'usdc', slug: 'lemoncash' },
+  belo: { asset: 'usdc', slug: 'belo' },
+  ripio: { asset: 'usdc', slug: 'ripio' },
+  global66: { asset: 'usd', slug: 'global66' },
   takenos: null,
   airtm: null,
   grabrfi: null,
