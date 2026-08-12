@@ -123,7 +123,7 @@ export const institutions: Array<{
     names: ['GLOBAL66', 'Global66', 'global66'],
     logo: 'https://api.argentinadatos.com/static/logos/global66.svg',
     shortName: 'Global66',
-    url: 'https://share.global66.com/ENZNOT1?ref=comparatasas',
+    url: 'https://share.global66.com/COMPARADOLAR?ref=comparatasas',
   },
   {
     names: ['Lemon', 'lemon', 'lemoncash'],
