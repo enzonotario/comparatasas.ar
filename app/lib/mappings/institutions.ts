@@ -306,7 +306,7 @@ export const institutions: Array<{
     url: 'https://mariva.com.ar/?ref=comparatasas',
   },
   {
-    names: ['BANCO DEL CHUBUT S.A.', 'Banco del Chubut', 'BANCO DEL CHUBUT'],
+    names: ['BANCO DEL CHUBUT S.A.', 'Banco del Chubut', 'BANCO DEL CHUBUT', 'CHUBUT'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-chubut.png',
     shortName: 'Banco del Chubut',
     url: 'https://bancochubut.com.ar/?ref=comparatasas',

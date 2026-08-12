@@ -123,28 +123,30 @@ function titleFor(tramo: PrestamoPersonalTasaPorPlazo): string {
       </span>
     </div>
 
-    <div class="relative w-full overflow-x-auto">
-      <div
-        class="relative flex w-full min-w-max gap-1 rounded-lg bg-neutral-100/80 p-1 dark:bg-neutral-800/50"
-      >
+    <div class="relative w-full">
+      <div class="overflow-x-auto overflow-y-hidden overscroll-x-contain">
         <div
-          v-for="(tramo, index) in sorted"
-          :key="`${tramo.plazoMinMeses}-${tramo.plazoMaxMeses}-${index}`"
-          class="relative flex shrink-0 items-center justify-center rounded-md border transition-opacity duration-200"
-          :class="[segmentClass(tramo), compact ? 'px-1 py-1' : 'px-1.5 py-1.5']"
-          :style="{
-            flex: `${segmentFlex(tramo)} 1 0`,
-            minWidth: SEGMENT_MIN_WIDTH,
-          }"
-          :title="titleFor(tramo)"
+          class="relative flex w-full min-w-max gap-1 rounded-lg bg-neutral-100/80 p-1 dark:bg-neutral-800/50"
         >
-          <span
-            class="font-semibold leading-none tabular-nums whitespace-nowrap"
-            :class="compact ? 'text-[10px]' : 'text-[11px]'"
+          <div
+            v-for="(tramo, index) in sorted"
+            :key="`${tramo.plazoMinMeses}-${tramo.plazoMaxMeses}-${index}`"
+            class="relative flex shrink-0 items-center justify-center rounded-md border transition-opacity duration-200"
+            :class="[segmentClass(tramo), compact ? 'px-1 py-1' : 'px-1.5 py-1.5']"
+            :style="{
+              flex: `${segmentFlex(tramo)} 1 0`,
+              minWidth: SEGMENT_MIN_WIDTH,
+            }"
+            :title="titleFor(tramo)"
           >
-            {{ formatPct(rateForDisplay(tramo)) }}
-            <span class="font-medium opacity-75">· {{ formatPlazoCompact(tramo) }}</span>
-          </span>
+            <span
+              class="font-semibold leading-none tabular-nums whitespace-nowrap"
+              :class="compact ? 'text-[10px]' : 'text-[11px]'"
+            >
+              {{ formatPct(rateForDisplay(tramo)) }}
+              <span class="font-medium opacity-75">· {{ formatPlazoCompact(tramo) }}</span>
+            </span>
+          </div>
         </div>
       </div>
 
