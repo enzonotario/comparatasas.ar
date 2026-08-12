@@ -114,6 +114,18 @@ export const institutions: Array<{
     url: 'https://mercadopago.com.ar/?ref=comparatasas',
   },
   {
+    names: ['Getnet', 'GETNET', 'getnet'],
+    logo: 'https://api.argentinadatos.com/static/logos/getnet.png',
+    shortName: 'Getnet',
+    url: 'https://www.getnet.net/ar/?ref=comparatasas',
+  },
+  {
+    names: ['Ualá Bis', 'UALA BIS', 'uala bis', 'ualabis'],
+    logo: 'https://api.argentinadatos.com/static/logos/uala.png',
+    shortName: 'Ualá Bis',
+    url: 'https://www.ualabis.com.ar/?ref=comparatasas',
+  },
+  {
     names: ['Personal Pay'],
     logo: 'https://api.argentinadatos.com/static/logos/personal-pay.png',
     shortName: 'Personal Pay',

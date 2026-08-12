@@ -297,6 +297,27 @@ export const methodologySections: MethodologySection[] = [
     ],
   },
   {
+    id: 'comisiones-cobro',
+    title: 'Comisiones de cobro',
+    category: 'otros',
+    categoryLabel: 'Otros productos',
+    source: 'Argentina Datos / fuentes oficiales',
+    blocks: [
+      {
+        type: 'p',
+        text: 'Comparamos aranceles (MDR) de cobro publicados por adquirentes y billeteras: Getnet, Mercado Pago y Ualá Bis. Los valores vienen de Argentina Datos (/v1/finanzas/cobros/comisiones) y se actualizan mensualmente.',
+      },
+      {
+        type: 'p',
+        text: 'El arancel se muestra en porcentaje. Si la fuente dice “hasta X%”, marcamos tope. Si dice “+ IVA” o que el costo no incluye IVA, mostramos el badge correspondiente. Podés filtrar por canal (POS, QR, link, checkout), medio de pago y tipo de acreditación.',
+      },
+      {
+        type: 'p',
+        text: 'Mercado Pago publica costos por provincia; usamos el primer grupo provincial de cada tabla como referencia.',
+      },
+    ],
+  },
+  {
     id: 'prestamos-personales',
     title: 'Préstamos personales',
     category: 'otros',

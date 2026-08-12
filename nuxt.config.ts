@@ -133,6 +133,7 @@ export default defineNuxtConfig({
         '/criptopesos',
         '/creditos-hipotecarios-uva',
         '/prestamos-personales',
+        '/comisiones-cobro',
         '/contado-cuotas',
         '/remesas',
         '/lecaps',

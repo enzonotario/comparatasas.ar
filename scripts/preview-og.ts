@@ -14,6 +14,7 @@ const routes = [
   { path: '/criptopesos', name: 'criptopesos' },
   { path: '/creditos-hipotecarios-uva', name: 'creditos-hipotecarios-uva' },
   { path: '/prestamos-personales', name: 'prestamos-personales' },
+  { path: '/comisiones-cobro', name: 'comisiones-cobro' },
   { path: '/contado-cuotas', name: 'contado-cuotas' },
   { path: '/lecaps', name: 'lecaps' },
   { path: '/bonos-cer', name: 'bonos-cer' },

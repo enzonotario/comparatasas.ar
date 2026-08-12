@@ -83,6 +83,12 @@ export const useNavigationPages = () => {
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-personal.png',
         },
         {
+          to: '/comisiones-cobro',
+          label: 'Comisiones de cobro',
+          icon: 'i-lucide-receipt',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cobros.png',
+        },
+        {
           to: '/contado-cuotas',
           label: 'Contado vs Cuotas',
           icon: 'i-lucide-credit-card',

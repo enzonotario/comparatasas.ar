@@ -68,6 +68,13 @@ const groups = [
         to: '/prestamos-personales',
       },
       {
+        id: 'comisiones-cobro',
+        label: 'Comisiones de cobro',
+        suffix: 'Comparador',
+        icon: 'i-lucide-receipt',
+        to: '/comisiones-cobro',
+      },
+      {
         id: 'bonos-cer',
         label: 'Bonos CER',
         suffix: 'Comparador',
