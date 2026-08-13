@@ -457,6 +457,12 @@ export const institutions: Array<{
     url: 'https://sbsfondos.com/?ref=comparatasas',
   },
   {
+    names: ['YPF', 'ypf', 'Ypf'],
+    logo: 'https://api.argentinadatos.com/static/logos/ypf.svg',
+    shortName: 'YPF',
+    url: 'https://app.ypf.com/?ref=comparatasas',
+  },
+  {
     names: ['Adcap', 'adcap', 'ADCAP'],
     logo: 'https://api.argentinadatos.com/static/logos/adcap.webp',
     shortName: 'Adcap',
