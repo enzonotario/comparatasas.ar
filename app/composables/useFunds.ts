@@ -241,7 +241,7 @@ async function transformComparatasasData(
 
       return institutions.map((inst: FundInstitution) => {
         const returnPercent = getComparatasasReturnPercent(fondo.rendimientos, fondo.tipoRenta)
-        const { tna, tea } = getComparatasasTnaAndTea(returnPercent, fondo.tipoRenta)
+        const { tna, tea } = getComparatasasTnaAndTea(returnPercent)
 
         return {
           fondo: fondo.nombre,

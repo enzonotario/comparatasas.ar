@@ -103,7 +103,7 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Usamos el rendimiento del último mes (unMes) publicado por CAFCI. A diferencia de mercado de dinero, acá el mes se anualiza de forma lineal.',
+        text: 'Usamos el rendimiento del último mes (unMes) publicado por CAFCI. La conversión a TNA y TEA es la misma que en mercado de dinero: el mes se toma como TNA directa (sin anualizar linealmente a 365 días).',
       },
       {
         type: 'formula',
@@ -111,7 +111,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'formula',
-        text: 'TNA = (rendimiento mensual ÷ 100) × (365 ÷ 30)',
+        text: 'TNA = rendimiento mensual ÷ 100',
       },
       {
         type: 'formula',
@@ -119,7 +119,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'Ejemplo: si unMes = 3 → TNA mostrada = 36,50%.',
+        text: 'Ejemplo: si unMes = 3 → TNA mostrada = 3,00%.',
       },
     ],
   },

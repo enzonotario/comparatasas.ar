@@ -22,15 +22,16 @@ describe('getComparatasasReturnPercent', () => {
 })
 
 describe('getComparatasasTnaAndTea', () => {
-  it('uses the monthly return directly as TNA for money market', () => {
-    expect(getComparatasasTnaAndTea(16.5, 'Mercado de Dinero')).toEqual({
+  it('uses the monthly return directly as TNA', () => {
+    expect(getComparatasasTnaAndTea(16.5)).toEqual({
       tna: 0.165,
       tea: Math.pow(1.165, 12) - 1,
     })
   })
 
-  it('annualizes the monthly return for other fund types', () => {
-    const { tna } = getComparatasasTnaAndTea(3, 'Renta Fija')
-    expect(tna).toBeCloseTo(0.03 * (365 / 30))
+  it('does not linearly annualize the monthly return', () => {
+    const { tna, tea } = getComparatasasTnaAndTea(3)
+    expect(tna).toBeCloseTo(0.03)
+    expect(tea).toBeCloseTo(Math.pow(1.03, 12) - 1)
   })
 })

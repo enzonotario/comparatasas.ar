@@ -14,10 +14,11 @@ export function getComparatasasReturnPercent(
   return rendimientos.unMes ?? 0
 }
 
-export function getComparatasasTnaAndTea(returnPercent: number, tipoRenta: string) {
+/** Convierte el rendimiento base (%) a TNA/TEA. No depende del tipo de renta. */
+export function getComparatasasTnaAndTea(returnPercent: number) {
   const returnRate = returnPercent / 100
-  const tna = tipoRenta === 'Mercado de Dinero' ? returnRate : returnRate * (365 / 30)
-  const tea = Math.pow(1 + returnPercent / 100, 12) - 1
+  const tna = returnRate
+  const tea = Math.pow(1 + returnRate, 12) - 1
 
   return {
     tna: Number.isFinite(tna) ? tna : 0,
