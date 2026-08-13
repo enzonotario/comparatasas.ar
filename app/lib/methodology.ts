@@ -329,6 +329,18 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
+        text: 'El simulador estima el costo de cobro sobre un monto de venta: costo = monto × arancel (+ IVA 21% si el arancel lo indica y dejás activada la opción). El neto es el monto menos ese costo. Los aranceles “hasta X%” usan el tope publicado. Al simular, la tabla se ordena por menor costo.',
+      },
+      {
+        type: 'formula',
+        text: 'costo = monto × arancel × (1 + 0,21 si + IVA)',
+      },
+      {
+        type: 'formula',
+        text: 'neto = monto − costo',
+      },
+      {
+        type: 'p',
         text: 'Mercado Pago publica costos por provincia; usamos el primer grupo provincial de cada tabla como referencia.',
       },
     ],

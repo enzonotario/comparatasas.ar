@@ -3,9 +3,11 @@ import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { useMediaQuery } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
+import { formatCurrency } from '~/lib/fci-fund-formatters'
 import { getInstitutionLogo, getInstitutionUrl } from '~/lib/mappings/institutions'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { ComisionCobroOption } from '~/composables/useComisionesCobro'
+import type { ComisionCobroSimulada } from '~/composables/useComisionesCobroSimulator'
 
 definePageMeta({
   pageTitle: 'Comisiones de cobro',
@@ -50,6 +52,7 @@ const {
   error,
   fetch: fetchComisiones,
 } = useComisionesCobro()
+const { isSimulating, calculateResults } = useComisionesCobroSimulator()
 
 await fetchComisiones().catch(() => undefined)
 
@@ -67,6 +70,11 @@ interface ComisionRow extends ComisionCobroOption {
   acreditacionDias: number | null
   acreditacionDisplayLabel: string
   acreditacionSort: number
+}
+
+type ComisionRowSimulada = ComisionCobroSimulada<ComisionRow> & {
+  costoSort: number
+  netoSort: number
 }
 
 const isDesktop = useMediaQuery('(min-width: 1024px)')
@@ -232,10 +240,20 @@ const acreditacionOptions = computed(() => {
   }))
 })
 
+const simulatedBase = calculateResults(rows)
+
+const simulatedRows = computed<ComisionRowSimulada[]>(() => {
+  return simulatedBase.value.map((row) => ({
+    ...row,
+    costoSort: row.simulation?.costo ?? Number.POSITIVE_INFINITY,
+    netoSort: row.simulation?.neto ?? Number.NEGATIVE_INFINITY,
+  }))
+})
+
 const filteredRows = computed(() => {
   const q = normalizeText(searchQuery.value)
 
-  return rows.value.filter((row) => {
+  return simulatedRows.value.filter((row) => {
     if (canalFilter.value !== 'all' && row.canal !== canalFilter.value) return false
     if (medioFilter.value !== 'all' && row.medioPago !== medioFilter.value) return false
     if (
@@ -260,12 +278,20 @@ const filteredRows = computed(() => {
   })
 })
 
+watch(isSimulating, (simulating) => {
+  if (simulating) {
+    sortQuery.value = '[{"id":"costoSort","desc":false}]'
+  } else {
+    sortQuery.value = '[{"id":"arancelSort","desc":false}]'
+  }
+})
+
 const sortedRows = computed(() => {
   const sort = sorting.value?.[0]
   if (!sort) return filteredRows.value
 
   const dir = sort.desc ? -1 : 1
-  const id = sort.id as keyof ComisionRow
+  const id = sort.id as keyof ComisionRowSimulada
 
   return [...filteredRows.value].sort((a, b) => {
     const av = a[id]
@@ -349,7 +375,7 @@ function sortableHeader(label: string) {
   }
 }
 
-function renderProviderCell(row: ComisionRow) {
+function renderProviderCell(row: ComisionRowSimulada) {
   const avatar = row.logo
     ? h('img', {
         src: row.logo,
@@ -381,29 +407,33 @@ function renderProviderCell(row: ComisionRow) {
     h('p', { class: 'text-xs text-neutral-500' }, row.producto),
   ])
 
-  if (row.providerUrl) {
-    return h(
-      'a',
-      {
-        href: row.providerUrl,
-        target: '_blank',
-        rel: 'noopener noreferrer',
-        class: 'group flex items-center gap-3',
-        onClick: () =>
-          trackProviderClick({
-            section: 'comisiones-cobro',
-            provider: row.entidad,
-            url: row.providerUrl!,
-          }),
-      },
-      [avatar, content],
-    )
-  }
+  const inner = row.providerUrl
+    ? h(
+        'a',
+        {
+          href: row.providerUrl,
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          class: 'group flex items-center gap-3',
+          onClick: () =>
+            trackProviderClick({
+              section: 'comisiones-cobro',
+              provider: row.entidad,
+              url: row.providerUrl!,
+            }),
+        },
+        [avatar, content],
+      )
+    : h('div', { class: 'flex items-center gap-3' }, [avatar, content])
 
-  return h('div', { class: 'flex items-center gap-3' }, [avatar, content])
+  return h(
+    'div',
+    { class: isSimulating.value && row.simulationDisabled ? 'opacity-40' : undefined },
+    [inner],
+  )
 }
 
-function renderArancelCell(row: ComisionRow) {
+function renderArancelCell(row: ComisionRowSimulada) {
   const badges = []
   if (row.arancelEsTope) {
     badges.push(
@@ -420,6 +450,51 @@ function renderArancelCell(row: ComisionRow) {
     h('p', { class: 'font-semibold tabular-nums' }, row.arancelLabel),
     badges.length ? h('div', { class: 'flex flex-wrap gap-1' }, badges) : null,
   ])
+}
+
+function renderCostoCell(row: ComisionRowSimulada) {
+  if (!row.simulation) {
+    return h('span', { class: 'text-muted' }, '—')
+  }
+
+  const parts = [
+    h('p', { class: 'font-semibold tabular-nums text-error' }, formatCurrency(row.simulation.costo)),
+  ]
+
+  if (row.simulation.iva > 0) {
+    parts.push(
+      h(
+        'p',
+        { class: 'text-xs text-muted tabular-nums' },
+        `Arancel ${formatCurrency(row.simulation.arancelBase)} · IVA ${formatCurrency(row.simulation.iva)}`,
+      ),
+    )
+  }
+
+  if (row.arancelEsTope) {
+    parts.push(
+      h(UBadge, { color: 'warning', variant: 'subtle', size: 'sm' }, () => 'Hasta'),
+    )
+  }
+
+  return h('div', { class: 'space-y-1' }, parts)
+}
+
+function renderNetoCell(row: ComisionRowSimulada) {
+  if (!row.simulation) {
+    return h('span', { class: 'text-muted' }, '—')
+  }
+
+  return h(
+    'p',
+    { class: 'font-semibold tabular-nums text-success' },
+    formatCurrency(row.simulation.neto),
+  )
+}
+
+function rowClass(row: ComisionRowSimulada): string | undefined {
+  if (isSimulating.value && row.simulationDisabled) return 'opacity-40'
+  return undefined
 }
 
 function acreditacionBarWidth(dias: number | null): string {
@@ -467,48 +542,70 @@ function renderAcreditacionCell(row: ComisionRow) {
   ])
 }
 
-const columns: TableColumn<ComisionRow>[] = [
-  {
-    accessorKey: 'displayName',
-    header: sortableHeader('Entidad'),
-    cell: ({ row }) => renderProviderCell(row.original),
-  },
-  {
-    accessorKey: 'canalLabel',
-    header: sortableHeader('Canal'),
-  },
-  {
-    accessorKey: 'medioPagoLabel',
-    header: sortableHeader('Medio'),
-  },
-  {
-    accessorKey: 'arancelSort',
-    header: sortableHeader('Arancel'),
-    cell: ({ row }) => renderArancelCell(row.original),
-  },
-  {
-    accessorKey: 'acreditacionSort',
-    header: sortableHeader('Acreditación'),
-    cell: ({ row }) => renderAcreditacionCell(row.original),
-  },
-  {
-    accessorKey: 'enlace',
-    header: 'Fuente',
-    cell: ({ row }) => {
-      if (!row.original.enlace) return '—'
-      return h(
-        'a',
-        {
-          href: row.original.enlace,
-          target: '_blank',
-          rel: 'noopener noreferrer',
-          class: 'text-primary-600 hover:underline dark:text-primary-400',
-        },
-        'Ver',
-      )
+const columns = computed<TableColumn<ComisionRowSimulada>[]>(() => {
+  const base: TableColumn<ComisionRowSimulada>[] = [
+    {
+      accessorKey: 'displayName',
+      header: sortableHeader('Entidad'),
+      cell: ({ row }) => renderProviderCell(row.original),
     },
-  },
-]
+    {
+      accessorKey: 'canalLabel',
+      header: sortableHeader('Canal'),
+    },
+    {
+      accessorKey: 'medioPagoLabel',
+      header: sortableHeader('Medio'),
+    },
+    {
+      accessorKey: 'arancelSort',
+      header: sortableHeader('Arancel'),
+      cell: ({ row }) => renderArancelCell(row.original),
+    },
+  ]
+
+  if (isSimulating.value) {
+    base.push(
+      {
+        accessorKey: 'costoSort',
+        header: sortableHeader('Costo'),
+        cell: ({ row }) => renderCostoCell(row.original),
+      },
+      {
+        accessorKey: 'netoSort',
+        header: sortableHeader('Neto'),
+        cell: ({ row }) => renderNetoCell(row.original),
+      },
+    )
+  }
+
+  base.push(
+    {
+      accessorKey: 'acreditacionSort',
+      header: sortableHeader('Acreditación'),
+      cell: ({ row }) => renderAcreditacionCell(row.original),
+    },
+    {
+      accessorKey: 'enlace',
+      header: 'Fuente',
+      cell: ({ row }) => {
+        if (!row.original.enlace) return '—'
+        return h(
+          'a',
+          {
+            href: row.original.enlace,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            class: 'text-primary-600 hover:underline dark:text-primary-400',
+          },
+          'Ver',
+        )
+      },
+    },
+  )
+
+  return base
+})
 
 function clearFilters() {
   searchQuery.value = ''
@@ -528,6 +625,8 @@ const hasActiveFilters = computed(
 
 <template>
   <div class="space-y-6">
+    <ComisionesCobroSimulator />
+
     <UAlert
       v-if="error"
       color="error"
@@ -545,9 +644,17 @@ const hasActiveFilters = computed(
         <template #header>
           <div class="space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-3">
-              <h2 class="text-lg font-semibold">
-                Tabla comparativa
-              </h2>
+              <div>
+                <h2 class="text-lg font-semibold">
+                  Tabla comparativa
+                </h2>
+                <p
+                  v-if="isSimulating"
+                  class="text-sm text-muted"
+                >
+                  Costo y neto estimados sobre el monto simulado. Ordenado por menor costo.
+                </p>
+              </div>
               <UButton
                 v-if="hasActiveFilters"
                 color="neutral"
@@ -660,6 +767,7 @@ const hasActiveFilters = computed(
             v-for="row in sortedRows"
             :key="`${row.entidad}-${row.producto}-${row.canal}-${row.medioPago}-${row.acreditacionTipo}-${row.arancelLabel}`"
             class="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800"
+            :class="rowClass(row)"
           >
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-center gap-3">
@@ -686,27 +794,37 @@ const hasActiveFilters = computed(
                 </div>
               </div>
               <div class="text-right">
-                <p class="font-semibold tabular-nums">
-                  {{ row.arancelLabel }}
-                </p>
-                <div class="mt-1 flex flex-wrap justify-end gap-1">
-                  <UBadge
-                    v-if="row.arancelEsTope"
-                    color="warning"
-                    variant="subtle"
-                    size="sm"
-                  >
-                    Hasta
-                  </UBadge>
-                  <UBadge
-                    v-if="row.ivaAdicional"
-                    color="neutral"
-                    variant="subtle"
-                    size="sm"
-                  >
-                    + IVA
-                  </UBadge>
-                </div>
+                <template v-if="isSimulating && row.simulation">
+                  <p class="font-semibold tabular-nums text-error">
+                    {{ formatCurrency(row.simulation.costo) }}
+                  </p>
+                  <p class="text-xs tabular-nums text-success">
+                    Neto {{ formatCurrency(row.simulation.neto) }}
+                  </p>
+                </template>
+                <template v-else>
+                  <p class="font-semibold tabular-nums">
+                    {{ row.arancelLabel }}
+                  </p>
+                  <div class="mt-1 flex flex-wrap justify-end gap-1">
+                    <UBadge
+                      v-if="row.arancelEsTope"
+                      color="warning"
+                      variant="subtle"
+                      size="sm"
+                    >
+                      Hasta
+                    </UBadge>
+                    <UBadge
+                      v-if="row.ivaAdicional"
+                      color="neutral"
+                      variant="subtle"
+                      size="sm"
+                    >
+                      + IVA
+                    </UBadge>
+                  </div>
+                </template>
               </div>
             </div>
             <dl class="mt-3 grid grid-cols-2 gap-2 text-sm">
@@ -722,6 +840,30 @@ const hasActiveFilters = computed(
                 </dt>
                 <dd>{{ row.medioPagoLabel }}</dd>
               </div>
+              <template v-if="isSimulating">
+                <div>
+                  <dt class="text-neutral-500">
+                    Arancel
+                  </dt>
+                  <dd class="tabular-nums">
+                    {{ row.arancelLabel }}
+                  </dd>
+                </div>
+                <div v-if="row.simulation">
+                  <dt class="text-neutral-500">
+                    Detalle costo
+                  </dt>
+                  <dd class="tabular-nums text-xs text-neutral-500">
+                    <template v-if="row.simulation.iva > 0">
+                      {{ formatCurrency(row.simulation.arancelBase) }} + IVA
+                      {{ formatCurrency(row.simulation.iva) }}
+                    </template>
+                    <template v-else>
+                      {{ formatCurrency(row.simulation.costo) }}
+                    </template>
+                  </dd>
+                </div>
+              </template>
               <div class="col-span-2">
                 <dt class="text-neutral-500">
                   Acreditación
