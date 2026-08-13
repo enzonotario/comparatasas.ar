@@ -170,7 +170,7 @@ export const institutions: Array<{
       'Pagos Nación',
       'Más Pagos Nación',
     ],
-    logo: 'https://api.argentinadatos.com/static/logos/banco-nacion.png',
+    logo: 'https://maspagos.com.ar/assets/nacion-23d299f2.webp',
     shortName: '+Pagos Nación',
     url: 'https://maspagos.com.ar/simulador-de-ventas?ref=comparatasas',
   },
