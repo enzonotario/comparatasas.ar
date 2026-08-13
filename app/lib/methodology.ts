@@ -305,7 +305,7 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Comparamos aranceles (MDR) de cobro publicados por adquirentes y billeteras: Getnet, Mercado Pago y Ualá Bis. Los valores vienen de Argentina Datos (/v1/finanzas/cobros/comisiones) y se actualizan mensualmente.',
+        text: 'Comparamos aranceles (MDR) de cobro publicados por adquirentes y billeteras: Getnet, Mercado Pago, Ualá Bis, Payway, Banco Provincia, Fiserv, Nave, Openpay, Viumi y +Pagos Nación. Los valores vienen de Argentina Datos (/v1/finanzas/cobros/comisiones) y se actualizan mensualmente.',
       },
       {
         type: 'p',
