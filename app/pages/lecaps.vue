@@ -81,6 +81,11 @@ const lecapsWithSimulation = computed(() => {
   })
 })
 
+/** Lista mobile: mismo orden por defecto que la tabla (días asc). */
+const lecapsForList = computed(() =>
+  [...lecapsWithSimulation.value].sort((a, b) => (a.days ?? 0) - (b.days ?? 0)),
+)
+
 function getRowToneClass(row: any) {
   const isOutOfHorizon = row?.simulation?.isOutOfHorizon
   return isSimulating.value && isOutOfHorizon ? 'opacity-40 text-muted' : ''
@@ -317,7 +322,82 @@ function formatDate(value: string): string {
     <FundsLoading v-if="loading && !lecapsItems.length" />
 
     <div v-else-if="lecapsItems.length" class="space-y-6">
-      <div class="border border-default rounded-lg overflow-hidden">
+      <!-- Mobile: lista -->
+      <div class="sm:hidden flex flex-col gap-3">
+        <div
+          v-for="item in lecapsForList"
+          :key="item.symbol"
+          class="rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-3"
+          :class="
+            isSimulating && item.simulation.isOutOfHorizon ? 'opacity-40 text-muted' : undefined
+          "
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 space-y-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-bold text-neutral-900 dark:text-white">{{ item.symbol }}</span>
+                <UBadge
+                  variant="soft"
+                  size="xs"
+                  :color="item.type === 'BONCAP' ? 'primary' : 'success'"
+                  class="font-bold"
+                >
+                  {{ item.type }}
+                </UBadge>
+              </div>
+              <p class="text-xs text-muted">
+                {{ formatDate(item.maturity) }} · {{ item.days }} días
+              </p>
+              <p class="text-xs text-muted tabular-nums">
+                Precio {{ formatCurrency(item.price) }} · Pago final
+                {{ formatCurrency(item.finalPayment) }}
+              </p>
+            </div>
+
+            <div class="text-right space-y-0.5 shrink-0">
+              <div class="font-bold tabular-nums text-green-600 dark:text-green-400">
+                {{ formatPercent(item.tir) }}
+              </div>
+              <div class="text-xs text-muted">TIR</div>
+              <div class="text-xs tabular-nums text-sky-600 dark:text-sky-400">
+                TEM {{ formatPercent(item.tem) }}
+              </div>
+              <div class="text-xs text-muted tabular-nums">TNA {{ formatPercent(item.tna) }}</div>
+            </div>
+          </div>
+
+          <div
+            v-if="isSimulating"
+            class="mt-3 flex items-baseline justify-between gap-3 border-t border-neutral-200 dark:border-neutral-800 pt-2"
+          >
+            <div class="text-xs text-muted">
+              {{
+                item.simulation.isOutOfHorizon
+                  ? `Fuera de horizonte (${item.simulation.itemDays}d)`
+                  : `A ${item.simulation.effectiveDays}d`
+              }}
+            </div>
+            <div class="text-right">
+              <div class="font-bold tabular-nums text-primary-600 dark:text-primary-400">
+                {{ formatCurrency(item.simulation.finalAmount) }}
+              </div>
+              <div
+                class="text-xs font-semibold tabular-nums"
+                :class="
+                  item.simulation.earned >= 0
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-red-600'
+                "
+              >
+                {{ formatCurrency(item.simulation.earned) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- sm+: tabla -->
+      <div class="hidden sm:block border border-default rounded-lg overflow-hidden">
         <UTable
           v-model:sorting="sorting"
           :data="lecapsWithSimulation"
