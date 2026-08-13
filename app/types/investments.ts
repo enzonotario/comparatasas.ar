@@ -132,6 +132,8 @@ export interface Lecap {
   days?: number
   tna?: number
   tir?: number
+  /** Tasa efectiva mensual implícita: (pago final ÷ precio)^(30 ÷ días) − 1 */
+  tem?: number
 }
 
 export interface UsdAccount {

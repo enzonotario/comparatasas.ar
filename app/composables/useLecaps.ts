@@ -134,6 +134,7 @@ export function useLecaps() {
       let days = 0
       let tir = 0
       let tna = 0
+      let tem = 0
 
       if (lecap.maturity) {
         const maturityDate = new Date(lecap.maturity)
@@ -144,6 +145,7 @@ export function useLecaps() {
           const ganancia = lecap.finalPayment / lecap.price
           tna = (ganancia - 1) * (365 / days)
           tir = Math.pow(ganancia, 365 / days) - 1
+          tem = Math.pow(ganancia, 30 / days) - 1
         }
       }
 
@@ -156,6 +158,7 @@ export function useLecaps() {
         maturity: lecap.maturity,
         tna,
         tir,
+        tem,
         bid: lecap.bid,
         ask: lecap.ask,
         type: lecap.type,

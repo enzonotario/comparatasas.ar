@@ -226,6 +226,14 @@ export const methodologySections: MethodologySection[] = [
         text: 'TIR = factor^(365 ÷ días) − 1',
       },
       {
+        type: 'formula',
+        text: 'TEM = factor^(30 ÷ días) − 1',
+      },
+      {
+        type: 'p',
+        text: 'La TEM es la tasa efectiva mensual implícita en el precio (base 30 días). Equivale a (1+TIR)^(30/365)−1. En la curva podés alternar TIR vs TEM.',
+      },
+      {
         type: 'p',
         text: 'En el simulador, la ganancia compuesta usa la TIR como tasa anual efectiva y limita los días al mínimo entre tu horizonte y los días al vencimiento del papel.',
       },

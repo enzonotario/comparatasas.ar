@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { UBadge, UButton } from '#components'
-import LecapYieldCurveChart from '~/components/charts/LecapYieldCurveChart.vue'
+import LecapYieldCurveChart, {
+  type LecapYieldMode,
+} from '~/components/charts/LecapYieldCurveChart.vue'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { TableColumn } from '@nuxt/ui'
+import { useRouteQuery } from '@vueuse/router'
 
 definePageMeta({
   pageTitle: 'LECAPs y BONCAPs',
@@ -34,6 +37,14 @@ const { amount, days, calculateCompoundInterest, isSimulating } = useInvestmentS
 // Por defecto en LECAPs: iniciar el simulador con 1M (y el horizonte por defecto 180d).
 amount.value = 1000000
 days.value = 180
+
+const curvaQuery = useRouteQuery<LecapYieldMode>('curva', 'tir')
+const curvaMode = computed<LecapYieldMode>({
+  get: () => (curvaQuery.value === 'tem' ? 'tem' : 'tir'),
+  set: (value) => {
+    curvaQuery.value = value
+  },
+})
 
 defineOgImage('LecapsCurve.takumi', {
   title: 'LECAPs y BONCAPs',
@@ -167,6 +178,16 @@ const baseColumns: TableColumn<any>[] = [
         'div',
         { class: `${getRowToneClass(row.original)} font-bold text-green-600 dark:text-green-400` },
         formatPercent(row.getValue('tir') as number),
+      ),
+  },
+  {
+    accessorKey: 'tem',
+    header: createSortableHeader('TEM', 'tem'),
+    cell: ({ row }) =>
+      h(
+        'div',
+        { class: `${getRowToneClass(row.original)} font-bold text-sky-600 dark:text-sky-400` },
+        formatPercent(row.getValue('tem') as number),
       ),
   },
 ]
@@ -319,10 +340,26 @@ function formatDate(value: string): string {
       </div>
 
       <div class="border border-default rounded-lg p-4 bg-white dark:bg-neutral-900">
-        <h3 class="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-4">
-          Curva de Rendimientos (TIR vs Días)
-        </h3>
-        <LecapYieldCurveChart :lecaps="lecapsItems" />
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h3 class="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            Curva de Rendimientos ({{ curvaMode === 'tem' ? 'TEM' : 'TIR' }} vs Días)
+          </h3>
+          <UFieldGroup size="sm" class="shrink-0">
+            <UButton
+              label="TIR"
+              color="neutral"
+              :variant="curvaMode === 'tir' ? 'solid' : 'outline'"
+              @click="curvaMode = 'tir'"
+            />
+            <UButton
+              label="TEM"
+              color="neutral"
+              :variant="curvaMode === 'tem' ? 'solid' : 'outline'"
+              @click="curvaMode = 'tem'"
+            />
+          </UFieldGroup>
+        </div>
+        <LecapYieldCurveChart :lecaps="lecapsItems" :mode="curvaMode" />
       </div>
     </div>
 
