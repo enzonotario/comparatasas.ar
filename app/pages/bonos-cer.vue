@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { UButton } from '#components'
-import CerYieldCurveChart from '~/components/charts/CerYieldCurveChart.vue'
+import CerYieldCurveChart, {
+  type CerYieldMode,
+} from '~/components/charts/CerYieldCurveChart.vue'
 import {
   type BonosCerPayload,
   type CerBondRow,
@@ -9,6 +11,7 @@ import {
 } from '~/composables/useBonosCer'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { TableColumn } from '@nuxt/ui'
+import { useRouteQuery } from '@vueuse/router'
 
 definePageMeta({
   pageTitle: 'Bonos CER',
@@ -50,12 +53,27 @@ defineOgImage('BonosCerCurve.takumi', {
 
 const { bonds, loading, error, data } = useBonosCer()
 
+const curvaQuery = useRouteQuery<CerYieldMode>('curva', 'tir')
+const curvaMode = computed<CerYieldMode>({
+  get: () => (curvaQuery.value === 'tem' ? 'tem' : 'tir'),
+  set: (value) => {
+    curvaQuery.value = value
+  },
+})
+
 const sorting = ref([
   {
     id: 'daysToMaturity',
     desc: false,
   },
 ])
+
+/** Lista mobile: orden por días al vencimiento (asc). */
+const bondsForList = computed(() =>
+  [...bonds.value].sort(
+    (a, b) => diasAlVencimientoCer(a.fechaVencimiento) - diasAlVencimientoCer(b.fechaVencimiento),
+  ),
+)
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('es-AR', {
@@ -131,6 +149,14 @@ const columns: TableColumn<CerBondRow>[] = [
     },
   },
   {
+    accessorKey: 'temPorcentaje',
+    header: createSortableHeader('TEM (%)', 'temPorcentaje'),
+    cell: ({ row }) => {
+      const v = (row.getValue('temPorcentaje') as number) ?? 0
+      return h('div', { class: 'font-bold text-sky-600 dark:text-sky-400' }, formatPctRaw(v))
+    },
+  },
+  {
     id: 'durationYears',
     accessorFn: (row) => durationYearsCerAprox(row.fechaVencimiento),
     header: createSortableHeader('Duration', 'durationYears'),
@@ -152,8 +178,6 @@ const columns: TableColumn<CerBondRow>[] = [
     },
   },
 ]
-
-const payload = computed(() => data.value)
 
 const extraccionError = computed(() => data.value?.errorExtraccion)
 
@@ -194,7 +218,48 @@ const textoActualizacion = computed(() => {
     <FundsLoading v-if="loading && !bonds.length" />
 
     <div v-else-if="bonds.length" class="space-y-6">
-      <div class="border border-default rounded-lg overflow-hidden">
+      <!-- Mobile: lista -->
+      <div class="sm:hidden flex flex-col gap-3">
+        <div
+          v-for="item in bondsForList"
+          :key="item.ticker"
+          class="rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-3"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 space-y-1">
+              <span class="font-bold text-neutral-900 dark:text-white">{{ item.ticker }}</span>
+              <p class="text-xs text-muted">
+                {{ formatDateShort(item.fechaVencimiento) }} ·
+                {{ diasAlVencimientoCer(item.fechaVencimiento) }} días · duration
+                {{ durationYearsCerAprox(item.fechaVencimiento).toFixed(2) }}
+              </p>
+              <p class="text-xs text-muted tabular-nums">
+                Precio {{ formatCurrency(item.precioArs) }}
+              </p>
+            </div>
+
+            <div class="text-right space-y-0.5 shrink-0">
+              <div
+                class="font-bold tabular-nums"
+                :class="
+                  item.tirPorcentaje >= 0
+                    ? 'text-green-800 dark:text-green-200'
+                    : 'text-red-800 dark:text-red-200'
+                "
+              >
+                {{ formatPctRaw(item.tirPorcentaje) }}
+              </div>
+              <div class="text-xs text-muted">TIR</div>
+              <div class="text-xs tabular-nums text-sky-600 dark:text-sky-400">
+                TEM {{ formatPctRaw(item.temPorcentaje ?? 0) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- sm+: tabla -->
+      <div class="hidden sm:block border border-default rounded-lg overflow-hidden">
         <UTable v-model:sorting="sorting" :data="bonds" :columns="columns" :loading="loading">
           <template #empty>
             <div class="py-12 text-center text-muted">No hay bonos CER disponibles.</div>
@@ -203,10 +268,26 @@ const textoActualizacion = computed(() => {
       </div>
 
       <div class="border border-default rounded-lg p-4 bg-white dark:bg-neutral-900">
-        <h3 class="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-4">
-          Curva TIR vs plazo (días al vencimiento)
-        </h3>
-        <CerYieldCurveChart :bonds="bonds" />
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h3 class="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            Curva de Rendimientos ({{ curvaMode === 'tem' ? 'TEM' : 'TIR' }} vs Días)
+          </h3>
+          <UFieldGroup size="sm" class="shrink-0">
+            <UButton
+              label="TIR"
+              color="neutral"
+              :variant="curvaMode === 'tir' ? 'solid' : 'outline'"
+              @click="curvaMode = 'tir'"
+            />
+            <UButton
+              label="TEM"
+              color="neutral"
+              :variant="curvaMode === 'tem' ? 'solid' : 'outline'"
+              @click="curvaMode = 'tem'"
+            />
+          </UFieldGroup>
+        </div>
+        <CerYieldCurveChart :bonds="bonds" :mode="curvaMode" />
       </div>
     </div>
 
@@ -230,11 +311,11 @@ const textoActualizacion = computed(() => {
             vida y preservar el poder adquisitivo frente a la inflación.
           </p>
           <p>
-            En esta página se muestran <strong>precio de cotización</strong> y
-            <strong>TIR</strong> (tasa interna de retorno en porcentaje) según datos de mercado
-            agregados por ArgentinaDatos. Son valores <strong>orientativos</strong>: la TIR depende
-            del precio observado, del calendario de cupones y de supuestos de mercado; no
-            constituyen asesoramiento financiero.
+            En esta página se muestran <strong>precio de cotización</strong>,
+            <strong>TIR</strong> y <strong>TEM</strong> (tasa efectiva mensual implícita) según
+            datos de mercado agregados por ArgentinaDatos. Son valores
+            <strong>orientativos</strong>: la TIR depende del precio observado, del calendario de
+            cupones y de supuestos de mercado; no constituyen asesoramiento financiero.
           </p>
         </div>
         <div class="space-y-4">

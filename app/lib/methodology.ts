@@ -250,6 +250,14 @@ export const methodologySections: MethodologySection[] = [
         type: 'p',
         text: 'Mostramos precio en pesos, fecha de vencimiento y TIR en porcentaje tal como viene de la fuente de mercado. Los días al vencimiento se calculan en calendario desde hoy para contexto en la UI.',
       },
+      {
+        type: 'formula',
+        text: 'TEM = (1 + TIR)^(30 ÷ 365) − 1',
+      },
+      {
+        type: 'p',
+        text: 'La TEM es la tasa efectiva mensual implícita (base 30 días) derivada de la TIR. En la curva podés alternar TIR vs TEM.',
+      },
     ],
   },
   {
