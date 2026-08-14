@@ -156,24 +156,42 @@ export function useFciFundPresentation(
     {
       accessorKey: 'period',
       header: 'Período',
+      meta: {
+        class: {
+          th: 'w-[7rem]',
+          td: 'w-[7rem] font-medium',
+        },
+      },
     },
     {
       accessorKey: 'value',
       header: () => h('div', { class: 'text-right' }, 'Rendimiento'),
+      meta: {
+        class: {
+          th: 'text-right',
+          td: 'text-right',
+        },
+      },
       cell: ({ row }) =>
         h(
           'div',
-          { class: `text-right font-medium ${metricTone(row.original.value)}` },
+          { class: `text-right tabular-nums font-medium ${metricTone(row.original.value)}` },
           formatPercentAuto(row.original.value),
         ),
     },
     {
       accessorKey: 'effectiveDays',
       header: () => h('div', { class: 'text-right' }, 'Días efectivos'),
+      meta: {
+        class: {
+          th: 'text-right',
+          td: 'text-right',
+        },
+      },
       cell: ({ row }) =>
         h(
           'div',
-          { class: 'text-right text-neutral-600 dark:text-neutral-300' },
+          { class: 'text-right tabular-nums text-neutral-600 dark:text-neutral-300' },
           row.original.effectiveDays ?? '—',
         ),
     },
@@ -183,47 +201,97 @@ export function useFciFundPresentation(
     {
       accessorKey: 'fecha',
       header: 'Fecha',
+      meta: {
+        class: {
+          th: 'whitespace-nowrap',
+          td: 'whitespace-nowrap',
+        },
+      },
       cell: ({ row }) => formatDate(row.original.fecha),
     },
     {
       accessorKey: 'valorCuotaparte',
-      header: 'Valor cuotaparte',
-      cell: ({ row }) =>
-        h('div', { class: 'text-right font-mono' }, formatDecimal(row.original.valorCuotaparte)),
-    },
-    {
-      accessorKey: 'retornoDiario',
-      header: 'Retorno diario',
+      header: () => h('div', { class: 'text-right' }, 'VCP'),
+      meta: {
+        class: {
+          th: 'text-right whitespace-nowrap',
+          td: 'text-right whitespace-nowrap',
+        },
+      },
       cell: ({ row }) =>
         h(
           'div',
-          { class: `text-right ${metricTone(row.original.retornoDiario)}` },
+          { class: 'text-right font-mono tabular-nums' },
+          formatDecimal(row.original.valorCuotaparte),
+        ),
+    },
+    {
+      accessorKey: 'retornoDiario',
+      header: () => h('div', { class: 'text-right' }, 'Ret. diario'),
+      meta: {
+        class: {
+          th: 'text-right whitespace-nowrap',
+          td: 'text-right whitespace-nowrap',
+        },
+      },
+      cell: ({ row }) =>
+        h(
+          'div',
+          {
+            class: `text-right tabular-nums ${metricTone(row.original.retornoDiario)}`,
+          },
           formatPercentAuto(row.original.retornoDiario),
         ),
     },
     {
       accessorKey: 'retornoAcumulado',
-      header: 'Retorno acumulado',
+      header: () => h('div', { class: 'text-right' }, 'Ret. acum.'),
+      meta: {
+        class: {
+          th: 'text-right whitespace-nowrap',
+          td: 'text-right whitespace-nowrap',
+        },
+      },
       cell: ({ row }) =>
         h(
           'div',
-          { class: `text-right ${metricTone(row.original.retornoAcumulado)}` },
+          {
+            class: `text-right tabular-nums ${metricTone(row.original.retornoAcumulado)}`,
+          },
           formatPercentAuto(row.original.retornoAcumulado),
         ),
     },
     {
       accessorKey: 'patrimonio',
-      header: 'Patrimonio',
-      cell: ({ row }) =>
-        h('div', { class: 'text-right' }, formatCompactNumber(row.original.patrimonio)),
-    },
-    {
-      accessorKey: 'flujoEstimado',
-      header: 'Flujo estimado',
+      header: () => h('div', { class: 'text-right' }, 'Patrimonio'),
+      meta: {
+        class: {
+          th: 'text-right whitespace-nowrap',
+          td: 'text-right whitespace-nowrap',
+        },
+      },
       cell: ({ row }) =>
         h(
           'div',
-          { class: `text-right ${metricTone(row.original.flujoEstimado)}` },
+          { class: 'text-right tabular-nums' },
+          formatCompactNumber(row.original.patrimonio),
+        ),
+    },
+    {
+      accessorKey: 'flujoEstimado',
+      header: () => h('div', { class: 'text-right' }, 'Flujo'),
+      meta: {
+        class: {
+          th: 'text-right whitespace-nowrap',
+          td: 'text-right whitespace-nowrap',
+        },
+      },
+      cell: ({ row }) =>
+        h(
+          'div',
+          {
+            class: `text-right tabular-nums ${metricTone(row.original.flujoEstimado)}`,
+          },
           formatCompactNumber(row.original.flujoEstimado),
         ),
     },

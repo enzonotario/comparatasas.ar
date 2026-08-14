@@ -69,11 +69,24 @@ const isHistoryLoading = computed(
         :loading="isHistoryLoading"
       />
 
-      <UCard>
+      <UCard
+        :ui="{
+          body: '!p-0',
+        }"
+      >
         <template #header>
           <h2 class="text-lg font-semibold">Tabla histórica</h2>
         </template>
-        <UTable :data="props.historyRows" :columns="props.historyColumns" sticky="header" />
+        <UTable
+          :data="props.historyRows"
+          :columns="props.historyColumns"
+          sticky="header"
+          :ui="{
+            base: 'table-fixed',
+            th: 'px-3 py-2.5 text-xs',
+            td: 'px-3 py-2 text-sm',
+          }"
+        />
       </UCard>
     </template>
 
