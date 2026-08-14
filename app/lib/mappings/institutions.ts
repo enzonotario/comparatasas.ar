@@ -175,6 +175,12 @@ export const institutions: Array<{
     url: 'https://maspagos.com.ar/simulador-de-ventas?ref=comparatasas',
   },
   {
+    names: ['Bezza Pay', 'Bezza', 'bezzapay', 'BEZZA', 'Taca Taca', 'tacataca'],
+    logo: 'https://api.argentinadatos.com/static/logos/bezzapay.svg',
+    shortName: 'Bezza Pay',
+    url: 'https://www.bezzapay.com.ar/smartpos?ref=comparatasas',
+  },
+  {
     names: ['Personal Pay'],
     logo: 'https://api.argentinadatos.com/static/logos/personal-pay.png',
     shortName: 'Personal Pay',
