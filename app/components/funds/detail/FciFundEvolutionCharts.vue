@@ -2,11 +2,7 @@
 import { provide } from 'vue'
 import type { FciFundHistoryItem } from '~/composables/useFciFundDetails'
 import { CHART_COLORS, formatCurrency, useChartTheme } from '~/composables/useChartConfig'
-import {
-  formatCompactNumber,
-  formatDecimal,
-  formatPercentAuto,
-} from '~/lib/fci-fund-formatters'
+import { formatCompactNumber, formatDecimal, formatPercentAuto } from '~/lib/fci-fund-formatters'
 
 type SeriesKey = 'vcp' | 'patrimonio' | 'retornoAcumulado' | 'retornoDiario' | 'flujo'
 
@@ -80,9 +76,7 @@ const seriesOptions: Array<{
 const selectedSeries = ref<SeriesKey>('vcp')
 
 const chronologicalPoints = computed(() => {
-  return [...props.points].sort(
-    (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime(),
-  )
+  return [...props.points].sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
 })
 
 const activeSeries = computed(
@@ -343,7 +337,7 @@ watch(
               v-for="option in visibleSeriesOptions"
               :key="option.key"
               size="sm"
-              :color="selectedSeries === option.key ? 'primary' : 'neutral'"
+              color="neutral"
               :variant="selectedSeries === option.key ? 'solid' : 'outline'"
               :label="option.shortLabel"
               @click="selectedSeries = option.key"
