@@ -39,6 +39,13 @@ export function useFciFundPresentation(
     })
   })
 
+  /** Serie limpia en orden cronológico (para charts). */
+  const historyChronological = computed(() => {
+    return [...historyRows.value].sort(
+      (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime(),
+    )
+  })
+
   const latestHistoryPoint = computed(() => historyRows.value[0] ?? null)
   const oldestHistoryPoint = computed(() => historyRows.value[historyRows.value.length - 1] ?? null)
 
@@ -224,6 +231,7 @@ export function useFciFundPresentation(
 
   return {
     historyRows,
+    historyChronological,
     latestHistoryPoint,
     oldestHistoryPoint,
     compositionRows,

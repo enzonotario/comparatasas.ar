@@ -74,6 +74,7 @@ const showNotFound = computed(() => !fundDetail.value && status.value === 'succe
 
 const {
   historyRows,
+  historyChronological,
   latestHistoryPoint,
   oldestHistoryPoint,
   compositionRows,
@@ -85,10 +86,12 @@ const {
 } = useFciFundPresentation(fundDetail, fundHistory)
 
 watch(
-  selectedDetailTab,
-  async (tab) => {
-    if (tab !== 'historico' || !fundDetail.value) return
-    await ensureHistoryLoaded()
+  [selectedDetailTab, fundDetail],
+  async ([tab]) => {
+    if (!fundDetail.value) return
+    if (tab === 'historico') {
+      await ensureHistoryLoaded()
+    }
   },
   { immediate: true },
 )
@@ -196,6 +199,7 @@ useSeoMeta({
             :history-status="historyStatus"
             :history-error="historyError"
             :history-rows="historyRows"
+            :history-chronological="historyChronological"
             :oldest-history-point="oldestHistoryPoint"
             :latest-history-point="latestHistoryPoint"
             :history-columns="historyColumns"

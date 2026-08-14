@@ -26,6 +26,9 @@ importers:
       '@vueuse/nuxt':
         specifier: 13.9.0
         version: 13.9.0(magicast@0.3.5)(nuxt@4.1.0(@libsql/client@0.17.0)(@parcel/watcher@2.5.1)(@types/node@25.0.10)(@vue/compiler-sfc@3.5.30)(db0@0.3.2(@libsql/client@0.17.0))(eslint@9.39.3(jiti@2.5.1))(ioredis@5.7.0)(lightningcss@1.32.0)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.50.0)(terser@5.43.1)(tsx@4.21.0)(typescript@5.9.3)(vite@7.1.4(@types/node@25.0.10)(jiti@2.5.1)(lightningcss@1.32.0)(terser@5.43.1)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2))(vue@3.5.28(typescript@5.9.3))
+      echarts:
+        specifier: ^6.1.0
+        version: 6.1.0
       eslint:
         specifier: ^9.39.3
         version: 9.39.3(jiti@2.5.1)
@@ -35,6 +38,9 @@ importers:
       nuxt:
         specifier: 4.1.0
         version: 4.1.0(@libsql/client@0.17.0)(@parcel/watcher@2.5.1)(@types/node@25.0.10)(@vue/compiler-sfc@3.5.30)(db0@0.3.2(@libsql/client@0.17.0))(eslint@9.39.3(jiti@2.5.1))(ioredis@5.7.0)(lightningcss@1.32.0)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.50.0)(terser@5.43.1)(tsx@4.21.0)(typescript@5.9.3)(vite@7.1.4(@types/node@25.0.10)(jiti@2.5.1)(lightningcss@1.32.0)(terser@5.43.1)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
+      nuxt-echarts:
+        specifier: 1.0.1
+        version: 1.0.1(echarts@6.1.0)(magicast@0.3.5)(vue-echarts@8.1.0(echarts@6.1.0)(vue@3.5.28(typescript@5.9.3)))
       nuxt-gtag:
         specifier: 4.0.0
         version: 4.0.0(magicast@0.3.5)
@@ -53,6 +59,9 @@ importers:
       vue-data-ui:
         specifier: ^3.17.11
         version: 3.17.11(vue@3.5.28(typescript@5.9.3))
+      vue-echarts:
+        specifier: ^8.1.0
+        version: 8.1.0(echarts@6.1.0)(vue@3.5.28(typescript@5.9.3))
       vue-router:
         specifier: ^5.0.2
         version: 5.0.2(@vue/compiler-sfc@3.5.30)(vue@3.5.28(typescript@5.9.3))
@@ -4226,6 +4235,9 @@ packages:
   ecdsa-sig-formatter@1.0.11:
     resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
 
+  echarts@6.1.0:
+    resolution: {integrity: sha512-q0yaFPggC9FUdsWH4blavRWFmxdrIodbkoKNAjJudAI6CA9gNPxHtV2RcZNEepZVlk4yvBYkOkbk6HIVpIyHZA==}
+
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
@@ -5916,6 +5928,12 @@ packages:
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
 
+  nuxt-echarts@1.0.1:
+    resolution: {integrity: sha512-YI7XKHSV7K918KKpm35eKMJkuiKcnaHYgRxMhi4ofMolbQkb821r0cOxDdI2Jlc7jh00OAx8drt80rX+PG8d5A==}
+    peerDependencies:
+      echarts: ^6.0.0
+      vue-echarts: ^8.0.0
+
   nuxt-gtag@4.0.0:
     resolution: {integrity: sha512-7Mz8d3Cbrp2WsskJmzTsxO5lYpX7oVLsmsMQPInM+r0/8aGM1LnDnQYdFtTO+j7fsVhMuCa+XZyNrH43EKNfHA==}
 
@@ -7175,6 +7193,9 @@ packages:
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
+  tslib@2.3.0:
+    resolution: {integrity: sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==}
+
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
@@ -7789,6 +7810,12 @@ packages:
   vue-devtools-stub@0.1.0:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
 
+  vue-echarts@8.1.0:
+    resolution: {integrity: sha512-/uJVwijy3M2vIZ0NcPDgdZVqgboc6zZtC/vERfESau0eFpkHOIujj0sIiMiLP4kztQrckMFnDYWrid+gLI+IOg==}
+    peerDependencies:
+      echarts: ^6.0.0
+      vue: ^3.3.0
+
   vue-eslint-parser@10.4.0:
     resolution: {integrity: sha512-Vxi9pJdbN3ZnVGLODVtZ7y4Y2kzAAE2Cm0CZ3ZDRvydVYxZ6VrnBhLikBsRS+dpwj4Jv4UCv21PTEwF5rQ9WXg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -8021,6 +8048,9 @@ packages:
 
   zod@4.1.11:
     resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
+
+  zrender@6.1.0:
+    resolution: {integrity: sha512-oEGMDB6pOP2S6OwRR4PdVv610zrjnA3Bh+JnSG12fYJlBKjtNAoEb5fSUoCOOINlH96I2fU38/A2UpRKs67xYQ==}
 
 snapshots:
 
@@ -12508,6 +12538,11 @@ snapshots:
     dependencies:
       safe-buffer: 5.2.1
 
+  echarts@6.1.0:
+    dependencies:
+      tslib: 2.3.0
+      zrender: 6.1.0
+
   ee-first@1.1.1: {}
 
   ejs@3.1.10:
@@ -14510,6 +14545,14 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
+  nuxt-echarts@1.0.1(echarts@6.1.0)(magicast@0.3.5)(vue-echarts@8.1.0(echarts@6.1.0)(vue@3.5.28(typescript@5.9.3))):
+    dependencies:
+      '@nuxt/kit': 4.3.1(magicast@0.3.5)
+      echarts: 6.1.0
+      vue-echarts: 8.1.0(echarts@6.1.0)(vue@3.5.28(typescript@5.9.3))
+    transitivePeerDependencies:
+      - magicast
+
   nuxt-gtag@4.0.0(magicast@0.3.5):
     dependencies:
       '@nuxt/kit': 4.1.0(magicast@0.3.5)
@@ -16082,6 +16125,8 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
+  tslib@2.3.0: {}
+
   tslib@2.8.1: {}
 
   tsscmp@1.0.6: {}
@@ -16656,6 +16701,11 @@ snapshots:
 
   vue-devtools-stub@0.1.0: {}
 
+  vue-echarts@8.1.0(echarts@6.1.0)(vue@3.5.28(typescript@5.9.3)):
+    dependencies:
+      echarts: 6.1.0
+      vue: 3.5.28(typescript@5.9.3)
+
   vue-eslint-parser@10.4.0(eslint@9.39.3(jiti@2.5.1)):
     dependencies:
       debug: 4.4.3
@@ -16977,3 +17027,7 @@ snapshots:
       readable-stream: 4.7.0
 
   zod@4.1.11: {}
+
+  zrender@6.1.0:
+    dependencies:
+      tslib: 2.3.0

@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     'nuxt-module-hotjar',
     'nuxt-highcharts',
+    'nuxt-echarts',
     'nuxt-og-image',
   ],
   ssr: true,
@@ -166,6 +167,16 @@ export default defineNuxtConfig({
 
   highcharts: {
     exporting: true,
+  },
+
+  echarts: {
+    charts: ['LineChart', 'BarChart'],
+    components: [
+      'GridComponent',
+      'TooltipComponent',
+      'LegendComponent',
+      'DataZoomComponent',
+    ],
   },
 
   hotjar: {
