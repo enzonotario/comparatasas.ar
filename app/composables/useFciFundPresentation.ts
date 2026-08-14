@@ -7,6 +7,11 @@ import type {
   FciFundHistoryItem,
 } from '~/composables/useFciFundDetails'
 import {
+  computeRendimientosFromHistory,
+  recomputeHistoryReturns,
+  sanitizeAnnualizedReturnPercent,
+} from '~/lib/finance/fci-history-returns'
+import {
   formatCompactNumber,
   formatDate,
   formatDecimal,
@@ -28,7 +33,8 @@ export function useFciFundPresentation(
   const fundHistory = computed(() => toValue(fundHistorySource) ?? null)
 
   const historyRows = computed(() => {
-    return [...(fundHistory.value?.historico ?? [])].sort((a, b) => {
+    const recomputed = recomputeHistoryReturns(fundHistory.value?.historico ?? [])
+    return [...recomputed].sort((a, b) => {
       return new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
     })
   })
@@ -76,38 +82,68 @@ export function useFciFundPresentation(
     return Math.max(1, Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1)
   })
 
-  const returnsRows = computed<ReturnRow[]>(() => [
-    {
-      period: '7D',
-      effectiveDays: 7,
-      value: fundDetail.value?.rendimientos?.ultimos7Dias,
-    },
-    {
-      period: '30D',
-      effectiveDays: 30,
-      value: fundDetail.value?.rendimientos?.unMes,
-    },
-    {
-      period: '90D',
-      effectiveDays: 90,
-      value: fundDetail.value?.rendimientos?.noventaDias,
-    },
-    {
-      period: '180D',
-      effectiveDays: 180,
-      value: fundDetail.value?.rendimientos?.cientoOchentaDias,
-    },
-    {
-      period: 'YTD',
-      effectiveDays: effectiveDaysInYear.value,
-      value: fundDetail.value?.rendimientos?.enElAnio,
-    },
-    {
-      period: '1Y',
-      effectiveDays: 365,
-      value: fundDetail.value?.rendimientos?.doceMeses,
-    },
-  ])
+  const recomputedRendimientos = computed(() => {
+    const detail = fundDetail.value
+    const history = fundHistory.value?.historico
+    if (!detail?.fecha || detail.rendimientos?.valorCuotaparte == null || !history?.length) {
+      return null
+    }
+
+    return computeRendimientosFromHistory({
+      fecha: detail.fecha,
+      valorCuotaparte: detail.rendimientos.valorCuotaparte,
+      history,
+    })
+  })
+
+  const returnsRows = computed<ReturnRow[]>(() => {
+    const api = fundDetail.value?.rendimientos
+    const recomputed = recomputedRendimientos.value
+
+    const sevenValue =
+      recomputed?.sevenDays != null
+        ? recomputed.ultimos7Dias
+        : sanitizeAnnualizedReturnPercent(api?.ultimos7Dias)
+    const monthValue =
+      recomputed?.thirtyDays != null
+        ? recomputed.unMes
+        : recomputed
+          ? null
+          : sanitizeAnnualizedReturnPercent(api?.unMes)
+
+    return [
+      {
+        period: '7D',
+        effectiveDays: recomputed?.sevenDays ?? (sevenValue == null ? null : 7),
+        value: sevenValue,
+      },
+      {
+        period: '30D',
+        effectiveDays: recomputed?.thirtyDays ?? (monthValue == null ? null : 30),
+        value: monthValue,
+      },
+      {
+        period: '90D',
+        effectiveDays: 90,
+        value: sanitizeAnnualizedReturnPercent(api?.noventaDias),
+      },
+      {
+        period: '180D',
+        effectiveDays: 180,
+        value: sanitizeAnnualizedReturnPercent(api?.cientoOchentaDias),
+      },
+      {
+        period: 'YTD',
+        effectiveDays: effectiveDaysInYear.value,
+        value: sanitizeAnnualizedReturnPercent(api?.enElAnio),
+      },
+      {
+        period: '1Y',
+        effectiveDays: 365,
+        value: sanitizeAnnualizedReturnPercent(api?.doceMeses),
+      },
+    ]
+  })
 
   const returnsColumns: TableColumn<ReturnRow>[] = [
     {

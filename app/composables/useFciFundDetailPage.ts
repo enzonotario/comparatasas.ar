@@ -38,11 +38,12 @@ export function useFciFundDetailPage(slugSource: MaybeRefOrGetter<string>) {
   } = useAsyncData(
     () => `fci-fund-history:${slug.value}`,
     async () => {
-      if (!data.value) return null
+      if (!slug.value) return null
       return await fetchFundHistorySafe(slug.value)
     },
     {
       default: () => null,
+      watch: [slug],
     },
   )
 

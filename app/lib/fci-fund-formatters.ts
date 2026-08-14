@@ -13,37 +13,63 @@ export function formatDateTime(value: string | null | undefined) {
   }).format(new Date(value))
 }
 
+function normalizeCurrencyLabel(currency: string | null | undefined) {
+  return (currency || '')
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+}
+
 export function normalizeCurrencyCode(currency: string | null | undefined) {
-  const normalized = (currency || '').trim().toLowerCase()
+  const normalized = normalizeCurrencyLabel(currency)
 
   if (!normalized) return 'ARS'
-  if (['ars', 'peso argentina', 'pesos argentinos'].includes(normalized)) return 'ARS'
+
   if (
-    [
-      'usd',
-      'u$s',
-      'dolar estadounidense',
-      'dolar estadounidense billete',
-      'dolar estadounidense cable',
-      'dólar estadounidense',
-      'dólar estadounidense billete',
-      'dólar estadounidense cable',
-    ].includes(normalized)
+    normalized === 'ars' ||
+    normalized === 'peso argentina' ||
+    normalized === 'peso argentino' ||
+    normalized === 'pesos argentinos' ||
+    normalized === 'pesos argentino'
+  ) {
+    return 'ARS'
+  }
+
+  if (
+    normalized === 'usd' ||
+    normalized === 'usb' || // typo frecuente en CNV
+    normalized === 'u$s' ||
+    normalized === 'dolar estadounidense' ||
+    normalized === 'dolar estadounidense billete' ||
+    normalized === 'dolar estadounidense cable'
   ) {
     return 'USD'
   }
 
-  return currency?.toUpperCase() || 'ARS'
+  const upper = currency?.trim().toUpperCase()
+  if (upper === 'ARS' || upper === 'USD') return upper
+
+  return 'ARS'
 }
 
 export function formatCurrency(value: number | null | undefined, currency = 'ARS') {
   if (value == null || !Number.isFinite(value)) return '—'
   const safeCurrency = normalizeCurrencyCode(currency)
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: safeCurrency,
-    maximumFractionDigits: 0,
-  }).format(value)
+
+  try {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: safeCurrency,
+      maximumFractionDigits: 0,
+    }).format(value)
+  } catch {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      maximumFractionDigits: 0,
+    }).format(value)
+  }
 }
 
 export function formatCompactNumber(value: number | null | undefined) {

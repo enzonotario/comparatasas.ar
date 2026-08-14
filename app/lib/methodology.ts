@@ -70,11 +70,11 @@ export const methodologySections: MethodologySection[] = [
     title: 'FCI de mercado de dinero',
     category: 'fci',
     categoryLabel: 'Fondos comunes de inversión',
-    source: 'CAFCI',
+    source: 'CNV / Argentina Datos',
     blocks: [
       {
         type: 'p',
-        text: 'Es el método por defecto del sitio. Tomamos el rendimiento del último mes informado por CAFCI y lo convertimos a TNA y TEA.',
+        text: 'Es el método por defecto del sitio. Tomamos el rendimiento del último mes informado por la CNV (vía Argentina Datos) y lo convertimos a TNA y TEA.',
       },
       {
         type: 'formula',
@@ -99,11 +99,11 @@ export const methodologySections: MethodologySection[] = [
     title: 'FCI de renta fija y demás tipos (mixta, variable, retorno total)',
     category: 'fci',
     categoryLabel: 'Fondos comunes de inversión',
-    source: 'CAFCI',
+    source: 'CNV / Argentina Datos',
     blocks: [
       {
         type: 'p',
-        text: 'Usamos el rendimiento del último mes (unMes) publicado por CAFCI. La conversión a TNA y TEA es la misma que en mercado de dinero: el mes se toma como TNA directa (sin anualizar linealmente a 365 días).',
+        text: 'Usamos el rendimiento del último mes (unMes) publicado por la CNV (vía Argentina Datos). La conversión a TNA y TEA es la misma que en mercado de dinero: el mes se toma como TNA directa (sin anualizar linealmente a 365 días).',
       },
       {
         type: 'formula',
@@ -125,14 +125,14 @@ export const methodologySections: MethodologySection[] = [
   },
   {
     id: 'fci-series-vcp',
-    title: 'Método alternativo por series de VCP (CAFCI)',
+    title: 'Método alternativo por series de VCP',
     category: 'fci',
     categoryLabel: 'Fondos comunes de inversión',
-    source: 'CAFCI (series de VCP)',
+    source: 'CNV / Argentina Datos (series de VCP)',
     blocks: [
       {
         type: 'p',
-        text: 'Como método alternativo, comparamos el valor cuotaparte (VCP) más reciente con el de hace ~30 días (retrocediendo día a día si falta el dato exacto), usando las series históricas de CAFCI.',
+        text: 'Como método alternativo (rankings curados y algunos gráficos), comparamos el valor cuotaparte (VCP) más reciente con el de hace ~30 días (retrocediendo día a día si falta el dato exacto), usando las series históricas publicadas vía Argentina Datos.',
       },
       {
         type: 'formula',
@@ -152,7 +152,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'La tabla de /fondos y algunos gráficos pueden usar este método para mostrar rendimiento efectivo entre dos VCP consecutivos de la serie.',
+        text: 'La tabla de /fondos usa el catálogo CNV (TNA desde unMes); este método de series de VCP queda como alternativa para rankings y visualizaciones históricas.',
       },
     ],
   },

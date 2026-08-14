@@ -5,7 +5,24 @@ import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn } from '@nuxt/ui'
 import { ogUpdatedAtDate, top3Funds } from '~/utils/og-data'
 import { getFundDetailPath } from '~/lib/funds-detail'
-import { fetchFundsSeriesLatest } from '~/composables/useFunds'
+import {
+  formatCompactNumber,
+  formatCurrency,
+  formatDate,
+  formatDecimal,
+  metricTone,
+} from '~/lib/fci-fund-formatters'
+import {
+  getComparatasasReturnPercent,
+  getComparatasasTnaAndTea,
+} from '~/lib/finance/fci-comparatasas-returns'
+import { sanitizeAnnualizedReturnPercent } from '~/lib/finance/fci-history-returns'
+import { getFundTypeInfo, type FundType } from '~/lib/mappings/funds'
+import {
+  fetchFciFundsCatalog,
+  type FciFundDetail,
+  type FciFundsDetailsResponse,
+} from '~/composables/useFciFundDetails'
 
 definePageMeta({
   pageTitle: 'Fondos Comunes de Inversión (FCI)',
@@ -15,21 +32,105 @@ definePageMeta({
 
 const UButton = resolveComponent('UButton')
 
-interface FundSeriesRow {
+const CNV_CUOTAPARTES_URL =
+  'https://www.cnv.gov.ar/SitioWeb/FondosComunesInversion/CuotaPartes'
+
+interface FundCatalogRow {
   fondo: string
-  horizonte: string
-  fecha: string
-  vcp: number
-  ccp: number
-  patrimonio: number
-  displayName?: string
-  institution?: string
-  fechaAnterior?: string
-  vcpAnterior?: number
-  ccpAnterior?: number
-  patrimonioAnterior?: number
-  tipoFondo?: 'rentaFija' | 'mercadoDinero' | 'rentaMixta' | 'rentaVariable' | 'retornoTotal'
-  typeLabel?: string
+  tipoFondo?: FundType
+  typeLabel: string
+  tipoFilterKey?: string
+  tipoRenta: string | null
+  horizonte: string | null
+  administradora: string | null
+  depositaria: string | null
+  tna: number | null
+  tea: number | null
+  vcp: number | null
+  patrimonio: number | null
+  inversionMinima: number | null
+  monedaInversion: string | null
+  plazoLiquidacionDias: number | null
+  region: string | null
+  fecha: string | null
+}
+
+function hasComparatasasReturn(fund: FciFundDetail) {
+  const rendimientos = fund.rendimientos
+  if (!rendimientos) return false
+
+  if (fund.tipoRenta === 'Mercado de Dinero') {
+    return rendimientos.unMes != null || rendimientos.ultimos7Dias != null
+  }
+
+  return rendimientos.unMes != null
+}
+
+function mapCatalogToRows(response: FciFundsDetailsResponse): FundCatalogRow[] {
+  return (response.fondos ?? [])
+    .filter((fund) => Boolean(fund.nombre?.trim()))
+    .map((fund) => {
+      const typeInfo = getFundTypeInfo(fund.tipoRenta)
+      const typeLabel = typeInfo?.typeLabel ?? fund.tipoRenta ?? '—'
+      const tipoFilterKey = typeInfo?.type ?? fund.tipoRenta ?? undefined
+
+      let tna: number | null = null
+      let tea: number | null = null
+
+      if (hasComparatasasReturn(fund) && fund.rendimientos) {
+        const returnPercent = sanitizeAnnualizedReturnPercent(
+          getComparatasasReturnPercent(fund.rendimientos, fund.tipoRenta ?? ''),
+        )
+
+        if (returnPercent != null) {
+          const rates = getComparatasasTnaAndTea(returnPercent)
+          tna = rates.tna
+          tea = rates.tea
+        }
+      }
+
+      return {
+        fondo: fund.nombre,
+        tipoFondo: typeInfo?.type,
+        typeLabel,
+        tipoFilterKey,
+        tipoRenta: fund.tipoRenta,
+        horizonte: fund.horizonte,
+        administradora: fund.administradora,
+        depositaria: fund.depositaria,
+        tna,
+        tea,
+        vcp: fund.rendimientos?.valorCuotaparte ?? null,
+        patrimonio: fund.patrimonio,
+        inversionMinima: fund.inversionMinima,
+        monedaInversion: fund.monedaInversion,
+        plazoLiquidacionDias: fund.plazoLiquidacionDias,
+        region: fund.region,
+        fecha: fund.fecha,
+      }
+    })
+}
+
+function formatRatePercent(value: number | null | undefined) {
+  if (value == null || !Number.isFinite(value)) return null
+  return new Intl.NumberFormat('es-AR', {
+    style: 'percent',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
+function mutedDash() {
+  return h('span', { class: 'text-muted' }, '—')
+}
+
+function sortNullableNumber(
+  a: number | null | undefined,
+  b: number | null | undefined,
+) {
+  if (a == null || !Number.isFinite(a)) return 1
+  if (b == null || !Number.isFinite(b)) return -1
+  return a - b
 }
 
 // Create single useFunds instance for both OG and page data
@@ -39,9 +140,13 @@ const {
   data: allFunds,
   pending: loading,
   error,
-} = await useAsyncData('funds-series-latest', () => fetchFundsSeriesLatest(), {
-  default: () => [] as FundSeriesRow[],
-})
+} = await useAsyncData(
+  'fci-funds-catalog',
+  async () => mapCatalogToRows(await fetchFciFundsCatalog()),
+  {
+    default: () => [] as FundCatalogRow[],
+  },
+)
 
 const { data: ogItems } = await useAsyncData('og-fondos', async () => {
   await fetchPageFunds({ forceBySeries: true })
@@ -111,43 +216,6 @@ useHead({
   ],
 })
 
-// Función helper para calcular días entre fechas
-function daysBetween(a: string, b: string) {
-  const d1 = new Date(a)
-  const d2 = new Date(b)
-  return Math.abs(Math.round((+d1 - +d2) / (1000 * 60 * 60 * 24)))
-}
-
-function formatDateArUtc(dateInput: string) {
-  const date = new Date(`${dateInput}T00:00:00.000Z`)
-  return new Intl.DateTimeFormat('es-AR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(date)
-}
-
-// Función para calcular rendimiento efectivo (sin anualizar)
-function calculateRendimientoEfectivo(newerVCP: number, olderVCP: number): number | null {
-  if (olderVCP <= 0 || Number.isNaN(newerVCP) || Number.isNaN(olderVCP)) {
-    return null
-  }
-  const rendimiento = (newerVCP - olderVCP) / olderVCP
-  return rendimiento
-}
-
-// Función para calcular TNA (anualizado)
-function calculateTNA(newerVCP: number, olderVCP: number, daysBetween: number): number | null {
-  if (daysBetween <= 0 || olderVCP <= 0 || Number.isNaN(newerVCP) || Number.isNaN(olderVCP)) {
-    return null
-  }
-  const totalReturn = (newerVCP - olderVCP) / olderVCP
-  const dailyReturn = totalReturn / daysBetween
-  const tna = dailyReturn * 365
-  return tna
-}
-
 // Filtros
 const searchQuery = useRouteQuery('q', '')
 const debouncedSearchQuery = refDebounced(searchQuery, 300)
@@ -184,18 +252,18 @@ const pageSize = computed<number>({
   },
 })
 
-// Obtener tipos únicos para el filtro
 const tiposDisponibles = computed(() => {
-  const tipos = new Set<string>()
+  const map = new Map<string, string>()
   allFunds.value.forEach((fund) => {
-    if (fund.tipoFondo) {
-      tipos.add(fund.tipoFondo)
+    if (fund.tipoFilterKey) {
+      map.set(fund.tipoFilterKey, fund.typeLabel)
     }
   })
-  return Array.from(tipos).sort()
+  return Array.from(map.entries())
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'es'))
 })
 
-// Obtener horizontes únicos para el filtro
 const horizontesDisponibles = computed(() => {
   const horizontes = new Set<string>()
   allFunds.value.forEach((fund) => {
@@ -203,10 +271,9 @@ const horizontesDisponibles = computed(() => {
       horizontes.add(fund.horizonte)
     }
   })
-  return Array.from(horizontes).sort()
+  return Array.from(horizontes).sort((a, b) => a.localeCompare(b, 'es'))
 })
 
-// Items para el select de tipos
 const tipoItems = computed(() => {
   const items: Array<{ label: string; value: string | undefined }> = [
     {
@@ -214,23 +281,12 @@ const tipoItems = computed(() => {
       value: undefined,
     },
   ]
-  tiposDisponibles.value.forEach((tipo) => {
-    const tipoLabels: Record<string, string> = {
-      rentaFija: 'Renta Fija',
-      mercadoDinero: 'Mercado Dinero',
-      rentaMixta: 'Renta Mixta',
-      rentaVariable: 'Renta Variable',
-      retornoTotal: 'Retorno Total',
-    }
-    items.push({
-      label: tipoLabels[tipo] || tipo,
-      value: tipo,
-    })
+  tiposDisponibles.value.forEach(({ value, label }) => {
+    items.push({ label, value })
   })
   return items
 })
 
-// Items para el select de horizontes
 const horizonteItems = computed(() => {
   const items: Array<{ label: string; value: string | undefined }> = [
     {
@@ -247,34 +303,23 @@ const horizonteItems = computed(() => {
   return items
 })
 
-// Filtrar fondos
 const filteredFunds = computed(() => {
   let funds = [...allFunds.value]
 
-  // Filtrar valores NaN
-  funds = funds.filter((fund) => {
-    const vcp = Number.parseFloat(String(fund.vcp))
-    const ccp = Number.parseFloat(String(fund.ccp))
-    const patrimonio = Number.parseFloat(String(fund.patrimonio))
-    return !Number.isNaN(vcp) && !Number.isNaN(ccp) && !Number.isNaN(patrimonio)
-  })
-
-  // Filtro por búsqueda
   if (debouncedSearchQuery.value) {
     const query = String(debouncedSearchQuery.value).toLowerCase()
     funds = funds.filter((fund) => {
       const byFundName = fund.fondo.toLowerCase().includes(query)
-      const byDisplayName = (fund.displayName ?? '').toLowerCase().includes(query)
-      return byFundName || byDisplayName
+      const byAdministradora = (fund.administradora ?? '').toLowerCase().includes(query)
+      const byDepositaria = (fund.depositaria ?? '').toLowerCase().includes(query)
+      return byFundName || byAdministradora || byDepositaria
     })
   }
 
-  // Filtro por tipo
   if (selectedTipo.value) {
-    funds = funds.filter((fund) => fund.tipoFondo === selectedTipo.value)
+    funds = funds.filter((fund) => fund.tipoFilterKey === selectedTipo.value)
   }
 
-  // Filtro por horizonte
   if (selectedHorizonte.value) {
     funds = funds.filter((fund) => fund.horizonte === selectedHorizonte.value)
   }
@@ -325,7 +370,6 @@ const pageRange = computed(() => {
   return { from, to }
 })
 
-// Función helper para crear headers ordenables
 function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = 'left') {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
@@ -360,40 +404,18 @@ function handleFundRowSelect(row: any) {
   navigateTo(getFundDetailPath(fundName))
 }
 
-// Columnas de la tabla
-const columns: TableColumn<FundSeriesRow>[] = [
+const columns: TableColumn<FundCatalogRow>[] = [
   {
     accessorKey: 'fondo',
     header: getSortableHeader('Fondo'),
-    cell: ({ row }) => {
-      const displayName = row.original.displayName
-      const fundName = String(row.getValue('fondo') ?? '')
-
-      if (displayName && displayName !== fundName) {
-        return h('div', { class: 'space-y-0.5' }, [
-          h('div', { class: 'font-medium' }, fundName),
-          h('div', { class: 'text-xs text-muted' }, displayName),
-        ])
-      }
-
-      return h('div', { class: 'font-medium' }, fundName)
-    },
+    cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.fondo),
   },
   {
-    accessorKey: 'tipoFondo',
+    accessorKey: 'typeLabel',
     header: getSortableHeader('Tipo'),
     cell: ({ row }) => {
-      const tipoFondo = row.original.tipoFondo
-      const typeLabel = row.original.typeLabel
-      if (!tipoFondo) return h('span', { class: 'text-muted' }, '-')
-      const tipoLabels: Record<string, string> = {
-        rentaFija: 'Renta Fija',
-        mercadoDinero: 'Money Market',
-        rentaMixta: 'Renta Mixta',
-        rentaVariable: 'Renta Variable',
-        retornoTotal: 'Retorno Total',
-      }
-      const label = typeLabel || tipoLabels[tipoFondo] || tipoFondo
+      const label = row.original.typeLabel
+      if (!label || label === '—') return mutedDash()
       return h('div', { class: 'text-sm' }, label)
     },
   },
@@ -401,328 +423,130 @@ const columns: TableColumn<FundSeriesRow>[] = [
     accessorKey: 'horizonte',
     header: getSortableHeader('Horizonte'),
     cell: ({ row }) => {
-      const horizonte = row.getValue('horizonte') as string
-      return h('div', { class: 'text-sm' }, horizonte || '-')
+      const horizonte = row.original.horizonte
+      if (!horizonte) return mutedDash()
+      return h('div', { class: 'text-sm' }, horizonte)
+    },
+  },
+  {
+    accessorKey: 'tna',
+    header: getSortableHeader('TNA', 'right'),
+    cell: ({ row }) => {
+      const formatted = formatRatePercent(row.original.tna)
+      if (!formatted) return mutedDash()
+      return h(
+        'div',
+        { class: `text-right font-medium text-sm ${metricTone(row.original.tna)}` },
+        formatted,
+      )
+    },
+    sortingFn: (rowA, rowB) =>
+      sortNullableNumber(rowA.original.tna, rowB.original.tna),
+  },
+  {
+    accessorKey: 'tea',
+    header: getSortableHeader('TEA', 'right'),
+    cell: ({ row }) => {
+      const formatted = formatRatePercent(row.original.tea)
+      if (!formatted) return mutedDash()
+      return h(
+        'div',
+        { class: `text-right font-medium text-sm ${metricTone(row.original.tea)}` },
+        formatted,
+      )
+    },
+    sortingFn: (rowA, rowB) =>
+      sortNullableNumber(rowA.original.tea, rowB.original.tea),
+  },
+  {
+    accessorKey: 'vcp',
+    header: getSortableHeader('VCP', 'right'),
+    cell: ({ row }) => {
+      const formatted = formatDecimal(row.original.vcp)
+      if (formatted === '—') return mutedDash()
+      return h('div', { class: 'text-right font-mono text-sm' }, formatted)
+    },
+    sortingFn: (rowA, rowB) =>
+      sortNullableNumber(rowA.original.vcp, rowB.original.vcp),
+  },
+  {
+    accessorKey: 'patrimonio',
+    header: getSortableHeader('Patrimonio', 'right'),
+    cell: ({ row }) => {
+      const formatted = formatCompactNumber(row.original.patrimonio)
+      if (formatted === '—') return mutedDash()
+      return h('div', { class: 'text-right text-sm' }, formatted)
+    },
+    sortingFn: (rowA, rowB) =>
+      sortNullableNumber(rowA.original.patrimonio, rowB.original.patrimonio),
+  },
+  {
+    accessorKey: 'inversionMinima',
+    header: getSortableHeader('Inversión mínima', 'right'),
+    cell: ({ row }) => {
+      const formatted = formatCurrency(
+        row.original.inversionMinima,
+        row.original.monedaInversion ?? 'ARS',
+      )
+      if (formatted === '—') return mutedDash()
+      return h('div', { class: 'text-right text-sm' }, formatted)
+    },
+    sortingFn: (rowA, rowB) =>
+      sortNullableNumber(rowA.original.inversionMinima, rowB.original.inversionMinima),
+  },
+  {
+    accessorKey: 'plazoLiquidacionDias',
+    header: getSortableHeader('Plazo liquidación', 'center'),
+    cell: ({ row }) => {
+      const days = row.original.plazoLiquidacionDias
+      if (days == null || !Number.isFinite(days)) return mutedDash()
+      const label = days === 1 ? 'día' : 'días'
+      return h('div', { class: 'text-center text-sm' }, `${days} ${label}`)
+    },
+    sortingFn: (rowA, rowB) =>
+      sortNullableNumber(
+        rowA.original.plazoLiquidacionDias,
+        rowB.original.plazoLiquidacionDias,
+      ),
+  },
+  {
+    accessorKey: 'region',
+    header: getSortableHeader('Región'),
+    cell: ({ row }) => {
+      const value = row.original.region
+      if (!value) return mutedDash()
+      return h('div', { class: 'text-sm' }, value)
     },
   },
   {
     accessorKey: 'fecha',
-    header: getSortableHeader('Último Cierre'),
+    header: getSortableHeader('Fecha'),
     cell: ({ row }) => {
-      const fecha = row.getValue('fecha') as string
-      if (!fecha) return h('span', { class: 'text-muted' }, '-')
-      const formatted = formatDateArUtc(fecha)
+      const formatted = formatDate(row.original.fecha)
+      if (formatted === '—') return mutedDash()
       return h('div', { class: 'text-sm' }, formatted)
     },
   },
   {
-    accessorKey: 'fechaAnterior',
-    header: getSortableHeader('Cierre Base'),
+    accessorKey: 'administradora',
+    header: getSortableHeader('Administradora'),
     cell: ({ row }) => {
-      const fechaAnterior = row.original.fechaAnterior
-      if (!fechaAnterior) return h('span', { class: 'text-muted' }, '-')
-      const formatted = formatDateArUtc(fechaAnterior)
-      return h('div', { class: 'text-sm text-muted' }, formatted)
+      const value = row.original.administradora
+      if (!value) return mutedDash()
+      return h('div', { class: 'text-sm' }, value)
     },
   },
   {
-    id: 'dias',
-    accessorFn: (row: FundSeriesRow) => {
-      const fecha = row.fecha
-      const fechaAnterior = row.fechaAnterior
-      if (!fecha || !fechaAnterior) return null
-      const date1 = new Date(fecha)
-      const date2 = new Date(fechaAnterior)
-      const diffTime = Math.abs(date1.getTime() - date2.getTime())
-      return Math.round(diffTime / (1000 * 60 * 60 * 24))
-    },
-    header: getSortableHeader('Días', 'center'),
+    accessorKey: 'depositaria',
+    header: getSortableHeader('Depositaria'),
     cell: ({ row }) => {
-      const fecha = row.original.fecha
-      const fechaAnterior = row.original.fechaAnterior
-      if (!fecha || !fechaAnterior) return h('span', { class: 'text-muted' }, '-')
-      const date1 = new Date(fecha)
-      const date2 = new Date(fechaAnterior)
-      const diffTime = Math.abs(date1.getTime() - date2.getTime())
-      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24))
-      const label = diffDays === 1 ? 'día' : 'días'
-      return h('div', { class: 'text-center text-sm font-medium' }, `${diffDays} ${label}`)
-    },
-    sortingFn: (rowA: any, rowB: any) => {
-      const fechaA = rowA.original.fecha
-      const fechaAnteriorA = rowA.original.fechaAnterior
-      const fechaB = rowB.original.fecha
-      const fechaAnteriorB = rowB.original.fechaAnterior
-
-      if (!fechaA || !fechaAnteriorA) return 1
-      if (!fechaB || !fechaAnteriorB) return -1
-
-      const date1A = new Date(fechaA)
-      const date2A = new Date(fechaAnteriorA)
-      const diffTimeA = Math.abs(date1A.getTime() - date2A.getTime())
-      const diffDaysA = Math.round(diffTimeA / (1000 * 60 * 60 * 24))
-
-      const date1B = new Date(fechaB)
-      const date2B = new Date(fechaAnteriorB)
-      const diffTimeB = Math.abs(date1B.getTime() - date2B.getTime())
-      const diffDaysB = Math.round(diffTimeB / (1000 * 60 * 60 * 24))
-
-      return diffDaysA - diffDaysB
-    },
-  },
-  {
-    id: 'rendimientoEfectivo',
-    accessorFn: (row: FundSeriesRow) => {
-      const vcp = Number.parseFloat(String(row.vcp))
-      const vcpAnterior = row.vcpAnterior
-      if (vcpAnterior === undefined || Number.isNaN(vcp) || Number.isNaN(vcpAnterior)) {
-        return null
-      }
-      const rendimiento = calculateRendimientoEfectivo(vcp, vcpAnterior)
-      return rendimiento ?? null
-    },
-    header: getSortableHeader('Variación VCP', 'right'),
-    cell: ({ row }) => {
-      const vcp = Number.parseFloat(String(row.original.vcp))
-      const vcpAnterior = row.original.vcpAnterior
-
-      if (vcpAnterior === undefined || Number.isNaN(vcp) || Number.isNaN(vcpAnterior)) {
-        return h('span', { class: 'text-muted' }, '-')
-      }
-
-      const rendimiento = calculateRendimientoEfectivo(vcp, vcpAnterior)
-
-      if (rendimiento === null) {
-        return h('span', { class: 'text-muted' }, '-')
-      }
-
-      const formatted = new Intl.NumberFormat('es-AR', {
-        style: 'percent',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(rendimiento)
-
-      const colorClass =
-        rendimiento > 0
-          ? 'text-green-600 dark:text-green-400'
-          : rendimiento < 0
-            ? 'text-red-600 dark:text-red-400'
-            : ''
-
-      return h('div', { class: `text-right font-medium text-sm ${colorClass}` }, formatted)
-    },
-    sortingFn: (rowA: { original: FundSeriesRow }, rowB: { original: FundSeriesRow }) => {
-      const vcpA = Number.parseFloat(String(rowA.original.vcp))
-      const vcpAnteriorA = rowA.original.vcpAnterior
-      const vcpB = Number.parseFloat(String(rowB.original.vcp))
-      const vcpAnteriorB = rowB.original.vcpAnterior
-
-      if (vcpAnteriorA === undefined || Number.isNaN(vcpA) || Number.isNaN(vcpAnteriorA)) {
-        return 1
-      }
-      if (vcpAnteriorB === undefined || Number.isNaN(vcpB) || Number.isNaN(vcpAnteriorB)) {
-        return -1
-      }
-
-      const rendimientoA = calculateRendimientoEfectivo(vcpA, vcpAnteriorA)
-      const rendimientoB = calculateRendimientoEfectivo(vcpB, vcpAnteriorB)
-
-      if (rendimientoA === null) return 1
-      if (rendimientoB === null) return -1
-
-      return (rendimientoA || 0) - (rendimientoB || 0)
-    },
-  },
-  {
-    id: 'tna',
-    accessorFn: (row: FundSeriesRow) => {
-      const fecha = row.fecha
-      const fechaAnterior = row.fechaAnterior
-      const vcp = Number.parseFloat(String(row.vcp))
-      const vcpAnterior = row.vcpAnterior
-
-      if (
-        !fecha ||
-        !fechaAnterior ||
-        vcpAnterior === undefined ||
-        Number.isNaN(vcp) ||
-        Number.isNaN(vcpAnterior)
-      ) {
-        return null
-      }
-
-      const days = daysBetween(fecha, fechaAnterior)
-      const tna = calculateTNA(vcp, vcpAnterior, days)
-      return tna ?? null
-    },
-    header: getSortableHeader('TNA Estimada', 'right'),
-    cell: ({ row }) => {
-      const fecha = row.original.fecha
-      const fechaAnterior = row.original.fechaAnterior
-      const vcp = Number.parseFloat(String(row.original.vcp))
-      const vcpAnterior = row.original.vcpAnterior
-
-      if (
-        !fecha ||
-        !fechaAnterior ||
-        vcpAnterior === undefined ||
-        Number.isNaN(vcp) ||
-        Number.isNaN(vcpAnterior)
-      ) {
-        return h('span', { class: 'text-muted' }, '-')
-      }
-
-      const days = daysBetween(fecha, fechaAnterior)
-      const tna = calculateTNA(vcp, vcpAnterior, days)
-
-      if (tna === null) {
-        return h('span', { class: 'text-muted' }, '-')
-      }
-
-      const formatted = new Intl.NumberFormat('es-AR', {
-        style: 'percent',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(tna)
-
-      const colorClass =
-        tna > 0
-          ? 'text-green-600 dark:text-green-400'
-          : tna < 0
-            ? 'text-red-600 dark:text-red-400'
-            : ''
-
-      return h('div', { class: `text-right font-medium text-sm ${colorClass}` }, formatted)
-    },
-    sortingFn: (rowA: { original: FundSeriesRow }, rowB: { original: FundSeriesRow }) => {
-      const fechaA = rowA.original.fecha
-      const fechaAnteriorA = rowA.original.fechaAnterior
-      const vcpA = Number.parseFloat(String(rowA.original.vcp))
-      const vcpAnteriorA = rowA.original.vcpAnterior
-
-      const fechaB = rowB.original.fecha
-      const fechaAnteriorB = rowB.original.fechaAnterior
-      const vcpB = Number.parseFloat(String(rowB.original.vcp))
-      const vcpAnteriorB = rowB.original.vcpAnterior
-
-      if (
-        !fechaA ||
-        !fechaAnteriorA ||
-        vcpAnteriorA === undefined ||
-        Number.isNaN(vcpA) ||
-        Number.isNaN(vcpAnteriorA)
-      ) {
-        return 1
-      }
-      if (
-        !fechaB ||
-        !fechaAnteriorB ||
-        vcpAnteriorB === undefined ||
-        Number.isNaN(vcpB) ||
-        Number.isNaN(vcpAnteriorB)
-      ) {
-        return -1
-      }
-
-      const daysA = daysBetween(fechaA, fechaAnteriorA)
-      const tnaA = calculateTNA(vcpA, vcpAnteriorA, daysA)
-
-      const daysB = daysBetween(fechaB, fechaAnteriorB)
-      const tnaB = calculateTNA(vcpB, vcpAnteriorB, daysB)
-
-      if (tnaA === null) return 1
-      if (tnaB === null) return -1
-
-      return (tnaA || 0) - (tnaB || 0)
-    },
-  },
-  {
-    accessorKey: 'vcp',
-    header: getSortableHeader('VCP Último Cierre', 'right'),
-    cell: ({ row }) => {
-      const vcp = Number.parseFloat(row.getValue('vcp') as string)
-      if (Number.isNaN(vcp)) return h('span', { class: 'text-muted' }, '-')
-      const formatted = new Intl.NumberFormat('es-AR', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4,
-      }).format(vcp)
-      return h('div', { class: 'text-right font-mono text-sm' }, formatted)
-    },
-  },
-  {
-    accessorKey: 'vcpAnterior',
-    header: getSortableHeader('VCP Cierre Base', 'right'),
-    cell: ({ row }) => {
-      const vcpAnterior = row.original.vcpAnterior
-      if (vcpAnterior === undefined || Number.isNaN(vcpAnterior)) {
-        return h('span', { class: 'text-muted' }, '-')
-      }
-      const formatted = new Intl.NumberFormat('es-AR', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4,
-      }).format(vcpAnterior)
-      return h('div', { class: 'text-right font-mono text-sm text-muted' }, formatted)
-    },
-  },
-  {
-    accessorKey: 'ccp',
-    header: getSortableHeader('CCP Último Cierre', 'right'),
-    cell: ({ row }) => {
-      const ccp = Number.parseFloat(row.getValue('ccp') as string)
-      if (Number.isNaN(ccp)) return h('span', { class: 'text-muted' }, '-')
-      const formatted = new Intl.NumberFormat('es-AR', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4,
-      }).format(ccp)
-      return h('div', { class: 'text-right font-mono text-sm' }, formatted)
-    },
-  },
-  {
-    accessorKey: 'ccpAnterior',
-    header: getSortableHeader('CCP Cierre Base', 'right'),
-    cell: ({ row }) => {
-      const ccpAnterior = row.original.ccpAnterior
-      if (ccpAnterior === undefined || Number.isNaN(ccpAnterior)) {
-        return h('span', { class: 'text-muted' }, '-')
-      }
-      const formatted = new Intl.NumberFormat('es-AR', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4,
-      }).format(ccpAnterior)
-      return h('div', { class: 'text-right font-mono text-sm text-muted' }, formatted)
-    },
-  },
-  {
-    accessorKey: 'patrimonio',
-    header: getSortableHeader('Patrimonio Último Cierre', 'right'),
-    cell: ({ row }) => {
-      const patrimonio = row.getValue('patrimonio') as number
-      if (Number.isNaN(patrimonio)) return h('span', { class: 'text-muted' }, '-')
-      const formatted = new Intl.NumberFormat('es-AR', {
-        notation: 'compact',
-        maximumFractionDigits: 1,
-      }).format(patrimonio)
-      return h('div', { class: 'text-right text-sm' }, formatted)
-    },
-  },
-  {
-    accessorKey: 'patrimonioAnterior',
-    header: getSortableHeader('Patrimonio Cierre Base', 'right'),
-    cell: ({ row }) => {
-      const patrimonioAnterior = row.original.patrimonioAnterior
-      if (patrimonioAnterior === undefined || Number.isNaN(patrimonioAnterior)) {
-        return h('span', { class: 'text-muted' }, '-')
-      }
-      const formatted = new Intl.NumberFormat('es-AR', {
-        notation: 'compact',
-        maximumFractionDigits: 1,
-      }).format(patrimonioAnterior)
-      return h('div', { class: 'text-right text-sm text-muted' }, formatted)
+      const value = row.original.depositaria
+      if (!value) return mutedDash()
+      return h('div', { class: 'text-sm' }, value)
     },
   },
 ]
 
-// Estado de ordenamiento
 const sortQuery = useRouteQuery<string>('sort', '[{"id":"fondo","desc":false}]')
 
 type SortingState = Array<{ id: string; desc: boolean }>
@@ -764,14 +588,15 @@ watch(
         <p class="text-xs text-muted mt-1">
           Fuente de datos:
           <NuxtLink
-            to="https://www.cafci.org.ar/"
+            :to="CNV_CUOTAPARTES_URL"
             external
             target="_blank"
             rel="noopener noreferrer"
             class="text-primary-600 dark:text-primary-400 hover:underline"
           >
-            CAFCI - Cámara Argentina de Fondos Comunes de Inversión
+            CNV - Cuotapartes
           </NuxtLink>
+          (vía Argentina Datos)
         </p>
       </div>
 
@@ -780,7 +605,7 @@ watch(
         <UInput
           v-model="searchQuery"
           icon="i-lucide-search"
-          placeholder="Buscar por nombre de fondo..."
+          placeholder="Buscar por nombre, administradora o depositaria..."
           class="flex-1"
         />
 
@@ -849,39 +674,31 @@ watch(
       <div class="border border-default rounded-lg overflow-hidden">
         <div v-if="loading" class="overflow-hidden">
           <div
-            class="grid grid-cols-4 gap-3 border-b border-default bg-elevated/50 px-4 py-3 text-sm font-medium text-muted lg:grid-cols-6 xl:grid-cols-12"
+            class="grid grid-cols-4 gap-3 border-b border-default bg-elevated/50 px-4 py-3 text-sm font-medium text-muted lg:grid-cols-6 xl:grid-cols-8"
           >
             <span>Fondo</span>
             <span>Tipo</span>
-            <span>Horizonte</span>
-            <span>Último Cierre</span>
-            <span class="hidden xl:block">Cierre Base</span>
-            <span class="hidden xl:block text-center">Días</span>
-            <span class="text-right">Variación VCP</span>
-            <span class="hidden lg:block text-right">TNA Estimada</span>
-            <span class="hidden xl:block text-right">VCP Último Cierre</span>
-            <span class="hidden xl:block text-right">VCP Cierre Base</span>
-            <span class="hidden xl:block text-right">CCP Último Cierre</span>
-            <span class="hidden xl:block text-right">Patrimonio Último Cierre</span>
+            <span class="hidden lg:block">Horizonte</span>
+            <span class="text-right">TNA</span>
+            <span class="hidden lg:block text-right">TEA</span>
+            <span class="text-right">Patrimonio</span>
+            <span class="hidden xl:block">Fecha</span>
+            <span class="hidden xl:block">Administradora</span>
           </div>
 
           <div class="space-y-3 p-4">
             <div
               v-for="row in 12"
               :key="`row-${row}`"
-              class="grid grid-cols-4 gap-3 lg:grid-cols-6 xl:grid-cols-12"
+              class="grid grid-cols-4 gap-3 lg:grid-cols-6 xl:grid-cols-8"
             >
               <USkeleton class="h-10 w-full" />
               <USkeleton class="h-10 w-full" />
-              <USkeleton class="h-10 w-full" />
-              <USkeleton class="h-10 w-full" />
-              <USkeleton class="hidden h-10 w-full xl:block" />
+              <USkeleton class="hidden h-10 w-full lg:block" />
               <USkeleton class="hidden h-10 w-full xl:block" />
               <USkeleton class="h-10 w-full" />
               <USkeleton class="hidden h-10 w-full lg:block" />
-              <USkeleton class="hidden h-10 w-full xl:block" />
-              <USkeleton class="hidden h-10 w-full xl:block" />
-              <USkeleton class="hidden h-10 w-full xl:block" />
+              <USkeleton class="h-10 w-full" />
               <USkeleton class="hidden h-10 w-full xl:block" />
             </div>
           </div>
@@ -904,7 +721,7 @@ watch(
               <p class="text-muted">
                 {{
                   searchQuery
-                    ? 'Intenta ajustar la búsqueda por nombre'
+                    ? 'Intenta ajustar la búsqueda por nombre, administradora o depositaria'
                     : 'No hay fondos disponibles en este momento'
                 }}
               </p>
@@ -936,16 +753,16 @@ watch(
         <p>
           Los datos provienen de la
           <NuxtLink
-            to="https://www.cafci.org.ar/"
+            :to="CNV_CUOTAPARTES_URL"
             external
             target="_blank"
             rel="noopener noreferrer"
             class="text-primary-600 dark:text-primary-400 hover:underline"
           >
-            Cámara Argentina de Fondos Comunes de Inversión (CAFCI)
+            Comisión Nacional de Valores (CNV) — Cuotapartes
           </NuxtLink>
-          . La información puede estar desactualizada y no garantizamos que estos sean los últimos
-          rendimientos vigentes.
+          , publicados vía Argentina Datos. La información puede estar desactualizada y no
+          garantizamos que estos sean los últimos rendimientos vigentes.
         </p>
       </div>
     </div>
