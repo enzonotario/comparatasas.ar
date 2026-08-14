@@ -181,6 +181,12 @@ export const institutions: Array<{
     url: 'https://www.bezzapay.com.ar/smartpos?ref=comparatasas',
   },
   {
+    names: ['Sipago', 'SIPAGO', 'sipago'],
+    logo: 'https://api.argentinadatos.com/static/logos/sipago.svg',
+    shortName: 'Sipago',
+    url: 'https://www.sipago.coop/comisiones?ref=comparatasas',
+  },
+  {
     names: ['Personal Pay'],
     logo: 'https://api.argentinadatos.com/static/logos/personal-pay.png',
     shortName: 'Personal Pay',

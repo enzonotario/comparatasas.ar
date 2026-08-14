@@ -12,7 +12,7 @@ import type { ComisionCobroSimulada } from '~/composables/useComisionesCobroSimu
 definePageMeta({
   pageTitle: 'Comisiones de cobro',
   pageDescription:
-    'Compará aranceles (MDR) de Getnet, Mercado Pago, Ualá Bis, Payway, Banco Provincia, Fiserv, Nave, Openpay, Viumi, +Pagos Nación, Naranja X y Bezza Pay por canal, medio de pago y acreditación.',
+    'Compará aranceles (MDR) de Getnet, Mercado Pago, Ualá Bis, Payway, Banco Provincia, Fiserv, Nave, Openpay, Viumi, +Pagos Nación, Naranja X, Bezza Pay y Sipago por canal, medio de pago y acreditación.',
 })
 
 const UBadge = resolveComponent('UBadge')
@@ -335,7 +335,7 @@ defineOgImage('ComparaTasas.takumi', {
 useSeoMeta({
   title: 'Comisiones de cobro',
   description:
-    'Compará aranceles de cobro (POS, QR, link y checkout) de Getnet, Mercado Pago, Ualá Bis, Payway, Banco Provincia, Fiserv, Nave, Openpay, Viumi, +Pagos Nación, Naranja X y Bezza Pay.',
+    'Compará aranceles de cobro (POS, QR, link y checkout) de Getnet, Mercado Pago, Ualá Bis, Payway, Banco Provincia, Fiserv, Nave, Openpay, Viumi, +Pagos Nación, Naranja X, Bezza Pay y Sipago.',
   ogTitle: 'Comisiones de cobro - Compara Tasas',
   ogDescription:
     'Ranking de comisiones de cobro por canal, medio de pago y plazo de acreditación.',
