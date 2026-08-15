@@ -1,21 +1,40 @@
 [
   {
+    "date": "20260815",
+    "categories": {
+      "Página Amiga": 25,
+      "Billetera": 10,
+      "Plazo Fijo": 11,
+      "Cuenta Remunerada": 13,
+      "Otro": 28,
+      "Billetera USD": 5,
+      "Cuenta Remunerada USD": 1,
+      "Frascos": 2,
+      "PF UVA precancelable": 1,
+      "General": 7,
+      "Criptomonedas": 5,
+      "plazo fijo tradicional": 4,
+      "wARS": 1
+    },
+    "total": 113
+  },
+  {
     "date": "20260814",
     "categories": {
-      "Página Amiga": 15,
-      "Billetera": 11,
-      "Plazo Fijo": 15,
-      "Cuenta Remunerada": 14,
-      "Otro": 36,
-      "Billetera USD": 10,
-      "Frascos": 8,
+      "Página Amiga": 39,
+      "Billetera": 32,
+      "Plazo Fijo": 38,
+      "Cuenta Remunerada": 37,
+      "Otro": 98,
+      "Billetera USD": 14,
+      "Frascos": 10,
       "PF UVA pago periódico": 1,
-      "General": 5,
-      "Criptomonedas": 5,
-      "plazo fijo tradicional": 13,
-      "wARS": 2
+      "General": 14,
+      "Criptomonedas": 6,
+      "plazo fijo tradicional": 20,
+      "wARS": 5
     },
-    "total": 135
+    "total": 314
   },
   {
     "date": "20260813",
@@ -60,33 +79,13 @@
   {
     "date": "20260811",
     "categories": {
-      "Página Amiga": 48,
-      "Billetera": 36,
-      "Cuenta Remunerada": 98,
-      "Otro": 105,
+      "Página Amiga": 38,
+      "Billetera": 35,
+      "Cuenta Remunerada": 79,
+      "Otro": 93,
       "Money Market": 6,
-      "Plazo Fijo": 61,
-      "Billetera USD": 20,
-      "Cuenta Remunerada USD": 1,
-      "Frascos": 14,
-      "PF UVA pago periódico": 4,
-      "General": 29,
-      "Criptomonedas": 17,
-      "plazo fijo tradicional": 26,
-      "wARS": 10
+      "Plazo Fijo": 29
     },
-    "total": 475
-  },
-  {
-    "date": "20260810",
-    "categories": {
-      "Otro": 42,
-      "Billetera": 26,
-      "Money Market": 7,
-      "Página Amiga": 48,
-      "Cuenta Remunerada": 39,
-      "Plazo Fijo": 25
-    },
-    "total": 187
+    "total": 280
   }
 ]
