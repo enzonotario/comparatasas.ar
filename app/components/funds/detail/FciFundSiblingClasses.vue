@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getFundDetailPath } from '~/lib/funds-detail'
+import { getFundDetailTo } from '~/lib/funds-detail'
 import { formatCompactNumber, formatCurrency, metricTone } from '~/lib/fci-fund-formatters'
 import { compareClassLabels } from '~/lib/fci-fund-class'
 import type { FundCatalogGroupRow } from '~/lib/fci-fund-groups'
@@ -15,8 +15,14 @@ const props = defineProps<{
   patrimonioTotal: number | null
 }>()
 
+const route = useRoute()
 const sortKey = ref<SortKey>('clase')
 const sortDir = ref<SortDir>('asc')
+
+function siblingDetailTo(fondo: string) {
+  const tab = typeof route.query.tab === 'string' ? route.query.tab : undefined
+  return getFundDetailTo(fondo, { tab })
+}
 
 function formatRate(value: number | null | undefined) {
   if (value == null || !Number.isFinite(value)) return null
@@ -163,7 +169,7 @@ const sortedSiblings = computed(() => {
         size="sm"
         color="neutral"
         :variant="row.fondo === currentFondo ? 'solid' : 'outline'"
-        :to="row.fondo === currentFondo ? undefined : getFundDetailPath(row.fondo)"
+        :to="row.fondo === currentFondo ? undefined : siblingDetailTo(row.fondo)"
         :label="row.classLabel || row.fondo"
       />
     </div>
@@ -244,7 +250,7 @@ const sortedSiblings = computed(() => {
               <div class="flex items-center gap-2 min-w-0">
                 <NuxtLink
                   v-if="row.fondo !== currentFondo"
-                  :to="getFundDetailPath(row.fondo)"
+                  :to="siblingDetailTo(row.fondo)"
                   class="font-medium text-neutral truncate hover:underline"
                 >
                   {{ row.classLabel || row.fondo }}

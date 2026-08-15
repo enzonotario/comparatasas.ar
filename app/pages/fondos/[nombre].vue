@@ -12,7 +12,7 @@ import {
 } from '~/lib/fci-fund-formatters'
 import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
 import { parseFundClassName } from '~/lib/fci-fund-class'
-import { getFundDetailPath } from '~/lib/funds-detail'
+import { getFundDetailTo, type FundDetailTab } from '~/lib/funds-detail'
 import { getInstitutionUrl } from '~/lib/mappings/institutions'
 import { getFundMappingBySlug, getFundTypeInfo } from '~/lib/mappings/funds'
 
@@ -62,7 +62,13 @@ function goBack() {
   router.push('/fondos')
 }
 
-const selectedDetailTab = ref('resumen')
+const detailTabQuery = useRouteQuery<FundDetailTab | undefined>('tab', undefined)
+const selectedDetailTab = computed({
+  get: (): FundDetailTab => (detailTabQuery.value === 'historico' ? 'historico' : 'resumen'),
+  set: (value: string) => {
+    detailTabQuery.value = value === 'historico' ? 'historico' : undefined
+  },
+})
 
 const detailTabs: TabsItem[] = [
   {
@@ -108,7 +114,7 @@ const classSwitcherItems = computed(() =>
   siblingInfo.value.siblings.map((row) => ({
     label: row.classLabel || row.fondo,
     value: row.fondo,
-    to: getFundDetailPath(row.fondo),
+    to: getFundDetailTo(row.fondo, { tab: selectedDetailTab.value }),
     active: row.fondo === fundDetail.value?.nombre,
   })),
 )
