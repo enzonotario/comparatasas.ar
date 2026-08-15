@@ -2,7 +2,7 @@
 import { h, resolveComponent } from 'vue'
 import { getPaginationRowModel } from '@tanstack/vue-table'
 import { useRouteQuery } from '@vueuse/router'
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn, TabsItem } from '@nuxt/ui'
 import { ogUpdatedAtDate, top3Funds } from '~/utils/og-data'
 import { getFundDetailPath } from '~/lib/funds-detail'
 import {
@@ -13,103 +13,57 @@ import {
   metricTone,
 } from '~/lib/fci-fund-formatters'
 import {
-  getComparatasasReturnPercent,
-  getComparatasasTnaAndTea,
-} from '~/lib/finance/fci-comparatasas-returns'
-import { sanitizeAnnualizedReturnPercent } from '~/lib/finance/fci-history-returns'
-import { getFundTypeInfo, type FundType } from '~/lib/mappings/funds'
+  groupFundCatalogRows,
+  toFlatFundCatalogRows,
+  type FundCatalogGroupRow,
+} from '~/lib/fci-fund-groups'
 import {
-  fetchFciFundsCatalog,
-  type FciFundDetail,
-  type FciFundsDetailsResponse,
-} from '~/composables/useFciFundDetails'
+  summarizeFundsByEntity,
+  isFundEntitySummary,
+  type CatalogVista,
+  type FundEntitySummary,
+} from '~/lib/fci-fund-entity-views'
 
 definePageMeta({
+  layout: 'fondos',
   pageTitle: 'Fondos Comunes de Inversión (FCI)',
   pageDescription:
     'Consultá y compará todos los FCI disponibles en Argentina. Información actualizada diariamente con datos de rendimiento y patrimonio.',
 })
 
 const UButton = resolveComponent('UButton')
+const UBadge = resolveComponent('UBadge')
+const table = useTemplateRef<{ tableApi?: any }>('table')
 
-const CNV_CUOTAPARTES_URL =
-  'https://www.cnv.gov.ar/SitioWeb/FondosComunesInversion/CuotaPartes'
+const groupByClassQuery = useRouteQuery<'1' | '0'>('agrupar', '1')
+const groupByClass = computed({
+  get: () => groupByClassQuery.value !== '0',
+  set: (value: boolean) => {
+    groupByClassQuery.value = value ? '1' : '0'
+  },
+})
 
-interface FundCatalogRow {
-  fondo: string
-  tipoFondo?: FundType
-  typeLabel: string
-  tipoFilterKey?: string
-  tipoRenta: string | null
-  horizonte: string | null
-  administradora: string | null
-  depositaria: string | null
-  tna: number | null
-  tea: number | null
-  vcp: number | null
-  patrimonio: number | null
-  inversionMinima: number | null
-  monedaInversion: string | null
-  plazoLiquidacionDias: number | null
-  region: string | null
-  fecha: string | null
-}
+const catalogVistaQuery = useRouteQuery<CatalogVista>('vista', 'fondos')
+const catalogVista = computed({
+  get: () => {
+    const value = catalogVistaQuery.value
+    if (value === 'administradoras' || value === 'depositarias') return value
+    return 'fondos'
+  },
+  set: (value: CatalogVista) => {
+    catalogVistaQuery.value = value === 'fondos' ? 'fondos' : value
+  },
+})
 
-function hasComparatasasReturn(fund: FciFundDetail) {
-  const rendimientos = fund.rendimientos
-  if (!rendimientos) return false
+const vistaTabs = computed<TabsItem[]>(() => [
+  { label: 'Fondos', value: 'fondos', icon: 'i-lucide-layout-list' },
+  { label: 'Administradoras', value: 'administradoras', icon: 'i-lucide-briefcase' },
+  { label: 'Depositarias', value: 'depositarias', icon: 'i-lucide-landmark' },
+])
 
-  if (fund.tipoRenta === 'Mercado de Dinero') {
-    return rendimientos.unMes != null || rendimientos.ultimos7Dias != null
-  }
+const isFondosVista = computed(() => catalogVista.value === 'fondos')
 
-  return rendimientos.unMes != null
-}
-
-function mapCatalogToRows(response: FciFundsDetailsResponse): FundCatalogRow[] {
-  return (response.fondos ?? [])
-    .filter((fund) => Boolean(fund.nombre?.trim()))
-    .map((fund) => {
-      const typeInfo = getFundTypeInfo(fund.tipoRenta)
-      const typeLabel = typeInfo?.typeLabel ?? fund.tipoRenta ?? '—'
-      const tipoFilterKey = typeInfo?.type ?? fund.tipoRenta ?? undefined
-
-      let tna: number | null = null
-      let tea: number | null = null
-
-      if (hasComparatasasReturn(fund) && fund.rendimientos) {
-        const returnPercent = sanitizeAnnualizedReturnPercent(
-          getComparatasasReturnPercent(fund.rendimientos, fund.tipoRenta ?? ''),
-        )
-
-        if (returnPercent != null) {
-          const rates = getComparatasasTnaAndTea(returnPercent)
-          tna = rates.tna
-          tea = rates.tea
-        }
-      }
-
-      return {
-        fondo: fund.nombre,
-        tipoFondo: typeInfo?.type,
-        typeLabel,
-        tipoFilterKey,
-        tipoRenta: fund.tipoRenta,
-        horizonte: fund.horizonte,
-        administradora: fund.administradora,
-        depositaria: fund.depositaria,
-        tna,
-        tea,
-        vcp: fund.rendimientos?.valorCuotaparte ?? null,
-        patrimonio: fund.patrimonio,
-        inversionMinima: fund.inversionMinima,
-        monedaInversion: fund.monedaInversion,
-        plazoLiquidacionDias: fund.plazoLiquidacionDias,
-        region: fund.region,
-        fecha: fund.fecha,
-      }
-    })
-}
+const expanded = ref<Record<string, boolean>>({})
 
 function formatRatePercent(value: number | null | undefined) {
   if (value == null || !Number.isFinite(value)) return null
@@ -124,29 +78,97 @@ function mutedDash() {
   return h('span', { class: 'text-muted' }, '—')
 }
 
-function sortNullableNumber(
-  a: number | null | undefined,
-  b: number | null | undefined,
-) {
-  if (a == null || !Number.isFinite(a)) return 1
-  if (b == null || !Number.isFinite(b)) return -1
-  return a - b
+function finiteOrUndefined(value: number | null | undefined) {
+  return value == null || !Number.isFinite(value) ? undefined : value
 }
 
-// Create single useFunds instance for both OG and page data
 const { allFundsCache, data: fundsData, fetch: fetchPageFunds } = useFunds()
-
+const { allFunds, loading, error } = useFondosCatalog()
 const {
-  data: allFunds,
-  pending: loading,
-  error,
-} = await useAsyncData(
-  'fci-funds-catalog',
-  async () => mapCatalogToRows(await fetchFciFundsCatalog()),
-  {
-    default: () => [] as FundCatalogRow[],
-  },
+  searchQuery,
+  selectedTipo,
+  selectedHorizonte,
+  selectedMoneda,
+  selectedRegion,
+  selectedAdministradora,
+  selectedDepositaria,
+  selectedPlazo,
+  tipoItems,
+  horizonteItems,
+  monedaItems,
+  regionItems,
+  administradoraItems,
+  depositariaItems,
+  plazoItems,
+  hasActiveFilters,
+  activeFilterCount,
+  clearFilters,
+  filteredFunds,
+  pageSizeOptions,
+  currentPage,
+  pageSize,
+  pagination,
+  stats,
+} = useFondosFilters(allFunds)
+
+const filtersOpen = ref(false)
+
+const tableData = computed(() => {
+  if (groupByClass.value) {
+    return groupFundCatalogRows(filteredFunds.value)
+  }
+  return toFlatFundCatalogRows(filteredFunds.value)
+})
+
+const entityTableData = computed(() => {
+  if (catalogVista.value === 'administradoras') {
+    return summarizeFundsByEntity(filteredFunds.value, 'administradora')
+  }
+  if (catalogVista.value === 'depositarias') {
+    return summarizeFundsByEntity(filteredFunds.value, 'depositaria')
+  }
+  return [] as FundEntitySummary[]
+})
+
+const activeTableData = computed(() =>
+  isFondosVista.value ? tableData.value : entityTableData.value,
 )
+
+const groupedFundsCount = computed(() => tableData.value.length)
+const multiClassGroupsCount = computed(() => tableData.value.filter((row) => row.isGroup).length)
+
+const tableTotalPages = computed(() =>
+  Math.max(1, Math.ceil(activeTableData.value.length / pageSize.value)),
+)
+
+const tablePageRange = computed(() => {
+  if (!activeTableData.value.length) {
+    return { from: 0, to: 0 }
+  }
+
+  const from = (currentPage.value - 1) * pageSize.value + 1
+  const to = Math.min(currentPage.value * pageSize.value, activeTableData.value.length)
+
+  return { from, to }
+})
+
+watch(groupByClass, () => {
+  expanded.value = {}
+  currentPage.value = 1
+})
+
+watch(catalogVista, (vista) => {
+  expanded.value = {}
+  currentPage.value = 1
+  sorting.value =
+    vista === 'fondos' ? [{ id: 'displayName', desc: false }] : [{ id: 'patrimonio', desc: true }]
+})
+
+watch(tableTotalPages, (value) => {
+  if (currentPage.value > value) {
+    currentPage.value = value
+  }
+})
 
 const { data: ogItems } = await useAsyncData('og-fondos', async () => {
   await fetchPageFunds({ forceBySeries: true })
@@ -216,160 +238,6 @@ useHead({
   ],
 })
 
-// Filtros
-const searchQuery = useRouteQuery('q', '')
-const debouncedSearchQuery = refDebounced(searchQuery, 300)
-const selectedTipo = useRouteQuery<string | undefined>('tipo', undefined)
-const selectedHorizonte = useRouteQuery<string | undefined>('horizonte', undefined)
-const pageQuery = useRouteQuery('page', '1')
-const pageSizeQuery = useRouteQuery('pageSize', '100')
-
-const pageSizeOptions = [
-  { label: '50 por página', value: 50 },
-  { label: '100 por página', value: 100 },
-  { label: '200 por página', value: 200 },
-]
-
-const currentPage = computed<number>({
-  get: () => {
-    const parsed = Number.parseInt(pageQuery.value, 10)
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
-  },
-  set: (value) => {
-    pageQuery.value = String(Math.max(1, Math.round(value)))
-  },
-})
-
-const pageSize = computed<number>({
-  get: () => {
-    const parsed = Number.parseInt(pageSizeQuery.value, 10)
-    const allowed = pageSizeOptions.map((option) => option.value)
-    return allowed.includes(parsed) ? parsed : 100
-  },
-  set: (value) => {
-    const allowed = pageSizeOptions.map((option) => option.value)
-    pageSizeQuery.value = String(allowed.includes(value) ? value : 100)
-  },
-})
-
-const tiposDisponibles = computed(() => {
-  const map = new Map<string, string>()
-  allFunds.value.forEach((fund) => {
-    if (fund.tipoFilterKey) {
-      map.set(fund.tipoFilterKey, fund.typeLabel)
-    }
-  })
-  return Array.from(map.entries())
-    .map(([value, label]) => ({ value, label }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'es'))
-})
-
-const horizontesDisponibles = computed(() => {
-  const horizontes = new Set<string>()
-  allFunds.value.forEach((fund) => {
-    if (fund.horizonte) {
-      horizontes.add(fund.horizonte)
-    }
-  })
-  return Array.from(horizontes).sort((a, b) => a.localeCompare(b, 'es'))
-})
-
-const tipoItems = computed(() => {
-  const items: Array<{ label: string; value: string | undefined }> = [
-    {
-      label: 'Todos los tipos',
-      value: undefined,
-    },
-  ]
-  tiposDisponibles.value.forEach(({ value, label }) => {
-    items.push({ label, value })
-  })
-  return items
-})
-
-const horizonteItems = computed(() => {
-  const items: Array<{ label: string; value: string | undefined }> = [
-    {
-      label: 'Todos los horizontes',
-      value: undefined,
-    },
-  ]
-  horizontesDisponibles.value.forEach((horizonte) => {
-    items.push({
-      label: horizonte,
-      value: horizonte,
-    })
-  })
-  return items
-})
-
-const filteredFunds = computed(() => {
-  let funds = [...allFunds.value]
-
-  if (debouncedSearchQuery.value) {
-    const query = String(debouncedSearchQuery.value).toLowerCase()
-    funds = funds.filter((fund) => {
-      const byFundName = fund.fondo.toLowerCase().includes(query)
-      const byAdministradora = (fund.administradora ?? '').toLowerCase().includes(query)
-      const byDepositaria = (fund.depositaria ?? '').toLowerCase().includes(query)
-      return byFundName || byAdministradora || byDepositaria
-    })
-  }
-
-  if (selectedTipo.value) {
-    funds = funds.filter((fund) => fund.tipoFilterKey === selectedTipo.value)
-  }
-
-  if (selectedHorizonte.value) {
-    funds = funds.filter((fund) => fund.horizonte === selectedHorizonte.value)
-  }
-
-  return funds
-})
-
-const totalPages = computed(() =>
-  Math.max(1, Math.ceil(filteredFunds.value.length / pageSize.value)),
-)
-
-watch([debouncedSearchQuery, selectedTipo, selectedHorizonte], () => {
-  currentPage.value = 1
-})
-
-watch(pageSize, () => {
-  currentPage.value = 1
-})
-
-watch(totalPages, (value) => {
-  if (currentPage.value > value) {
-    currentPage.value = value
-  }
-})
-
-const pagination = computed({
-  get: () => ({
-    pageIndex: currentPage.value - 1,
-    pageSize: pageSize.value,
-  }),
-  set: (value: { pageIndex?: number; pageSize?: number }) => {
-    currentPage.value = (value.pageIndex ?? 0) + 1
-
-    if (typeof value.pageSize === 'number') {
-      pageSize.value = value.pageSize
-    }
-  },
-})
-
-const pageRange = computed(() => {
-  if (!filteredFunds.value.length) {
-    return { from: 0, to: 0 }
-  }
-
-  const from = (currentPage.value - 1) * pageSize.value + 1
-  const to = Math.min(currentPage.value * pageSize.value, filteredFunds.value.length)
-
-  return { from, to }
-})
-
 function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = 'left') {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
@@ -377,13 +245,18 @@ function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = '
     const button = h(UButton, {
       color: 'neutral',
       variant: 'ghost',
+      size: 'xs',
       label,
       icon: isSorted
         ? isSorted === 'asc'
           ? 'i-lucide-arrow-up-narrow-wide'
           : 'i-lucide-arrow-down-wide-narrow'
         : 'i-lucide-arrow-up-down',
-      class: '-mx-2.5',
+      class: ['-mx-1.5', isSorted ? 'text-highlighted' : 'text-muted hover:text-highlighted'],
+      ui: {
+        label: 'font-medium',
+        leadingIcon: 'size-3.5 opacity-70',
+      },
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
 
@@ -398,17 +271,232 @@ function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = '
 }
 
 function handleFundRowSelect(row: any) {
-  const fundName = row?.original?.fondo
+  const original = row?.original as FundCatalogGroupRow | undefined
+  const fundName = original?.primaryFondo || original?.fondo
   if (!fundName) return
-
   navigateTo(getFundDetailPath(fundName))
 }
 
-const columns: TableColumn<FundCatalogRow>[] = [
+function handleEntityRowSelect(row: any) {
+  const original = row?.original
+  if (!original) return
+
+  if (isFundEntitySummary(original)) {
+    if (row.getCanExpand?.()) row.toggleExpanded()
+    return
+  }
+
+  handleFundRowSelect(row)
+}
+
+function entityDepthClass(depth: number) {
+  if (depth <= 0) return ''
+  if (depth === 1) return 'pl-4'
+  return 'pl-8'
+}
+
+const entityColumns: TableColumn<FundEntitySummary>[] = [
   {
-    accessorKey: 'fondo',
+    id: 'expand',
+    enableHiding: false,
+    enableSorting: false,
+    header: () => null,
+    cell: ({ row }) => {
+      if (!row.getCanExpand()) return null
+
+      return h(UButton, {
+        color: 'neutral',
+        variant: 'ghost',
+        size: 'xs',
+        square: true,
+        icon: row.getIsExpanded() ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right',
+        onClick: (event: Event) => {
+          event.stopPropagation()
+          row.toggleExpanded()
+        },
+      })
+    },
+  },
+  {
+    id: 'name',
+    accessorFn: (row) => (isFundEntitySummary(row) ? row.name : row.displayName || row.fondo),
+    header: getSortableHeader('Nombre'),
+    cell: ({ row }) => {
+      const original = row.original as FundEntitySummary | FundCatalogGroupRow
+      const depthClass = entityDepthClass(row.depth)
+
+      if (isFundEntitySummary(original)) {
+        return h('div', { class: `min-w-0 ${depthClass}` }, [
+          h('div', { class: 'font-medium text-highlighted truncate' }, original.name),
+        ])
+      }
+
+      return h('div', { class: `flex items-center gap-2 min-w-0 ${depthClass}` }, [
+        h(
+          'div',
+          { class: 'font-medium text-highlighted truncate' },
+          original.displayName || original.fondo,
+        ),
+        original.isGroup
+          ? h(
+              UBadge,
+              { color: 'neutral', variant: 'subtle', size: 'sm' },
+              () => `${original.classCount} clases`,
+            )
+          : original.classLabel && row.depth === 1
+            ? h(
+                UBadge,
+                { color: 'neutral', variant: 'outline', size: 'sm' },
+                () => original.classLabel,
+              )
+            : null,
+      ])
+    },
+  },
+  {
+    id: 'fondos',
+    accessorFn: (row) => (isFundEntitySummary(row) ? row.fondos : undefined),
+    header: getSortableHeader('Fondos', 'right'),
+    cell: ({ row }) => {
+      const original = row.original as FundEntitySummary | FundCatalogGroupRow
+      if (!isFundEntitySummary(original)) return mutedDash()
+      return h('div', { class: 'text-right text-sm tabular-nums' }, String(original.fondos))
+    },
+    sortUndefined: 'last',
+    sortingFn: 'basic',
+  },
+  {
+    id: 'clases',
+    accessorFn: (row) => (isFundEntitySummary(row) ? row.clases : row.isGroup ? row.classCount : 1),
+    header: getSortableHeader('Clases', 'right'),
+    cell: ({ row }) => {
+      const original = row.original as FundEntitySummary | FundCatalogGroupRow
+      const value = isFundEntitySummary(original)
+        ? original.clases
+        : original.isGroup
+          ? original.classCount
+          : 1
+      return h('div', { class: 'text-right text-sm tabular-nums' }, String(value))
+    },
+  },
+  {
+    id: 'typeLabel',
+    accessorFn: (row) => (isFundEntitySummary(row) ? undefined : row.typeLabel),
+    header: getSortableHeader('Tipo'),
+    cell: ({ row }) => {
+      const original = row.original as FundEntitySummary | FundCatalogGroupRow
+      if (isFundEntitySummary(original)) {
+        return h('div', { class: 'text-sm text-muted' }, `${original.tipos} tipos`)
+      }
+      if (!original.typeLabel || original.typeLabel === '—') return mutedDash()
+      return h('div', { class: 'text-sm' }, original.typeLabel)
+    },
+    sortUndefined: 'last',
+    sortingFn: 'basic',
+  },
+  {
+    id: 'avgTna',
+    accessorFn: (row) => finiteOrUndefined(isFundEntitySummary(row) ? row.avgTna : row.tna),
+    header: getSortableHeader('TNA', 'right'),
+    cell: ({ row }) => {
+      const original = row.original as FundEntitySummary | FundCatalogGroupRow
+      const value = isFundEntitySummary(original) ? original.avgTna : original.tna
+      const formatted = formatRatePercent(value)
+      if (!formatted) return mutedDash()
+      return h('div', { class: `text-right font-medium text-sm ${metricTone(value)}` }, formatted)
+    },
+    sortUndefined: 'last',
+    sortingFn: 'basic',
+  },
+  {
+    id: 'patrimonio',
+    accessorFn: (row) =>
+      finiteOrUndefined(
+        isFundEntitySummary(row)
+          ? row.patrimonio
+          : row.isGroup
+            ? row.patrimonioTotal
+            : row.patrimonio,
+      ),
+    header: getSortableHeader('Patrimonio', 'right'),
+    cell: ({ row }) => {
+      const original = row.original as FundEntitySummary | FundCatalogGroupRow
+      const value = isFundEntitySummary(original)
+        ? original.patrimonio
+        : original.isGroup
+          ? original.patrimonioTotal
+          : original.patrimonio
+      const formatted = formatCompactNumber(value)
+      if (formatted === '—') return mutedDash()
+      return h(
+        'div',
+        {
+          class: `text-right text-sm ${isFundEntitySummary(original) || original.isGroup ? 'font-medium' : ''}`,
+        },
+        formatted,
+      )
+    },
+    sortUndefined: 'last',
+    sortingFn: 'basic',
+  },
+]
+
+const columns: TableColumn<FundCatalogGroupRow>[] = [
+  {
+    id: 'expand',
+    enableHiding: false,
+    enableSorting: false,
+    header: () => null,
+    cell: ({ row }) => {
+      if (!row.getCanExpand()) return null
+
+      return h(UButton, {
+        color: 'neutral',
+        variant: 'ghost',
+        size: 'xs',
+        square: true,
+        icon: row.getIsExpanded() ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right',
+        onClick: (event: Event) => {
+          event.stopPropagation()
+          row.toggleExpanded()
+        },
+      })
+    },
+  },
+  {
+    accessorKey: 'displayName',
     header: getSortableHeader('Fondo'),
-    cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.fondo),
+    cell: ({ row }) => {
+      const original = row.original
+      const depthClass = row.depth === 1 ? 'pl-4' : row.depth > 1 ? 'pl-8' : ''
+
+      return h('div', { class: `flex items-center gap-2 min-w-0 ${depthClass}` }, [
+        h(
+          'div',
+          { class: 'font-medium text-highlighted truncate' },
+          original.displayName || original.fondo,
+        ),
+        original.isGroup
+          ? h(
+              UBadge,
+              { color: 'neutral', variant: 'subtle', size: 'sm' },
+              () => `${original.classCount} clases`,
+            )
+          : original.classLabel && row.depth === 0
+            ? h(
+                UBadge,
+                { color: 'neutral', variant: 'outline', size: 'sm' },
+                () => original.classLabel,
+              )
+            : null,
+      ])
+    },
+    meta: {
+      class: {
+        th: 'whitespace-nowrap',
+        td: 'max-w-xs whitespace-nowrap',
+      },
+    },
   },
   {
     accessorKey: 'typeLabel',
@@ -429,7 +517,26 @@ const columns: TableColumn<FundCatalogRow>[] = [
     },
   },
   {
-    accessorKey: 'tna',
+    accessorKey: 'administradora',
+    header: getSortableHeader('Administradora'),
+    cell: ({ row }) => {
+      const value = row.original.administradora
+      if (!value) return mutedDash()
+      return h('div', { class: 'text-sm truncate max-w-[10rem]', title: value }, value)
+    },
+  },
+  {
+    accessorKey: 'depositaria',
+    header: getSortableHeader('Depositaria'),
+    cell: ({ row }) => {
+      const value = row.original.depositaria
+      if (!value) return mutedDash()
+      return h('div', { class: 'text-sm truncate max-w-[10rem]', title: value }, value)
+    },
+  },
+  {
+    id: 'tna',
+    accessorFn: (row) => finiteOrUndefined(row.tna),
     header: getSortableHeader('TNA', 'right'),
     cell: ({ row }) => {
       const formatted = formatRatePercent(row.original.tna)
@@ -440,11 +547,12 @@ const columns: TableColumn<FundCatalogRow>[] = [
         formatted,
       )
     },
-    sortingFn: (rowA, rowB) =>
-      sortNullableNumber(rowA.original.tna, rowB.original.tna),
+    sortUndefined: 'last',
+    sortingFn: 'basic',
   },
   {
-    accessorKey: 'tea',
+    id: 'tea',
+    accessorFn: (row) => finiteOrUndefined(row.tea),
     header: getSortableHeader('TEA', 'right'),
     cell: ({ row }) => {
       const formatted = formatRatePercent(row.original.tea)
@@ -455,33 +563,48 @@ const columns: TableColumn<FundCatalogRow>[] = [
         formatted,
       )
     },
-    sortingFn: (rowA, rowB) =>
-      sortNullableNumber(rowA.original.tea, rowB.original.tea),
+    sortUndefined: 'last',
+    sortingFn: 'basic',
   },
   {
-    accessorKey: 'vcp',
+    id: 'vcp',
+    accessorFn: (row) => finiteOrUndefined(row.vcp),
     header: getSortableHeader('VCP', 'right'),
     cell: ({ row }) => {
       const formatted = formatDecimal(row.original.vcp)
       if (formatted === '—') return mutedDash()
       return h('div', { class: 'text-right font-mono text-sm' }, formatted)
     },
-    sortingFn: (rowA, rowB) =>
-      sortNullableNumber(rowA.original.vcp, rowB.original.vcp),
+    sortUndefined: 'last',
+    sortingFn: 'basic',
   },
   {
-    accessorKey: 'patrimonio',
+    id: 'patrimonio',
+    accessorFn: (row) => finiteOrUndefined(row.isGroup ? row.patrimonioTotal : row.patrimonio),
     header: getSortableHeader('Patrimonio', 'right'),
     cell: ({ row }) => {
-      const formatted = formatCompactNumber(row.original.patrimonio)
+      const value = row.original.isGroup ? row.original.patrimonioTotal : row.original.patrimonio
+      const formatted = formatCompactNumber(value)
       if (formatted === '—') return mutedDash()
-      return h('div', { class: 'text-right text-sm' }, formatted)
+      return h(
+        'div',
+        {
+          class: `text-right text-sm ${row.original.isGroup ? 'font-medium' : ''}`,
+        },
+        [
+          formatted,
+          row.original.isGroup
+            ? h('span', { class: 'block text-[10px] text-muted font-normal' }, 'suma clases')
+            : null,
+        ],
+      )
     },
-    sortingFn: (rowA, rowB) =>
-      sortNullableNumber(rowA.original.patrimonio, rowB.original.patrimonio),
+    sortUndefined: 'last',
+    sortingFn: 'basic',
   },
   {
-    accessorKey: 'inversionMinima',
+    id: 'inversionMinima',
+    accessorFn: (row) => finiteOrUndefined(row.inversionMinima),
     header: getSortableHeader('Inversión mínima', 'right'),
     cell: ({ row }) => {
       const formatted = formatCurrency(
@@ -491,11 +614,12 @@ const columns: TableColumn<FundCatalogRow>[] = [
       if (formatted === '—') return mutedDash()
       return h('div', { class: 'text-right text-sm' }, formatted)
     },
-    sortingFn: (rowA, rowB) =>
-      sortNullableNumber(rowA.original.inversionMinima, rowB.original.inversionMinima),
+    sortUndefined: 'last',
+    sortingFn: 'basic',
   },
   {
-    accessorKey: 'plazoLiquidacionDias',
+    id: 'plazoLiquidacionDias',
+    accessorFn: (row) => finiteOrUndefined(row.plazoLiquidacionDias),
     header: getSortableHeader('Plazo liquidación', 'center'),
     cell: ({ row }) => {
       const days = row.original.plazoLiquidacionDias
@@ -503,11 +627,8 @@ const columns: TableColumn<FundCatalogRow>[] = [
       const label = days === 1 ? 'día' : 'días'
       return h('div', { class: 'text-center text-sm' }, `${days} ${label}`)
     },
-    sortingFn: (rowA, rowB) =>
-      sortNullableNumber(
-        rowA.original.plazoLiquidacionDias,
-        rowB.original.plazoLiquidacionDias,
-      ),
+    sortUndefined: 'last',
+    sortingFn: 'basic',
   },
   {
     accessorKey: 'region',
@@ -527,27 +648,17 @@ const columns: TableColumn<FundCatalogRow>[] = [
       return h('div', { class: 'text-sm' }, formatted)
     },
   },
-  {
-    accessorKey: 'administradora',
-    header: getSortableHeader('Administradora'),
-    cell: ({ row }) => {
-      const value = row.original.administradora
-      if (!value) return mutedDash()
-      return h('div', { class: 'text-sm' }, value)
-    },
-  },
-  {
-    accessorKey: 'depositaria',
-    header: getSortableHeader('Depositaria'),
-    cell: ({ row }) => {
-      const value = row.original.depositaria
-      if (!value) return mutedDash()
-      return h('div', { class: 'text-sm' }, value)
-    },
-  },
 ]
 
-const sortQuery = useRouteQuery<string>('sort', '[{"id":"fondo","desc":false}]')
+const sortQuery = useRouteQuery<string>('sort', '[{"id":"displayName","desc":false}]')
+const columnVisibility = ref<Record<string, boolean>>({
+  expand: true,
+  administradora: true,
+  depositaria: true,
+  vcp: false,
+  fecha: false,
+  region: false,
+})
 
 type SortingState = Array<{ id: string; desc: boolean }>
 
@@ -556,7 +667,7 @@ function parseSorting(value: string): SortingState {
     const parsed = JSON.parse(value)
     return Array.isArray(parsed) ? parsed : []
   } catch {
-    return [{ id: 'fondo', desc: false }]
+    return [{ id: 'displayName', desc: false }]
   }
 }
 
@@ -579,242 +690,426 @@ watch(
   },
   { deep: true },
 )
+
+const columnLabelMap: Record<string, string> = {
+  displayName: 'Fondo',
+  typeLabel: 'Tipo',
+  horizonte: 'Horizonte',
+  tna: 'TNA',
+  tea: 'TEA',
+  vcp: 'VCP',
+  patrimonio: 'Patrimonio',
+  inversionMinima: 'Inversión mínima',
+  plazoLiquidacionDias: 'Plazo liquidación',
+  region: 'Región',
+  fecha: 'Fecha',
+  administradora: 'Administradora',
+  depositaria: 'Depositaria',
+}
+
+const displayMenuItems = computed(() => {
+  const api = table.value?.tableApi
+  if (!api) return []
+
+  return api
+    .getAllColumns()
+    .filter((column: any) => column.getCanHide())
+    .map((column: any) => ({
+      label: columnLabelMap[column.id] ?? column.id,
+      type: 'checkbox' as const,
+      checked: column.getIsVisible(),
+      onUpdateChecked(checked: boolean) {
+        column.toggleVisibility(!!checked)
+      },
+      onSelect(e?: Event) {
+        e?.preventDefault()
+      },
+    }))
+})
+
+const avgTnaLabel = computed(() => formatRatePercent(stats.value.avgTna) ?? '—')
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div class="space-y-3">
-      <div>
-        <p class="text-xs text-muted mt-1">
-          Fuente de datos:
-          <NuxtLink
-            :to="CNV_CUOTAPARTES_URL"
-            external
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-primary-600 dark:text-primary-400 hover:underline"
-          >
-            CNV - Cuotapartes
-          </NuxtLink>
-          (vía Argentina Datos)
-        </p>
-      </div>
+  <UDashboardPanel
+    id="fondos-catalog"
+    class="h-full min-h-0"
+    :ui="{
+      root: 'h-full min-h-0 !min-h-0',
+      body: 'overflow-hidden min-h-0',
+    }"
+  >
+    <template #header>
+      <UDashboardNavbar>
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
 
-      <!-- Filtros -->
-      <div class="flex flex-col sm:flex-row gap-4">
-        <UInput
-          v-model="searchQuery"
-          icon="i-lucide-search"
-          placeholder="Buscar por nombre, administradora o depositaria..."
-          class="flex-1"
-        />
+        <template #trailing>
+          <UBadge
+            v-if="activeFilterCount"
+            color="neutral"
+            variant="subtle"
+            :label="`${activeFilterCount} filtros`"
+          />
+        </template>
 
-        <USelect
-          v-model="selectedTipo"
-          :items="tipoItems"
-          placeholder="Filtrar por tipo"
-          value-key="value"
-          class="flex-1"
-        >
-          <template #item-label="{ item }">
-            {{ item.label }}
-          </template>
-        </USelect>
+        <template #right>
+          <UTabs
+            v-model="catalogVista"
+            :items="vistaTabs"
+            :content="false"
+            color="neutral"
+            size="xs"
+            variant="link"
+            class="w-auto"
+          />
+        </template>
+      </UDashboardNavbar>
 
-        <USelect
-          v-model="selectedHorizonte"
-          :items="horizonteItems"
-          placeholder="Filtrar por horizonte"
-          value-key="value"
-          class="flex-1"
-        >
-          <template #item-label="{ item }">
-            {{ item.label }}
-          </template>
-        </USelect>
-      </div>
+      <UDashboardToolbar>
+        <template #left>
+          <UInput
+            v-model="searchQuery"
+            color="neutral"
+            icon="i-lucide-search"
+            placeholder="Buscar por nombre, administradora o depositaria..."
+            class="w-full max-w-sm"
+          />
 
-      <!-- Información de resultados -->
-      <div
-        class="flex flex-col gap-3 text-sm text-muted md:flex-row md:items-center md:justify-between"
-      >
-        <div class="flex flex-wrap items-center gap-3">
-          <span>
-            Mostrando {{ pageRange.from }}-{{ pageRange.to }} de {{ filteredFunds.length }} fondos
-          </span>
-          <span class="hidden md:inline">·</span>
-          <span>Total cargados: {{ allFunds.length }}</span>
-          <span v-if="searchQuery || selectedTipo || selectedHorizonte" class="text-primary">
-            Filtros activos
-          </span>
-        </div>
+          <USelect
+            v-model="selectedTipo"
+            color="neutral"
+            :items="tipoItems"
+            value-key="value"
+            placeholder="Tipo"
+            class="w-44 hidden lg:block"
+            size="sm"
+          />
 
-        <div class="flex items-center gap-2">
-          <span class="text-xs uppercase tracking-wide text-muted">Filas</span>
+          <USelect
+            v-model="selectedHorizonte"
+            color="neutral"
+            :items="horizonteItems"
+            value-key="value"
+            placeholder="Horizonte"
+            class="w-44 hidden xl:block"
+            size="sm"
+          />
+        </template>
+
+        <template #right>
+          <UButton
+            v-if="isFondosVista"
+            color="neutral"
+            :variant="groupByClass ? 'soft' : 'outline'"
+            icon="i-lucide-layers"
+            :label="groupByClass ? 'Agrupado' : 'Todas las clases'"
+            size="sm"
+            @click="groupByClass = !groupByClass"
+          />
+
+          <USlideover v-model:open="filtersOpen" title="Filtros del catálogo">
+            <UButton
+              color="neutral"
+              variant="outline"
+              icon="i-lucide-sliders-horizontal"
+              label="Filtros"
+              size="sm"
+            >
+              <template v-if="activeFilterCount" #trailing>
+                <UKbd>{{ activeFilterCount }}</UKbd>
+              </template>
+            </UButton>
+
+            <template #body>
+              <div class="flex flex-col gap-4">
+                <div class="space-y-1.5">
+                  <p class="text-xs text-muted">Tipo</p>
+                  <USelect
+                    v-model="selectedTipo"
+                    color="neutral"
+                    :items="tipoItems"
+                    value-key="value"
+                    placeholder="Tipo"
+                    class="w-full"
+                  />
+                </div>
+
+                <div class="space-y-1.5">
+                  <p class="text-xs text-muted">Horizonte</p>
+                  <USelect
+                    v-model="selectedHorizonte"
+                    color="neutral"
+                    :items="horizonteItems"
+                    value-key="value"
+                    placeholder="Horizonte"
+                    class="w-full"
+                  />
+                </div>
+
+                <div class="space-y-1.5">
+                  <p class="text-xs text-muted">Moneda</p>
+                  <USelect
+                    v-model="selectedMoneda"
+                    color="neutral"
+                    :items="monedaItems"
+                    value-key="value"
+                    placeholder="Moneda"
+                    class="w-full"
+                  />
+                </div>
+
+                <div class="space-y-1.5">
+                  <p class="text-xs text-muted">Región</p>
+                  <USelect
+                    v-model="selectedRegion"
+                    color="neutral"
+                    :items="regionItems"
+                    value-key="value"
+                    placeholder="Región"
+                    class="w-full"
+                  />
+                </div>
+
+                <div class="space-y-1.5">
+                  <p class="text-xs text-muted">Administradora</p>
+                  <USelect
+                    v-model="selectedAdministradora"
+                    color="neutral"
+                    :items="administradoraItems"
+                    value-key="value"
+                    placeholder="Administradora"
+                    class="w-full"
+                  />
+                </div>
+
+                <div class="space-y-1.5">
+                  <p class="text-xs text-muted">Depositaria</p>
+                  <USelect
+                    v-model="selectedDepositaria"
+                    color="neutral"
+                    :items="depositariaItems"
+                    value-key="value"
+                    placeholder="Depositaria"
+                    class="w-full"
+                  />
+                </div>
+
+                <div class="space-y-1.5">
+                  <p class="text-xs text-muted">Plazo de liquidación</p>
+                  <USelect
+                    v-model="selectedPlazo"
+                    color="neutral"
+                    :items="plazoItems"
+                    value-key="value"
+                    placeholder="Plazo"
+                    class="w-full"
+                  />
+                </div>
+              </div>
+            </template>
+
+            <template #footer>
+              <div class="flex items-center justify-between gap-2 w-full">
+                <UButton
+                  color="neutral"
+                  variant="outline"
+                  label="Limpiar"
+                  :disabled="!hasActiveFilters"
+                  @click="clearFilters"
+                />
+                <UButton label="Aplicar" color="neutral" @click="filtersOpen = false" />
+              </div>
+            </template>
+          </USlideover>
+
+          <UButton
+            v-if="hasActiveFilters"
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-x"
+            label="Limpiar"
+            size="sm"
+            @click="clearFilters"
+          />
+
+          <UDropdownMenu v-if="isFondosVista" :items="displayMenuItems" :content="{ align: 'end' }">
+            <UButton
+              label="Columnas"
+              color="neutral"
+              variant="outline"
+              trailing-icon="i-lucide-settings-2"
+              size="sm"
+            />
+          </UDropdownMenu>
+
           <USelect
             v-model="pageSize"
+            color="neutral"
             :items="pageSizeOptions"
             value-key="value"
             class="w-36"
             size="sm"
-          >
-            <template #item-label="{ item }">
-              {{ item.label }}
-            </template>
-          </USelect>
-        </div>
+          />
+        </template>
+      </UDashboardToolbar>
+    </template>
+
+    <template #body>
+      <div class="shrink-0 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        <UPageCard
+          title="Clases cargadas"
+          icon="i-lucide-database"
+          variant="subtle"
+          :ui="{
+            container: 'relative flex flex-col flex-1 gap-y-0 p-2.5 sm:p-3',
+            header: 'mb-0.5',
+            leading: 'inline-flex items-center mb-1',
+            title: 'font-normal text-muted text-[10px] uppercase tracking-wide',
+            leadingIcon: 'size-3.5 shrink-0 text-muted',
+          }"
+        >
+          <p class="text-lg font-semibold text-highlighted leading-tight">{{ stats.total }}</p>
+        </UPageCard>
+        <UPageCard
+          :title="groupByClass ? 'Fondos en vista' : 'Clases filtradas'"
+          icon="i-lucide-filter"
+          variant="subtle"
+          :ui="{
+            container: 'relative flex flex-col flex-1 gap-y-0 p-2.5 sm:p-3',
+            header: 'mb-0.5',
+            leading: 'inline-flex items-center mb-1',
+            title: 'font-normal text-muted text-[10px] uppercase tracking-wide',
+            leadingIcon: 'size-3.5 shrink-0 text-muted',
+          }"
+        >
+          <p class="text-lg font-semibold text-highlighted leading-tight">
+            {{ groupByClass ? groupedFundsCount : stats.filtered }}
+          </p>
+          <p v-if="groupByClass" class="text-[10px] text-muted leading-tight">
+            {{ stats.filtered }} clases · {{ multiClassGroupsCount }} con varias clases
+          </p>
+        </UPageCard>
+        <UPageCard
+          title="TNA promedio"
+          icon="i-lucide-percent"
+          variant="subtle"
+          :ui="{
+            container: 'relative flex flex-col flex-1 gap-y-0 p-2.5 sm:p-3',
+            header: 'mb-0.5',
+            leading: 'inline-flex items-center mb-1',
+            title: 'font-normal text-muted text-[10px] uppercase tracking-wide',
+            leadingIcon: 'size-3.5 shrink-0 text-muted',
+          }"
+        >
+          <p class="text-lg font-semibold text-highlighted leading-tight">{{ avgTnaLabel }}</p>
+        </UPageCard>
+        <UPageCard
+          title="Tipos en vista"
+          icon="i-lucide-layers"
+          variant="subtle"
+          :ui="{
+            container: 'relative flex flex-col flex-1 gap-y-0 p-2.5 sm:p-3',
+            header: 'mb-0.5',
+            leading: 'inline-flex items-center mb-1',
+            title: 'font-normal text-muted text-[10px] uppercase tracking-wide',
+            leadingIcon: 'size-3.5 shrink-0 text-muted',
+          }"
+        >
+          <p class="text-lg font-semibold text-highlighted leading-tight">{{ stats.types }}</p>
+        </UPageCard>
       </div>
 
-      <!-- Error -->
-      <UAlert v-if="error" color="error" variant="soft" title="Error cargando fondos">
+      <UAlert
+        v-if="error"
+        class="shrink-0"
+        color="error"
+        variant="soft"
+        title="Error cargando fondos"
+      >
         No se pudieron cargar los fondos. Por favor, intenta nuevamente.
       </UAlert>
 
-      <!-- Tabla -->
-      <div class="border border-default rounded-lg overflow-hidden">
-        <div v-if="loading" class="overflow-hidden">
-          <div
-            class="grid grid-cols-4 gap-3 border-b border-default bg-elevated/50 px-4 py-3 text-sm font-medium text-muted lg:grid-cols-6 xl:grid-cols-8"
-          >
-            <span>Fondo</span>
-            <span>Tipo</span>
-            <span class="hidden lg:block">Horizonte</span>
-            <span class="text-right">TNA</span>
-            <span class="hidden lg:block text-right">TEA</span>
-            <span class="text-right">Patrimonio</span>
-            <span class="hidden xl:block">Fecha</span>
-            <span class="hidden xl:block">Administradora</span>
+      <UTable
+        ref="table"
+        v-model:sorting="sorting"
+        v-model:pagination="pagination"
+        v-model:column-visibility="columnVisibility"
+        v-model:expanded="expanded"
+        sticky="header"
+        :data="activeTableData"
+        :columns="isFondosVista ? columns : entityColumns"
+        :loading="loading"
+        :get-sub-rows="
+          isFondosVista
+            ? (row: FundCatalogGroupRow) => row.children
+            : (row: FundEntitySummary | FundCatalogGroupRow) => row.children
+        "
+        :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
+        :on-select="isFondosVista ? handleFundRowSelect : handleEntityRowSelect"
+        class="flex-1 min-h-0"
+        :ui="{
+          base: 'table-fixed border-separate border-spacing-0',
+          thead:
+            '!bg-default/95 backdrop-blur-md [&>tr]:bg-transparent [&>tr]:after:content-none shadow-[inset_0_-1px_0_0_var(--ui-border)]',
+          tbody:
+            '[&>tr]:last:[&>td]:border-b-0 [&>tr[data-expanded=true]+tr:has(>td[colspan]:only-child)]:hidden',
+          th: 'py-1.5 px-3 bg-default/95 backdrop-blur-md border-0 text-muted font-medium',
+          td: 'py-2.5 border-b border-default',
+          separator: 'h-0',
+          tr: 'cursor-pointer',
+        }"
+      >
+        <template #expanded />
+        <template #empty>
+          <div class="py-12 text-center">
+            <UIcon name="i-lucide-search-x" class="w-12 h-12 text-muted mx-auto mb-4" />
+            <h3 class="text-lg font-medium mb-2">
+              {{ isFondosVista ? 'No se encontraron fondos' : 'No se encontraron resultados' }}
+            </h3>
+            <p class="text-muted">
+              {{
+                searchQuery || selectedTipo || selectedHorizonte
+                  ? 'Intenta ajustar los filtros'
+                  : 'No hay datos disponibles en este momento'
+              }}
+            </p>
           </div>
-
-          <div class="space-y-3 p-4">
-            <div
-              v-for="row in 12"
-              :key="`row-${row}`"
-              class="grid grid-cols-4 gap-3 lg:grid-cols-6 xl:grid-cols-8"
-            >
-              <USkeleton class="h-10 w-full" />
-              <USkeleton class="h-10 w-full" />
-              <USkeleton class="hidden h-10 w-full lg:block" />
-              <USkeleton class="hidden h-10 w-full xl:block" />
-              <USkeleton class="h-10 w-full" />
-              <USkeleton class="hidden h-10 w-full lg:block" />
-              <USkeleton class="h-10 w-full" />
-              <USkeleton class="hidden h-10 w-full xl:block" />
-            </div>
-          </div>
-        </div>
-
-        <UTable
-          v-else
-          v-model:sorting="sorting"
-          v-model:pagination="pagination"
-          :data="filteredFunds"
-          :columns="columns"
-          :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
-          :on-select="handleFundRowSelect"
-          :ui="{ tr: 'cursor-pointer' }"
-        >
-          <template #empty>
-            <div class="py-12 text-center">
-              <UIcon name="i-lucide-search-x" class="w-12 h-12 text-muted mx-auto mb-4" />
-              <h3 class="text-lg font-medium mb-2">No se encontraron fondos</h3>
-              <p class="text-muted">
-                {{
-                  searchQuery
-                    ? 'Intenta ajustar la búsqueda por nombre, administradora o depositaria'
-                    : 'No hay fondos disponibles en este momento'
-                }}
-              </p>
-            </div>
-          </template>
-        </UTable>
-      </div>
+        </template>
+      </UTable>
 
       <div
-        v-if="!loading && filteredFunds.length > pageSize"
-        class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+        class="shrink-0 flex flex-col gap-3 md:flex-row md:items-center md:justify-between mt-1 pt-1 border-t border-default"
       >
         <p class="text-sm text-muted">
-          Página {{ currentPage }} de {{ totalPages }} · {{ filteredFunds.length }} fondos
-          encontrados
+          Mostrando {{ tablePageRange.from }}-{{ tablePageRange.to }} de
+          <template v-if="isFondosVista">
+            {{ groupedFundsCount }}
+            {{ groupByClass ? 'fondos' : 'clases' }}
+            <span v-if="groupByClass"> ({{ stats.filtered }} clases)</span>
+          </template>
+          <template v-else>
+            {{ entityTableData.length }}
+            {{ catalogVista === 'administradoras' ? 'administradoras' : 'depositarias' }}
+          </template>
+          <span v-if="tableTotalPages > 1">
+            · Página {{ currentPage }} de {{ tableTotalPages }}
+          </span>
         </p>
 
         <UPagination
+          v-if="activeTableData.length > pageSize"
           v-model:page="currentPage"
           :items-per-page="pageSize"
-          :total="filteredFunds.length"
+          :total="activeTableData.length"
           :sibling-count="1"
           show-edges
           size="sm"
+          color="neutral"
+          active-color="neutral"
         />
       </div>
-
-      <div class="text-center text-xs text-muted pt-4 border-t border-default">
-        <p>
-          Los datos provienen de la
-          <NuxtLink
-            :to="CNV_CUOTAPARTES_URL"
-            external
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-primary-600 dark:text-primary-400 hover:underline"
-          >
-            Comisión Nacional de Valores (CNV) — Cuotapartes
-          </NuxtLink>
-          , publicados vía Argentina Datos. La información puede estar desactualizada y no
-          garantizamos que estos sean los últimos rendimientos vigentes.
-        </p>
-      </div>
-    </div>
-
-    <section
-      class="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800 space-y-6 text-neutral-700 dark:text-neutral-300"
-    >
-      <div class="flex flex-col gap-6 max-w-4xl mx-auto">
-        <div class="space-y-4 text-sm leading-relaxed">
-          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
-            ¿Qué es un Fondo Común de Inversión (FCI)?
-          </h3>
-          <p>
-            Un <strong>Fondo Común de Inversión (FCI)</strong> es un patrimonio formado por los
-            aportes de muchas personas que tienen objetivos de inversión similares. Este dinero es
-            administrado por profesionales que lo invierten en distintos activos como acciones,
-            bonos o plazos fijos.
-          </p>
-          <p>
-            En Argentina, los FCI son una alternativa ideal para pequeños y medianos ahorristas, ya
-            que permiten diversificar la inversión de manera eficiente y acceder a mercados que, de
-            forma individual, serían más difíciles de alcanzar.
-          </p>
-        </div>
-        <div class="space-y-4 text-sm leading-relaxed">
-          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
-            Tipos Principales de FCI
-          </h3>
-          <ul class="list-disc list-inside space-y-2">
-            <li>
-              <strong>Mercado de Dinero (Money Market):</strong> De bajo riesgo y liquidez
-              inmediata, ideal para el efectivo de corto plazo.
-            </li>
-            <li>
-              <strong>Renta Fija:</strong> Invierten mayormente en bonos y otros instrumentos de
-              deuda con una tasa predeterminada.
-            </li>
-            <li>
-              <strong>Renta Mixta:</strong> Combinan acciones y bonos para buscar un equilibrio
-              entre riesgo y potencial de ganancia.
-            </li>
-            <li>
-              <strong>Renta Variable:</strong> Invierten en acciones de empresas, ofreciendo mayor
-              potencial de ganancia a cambio de un mayor riesgo.
-            </li>
-            <li>
-              <strong>Retorno Total:</strong> Buscan maximizar el rendimiento total combinando
-              instrumentos de renta fija, cobertura, duration y manejo más flexible de la cartera.
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-  </div>
+    </template>
+  </UDashboardPanel>
 </template>

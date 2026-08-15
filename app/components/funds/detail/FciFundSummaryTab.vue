@@ -210,7 +210,7 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
               class="rounded-2xl border border-neutral-200 p-3 dark:border-neutral-800"
             >
               <div class="flex flex-wrap items-center gap-2">
-                <UBadge v-if="rating.calificacion" color="primary" variant="soft">{{
+                <UBadge v-if="rating.calificacion" color="neutral" variant="soft">{{
                   rating.calificacion
                 }}</UBadge>
                 <span class="font-medium text-neutral-900 dark:text-white">{{
