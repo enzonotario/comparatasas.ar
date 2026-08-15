@@ -37,9 +37,7 @@ interface ComisionesCobroResponse {
   comisiones: Array<Omit<ComisionCobroOption, 'arancelPorcentaje'>>
 }
 
-function mapComision(
-  item: Omit<ComisionCobroOption, 'arancelPorcentaje'>,
-): ComisionCobroOption {
+function mapComision(item: Omit<ComisionCobroOption, 'arancelPorcentaje'>): ComisionCobroOption {
   return {
     ...item,
     arancelPorcentaje:

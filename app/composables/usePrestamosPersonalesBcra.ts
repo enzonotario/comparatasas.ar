@@ -7,8 +7,7 @@ import {
 
 export type { PrestamoPersonalBcra }
 
-const API_URL =
-  'https://api.argentinadatos.com/v1/finanzas/creditos/prestamosPersonalesBcra/'
+const API_URL = 'https://api.argentinadatos.com/v1/finanzas/creditos/prestamosPersonalesBcra/'
 
 export function usePrestamosPersonalesBcra() {
   const {

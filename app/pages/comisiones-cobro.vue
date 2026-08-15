@@ -168,15 +168,9 @@ function normalizeAcreditacion(item: ComisionCobroOption): {
 const rows = computed<ComisionRow[]>(() => {
   return comisiones.value.map((item) => {
     const displayName = item.nombreComercial || item.entidad
-    const logo =
-      getInstitutionLogo(item.entidad) ||
-      getInstitutionLogo(displayName) ||
-      undefined
+    const logo = getInstitutionLogo(item.entidad) || getInstitutionLogo(displayName) || undefined
     const providerUrl =
-      getInstitutionUrl(item.entidad) ||
-      getInstitutionUrl(displayName) ||
-      item.enlace ||
-      undefined
+      getInstitutionUrl(item.entidad) || getInstitutionUrl(displayName) || item.enlace || undefined
     const acreditacion = normalizeAcreditacion(item)
 
     return {
@@ -193,14 +187,10 @@ const rows = computed<ComisionRow[]>(() => {
       canalLabel: canalLabels[item.canal] ?? item.canal,
       medioPagoLabel: medioPagoLabels[item.medioPago] ?? item.medioPago,
       acreditacionTipoNormalizado: acreditacion.tipo,
-      acreditacionTipoLabel:
-        acreditacionLabels[acreditacion.tipo] ?? acreditacion.tipo,
+      acreditacionTipoLabel: acreditacionLabels[acreditacion.tipo] ?? acreditacion.tipo,
       acreditacionDias: acreditacion.dias,
       acreditacionDisplayLabel: acreditacion.displayLabel,
-      acreditacionSort:
-        acreditacion.dias == null
-          ? Number.POSITIVE_INFINITY
-          : acreditacion.dias,
+      acreditacionSort: acreditacion.dias == null ? Number.POSITIVE_INFINITY : acreditacion.dias,
     }
   })
 })
@@ -229,11 +219,7 @@ const medioOptions = computed(() => {
 })
 
 const acreditacionOptions = computed(() => {
-  const values = [
-    ...new Set(
-      rows.value.map((r) => r.acreditacionTipoNormalizado).filter(Boolean),
-    ),
-  ]
+  const values = [...new Set(rows.value.map((r) => r.acreditacionTipoNormalizado).filter(Boolean))]
   return values.map((value) => ({
     label: acreditacionLabels[value] ?? value,
     value,
@@ -337,8 +323,7 @@ useSeoMeta({
   description:
     'Compará aranceles de cobro (POS, QR, link y checkout) de Getnet, Mercado Pago, Ualá Bis, Payway, Banco Provincia, Fiserv, Nave, Openpay, Viumi, +Pagos Nación, Naranja X, Bezza Pay y Sipago.',
   ogTitle: 'Comisiones de cobro - Compara Tasas',
-  ogDescription:
-    'Ranking de comisiones de cobro por canal, medio de pago y plazo de acreditación.',
+  ogDescription: 'Ranking de comisiones de cobro por canal, medio de pago y plazo de acreditación.',
 })
 
 useHead({
@@ -358,7 +343,11 @@ useHead({
 })
 
 function sortableHeader(label: string) {
-  return ({ column }: { column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (desc?: boolean) => void } }) => {
+  return ({
+    column,
+  }: {
+    column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (desc?: boolean) => void }
+  }) => {
     const isSorted = column.getIsSorted()
     return h(UButton, {
       color: 'neutral',
@@ -436,14 +425,10 @@ function renderProviderCell(row: ComisionRowSimulada) {
 function renderArancelCell(row: ComisionRowSimulada) {
   const badges = []
   if (row.arancelEsTope) {
-    badges.push(
-      h(UBadge, { color: 'warning', variant: 'subtle', size: 'sm' }, () => 'Hasta'),
-    )
+    badges.push(h(UBadge, { color: 'warning', variant: 'subtle', size: 'sm' }, () => 'Hasta'))
   }
   if (row.ivaAdicional) {
-    badges.push(
-      h(UBadge, { color: 'neutral', variant: 'subtle', size: 'sm' }, () => '+ IVA'),
-    )
+    badges.push(h(UBadge, { color: 'neutral', variant: 'subtle', size: 'sm' }, () => '+ IVA'))
   }
 
   return h('div', { class: 'space-y-1' }, [
@@ -458,7 +443,11 @@ function renderCostoCell(row: ComisionRowSimulada) {
   }
 
   const parts = [
-    h('p', { class: 'font-semibold tabular-nums text-error' }, formatCurrency(row.simulation.costo)),
+    h(
+      'p',
+      { class: 'font-semibold tabular-nums text-error' },
+      formatCurrency(row.simulation.costo),
+    ),
   ]
 
   if (row.simulation.iva > 0) {
@@ -472,9 +461,7 @@ function renderCostoCell(row: ComisionRowSimulada) {
   }
 
   if (row.arancelEsTope) {
-    parts.push(
-      h(UBadge, { color: 'warning', variant: 'subtle', size: 'sm' }, () => 'Hasta'),
-    )
+    parts.push(h(UBadge, { color: 'warning', variant: 'subtle', size: 'sm' }, () => 'Hasta'))
   }
 
   return h('div', { class: 'space-y-1' }, parts)
@@ -505,11 +492,7 @@ function acreditacionBarWidth(dias: number | null): string {
 
 function renderAcreditacionCell(row: ComisionRow) {
   if (row.acreditacionTipoNormalizado === 'inmediata' || row.acreditacionDias === 0) {
-    return h(
-      UBadge,
-      { color: 'success', variant: 'subtle', size: 'sm' },
-      () => 'Inmediata',
-    )
+    return h(UBadge, { color: 'success', variant: 'subtle', size: 'sm' }, () => 'Inmediata')
   }
 
   const barColor =
@@ -527,8 +510,7 @@ function renderAcreditacionCell(row: ComisionRow) {
       ? h(
           'div',
           {
-            class:
-              'h-1.5 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800',
+            class: 'h-1.5 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800',
             title: row.acreditacionDisplayLabel,
           },
           [
@@ -645,13 +627,8 @@ const hasActiveFilters = computed(
           <div class="space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 class="text-lg font-semibold">
-                  Tabla comparativa
-                </h2>
-                <p
-                  v-if="isSimulating"
-                  class="text-sm text-muted"
-                >
+                <h2 class="text-lg font-semibold">Tabla comparativa</h2>
+                <p v-if="isSimulating" class="text-sm text-muted">
                   Costo y neto estimados sobre el monto simulado. Ordenado por menor costo.
                 </p>
               </div>
@@ -676,9 +653,7 @@ const hasActiveFilters = computed(
 
               <div class="grid gap-3 md:grid-cols-3">
                 <div class="space-y-2">
-                  <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                    Canal
-                  </p>
+                  <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Canal</p>
                   <div class="flex flex-wrap gap-2">
                     <UButton
                       v-for="option in [{ value: 'all', label: 'Todos' }, ...canalOptions]"
@@ -747,10 +722,7 @@ const hasActiveFilters = computed(
           class="mb-4"
         />
 
-        <div
-          v-if="isDesktop"
-          class="overflow-hidden"
-        >
+        <div v-if="isDesktop" class="overflow-hidden">
           <UTable
             v-model:sorting="sorting"
             :data="filteredRows"
@@ -759,10 +731,7 @@ const hasActiveFilters = computed(
           />
         </div>
 
-        <div
-          v-else
-          class="space-y-3"
-        >
+        <div v-else class="space-y-3">
           <article
             v-for="row in sortedRows"
             :key="`${row.entidad}-${row.producto}-${row.canal}-${row.medioPago}-${row.acreditacionTipo}-${row.arancelLabel}`"
@@ -777,7 +746,7 @@ const hasActiveFilters = computed(
                   :alt="`${row.displayName} logo`"
                   class="size-10 rounded-full object-contain"
                   loading="lazy"
-                >
+                />
                 <div
                   v-else
                   class="flex size-10 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold dark:bg-neutral-800"
@@ -807,20 +776,10 @@ const hasActiveFilters = computed(
                     {{ row.arancelLabel }}
                   </p>
                   <div class="mt-1 flex flex-wrap justify-end gap-1">
-                    <UBadge
-                      v-if="row.arancelEsTope"
-                      color="warning"
-                      variant="subtle"
-                      size="sm"
-                    >
+                    <UBadge v-if="row.arancelEsTope" color="warning" variant="subtle" size="sm">
                       Hasta
                     </UBadge>
-                    <UBadge
-                      v-if="row.ivaAdicional"
-                      color="neutral"
-                      variant="subtle"
-                      size="sm"
-                    >
+                    <UBadge v-if="row.ivaAdicional" color="neutral" variant="subtle" size="sm">
                       + IVA
                     </UBadge>
                   </div>
@@ -829,30 +788,22 @@ const hasActiveFilters = computed(
             </div>
             <dl class="mt-3 grid grid-cols-2 gap-2 text-sm">
               <div>
-                <dt class="text-neutral-500">
-                  Canal
-                </dt>
+                <dt class="text-neutral-500">Canal</dt>
                 <dd>{{ row.canalLabel }}</dd>
               </div>
               <div>
-                <dt class="text-neutral-500">
-                  Medio
-                </dt>
+                <dt class="text-neutral-500">Medio</dt>
                 <dd>{{ row.medioPagoLabel }}</dd>
               </div>
               <template v-if="isSimulating">
                 <div>
-                  <dt class="text-neutral-500">
-                    Arancel
-                  </dt>
+                  <dt class="text-neutral-500">Arancel</dt>
                   <dd class="tabular-nums">
                     {{ row.arancelLabel }}
                   </dd>
                 </div>
                 <div v-if="row.simulation">
-                  <dt class="text-neutral-500">
-                    Detalle costo
-                  </dt>
+                  <dt class="text-neutral-500">Detalle costo</dt>
                   <dd class="tabular-nums text-xs text-neutral-500">
                     <template v-if="row.simulation.iva > 0">
                       {{ formatCurrency(row.simulation.arancelBase) }} + IVA
@@ -865,22 +816,19 @@ const hasActiveFilters = computed(
                 </div>
               </template>
               <div class="col-span-2">
-                <dt class="text-neutral-500">
-                  Acreditación
-                </dt>
+                <dt class="text-neutral-500">Acreditación</dt>
                 <dd class="mt-1">
                   <UBadge
-                    v-if="row.acreditacionTipoNormalizado === 'inmediata' || row.acreditacionDias === 0"
+                    v-if="
+                      row.acreditacionTipoNormalizado === 'inmediata' || row.acreditacionDias === 0
+                    "
                     color="success"
                     variant="subtle"
                     size="sm"
                   >
                     Inmediata
                   </UBadge>
-                  <div
-                    v-else
-                    class="space-y-1.5"
-                  >
+                  <div v-else class="space-y-1.5">
                     <p class="font-medium tabular-nums">
                       {{ row.acreditacionDisplayLabel }}
                     </p>

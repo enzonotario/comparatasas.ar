@@ -15,17 +15,12 @@ const props = defineProps<{
   historyColumns: TableColumn<FciFundHistoryItem>[]
 }>()
 
-const isHistoryLoading = computed(
-  () => props.historyStatus === 'pending' && !props.fundHistory,
-)
+const isHistoryLoading = computed(() => props.historyStatus === 'pending' && !props.fundHistory)
 </script>
 
 <template>
   <div class="space-y-6">
-    <div
-      v-if="isHistoryLoading"
-      class="grid gap-3 md:grid-cols-3"
-    >
+    <div v-if="isHistoryLoading" class="grid gap-3 md:grid-cols-3">
       <USkeleton v-for="index in 3" :key="`history-metric-${index}`" class="h-20 rounded-2xl" />
     </div>
 
@@ -64,10 +59,7 @@ const isHistoryLoading = computed(
         </div>
       </div>
 
-      <FciFundEvolutionCharts
-        :points="props.historyChronological"
-        :loading="isHistoryLoading"
-      />
+      <FciFundEvolutionCharts :points="props.historyChronological" :loading="isHistoryLoading" />
 
       <UCard
         :ui="{

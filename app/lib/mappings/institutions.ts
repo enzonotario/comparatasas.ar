@@ -24,13 +24,25 @@ export const institutions: Array<{
     url: 'https://bna.com.ar/Personas?ref=comparatasas',
   },
   {
-    names: ['BANCO SANTANDER ARGENTINA S.A.', 'Banco Santander', 'Santander', 'santander', 'SANTANDER'],
+    names: [
+      'BANCO SANTANDER ARGENTINA S.A.',
+      'Banco Santander',
+      'Santander',
+      'santander',
+      'SANTANDER',
+    ],
     logo: 'https://api.argentinadatos.com/static/logos/banco-santander.png',
     shortName: 'Banco Santander',
     url: 'https://www.santander.com.ar/personas?ref=comparatasas',
   },
   {
-    names: ['BANCO DE GALICIA Y BUENOS AIRES S.A.U.', 'Banco Galicia', 'Galicia', 'galicia', 'GALICIA'],
+    names: [
+      'BANCO DE GALICIA Y BUENOS AIRES S.A.U.',
+      'Banco Galicia',
+      'Galicia',
+      'galicia',
+      'GALICIA',
+    ],
     logo: 'https://api.argentinadatos.com/static/logos/banco-galicia.png',
     shortName: 'Banco Galicia',
     url: 'https://www.galicia.ar/personas?ref=comparatasas',

@@ -21,11 +21,7 @@ function daysBetween(fromDate: string, toDate: string) {
   return Math.round((to - from) / (24 * 60 * 60 * 1000))
 }
 
-export function annualizeReturnPercent(
-  vcpNew: number,
-  vcpOld: number,
-  days: number,
-) {
+export function annualizeReturnPercent(vcpNew: number, vcpOld: number, days: number) {
   if (!(vcpOld > 0) || !(vcpNew > 0) || !(days > 0)) return null
 
   const periodReturn = (vcpNew - vcpOld) / vcpOld
@@ -48,17 +44,13 @@ export function sanitizeAnnualizedReturnPercent(value: number | null | undefined
 /** Filtra puntos seed (p. ej. VCP=1) inconsistentes con el VCP más reciente. */
 export function filterPlausibleHistoryPoints<T extends FciHistoryVcpPoint>(points: T[]) {
   const sorted = [...points]
-    .filter(item => item?.fecha && item.valorCuotaparte != null)
-    .sort((a, b) => a.fecha.localeCompare(b.fecha)) as Array<
-    T & { valorCuotaparte: number }
-  >
+    .filter((item) => item?.fecha && item.valorCuotaparte != null)
+    .sort((a, b) => a.fecha.localeCompare(b.fecha)) as Array<T & { valorCuotaparte: number }>
 
   if (!sorted.length) return []
 
   const latest = sorted[sorted.length - 1]
-  return sorted.filter(item =>
-    isPlausibleVcpPair(latest.valorCuotaparte, item.valorCuotaparte),
-  )
+  return sorted.filter((item) => isPlausibleVcpPair(latest.valorCuotaparte, item.valorCuotaparte))
 }
 
 export function recomputeHistoryReturns<T extends FciHistoryVcpPoint>(points: T[]) {
@@ -73,8 +65,7 @@ export function recomputeHistoryReturns<T extends FciHistoryVcpPoint>(points: T[
       previous && previous.valorCuotaparte > 0
         ? Number(
             (
-              ((item.valorCuotaparte - previous.valorCuotaparte) /
-                previous.valorCuotaparte) *
+              ((item.valorCuotaparte - previous.valorCuotaparte) / previous.valorCuotaparte) *
               100
             ).toFixed(6),
           )
@@ -82,9 +73,7 @@ export function recomputeHistoryReturns<T extends FciHistoryVcpPoint>(points: T[
 
     const retornoAcumulado =
       firstVcp > 0
-        ? Number(
-            (((item.valorCuotaparte - firstVcp) / firstVcp) * 100).toFixed(6),
-          )
+        ? Number((((item.valorCuotaparte - firstVcp) / firstVcp) * 100).toFixed(6))
         : null
 
     return {
@@ -108,8 +97,7 @@ export function computeRendimientosFromHistory(input: {
   const findNear = (targetDays: number) => {
     if (!fecha || valorCuotaparte == null) return null
 
-    const targetTime =
-      Date.parse(`${fecha}T00:00:00.000Z`) - targetDays * 24 * 60 * 60 * 1000
+    const targetTime = Date.parse(`${fecha}T00:00:00.000Z`) - targetDays * 24 * 60 * 60 * 1000
 
     let best: (FciHistoryVcpPoint & { valorCuotaparte: number }) | null = null
     let bestDistance = Number.POSITIVE_INFINITY
@@ -126,10 +114,7 @@ export function computeRendimientosFromHistory(input: {
       }
     }
 
-    if (
-      !best ||
-      bestDistance > LOOKBACK_TOLERANCE_DAYS * 24 * 60 * 60 * 1000
-    ) {
+    if (!best || bestDistance > LOOKBACK_TOLERANCE_DAYS * 24 * 60 * 60 * 1000) {
       return null
     }
 
@@ -148,9 +133,7 @@ export function computeRendimientosFromHistory(input: {
   const thirty = findNear(30)
 
   const fromDaily =
-    typeof variacionDiariaPct === 'number'
-      ? Number((variacionDiariaPct * 365).toFixed(4))
-      : null
+    typeof variacionDiariaPct === 'number' ? Number((variacionDiariaPct * 365).toFixed(4)) : null
 
   return {
     valorCuotaparte: valorCuotaparte ?? null,

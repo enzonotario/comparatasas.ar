@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { UButton } from '#components'
-import CerYieldCurveChart, {
-  type CerYieldMode,
-} from '~/components/charts/CerYieldCurveChart.vue'
+import CerYieldCurveChart, { type CerYieldMode } from '~/components/charts/CerYieldCurveChart.vue'
 import {
   type BonosCerPayload,
   type CerBondRow,
@@ -311,11 +309,11 @@ const textoActualizacion = computed(() => {
             vida y preservar el poder adquisitivo frente a la inflación.
           </p>
           <p>
-            En esta página se muestran <strong>precio de cotización</strong>,
-            <strong>TIR</strong> y <strong>TEM</strong> (tasa efectiva mensual implícita) según
-            datos de mercado agregados por ArgentinaDatos. Son valores
-            <strong>orientativos</strong>: la TIR depende del precio observado, del calendario de
-            cupones y de supuestos de mercado; no constituyen asesoramiento financiero.
+            En esta página se muestran <strong>precio de cotización</strong>, <strong>TIR</strong> y
+            <strong>TEM</strong> (tasa efectiva mensual implícita) según datos de mercado agregados
+            por ArgentinaDatos. Son valores <strong>orientativos</strong>: la TIR depende del precio
+            observado, del calendario de cupones y de supuestos de mercado; no constituyen
+            asesoramiento financiero.
           </p>
         </div>
         <div class="space-y-4">

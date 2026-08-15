@@ -111,10 +111,7 @@ describe('curarPrestamosPersonalesBcra', () => {
       defaults: {
         preferTerritorioNacional: true,
         maxVariantesPorProducto: 1,
-        preferBeneficiarioIncludes: [
-          'todos los beneficiarios',
-          'clientes que acrediten sueldos',
-        ],
+        preferBeneficiarioIncludes: ['todos los beneficiarios', 'clientes que acrediten sueldos'],
       },
     })
 
@@ -177,10 +174,7 @@ describe('curarPrestamosPersonalesBcra', () => {
       defaults: {
         preferTerritorioNacional: true,
         maxVariantesPorProducto: 2,
-        preferBeneficiarioIncludes: [
-          'clientes que acrediten sueldos',
-          'clientes con cuenta',
-        ],
+        preferBeneficiarioIncludes: ['clientes que acrediten sueldos', 'clientes con cuenta'],
       },
     })
 

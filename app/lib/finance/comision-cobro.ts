@@ -24,9 +24,7 @@ export interface ComisionCobroSimResult {
  * Estima costo de cobro y neto a acreditar sobre un monto de venta.
  * Si `arancel` es null, no se puede simular.
  */
-export function simulateComisionCobro(
-  input: ComisionCobroSimInput,
-): ComisionCobroSimResult | null {
+export function simulateComisionCobro(input: ComisionCobroSimInput): ComisionCobroSimResult | null {
   const { monto, arancel, ivaAdicional, sumarIva } = input
   if (arancel == null || !Number.isFinite(arancel) || !Number.isFinite(monto) || monto <= 0) {
     return null

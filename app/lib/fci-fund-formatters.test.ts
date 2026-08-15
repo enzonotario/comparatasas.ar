@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  formatCurrency,
-  formatPercentAuto,
-  normalizeCurrencyCode,
-} from './fci-fund-formatters'
+import { formatCurrency, formatPercentAuto, normalizeCurrencyCode } from './fci-fund-formatters'
 
 describe('formatPercentAuto', () => {
   it('formats fee values already in percentage points without scaling', () => {

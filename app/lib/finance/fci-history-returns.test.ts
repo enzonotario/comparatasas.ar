@@ -22,10 +22,7 @@ describe('filterPlausibleHistoryPoints', () => {
       { fecha: '2026-08-12', valorCuotaparte: 1014.821 },
     ])
 
-    expect(cleaned.map((item) => item.fecha)).toEqual([
-      '2026-07-15',
-      '2026-08-12',
-    ])
+    expect(cleaned.map((item) => item.fecha)).toEqual(['2026-07-15', '2026-08-12'])
   })
 })
 
@@ -43,10 +40,7 @@ describe('computeRendimientosFromHistory', () => {
     })
 
     expect(rendimientos.ultimos7Dias).toBeCloseTo(26.5912, 0)
-    expect(rendimientos.unMes).toBeCloseTo(
-      annualizeReturnPercent(1014.821, 1001.981, 28)!,
-      3,
-    )
+    expect(rendimientos.unMes).toBeCloseTo(annualizeReturnPercent(1014.821, 1001.981, 28)!, 3)
     expect(rendimientos.thirtyDays).toBe(28)
   })
 })
@@ -61,9 +55,6 @@ describe('recomputeHistoryReturns', () => {
 
     expect(rows).toHaveLength(2)
     expect(rows[0].retornoAcumulado).toBe(0)
-    expect(rows[1].retornoAcumulado).toBeCloseTo(
-      ((1014.821 - 1001.981) / 1001.981) * 100,
-      4,
-    )
+    expect(rows[1].retornoAcumulado).toBeCloseTo(((1014.821 - 1001.981) / 1001.981) * 100, 4)
   })
 })

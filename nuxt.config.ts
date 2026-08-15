@@ -155,6 +155,11 @@ export default defineNuxtConfig({
     },
   },
 
+  echarts: {
+    charts: ['LineChart', 'BarChart'],
+    components: ['GridComponent', 'TooltipComponent', 'LegendComponent', 'DataZoomComponent'],
+  },
+
   eslint: {
     config: {
       stylistic: true,
@@ -167,16 +172,6 @@ export default defineNuxtConfig({
 
   highcharts: {
     exporting: true,
-  },
-
-  echarts: {
-    charts: ['LineChart', 'BarChart'],
-    components: [
-      'GridComponent',
-      'TooltipComponent',
-      'LegendComponent',
-      'DataZoomComponent',
-    ],
   },
 
   hotjar: {

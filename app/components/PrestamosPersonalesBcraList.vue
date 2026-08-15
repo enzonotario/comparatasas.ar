@@ -31,8 +31,7 @@ const items = computed(() => {
       logo,
       institution,
       productoLabel: prestamo.productoCorto || prestamo.producto || 'Préstamo personal',
-      montoRango:
-        montoMin && montoMax ? `${montoMin} – ${montoMax}` : montoMax || montoMin || null,
+      montoRango: montoMin && montoMax ? `${montoMin} – ${montoMax}` : montoMax || montoMin || null,
       plazoLabel: plazoMax != null ? `hasta ${plazoMax}m` : null,
     }
   })
@@ -69,11 +68,7 @@ const items = computed(() => {
               >
                 {{ item.condiciones }}
               </UBadge>
-              <UBadge
-                v-if="item.metadata?.afectacionIngresos"
-                color="neutral"
-                variant="subtle"
-              >
+              <UBadge v-if="item.metadata?.afectacionIngresos" color="neutral" variant="subtle">
                 Afectación {{ item.metadata.afectacionIngresos }}
               </UBadge>
               <UBadge v-if="item.plazoLabel" color="neutral" variant="subtle">
@@ -83,9 +78,7 @@ const items = computed(() => {
                 Requiere cliente
               </UBadge>
             </div>
-            <div v-if="item.montoRango" class="text-xs text-muted">
-              Monto {{ item.montoRango }}
-            </div>
+            <div v-if="item.montoRango" class="text-xs text-muted">Monto {{ item.montoRango }}</div>
           </div>
         </div>
 

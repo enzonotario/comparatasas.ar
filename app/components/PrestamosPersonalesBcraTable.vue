@@ -75,12 +75,7 @@ const columns: TableColumn<(typeof rows.value)[number]>[] = [
       <div class="flex flex-col gap-1.5 min-w-[10rem]">
         <span class="text-sm text-muted">{{ row.original.condiciones || '—' }}</span>
         <div class="flex flex-wrap gap-1">
-          <UBadge
-            v-if="row.original.afectacionIngresos"
-            color="neutral"
-            variant="subtle"
-            size="sm"
-          >
+          <UBadge v-if="row.original.afectacionIngresos" color="neutral" variant="subtle" size="sm">
             Afectación {{ row.original.afectacionIngresos }}
           </UBadge>
           <UBadge v-if="row.original.requiereCliente" color="warning" variant="outline" size="sm">

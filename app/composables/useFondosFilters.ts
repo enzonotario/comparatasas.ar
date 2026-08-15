@@ -6,7 +6,9 @@ export type PlazoFilter = '0' | '1' | '2+'
 
 function uniqueSorted(values: Array<string | null | undefined>) {
   return Array.from(
-    new Set(values.map((value) => value?.trim()).filter((value): value is string => Boolean(value))),
+    new Set(
+      values.map((value) => value?.trim()).filter((value): value is string => Boolean(value)),
+    ),
   ).sort((a, b) => a.localeCompare(b, 'es'))
 }
 
@@ -172,13 +174,13 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
   const hasActiveFilters = computed(() => {
     return Boolean(
       searchQuery.value ||
-        selectedTipo.value ||
-        selectedHorizonte.value ||
-        selectedMoneda.value ||
-        selectedRegion.value ||
-        selectedAdministradora.value ||
-        selectedDepositaria.value ||
-        selectedPlazo.value,
+      selectedTipo.value ||
+      selectedHorizonte.value ||
+      selectedMoneda.value ||
+      selectedRegion.value ||
+      selectedAdministradora.value ||
+      selectedDepositaria.value ||
+      selectedPlazo.value,
     )
   })
 

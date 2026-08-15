@@ -559,7 +559,8 @@ const selectedEndpointTab = computed<EndpointTab>({
                     </h3>
                     <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                       <li v-for="field in spec.fields" :key="field.name">
-                        <code>{{ field.name }}</code>: {{ field.description }}
+                        <code>{{ field.name }}</code
+                        >: {{ field.description }}
                       </li>
                     </ul>
                   </div>

@@ -10,9 +10,7 @@ describe('parseFundClassName', () => {
   })
 
   it('keeps complex class labels', () => {
-    const parsed = parseFundClassName(
-      'Adcap Ahorro Pesos Fondo de Dinero - Clase Ley Nº 27.743',
-    )
+    const parsed = parseFundClassName('Adcap Ahorro Pesos Fondo de Dinero - Clase Ley Nº 27.743')
     expect(parsed.baseName).toBe('Adcap Ahorro Pesos Fondo de Dinero')
     expect(parsed.classLabel).toBe('Clase Ley Nº 27.743')
   })

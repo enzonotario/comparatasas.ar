@@ -124,9 +124,7 @@ export function curarPrestamosPersonalesBcra(
   const selected: PrestamoPersonalBcraApiItem[] = []
 
   for (const config of enabled) {
-    let pool = items.filter(
-      (item) => matchesEntidad(item, config) && matchesProducto(item, config),
-    )
+    let pool = items.filter((item) => matchesEntidad(item, config) && matchesProducto(item, config))
 
     if (!pool.length) continue
 

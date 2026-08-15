@@ -134,9 +134,7 @@ export function findSiblingFundClasses(
   const fondoId = options?.fondoId?.trim() || null
 
   const byFondoId =
-    fondoId != null
-      ? allFunds.filter((row) => row.fondoId != null && row.fondoId === fondoId)
-      : []
+    fondoId != null ? allFunds.filter((row) => row.fondoId != null && row.fondoId === fondoId) : []
 
   const matched =
     byFondoId.length > 0

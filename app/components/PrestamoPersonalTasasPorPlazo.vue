@@ -113,12 +113,9 @@ function titleFor(tramo: PrestamoPersonalTasaPorPlazo): string {
       class="text-[11px] font-medium tabular-nums leading-none text-primary-600 dark:text-primary-400"
       :class="compact ? 'text-left' : 'text-right'"
     >
-      Tramo {{ formatPlazoCompact(activeTramo) }} ·
-      {{ rateLabel(activeTramo) }} {{ formatPct(rateForDisplay(activeTramo)) }}
-      <span
-        v-if="activeTramo.cftTea != null && activeTramo.tna != null"
-        class="opacity-75"
-      >
+      Tramo {{ formatPlazoCompact(activeTramo) }} · {{ rateLabel(activeTramo) }}
+      {{ formatPct(rateForDisplay(activeTramo)) }}
+      <span v-if="activeTramo.cftTea != null && activeTramo.tna != null" class="opacity-75">
         · TNA {{ formatPct(activeTramo.tna) }}
       </span>
     </div>

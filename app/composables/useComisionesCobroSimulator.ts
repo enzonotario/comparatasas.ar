@@ -1,7 +1,4 @@
-import {
-  simulateComisionCobro,
-  type ComisionCobroSimResult,
-} from '~/lib/finance/comision-cobro'
+import { simulateComisionCobro, type ComisionCobroSimResult } from '~/lib/finance/comision-cobro'
 import type { ComisionCobroOption } from '~/composables/useComisionesCobro'
 
 export type ComisionCobroSimulada<T extends ComisionCobroOption = ComisionCobroOption> = T & {
@@ -29,9 +26,7 @@ export function useComisionesCobroSimulator() {
     isSimulating.value = false
   }
 
-  function calculateResults<T extends ComisionCobroOption>(
-    itemsRef: Ref<T[]> | ComputedRef<T[]>,
-  ) {
+  function calculateResults<T extends ComisionCobroOption>(itemsRef: Ref<T[]> | ComputedRef<T[]>) {
     return computed<ComisionCobroSimulada<T>[]>(() => {
       return unref(itemsRef).map((item) => {
         const simulation = simulateComisionCobro({
