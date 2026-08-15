@@ -2,7 +2,16 @@ import { describe, expect, it } from 'vitest'
 import { getComparatasasReturnPercent, getComparatasasTnaAndTea } from './fci-comparatasas-returns'
 
 describe('getComparatasasReturnPercent', () => {
-  it('uses unMes for money market when available', () => {
+  it('anualiza la variación diaria para money market', () => {
+    expect(
+      getComparatasasReturnPercent(
+        { unMes: 0.602, ultimos7Dias: 0.35, variacionDiariaPct: 0.05 },
+        'Mercado de Dinero',
+      ),
+    ).toBeCloseTo(18.25, 2)
+  })
+
+  it('falls back to legacy CAFCI unMes for money market when daily is missing', () => {
     expect(
       getComparatasasReturnPercent({ unMes: 16.5, ultimos7Dias: 18.4 }, 'Mercado de Dinero'),
     ).toBe(16.5)
@@ -12,6 +21,15 @@ describe('getComparatasasReturnPercent', () => {
     expect(
       getComparatasasReturnPercent({ unMes: null, ultimos7Dias: 18.4158 }, 'Mercado de Dinero'),
     ).toBe(18.4158)
+  })
+
+  it('uses CNV period unMes for non money market funds', () => {
+    expect(
+      getComparatasasReturnPercent(
+        { unMes: -9.849, ultimos7Dias: -1.2, variacionDiariaPct: -1.514 },
+        'Renta Variable',
+      ),
+    ).toBeCloseTo(-9.849, 3)
   })
 
   it('does not fall back to ultimos7Dias for non money market funds', () => {

@@ -157,11 +157,10 @@ watch(groupByClass, () => {
   currentPage.value = 1
 })
 
-watch(catalogVista, (vista) => {
+watch(catalogVista, () => {
   expanded.value = {}
   currentPage.value = 1
-  sorting.value =
-    vista === 'fondos' ? [{ id: 'displayName', desc: false }] : [{ id: 'patrimonio', desc: true }]
+  sorting.value = [{ id: 'patrimonio', desc: true }]
 })
 
 watch(tableTotalPages, (value) => {
@@ -650,7 +649,7 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
   },
 ]
 
-const sortQuery = useRouteQuery<string>('sort', '[{"id":"displayName","desc":false}]')
+const sortQuery = useRouteQuery<string>('sort', '[{"id":"patrimonio","desc":true}]')
 const columnVisibility = ref<Record<string, boolean>>({
   expand: true,
   administradora: true,
@@ -667,7 +666,7 @@ function parseSorting(value: string): SortingState {
     const parsed = JSON.parse(value)
     return Array.isArray(parsed) ? parsed : []
   } catch {
-    return [{ id: 'displayName', desc: false }]
+    return [{ id: 'patrimonio', desc: true }]
   }
 }
 

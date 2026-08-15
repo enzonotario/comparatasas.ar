@@ -37,7 +37,11 @@ function hasComparatasasReturn(fund: FciFundDetail) {
   if (!rendimientos) return false
 
   if (fund.tipoRenta === 'Mercado de Dinero') {
-    return rendimientos.unMes != null || rendimientos.ultimos7Dias != null
+    return (
+      rendimientos.variacionDiariaPct != null ||
+      rendimientos.unMes != null ||
+      rendimientos.ultimos7Dias != null
+    )
   }
 
   return rendimientos.unMes != null

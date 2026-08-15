@@ -1,5 +1,7 @@
 export interface FciFundReturns {
   valorCuotaparte: number | null
+  /** Variación diaria CNV en % (columna Variac. %). */
+  variacionDiariaPct?: number | null
   ultimos7Dias: number | null
   unMes: number | null
   noventaDias: number | null

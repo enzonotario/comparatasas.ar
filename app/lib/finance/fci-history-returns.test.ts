@@ -1,16 +1,18 @@
 import { describe, expect, it } from 'vitest'
 import {
-  annualizeReturnPercent,
   computeRendimientosFromHistory,
   filterPlausibleHistoryPoints,
+  periodReturnPercent,
   recomputeHistoryReturns,
-  sanitizeAnnualizedReturnPercent,
+  sanitizePeriodReturnPercent,
 } from './fci-history-returns'
 
-describe('sanitizeAnnualizedReturnPercent', () => {
+describe('sanitizePeriodReturnPercent', () => {
   it('drops absurd persisted returns', () => {
-    expect(sanitizeAnnualizedReturnPercent(1233482.2167)).toBeNull()
-    expect(sanitizeAnnualizedReturnPercent(26.5912)).toBeCloseTo(26.5912)
+    expect(sanitizePeriodReturnPercent(1233482.2167)).toBeNull()
+    expect(sanitizePeriodReturnPercent(-217.8022)).toBeNull()
+    expect(sanitizePeriodReturnPercent(-9.849)).toBeCloseTo(-9.849)
+    expect(sanitizePeriodReturnPercent(26.535)).toBeCloseTo(26.535)
   })
 })
 
@@ -27,7 +29,26 @@ describe('filterPlausibleHistoryPoints', () => {
 })
 
 describe('computeRendimientosFromHistory', () => {
-  it('ignores VCP=1 seeds for 30D and keeps a plausible TNA', () => {
+  it('prefers CNV period columns and does not annualize', () => {
+    const rendimientos = computeRendimientosFromHistory({
+      fecha: '2026-08-14',
+      valorCuotaparte: 250943.119,
+      variacionUnMesPct: -9.849,
+      variacionEnElAnioPct: -6.474,
+      variacionDoceMesesPct: 26.535,
+      history: [
+        { fecha: '2026-08-07', valorCuotaparte: 255000 },
+        { fecha: '2026-07-15', valorCuotaparte: 278000 },
+      ],
+    })
+
+    expect(rendimientos.unMes).toBeCloseTo(-9.849, 3)
+    expect(rendimientos.enElAnio).toBeCloseTo(-6.474, 3)
+    expect(rendimientos.doceMeses).toBeCloseTo(26.535, 3)
+    expect(rendimientos.ultimos7Dias).toBeCloseTo(periodReturnPercent(250943.119, 255000)!, 3)
+  })
+
+  it('uses period returns from VCP when CNV columns are missing', () => {
     const rendimientos = computeRendimientosFromHistory({
       fecha: '2026-08-12',
       valorCuotaparte: 1014.821,
@@ -39,8 +60,8 @@ describe('computeRendimientosFromHistory', () => {
       ],
     })
 
-    expect(rendimientos.ultimos7Dias).toBeCloseTo(26.5912, 0)
-    expect(rendimientos.unMes).toBeCloseTo(annualizeReturnPercent(1014.821, 1001.981, 28)!, 3)
+    expect(rendimientos.ultimos7Dias).toBeCloseTo(periodReturnPercent(1014.821, 1009.672)!, 3)
+    expect(rendimientos.unMes).toBeCloseTo(periodReturnPercent(1014.821, 1001.981)!, 3)
     expect(rendimientos.thirtyDays).toBe(28)
   })
 })

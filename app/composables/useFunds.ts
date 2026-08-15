@@ -97,6 +97,7 @@ interface FciComparatasasResponse {
     plazoLiquidacionDias: number
     rendimientos: {
       valorCuotaparte: number
+      variacionDiariaPct?: number | null
       ultimos7Dias: number | null
       unMes: number | null
       noventaDias: number | null

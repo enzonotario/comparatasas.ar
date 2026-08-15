@@ -9,7 +9,7 @@ import type {
 import {
   computeRendimientosFromHistory,
   recomputeHistoryReturns,
-  sanitizeAnnualizedReturnPercent,
+  sanitizePeriodReturnPercent,
 } from '~/lib/finance/fci-history-returns'
 import {
   formatCompactNumber,
@@ -89,7 +89,7 @@ export function useFciFundPresentation(
     return Math.max(1, Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1)
   })
 
-  const recomputedRendimientos = computed(() => {
+  const fallbackRendimientos = computed(() => {
     const detail = fundDetail.value
     const history = fundHistory.value?.historico
     if (!detail?.fecha || detail.rendimientos?.valorCuotaparte == null || !history?.length) {
@@ -99,55 +99,64 @@ export function useFciFundPresentation(
     return computeRendimientosFromHistory({
       fecha: detail.fecha,
       valorCuotaparte: detail.rendimientos.valorCuotaparte,
+      variacionDiariaPct: detail.rendimientos.variacionDiariaPct,
       history,
     })
   })
 
   const returnsRows = computed<ReturnRow[]>(() => {
     const api = fundDetail.value?.rendimientos
-    const recomputed = recomputedRendimientos.value
+    const fallback = fallbackRendimientos.value
 
+    // Preferir retornos de período publicados por CNV; historial solo como fallback.
+    const dailyValue = sanitizePeriodReturnPercent(api?.variacionDiariaPct)
     const sevenValue =
-      recomputed?.sevenDays != null
-        ? recomputed.ultimos7Dias
-        : sanitizeAnnualizedReturnPercent(api?.ultimos7Dias)
+      sanitizePeriodReturnPercent(api?.ultimos7Dias) ??
+      sanitizePeriodReturnPercent(fallback?.ultimos7Dias)
     const monthValue =
-      recomputed?.thirtyDays != null
-        ? recomputed.unMes
-        : recomputed
-          ? null
-          : sanitizeAnnualizedReturnPercent(api?.unMes)
+      sanitizePeriodReturnPercent(api?.unMes) ?? sanitizePeriodReturnPercent(fallback?.unMes)
+    const ytdValue =
+      sanitizePeriodReturnPercent(api?.enElAnio) ??
+      sanitizePeriodReturnPercent(fallback?.enElAnio)
+    const yearValue =
+      sanitizePeriodReturnPercent(api?.doceMeses) ??
+      sanitizePeriodReturnPercent(fallback?.doceMeses)
 
     return [
       {
+        period: '1D',
+        effectiveDays: dailyValue == null ? null : 1,
+        value: dailyValue,
+      },
+      {
         period: '7D',
-        effectiveDays: recomputed?.sevenDays ?? (sevenValue == null ? null : 7),
+        effectiveDays: fallback?.sevenDays ?? (sevenValue == null ? null : 7),
         value: sevenValue,
       },
       {
         period: '30D',
-        effectiveDays: recomputed?.thirtyDays ?? (monthValue == null ? null : 30),
+        effectiveDays: fallback?.thirtyDays ?? (monthValue == null ? null : 30),
         value: monthValue,
       },
       {
         period: '90D',
         effectiveDays: 90,
-        value: sanitizeAnnualizedReturnPercent(api?.noventaDias),
+        value: sanitizePeriodReturnPercent(api?.noventaDias),
       },
       {
         period: '180D',
         effectiveDays: 180,
-        value: sanitizeAnnualizedReturnPercent(api?.cientoOchentaDias),
+        value: sanitizePeriodReturnPercent(api?.cientoOchentaDias),
       },
       {
         period: 'YTD',
         effectiveDays: effectiveDaysInYear.value,
-        value: sanitizeAnnualizedReturnPercent(api?.enElAnio),
+        value: ytdValue,
       },
       {
         period: '1Y',
         effectiveDays: 365,
-        value: sanitizeAnnualizedReturnPercent(api?.doceMeses),
+        value: yearValue,
       },
     ]
   })

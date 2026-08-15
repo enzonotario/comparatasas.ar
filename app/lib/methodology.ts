@@ -74,23 +74,19 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Es el método por defecto del sitio. Tomamos el rendimiento del último mes informado por la CNV (vía Argentina Datos) y lo convertimos a TNA y TEA.',
+        text: 'Es el método por defecto del sitio. La planilla CNV publica retornos de período; para money market estimamos la TNA anualizando la variación diaria (×365).',
       },
       {
         type: 'formula',
-        text: 'Rendimiento base = unMes; si falta, ultimos7Dias',
+        text: 'TNA = variacionDiariaPct × 365 (si falta, legacy unMes / ultimos7Dias)',
       },
       {
         type: 'formula',
-        text: 'TNA = rendimiento mensual ÷ 100 (el mes se toma como TNA directa, sin proyectar a 365 días)',
-      },
-      {
-        type: 'formula',
-        text: 'TEA = (1 + rendimiento mensual ÷ 100)^12 − 1',
+        text: 'TEA = (1 + TNA ÷ 100)^12 − 1',
       },
       {
         type: 'p',
-        text: 'Ejemplo: si unMes = 16,5 → TNA mostrada = 16,50%.',
+        text: 'Ejemplo: si variacionDiariaPct = 0,05 → TNA mostrada = 18,25%.',
       },
     ],
   },
@@ -103,7 +99,7 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Usamos el rendimiento del último mes (unMes) publicado por la CNV (vía Argentina Datos). La conversión a TNA y TEA es la misma que en mercado de dinero: el mes se toma como TNA directa (sin anualizar linealmente a 365 días).',
+        text: 'Usamos el retorno de período `unMes` de la planilla CNV (columna de variación vs. fin de mes previo), el mismo criterio que exploradores como fonditos.',
       },
       {
         type: 'formula',
@@ -111,15 +107,15 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'formula',
-        text: 'TNA = rendimiento mensual ÷ 100',
+        text: 'TNA mostrada = rendimiento ÷ 100 (período CNV, sin proyectar a 365 días)',
       },
       {
         type: 'formula',
-        text: 'TEA = (1 + rendimiento mensual ÷ 100)^12 − 1',
+        text: 'TEA = (1 + rendimiento ÷ 100)^12 − 1',
       },
       {
         type: 'p',
-        text: 'Ejemplo: si unMes = 3 → TNA mostrada = 3,00%.',
+        text: 'Ejemplo: si unMes = -9,85 → valor mostrado = -9,85%.',
       },
     ],
   },
@@ -152,7 +148,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'La tabla de /fondos usa el catálogo CNV (TNA desde unMes); este método de series de VCP queda como alternativa para rankings y visualizaciones históricas.',
+        text: 'La tabla de /fondos usa el catálogo CNV (retornos de período + TNA MM vía variación diaria); este método de series de VCP queda como alternativa para rankings y visualizaciones históricas.',
       },
     ],
   },

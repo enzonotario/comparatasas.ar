@@ -2,8 +2,8 @@
 export const MAX_VCP_LOOKBACK_RATIO = 2
 const LOOKBACK_TOLERANCE_DAYS = 4
 
-/** Umbral para descartar TNA/rendimientos absurdos ya persistidos en API. */
-export const MAX_PLAUSIBLE_ANNUALIZED_RETURN_PCT = 1000
+/** Umbral para descartar rendimientos absurdos ya persistidos en API. */
+export const MAX_PLAUSIBLE_PERIOD_RETURN_PCT = 200
 
 export type FciHistoryVcpPoint = {
   fecha: string
@@ -21,6 +21,12 @@ function daysBetween(fromDate: string, toDate: string) {
   return Math.round((to - from) / (24 * 60 * 60 * 1000))
 }
 
+/** Retorno de período en % (estilo planilla CNV), sin anualizar. */
+export function periodReturnPercent(vcpNew: number, vcpOld: number) {
+  if (!(vcpOld > 0) || !(vcpNew > 0)) return null
+  return Number((((vcpNew - vcpOld) / vcpOld) * 100).toFixed(4))
+}
+
 export function annualizeReturnPercent(vcpNew: number, vcpOld: number, days: number) {
   if (!(vcpOld > 0) || !(vcpNew > 0) || !(days > 0)) return null
 
@@ -35,10 +41,16 @@ export function isPlausibleVcpPair(vcpNew: number, vcpOld: number) {
   return ratio >= 1 / MAX_VCP_LOOKBACK_RATIO && ratio <= MAX_VCP_LOOKBACK_RATIO
 }
 
-export function sanitizeAnnualizedReturnPercent(value: number | null | undefined) {
+export function sanitizePeriodReturnPercent(value: number | null | undefined) {
   if (value == null || !Number.isFinite(value)) return null
-  if (Math.abs(value) > MAX_PLAUSIBLE_ANNUALIZED_RETURN_PCT) return null
+  // Long-only no pierde >100%; valores tipo -217 suelen ser TNA mal anualizada persistida.
+  if (value < -100 || value > MAX_PLAUSIBLE_PERIOD_RETURN_PCT) return null
   return value
+}
+
+/** @deprecated usar sanitizePeriodReturnPercent; se mantiene por compat. */
+export function sanitizeAnnualizedReturnPercent(value: number | null | undefined) {
+  return sanitizePeriodReturnPercent(value)
 }
 
 /** Filtra puntos seed (p. ej. VCP=1) inconsistentes con el VCP más reciente. */
@@ -88,9 +100,20 @@ export function computeRendimientosFromHistory(input: {
   fecha: string | null | undefined
   valorCuotaparte: number | null | undefined
   variacionDiariaPct?: number | null
+  variacionUnMesPct?: number | null
+  variacionEnElAnioPct?: number | null
+  variacionDoceMesesPct?: number | null
   history?: FciHistoryVcpPoint[]
 }) {
-  const { fecha, valorCuotaparte, variacionDiariaPct = null, history = [] } = input
+  const {
+    fecha,
+    valorCuotaparte,
+    variacionDiariaPct = null,
+    variacionUnMesPct = null,
+    variacionEnElAnioPct = null,
+    variacionDoceMesesPct = null,
+    history = [],
+  } = input
 
   const sorted = filterPlausibleHistoryPoints(history)
 
@@ -125,20 +148,20 @@ export function computeRendimientosFromHistory(input: {
 
     return {
       days,
-      value: annualizeReturnPercent(valorCuotaparte, best.valorCuotaparte, days),
+      value: periodReturnPercent(valorCuotaparte, best.valorCuotaparte),
     }
   }
 
   const seven = findNear(7)
   const thirty = findNear(30)
 
-  const fromDaily =
-    typeof variacionDiariaPct === 'number' ? Number((variacionDiariaPct * 365).toFixed(4)) : null
-
   return {
     valorCuotaparte: valorCuotaparte ?? null,
-    ultimos7Dias: seven?.value ?? fromDaily,
-    unMes: thirty?.value ?? seven?.value ?? fromDaily,
+    variacionDiariaPct: typeof variacionDiariaPct === 'number' ? variacionDiariaPct : null,
+    ultimos7Dias: seven?.value ?? null,
+    unMes: typeof variacionUnMesPct === 'number' ? variacionUnMesPct : (thirty?.value ?? null),
+    enElAnio: typeof variacionEnElAnioPct === 'number' ? variacionEnElAnioPct : null,
+    doceMeses: typeof variacionDoceMesesPct === 'number' ? variacionDoceMesesPct : null,
     sevenDays: seven?.days ?? null,
     thirtyDays: thirty?.days ?? null,
   }

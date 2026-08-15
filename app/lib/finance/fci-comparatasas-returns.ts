@@ -1,6 +1,8 @@
 export interface FciComparatasasRendimientos {
   ultimos7Dias: number | null
   unMes: number | null
+  /** Variación diaria CNV en %; se usa para estimar TNA de money market. */
+  variacionDiariaPct?: number | null
 }
 
 export function getComparatasasReturnPercent(
@@ -8,6 +10,15 @@ export function getComparatasasReturnPercent(
   tipoRenta: string,
 ) {
   if (tipoRenta === 'Mercado de Dinero') {
+    // CNV publica retornos de período; para MM la TNA ≈ variación diaria * 365.
+    if (
+      rendimientos.variacionDiariaPct != null &&
+      Number.isFinite(rendimientos.variacionDiariaPct)
+    ) {
+      return rendimientos.variacionDiariaPct * 365
+    }
+
+    // Legacy CAFCI: unMes/ultimos7Dias ya venían anualizados ~TNA.
     return rendimientos.unMes ?? rendimientos.ultimos7Dias ?? 0
   }
 
