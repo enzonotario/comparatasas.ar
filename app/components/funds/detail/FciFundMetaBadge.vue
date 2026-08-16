@@ -17,7 +17,11 @@ const props = withDefaults(
 </script>
 
 <template>
-  <UBadge color="neutral" variant="outline" class="max-w-full px-2 py-1 align-middle">
+  <UBadge
+    color="neutral"
+    variant="outline"
+    class="inline-flex w-fit max-w-full px-2 py-1 align-middle"
+  >
     <div class="flex min-w-0 items-center gap-1.5">
       <UAvatar
         v-if="props.avatarSrc || props.avatarText"

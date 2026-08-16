@@ -269,7 +269,7 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
         </div>
 
         <div
-          class="min-h-[460px] rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950/60"
+          class="hidden lg:block min-h-[320px] xl:min-h-[460px] rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950/60"
         >
           <ClientOnly>
             <component

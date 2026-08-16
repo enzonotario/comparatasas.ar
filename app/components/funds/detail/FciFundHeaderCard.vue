@@ -112,7 +112,11 @@ const tipoRentaLabel = computed(() => {
           />
         </div>
 
-        <FciFundMetaBadge label="Actualizado" :value="updatedAtLabel" />
+        <FciFundMetaBadge
+          label="Actualizado"
+          :value="updatedAtLabel"
+          class="w-fit max-w-full shrink-0 self-start"
+        />
       </div>
 
       <div
@@ -124,13 +128,14 @@ const tipoRentaLabel = computed(() => {
         </h1>
       </div>
 
-      <div class="mt-2 flex flex-wrap items-center gap-1.5">
+      <div class="mt-2 flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:items-center">
         <FciFundMetaBadge
           label="Administradora"
           :value="props.fundDetail.administradora || '—'"
           :avatar-src="administradoraLogo"
           :avatar-alt="props.fundDetail.administradora || 'Administradora'"
           :avatar-text="companyInitials(props.fundDetail.administradora)"
+          class="min-w-0 max-w-full"
         />
 
         <FciFundMetaBadge
@@ -139,6 +144,7 @@ const tipoRentaLabel = computed(() => {
           :avatar-src="depositariaLogo"
           :avatar-alt="props.fundDetail.depositaria || 'Depositaria'"
           :avatar-text="companyInitials(props.fundDetail.depositaria)"
+          class="min-w-0 max-w-full"
         />
 
         <template v-if="!compact">

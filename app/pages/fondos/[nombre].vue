@@ -201,6 +201,11 @@ const kpiItems = computed(() => {
   return items
 })
 
+/** En mobile el patrimonio total ya se ve en clases; dejamos 4 KPIs en grilla 2×2. */
+const mobileKpiItems = computed(() =>
+  kpiItems.value.filter((item) => item.label !== 'Patrimonio total'),
+)
+
 useSeoMeta({
   title: () =>
     fundDetail.value ? `${fundDetail.value.nombre} - Fondo común de inversión` : 'Detalle de FCI',
@@ -225,7 +230,7 @@ useSeoMeta({
     class="max-lg:h-auto max-lg:min-h-0 lg:h-full lg:min-h-0"
     :ui="{
       root: 'max-lg:!min-h-0 max-lg:h-auto lg:h-full lg:min-h-0 lg:!min-h-0',
-      body: 'max-lg:!overflow-visible max-lg:!flex-none p-2!',
+      body: 'max-lg:!overflow-visible max-lg:!flex-none space-y-4 p-3! sm:p-4! gap-0!',
     }"
   >
     <template #header>
@@ -233,25 +238,37 @@ useSeoMeta({
         :title="navbarTitle"
         :ui="{
           root: 'max-lg:sticky max-lg:top-[var(--ui-header-height)] max-lg:z-40 max-lg:bg-default/95 max-lg:backdrop-blur-md',
+          title: 'truncate max-w-[42vw] sm:max-w-none',
         }"
       >
         <template #trailing>
-          <UBadge color="neutral" variant="outline">FCI</UBadge>
+          <UBadge color="neutral" variant="outline" class="hidden sm:inline-flex">FCI</UBadge>
           <UBadge
             v-if="fundDetail?.tipoRenta"
             color="neutral"
             variant="subtle"
+            class="hidden sm:inline-flex"
             :label="tipoRentaLabel"
           />
           <UBadge
             v-if="fundDetail?.moneda"
             color="neutral"
             variant="subtle"
+            class="hidden md:inline-flex"
             :label="normalizeCurrencyCode(fundDetail.moneda)"
           />
         </template>
 
         <template #right>
+          <UButton
+            icon="i-lucide-arrow-left"
+            variant="ghost"
+            color="neutral"
+            square
+            aria-label="Volver"
+            class="sm:hidden"
+            @click="goBack"
+          />
           <UButton
             icon="i-lucide-arrow-left"
             variant="ghost"
@@ -282,12 +299,30 @@ useSeoMeta({
             color="neutral"
             variant="outline"
             icon="i-lucide-external-link"
+            square
+            aria-label="CAFCI"
+            class="sm:hidden"
+          />
+          <UButton
+            v-if="cafciUrl"
+            :to="cafciUrl"
+            external
+            target="_blank"
+            rel="noopener noreferrer"
+            color="neutral"
+            variant="outline"
+            icon="i-lucide-external-link"
             label="CAFCI"
+            class="hidden sm:inline-flex"
           />
         </template>
       </UDashboardNavbar>
 
-      <UDashboardToolbar v-if="fundDetail && siblingInfo.siblings.length > 1">
+      <!-- Desktop: quick class switcher in toolbar -->
+      <UDashboardToolbar
+        v-if="fundDetail && siblingInfo.siblings.length > 1"
+        class="hidden md:flex"
+      >
         <template #left>
           <div class="flex flex-wrap items-center gap-1.5 -ms-1">
             <span class="text-xs text-muted mr-1">Clases</span>
@@ -313,7 +348,35 @@ useSeoMeta({
         </template>
       </UDashboardToolbar>
 
-      <UDashboardToolbar v-if="fundDetail">
+      <!-- Mobile: KPI grid + tabs stacked -->
+      <div v-if="fundDetail" class="border-b border-default px-3 py-3 space-y-3 md:hidden">
+        <div class="grid grid-cols-2 gap-2">
+          <div
+            v-for="kpi in mobileKpiItems"
+            :key="kpi.label"
+            class="rounded-lg border border-default bg-elevated/40 px-2.5 py-2 min-w-0"
+          >
+            <div class="flex items-center gap-1.5 mb-0.5">
+              <UIcon :name="kpi.icon" class="size-3 text-muted shrink-0" />
+              <p class="text-[10px] uppercase tracking-wide text-muted truncate">{{ kpi.label }}</p>
+            </div>
+            <p class="text-sm font-semibold text-highlighted truncate">{{ kpi.value }}</p>
+          </div>
+        </div>
+
+        <UTabs
+          v-model="selectedDetailTab"
+          :items="detailTabs"
+          :content="false"
+          color="neutral"
+          size="sm"
+          class="w-full"
+          :ui="{ list: 'w-full', trigger: 'flex-1' }"
+        />
+      </div>
+
+      <!-- Desktop: KPI strip + tabs -->
+      <UDashboardToolbar v-if="fundDetail" class="hidden md:flex">
         <template #left>
           <div class="flex flex-wrap items-center gap-2 -ms-1">
             <div
@@ -371,15 +434,15 @@ useSeoMeta({
           compact
         />
 
-        <FciFundSiblingClasses
-          :base-name="siblingInfo.baseName"
-          :current-fondo="fundDetail.nombre"
-          :current-patrimonio="fundDetail.patrimonio"
-          :siblings="siblingInfo.siblings"
-          :patrimonio-total="siblingInfo.patrimonioTotal"
-        />
+        <div v-show="selectedDetailTab === 'resumen'" class="space-y-4">
+          <FciFundSiblingClasses
+            :base-name="siblingInfo.baseName"
+            :current-fondo="fundDetail.nombre"
+            :current-patrimonio="fundDetail.patrimonio"
+            :siblings="siblingInfo.siblings"
+            :patrimonio-total="siblingInfo.patrimonioTotal"
+          />
 
-        <div v-show="selectedDetailTab === 'resumen'">
           <FciFundSummaryTab
             :fund-detail="fundDetail"
             :returns-rows="returnsRows"

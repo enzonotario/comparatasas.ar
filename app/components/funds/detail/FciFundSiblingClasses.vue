@@ -148,7 +148,7 @@ const sortedSiblings = computed(() => {
 
       <div
         v-if="hasMultipleClasses"
-        class="shrink-0 rounded-lg border border-default bg-default px-3 py-2 text-sm"
+        class="hidden sm:block shrink-0 rounded-lg border border-default bg-default px-3 py-2 text-sm"
       >
         <p class="text-[10px] uppercase tracking-wide text-muted">Patrimonio total</p>
         <p class="text-lg font-semibold text-highlighted leading-tight">
@@ -162,7 +162,8 @@ const sortedSiblings = computed(() => {
       </div>
     </div>
 
-    <div class="flex flex-wrap gap-1.5">
+    <!-- Desktop: quick pills (toolbar also has them from md+) -->
+    <div class="hidden md:flex flex-wrap gap-1.5">
       <UButton
         v-for="row in siblings"
         :key="row.fondo"
@@ -174,7 +175,59 @@ const sortedSiblings = computed(() => {
       />
     </div>
 
-    <div v-if="hasMultipleClasses" class="overflow-x-auto -mx-1">
+    <!-- Mobile: compact class cards -->
+    <div v-if="hasMultipleClasses" class="space-y-2 md:hidden">
+      <template v-for="row in sortedSiblings" :key="`mobile-${row.fondo}`">
+        <NuxtLink
+          v-if="row.fondo !== currentFondo"
+          :to="siblingDetailTo(row.fondo)"
+          class="flex items-center justify-between gap-3 rounded-lg border border-default bg-default px-3 py-2.5 active:bg-elevated/60"
+        >
+          <div class="min-w-0">
+            <p class="font-medium text-highlighted truncate">
+              {{ row.classLabel || row.fondo }}
+            </p>
+            <p class="text-xs text-muted mt-0.5">
+              {{ formatCompactNumber(row.patrimonio) }}
+              <span v-if="shareOfFund(row) != null"> · {{ formatShare(row) }} del fondo</span>
+            </p>
+          </div>
+          <div class="shrink-0 text-right">
+            <p class="text-sm font-semibold tabular-nums" :class="metricTone(row.tna)">
+              {{ formatRate(row.tna) ?? '—' }}
+            </p>
+            <p class="text-[10px] uppercase tracking-wide text-muted">TNA</p>
+          </div>
+        </NuxtLink>
+
+        <div
+          v-else
+          class="flex items-center justify-between gap-3 rounded-lg border border-default bg-default px-3 py-2.5 ring-1 ring-default"
+        >
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <p class="font-medium text-highlighted truncate">
+                {{ row.classLabel || row.fondo }}
+              </p>
+              <UBadge color="neutral" variant="subtle" size="sm" label="Actual" />
+            </div>
+            <p class="text-xs text-muted mt-0.5">
+              {{ formatCompactNumber(row.patrimonio) }}
+              <span v-if="shareOfFund(row) != null"> · {{ formatShare(row) }} del fondo</span>
+            </p>
+          </div>
+          <div class="shrink-0 text-right">
+            <p class="text-sm font-semibold tabular-nums" :class="metricTone(row.tna)">
+              {{ formatRate(row.tna) ?? '—' }}
+            </p>
+            <p class="text-[10px] uppercase tracking-wide text-muted">TNA</p>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Desktop: sortable table -->
+    <div v-if="hasMultipleClasses" class="overflow-x-auto -mx-1 hidden md:block">
       <table class="w-full text-sm min-w-[520px]">
         <thead>
           <tr class="text-left text-muted border-b border-default">
@@ -284,7 +337,7 @@ const sortedSiblings = computed(() => {
       </table>
     </div>
 
-    <p v-if="hasMultipleClasses" class="text-xs text-muted">
+    <p v-if="hasMultipleClasses" class="text-xs text-muted hidden md:block">
       El patrimonio total suma todas las clases del mismo fondo. La TNA es propia de cada clase.
     </p>
   </div>
