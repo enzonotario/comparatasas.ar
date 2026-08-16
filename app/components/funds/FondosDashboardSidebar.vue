@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
 import type { FundCatalogRow } from '~/composables/useFondosCatalog'
+import { formatCompactNumber } from '~/lib/fci-fund-formatters'
+import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
+import { getFundDetailTo, normalizeFundSlug } from '~/lib/funds-detail'
 
 const props = defineProps<{
   allFunds: FundCatalogRow[]
-  collapsed?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -13,8 +15,10 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const isDetailPage = computed(() => route.name === 'fondos-nombre')
-
-const CNV_CUOTAPARTES_URL = 'https://www.cnv.gov.ar/SitioWeb/FondosComunesInversion/CuotaPartes'
+const detailSlug = computed(() => String(route.params.nombre || ''))
+const detailTab = computed(() =>
+  typeof route.query.tab === 'string' ? route.query.tab : undefined,
+)
 
 const PRESERVED_KEYS = ['agrupar', 'sort', 'pageSize'] as const
 
@@ -67,6 +71,41 @@ function clearTipoQuery() {
 
 const selectedTipo = computed(() => queryValue('tipo'))
 
+const currentCatalogFund = computed(() => {
+  if (!isDetailPage.value || !detailSlug.value) return null
+  return (
+    props.allFunds.find((fund) => normalizeFundSlug(fund.fondo) === detailSlug.value) ?? null
+  )
+})
+
+const detailSiblingInfo = computed(() => {
+  const fund = currentCatalogFund.value
+  if (!fund) return null
+
+  return findSiblingFundClasses(props.allFunds, fund.fondo, {
+    fondoId: fund.fondoId,
+  })
+})
+
+const claseChildren = computed<NavigationMenuItem[]>(() => {
+  const info = detailSiblingInfo.value
+  if (!info?.siblings.length) return []
+
+  return info.siblings.map((row) => {
+    const isActive = normalizeFundSlug(row.fondo) === detailSlug.value
+    const patrimonio = formatCompactNumber(row.patrimonio)
+
+    return {
+      label: row.classLabel || row.fondo,
+      icon: isActive ? 'i-lucide-circle-dot' : 'i-lucide-circle',
+      to: isActive ? undefined : getFundDetailTo(row.fondo, { tab: detailTab.value }),
+      active: isActive,
+      badge: patrimonio !== '—' ? patrimonio : undefined,
+      onSelect: closeSidebar,
+    }
+  })
+})
+
 const tipoChildren = computed<NavigationMenuItem[]>(() => {
   const map = new Map<string, string>()
   for (const fund of props.allFunds) {
@@ -98,26 +137,38 @@ const tipoChildren = computed<NavigationMenuItem[]>(() => {
 })
 
 const mainLinks = computed<NavigationMenuItem[]>(() => {
-  const items: NavigationMenuItem[] = []
-
   if (isDetailPage.value) {
-    items.push({
-      label: 'Volver al catálogo',
-      icon: 'i-lucide-arrow-left',
-      to: '/fondos',
-      onSelect: closeSidebar,
-    })
+    const items: NavigationMenuItem[] = [
+      {
+        label: 'Volver al catálogo',
+        icon: 'i-lucide-arrow-left',
+        to: '/fondos',
+        onSelect: closeSidebar,
+      },
+    ]
+
+    const siblings = claseChildren.value
+    if (siblings.length) {
+      const baseName = detailSiblingInfo.value?.baseName
+      items.push(
+        {
+          label: baseName || 'Clases del fondo',
+          type: 'label',
+        },
+        ...siblings,
+      )
+    }
+
+    return items
   }
 
-  items.push({
-    label: 'Tipos de fondo',
-    icon: 'i-lucide-layers',
-    type: 'trigger',
-    defaultOpen: true,
-    children: tipoChildren.value,
-  })
-
-  return items
+  return [
+    {
+      label: 'Tipos de fondo',
+      type: 'label',
+    },
+    ...tipoChildren.value,
+  ]
 })
 
 const secondaryLinks = computed<NavigationMenuItem[]>(() => [
@@ -132,19 +183,14 @@ const secondaryLinks = computed<NavigationMenuItem[]>(() => [
 
 <template>
   <UNavigationMenu
-    :collapsed="collapsed"
     :items="mainLinks"
     orientation="vertical"
-    tooltip
-    popover
     color="neutral"
   />
 
   <UNavigationMenu
-    :collapsed="collapsed"
     :items="secondaryLinks"
     orientation="vertical"
-    tooltip
     color="neutral"
     class="mt-auto"
   />

@@ -89,7 +89,6 @@ const isDetailPage = computed(() => route.name === 'fondos-nombre')
       <UDashboardSidebar
         id="fondos"
         v-model:open="open"
-        collapsible
         resizable
         :min-size="14"
         :default-size="18"
@@ -100,28 +99,26 @@ const isDetailPage = computed(() => route.name === 'fondos-nombre')
           footer: 'lg:border-t lg:border-default',
         }"
       >
-        <template #default="{ collapsed }">
+        <template #default>
           <FondosDashboardSidebar
             :all-funds="allFunds ?? []"
-            :collapsed="collapsed"
             @select="open = false"
           />
         </template>
 
-        <template #footer="{ collapsed }">
+        <template #footer>
           <NuxtLink
             to="https://argentinadatos.com"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-2 w-full min-w-0 rounded-md hover:bg-elevated/50 transition-colors"
-            :class="collapsed ? 'justify-center p-1' : 'px-1 py-0.5'"
+            class="flex items-center gap-2 w-full min-w-0 rounded-md hover:bg-elevated/50 transition-colors px-1 py-0.5"
           >
             <div
               class="size-8 shrink-0 rounded-full bg-elevated ring ring-default flex items-center justify-center"
             >
               <UIcon name="i-lucide-database" class="size-4 text-muted" />
             </div>
-            <div v-if="!collapsed" class="min-w-0 flex-1">
+            <div class="min-w-0 flex-1">
               <p class="text-sm font-medium truncate">ArgentinaDatos</p>
             </div>
           </NuxtLink>

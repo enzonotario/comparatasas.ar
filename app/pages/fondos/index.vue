@@ -748,10 +748,6 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
             root: 'bg-transparent',
           }"
         >
-          <template #leading>
-            <UDashboardSidebarCollapse />
-          </template>
-
           <template #trailing>
             <UBadge
               v-if="activeFilterCount"

@@ -235,10 +235,6 @@ useSeoMeta({
           root: 'max-lg:sticky max-lg:top-[var(--ui-header-height)] max-lg:z-40 max-lg:bg-default/95 max-lg:backdrop-blur-md',
         }"
       >
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-
         <template #trailing>
           <UBadge color="neutral" variant="outline">FCI</UBadge>
           <UBadge
