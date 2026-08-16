@@ -225,7 +225,7 @@ useSeoMeta({
     class="max-lg:h-auto max-lg:min-h-0 lg:h-full lg:min-h-0"
     :ui="{
       root: 'max-lg:!min-h-0 max-lg:h-auto lg:h-full lg:min-h-0 lg:!min-h-0',
-      body: 'max-lg:!overflow-visible max-lg:!flex-none',
+      body: 'max-lg:!overflow-visible max-lg:!flex-none p-2!',
     }"
   >
     <template #header>
