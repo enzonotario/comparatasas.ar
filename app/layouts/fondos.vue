@@ -25,7 +25,7 @@ const isDetailPage = computed(() => route.name === 'fondos-nombre')
     <GlobalSearch />
 
     <UHeader
-      class="fixed top-0 left-0 right-0 z-[60] bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md"
+      class="top-0 left-0 right-0 z-[60] bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md max-lg:sticky lg:fixed"
       :ui="{
         center: '!flex',
         toggle: '!hidden',
@@ -84,7 +84,7 @@ const isDetailPage = computed(() => route.name === 'fondos-nombre')
     <UDashboardGroup
       unit="rem"
       storage-key="fondos-dashboard"
-      class="bg-neutral-50 dark:bg-neutral-950 max-lg:relative max-lg:!inset-auto max-lg:!top-auto max-lg:!bottom-auto max-lg:overflow-visible max-lg:h-auto max-lg:min-h-0 max-lg:pt-[var(--ui-header-height)] lg:fixed lg:!inset-x-0 lg:!top-[var(--ui-header-height)] lg:!bottom-0 lg:overflow-hidden"
+      class="bg-neutral-50 dark:bg-neutral-950 max-lg:relative max-lg:!inset-auto max-lg:!top-auto max-lg:!bottom-auto max-lg:overflow-visible max-lg:h-auto max-lg:min-h-0 lg:fixed lg:!inset-x-0 lg:!top-[var(--ui-header-height)] lg:!bottom-0 lg:overflow-hidden"
     >
       <UDashboardSidebar
         id="fondos"
