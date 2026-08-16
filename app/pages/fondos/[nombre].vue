@@ -319,7 +319,7 @@ useSeoMeta({
             <div
               v-for="kpi in kpiItems"
               :key="kpi.label"
-              class="flex items-center gap-2 rounded-lg border border-default bg-elevated/50 px-2.5 py-1.5"
+              class="flex items-center gap-2 rounded-lg px-2.5 py-1.5"
             >
               <UIcon :name="kpi.icon" class="size-3.5 text-muted shrink-0" />
               <div class="min-w-0">
