@@ -84,7 +84,7 @@ const isDetailPage = computed(() => route.name === 'fondos-nombre')
     <UDashboardGroup
       unit="rem"
       storage-key="fondos-dashboard"
-      class="!top-[var(--ui-header-height)] !bottom-0 bg-neutral-50 dark:bg-neutral-950"
+      class="bg-neutral-50 dark:bg-neutral-950 max-lg:relative max-lg:!inset-auto max-lg:!top-auto max-lg:!bottom-auto max-lg:overflow-visible max-lg:h-auto max-lg:min-h-0 max-lg:pt-[var(--ui-header-height)] lg:fixed lg:!inset-x-0 lg:!top-[var(--ui-header-height)] lg:!bottom-0 lg:overflow-hidden"
     >
       <UDashboardSidebar
         id="fondos"

@@ -220,9 +220,21 @@ useSeoMeta({
 </script>
 
 <template>
-  <UDashboardPanel id="fondos-detail">
+  <UDashboardPanel
+    id="fondos-detail"
+    class="max-lg:h-auto max-lg:min-h-0 lg:h-full lg:min-h-0"
+    :ui="{
+      root: 'max-lg:!min-h-0 max-lg:h-auto lg:h-full lg:min-h-0 lg:!min-h-0',
+      body: 'max-lg:!overflow-visible max-lg:!flex-none',
+    }"
+  >
     <template #header>
-      <UDashboardNavbar :title="navbarTitle">
+      <UDashboardNavbar
+        :title="navbarTitle"
+        :ui="{
+          root: 'max-lg:sticky max-lg:top-[var(--ui-header-height)] max-lg:z-40 max-lg:bg-default/95 max-lg:backdrop-blur-md',
+        }"
+      >
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>

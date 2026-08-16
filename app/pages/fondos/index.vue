@@ -727,46 +727,58 @@ const displayMenuItems = computed(() => {
 })
 
 const avgTnaLabel = computed(() => formatRatePercent(stats.value.avgTna) ?? '—')
+const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
 </script>
 
 <template>
   <UDashboardPanel
     id="fondos-catalog"
-    class="h-full min-h-0"
+    class="max-lg:h-auto max-lg:min-h-0 lg:h-full lg:min-h-0"
     :ui="{
-      root: 'h-full min-h-0 !min-h-0',
-      body: 'overflow-hidden min-h-0',
+      root: 'max-lg:!min-h-0 max-lg:h-auto lg:h-full lg:min-h-0 lg:!min-h-0',
+      body: 'max-lg:!overflow-visible max-lg:!flex-none lg:overflow-hidden lg:min-h-0',
     }"
   >
     <template #header>
-      <UDashboardNavbar>
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
+      <div
+        class="max-lg:sticky max-lg:top-[var(--ui-header-height)] max-lg:z-40 max-lg:bg-default/95 max-lg:backdrop-blur-md max-lg:border-b max-lg:border-default"
+      >
+        <UDashboardNavbar
+          :ui="{
+            root: 'bg-transparent',
+          }"
+        >
+          <template #leading>
+            <UDashboardSidebarCollapse />
+          </template>
 
-        <template #trailing>
-          <UBadge
-            v-if="activeFilterCount"
-            color="neutral"
-            variant="subtle"
-            :label="`${activeFilterCount} filtros`"
-          />
-        </template>
+          <template #trailing>
+            <UBadge
+              v-if="activeFilterCount"
+              color="neutral"
+              variant="subtle"
+              :label="`${activeFilterCount} filtros`"
+            />
+          </template>
 
-        <template #right>
-          <UTabs
-            v-model="catalogVista"
-            :items="vistaTabs"
-            :content="false"
-            color="neutral"
-            size="xs"
-            variant="link"
-            class="w-auto"
-          />
-        </template>
-      </UDashboardNavbar>
+          <template #right>
+            <UTabs
+              v-model="catalogVista"
+              :items="vistaTabs"
+              :content="false"
+              color="neutral"
+              size="xs"
+              variant="link"
+              class="w-auto"
+            />
+          </template>
+        </UDashboardNavbar>
 
-      <UDashboardToolbar>
+        <UDashboardToolbar
+          :ui="{
+            root: 'bg-transparent',
+          }"
+        >
         <template #left>
           <UInput
             v-model="searchQuery"
@@ -953,6 +965,7 @@ const avgTnaLabel = computed(() => formatRatePercent(stats.value.avgTna) ?? '—
           />
         </template>
       </UDashboardToolbar>
+      </div>
     </template>
 
     <template #body>
@@ -1036,7 +1049,7 @@ const avgTnaLabel = computed(() => formatRatePercent(stats.value.avgTna) ?? '—
         v-model:pagination="pagination"
         v-model:column-visibility="columnVisibility"
         v-model:expanded="expanded"
-        sticky="header"
+        :sticky="isDesktopLayout ? 'header' : false"
         :data="activeTableData"
         :columns="isFondosVista ? columns : entityColumns"
         :loading="loading"
@@ -1047,8 +1060,9 @@ const avgTnaLabel = computed(() => formatRatePercent(stats.value.avgTna) ?? '—
         "
         :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
         :on-select="isFondosVista ? handleFundRowSelect : handleEntityRowSelect"
-        class="flex-1 min-h-0"
+        class="w-full shrink-0 lg:flex-1 lg:min-h-0 lg:shrink"
         :ui="{
+          root: 'relative overflow-x-auto overflow-y-visible lg:overflow-auto',
           base: 'table-fixed border-separate border-spacing-0',
           thead:
             '!bg-default/95 backdrop-blur-md [&>tr]:bg-transparent [&>tr]:after:content-none shadow-[inset_0_-1px_0_0_var(--ui-border)]',
