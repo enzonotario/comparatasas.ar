@@ -171,7 +171,7 @@ watch(tableTotalPages, (value) => {
 })
 
 const { data: ogItems } = await useAsyncData('og-fondos', async () => {
-  await fetchPageFunds({ forceBySeries: true })
+  await fetchPageFunds()
   const accountsFunds = allFundsCache.value.filter((i) => i?.meta?.showInAccounts)
   const mercadoDineroFunds = (fundsData.value?.mercadoDinero ?? []).filter(
     (i) => i?.meta?.showInFunds,

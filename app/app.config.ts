@@ -5,7 +5,4 @@ export default defineAppConfig({
       neutral: 'zinc',
     },
   },
-  features: {
-    useFundsBySeriesEndpoint: false,
-  },
 })
