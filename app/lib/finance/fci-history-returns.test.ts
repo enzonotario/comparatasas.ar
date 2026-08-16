@@ -29,23 +29,44 @@ describe('filterPlausibleHistoryPoints', () => {
 })
 
 describe('computeRendimientosFromHistory', () => {
-  it('prefers CNV period columns and does not annualize', () => {
+  it('computes rolling period returns from VCP', () => {
+    const rendimientos = computeRendimientosFromHistory({
+      fecha: '2026-08-14',
+      valorCuotaparte: 104992.455,
+      history: [
+        { fecha: '2025-08-14', valorCuotaparte: 81290 },
+        { fecha: '2025-12-30', valorCuotaparte: 92280 },
+        { fecha: '2026-05-21', valorCuotaparte: 100870 },
+        { fecha: '2026-07-15', valorCuotaparte: 103479 },
+        { fecha: '2026-08-07', valorCuotaparte: 104617 },
+        { fecha: '2026-08-13', valorCuotaparte: 104930.7 },
+        { fecha: '2026-08-14', valorCuotaparte: 104992.455 },
+      ],
+    })
+
+    expect(rendimientos.ultimos7Dias).toBeCloseTo(periodReturnPercent(104992.455, 104617)!, 3)
+    expect(rendimientos.unMes).toBeCloseTo(periodReturnPercent(104992.455, 103479)!, 3)
+    expect(rendimientos.noventaDias).toBeCloseTo(periodReturnPercent(104992.455, 100870)!, 3)
+    expect(rendimientos.enElAnio).toBeCloseTo(periodReturnPercent(104992.455, 92280)!, 3)
+    expect(rendimientos.doceMeses).toBeCloseTo(periodReturnPercent(104992.455, 81290)!, 3)
+    expect(rendimientos.thirtyDays).toBe(30)
+  })
+
+  it('falls back to CNV columns when history cannot resolve the window', () => {
     const rendimientos = computeRendimientosFromHistory({
       fecha: '2026-08-14',
       valorCuotaparte: 250943.119,
       variacionUnMesPct: -9.849,
       variacionEnElAnioPct: -6.474,
       variacionDoceMesesPct: 26.535,
-      history: [
-        { fecha: '2026-08-07', valorCuotaparte: 255000 },
-        { fecha: '2026-07-15', valorCuotaparte: 278000 },
-      ],
+      history: [{ fecha: '2026-08-07', valorCuotaparte: 255000 }],
     })
 
+    // Solo hay ~7 días de historia: 30D/YTD/1Y caen al fallback CNV.
+    expect(rendimientos.ultimos7Dias).toBeCloseTo(periodReturnPercent(250943.119, 255000)!, 3)
     expect(rendimientos.unMes).toBeCloseTo(-9.849, 3)
     expect(rendimientos.enElAnio).toBeCloseTo(-6.474, 3)
     expect(rendimientos.doceMeses).toBeCloseTo(26.535, 3)
-    expect(rendimientos.ultimos7Dias).toBeCloseTo(periodReturnPercent(250943.119, 255000)!, 3)
   })
 
   it('uses period returns from VCP when CNV columns are missing', () => {

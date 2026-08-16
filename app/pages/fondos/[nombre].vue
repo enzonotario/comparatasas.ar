@@ -132,17 +132,17 @@ const {
   maxCompositionPercentage,
   feeRows,
   returnsRows,
+  return30d,
   returnsColumns,
   historyColumns,
 } = useFciFundPresentation(fundDetail, fundHistory)
 
 watch(
-  [selectedDetailTab, fundDetail],
-  async ([tab]) => {
+  fundDetail,
+  async () => {
     if (!fundDetail.value) return
-    if (tab === 'historico') {
-      await ensureHistoryLoaded()
-    }
+    // Histórico hace falta también en Resumen para 30D/90D/180D rolling (CNV unMes ≠ 30D).
+    await ensureHistoryLoaded()
   },
   { immediate: true },
 )
@@ -163,7 +163,7 @@ const tipoRentaLabel = computed(() => {
 const kpiItems = computed(() => {
   if (!fundDetail.value) return []
 
-  const unMes = fundDetail.value.rendimientos?.unMes ?? null
+  const unMes = return30d.value ?? fundDetail.value.rendimientos?.unMes ?? null
   const items = [
     {
       label: 'Patrimonio clase',
@@ -176,7 +176,7 @@ const kpiItems = computed(() => {
       icon: 'i-lucide-circle-dollar-sign',
     },
     {
-      label: 'Rend. 1 mes',
+      label: 'Rend. 30D',
       value: formatPercentAuto(unMes),
       icon: 'i-lucide-trending-up',
     },

@@ -108,19 +108,22 @@ export function useFciFundPresentation(
     const api = fundDetail.value?.rendimientos
     const fallback = fallbackRendimientos.value
 
-    // Preferir retornos de período publicados por CNV; historial solo como fallback.
+    // 1D/7D/YTD/1Y de CNV suelen coincidir con rolling. unMes CNV = vs fin de mes previo
+    // (no 30D). noventa/cientoOchenta CNV suelen venir anualizados — no usarlos como período.
     const dailyValue = sanitizePeriodReturnPercent(api?.variacionDiariaPct)
     const sevenValue =
-      sanitizePeriodReturnPercent(api?.ultimos7Dias) ??
-      sanitizePeriodReturnPercent(fallback?.ultimos7Dias)
+      sanitizePeriodReturnPercent(fallback?.ultimos7Dias) ??
+      sanitizePeriodReturnPercent(api?.ultimos7Dias)
     const monthValue =
-      sanitizePeriodReturnPercent(api?.unMes) ?? sanitizePeriodReturnPercent(fallback?.unMes)
+      sanitizePeriodReturnPercent(fallback?.unMes) ?? sanitizePeriodReturnPercent(api?.unMes)
+    const ninetyValue = sanitizePeriodReturnPercent(fallback?.noventaDias)
+    const oneEightyValue = sanitizePeriodReturnPercent(fallback?.cientoOchentaDias)
     const ytdValue =
-      sanitizePeriodReturnPercent(api?.enElAnio) ??
-      sanitizePeriodReturnPercent(fallback?.enElAnio)
+      sanitizePeriodReturnPercent(fallback?.enElAnio) ??
+      sanitizePeriodReturnPercent(api?.enElAnio)
     const yearValue =
-      sanitizePeriodReturnPercent(api?.doceMeses) ??
-      sanitizePeriodReturnPercent(fallback?.doceMeses)
+      sanitizePeriodReturnPercent(fallback?.doceMeses) ??
+      sanitizePeriodReturnPercent(api?.doceMeses)
 
     return [
       {
@@ -140,26 +143,30 @@ export function useFciFundPresentation(
       },
       {
         period: '90D',
-        effectiveDays: 90,
-        value: sanitizePeriodReturnPercent(api?.noventaDias),
+        effectiveDays: fallback?.ninetyDays ?? (ninetyValue == null ? null : 90),
+        value: ninetyValue,
       },
       {
         period: '180D',
-        effectiveDays: 180,
-        value: sanitizePeriodReturnPercent(api?.cientoOchentaDias),
+        effectiveDays: fallback?.oneEightyDays ?? (oneEightyValue == null ? null : 180),
+        value: oneEightyValue,
       },
       {
         period: 'YTD',
-        effectiveDays: effectiveDaysInYear.value,
+        effectiveDays: fallback?.ytdDays ?? effectiveDaysInYear.value,
         value: ytdValue,
       },
       {
         period: '1Y',
-        effectiveDays: 365,
+        effectiveDays: fallback?.twelveMonthDays ?? (yearValue == null ? null : 365),
         value: yearValue,
       },
     ]
   })
+
+  const return30d = computed(
+    () => returnsRows.value.find((row) => row.period === '30D')?.value ?? null,
+  )
 
   const returnsColumns: TableColumn<ReturnRow>[] = [
     {
@@ -315,6 +322,7 @@ export function useFciFundPresentation(
     maxCompositionPercentage,
     feeRows,
     returnsRows,
+    return30d,
     returnsColumns,
     historyColumns,
   }

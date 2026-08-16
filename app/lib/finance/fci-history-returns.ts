@@ -21,6 +21,10 @@ function daysBetween(fromDate: string, toDate: string) {
   return Math.round((to - from) / (24 * 60 * 60 * 1000))
 }
 
+function lookbackToleranceDays(targetDays: number) {
+  return Math.max(LOOKBACK_TOLERANCE_DAYS, Math.ceil(targetDays * 0.1))
+}
+
 /** Retorno de período en % (estilo planilla CNV), sin anualizar. */
 export function periodReturnPercent(vcpNew: number, vcpOld: number) {
   if (!(vcpOld > 0) || !(vcpNew > 0)) return null
@@ -96,12 +100,23 @@ export function recomputeHistoryReturns<T extends FciHistoryVcpPoint>(points: T[
   })
 }
 
+/**
+ * Retornos de período (no anualizados) desde la serie de VCP.
+ * Retornos de período (no anualizados) desde la serie de VCP:
+ * 7D/30D/90D/180D/1Y rolling y YTD.
+ *
+ * Nota: la planilla CNV `unMes` es variación vs fin de mes previo (no 30D rolling),
+ * y `noventaDias`/`cientoOchentaDias` suelen venir anualizados — no usarlos como período.
+ */
 export function computeRendimientosFromHistory(input: {
   fecha: string | null | undefined
   valorCuotaparte: number | null | undefined
   variacionDiariaPct?: number | null
+  /** Fallback si no hay histórico suficiente para 30D rolling. */
   variacionUnMesPct?: number | null
+  /** Fallback si no hay histórico suficiente para YTD. */
   variacionEnElAnioPct?: number | null
+  /** Fallback si no hay histórico suficiente para 12M. */
   variacionDoceMesesPct?: number | null
   history?: FciHistoryVcpPoint[]
 }) {
@@ -120,6 +135,7 @@ export function computeRendimientosFromHistory(input: {
   const findNear = (targetDays: number) => {
     if (!fecha || valorCuotaparte == null) return null
 
+    const toleranceDays = lookbackToleranceDays(targetDays)
     const targetTime = Date.parse(`${fecha}T00:00:00.000Z`) - targetDays * 24 * 60 * 60 * 1000
 
     let best: (FciHistoryVcpPoint & { valorCuotaparte: number }) | null = null
@@ -137,12 +153,12 @@ export function computeRendimientosFromHistory(input: {
       }
     }
 
-    if (!best || bestDistance > LOOKBACK_TOLERANCE_DAYS * 24 * 60 * 60 * 1000) {
+    if (!best || bestDistance > toleranceDays * 24 * 60 * 60 * 1000) {
       return null
     }
 
     const days = daysBetween(best.fecha, fecha)
-    if (!days || days < targetDays - LOOKBACK_TOLERANCE_DAYS) {
+    if (!days || days < targetDays - toleranceDays) {
       return null
     }
 
@@ -152,17 +168,52 @@ export function computeRendimientosFromHistory(input: {
     }
   }
 
+  const findYtd = () => {
+    if (!fecha || valorCuotaparte == null) return null
+
+    const yearStart = `${fecha.slice(0, 4)}-01-01`
+    let baseline: (FciHistoryVcpPoint & { valorCuotaparte: number }) | null = null
+
+    for (const item of sorted) {
+      if (item.fecha <= yearStart) baseline = item
+      else break
+    }
+
+    if (!baseline || baseline.fecha >= fecha) return null
+
+    const days = daysBetween(baseline.fecha, fecha)
+    if (!days) return null
+
+    return {
+      days,
+      value: periodReturnPercent(valorCuotaparte, baseline.valorCuotaparte),
+    }
+  }
+
   const seven = findNear(7)
   const thirty = findNear(30)
+  const ninety = findNear(90)
+  const oneEighty = findNear(180)
+  const twelveMonths = findNear(365)
+  const ytd = findYtd()
 
   return {
     valorCuotaparte: valorCuotaparte ?? null,
     variacionDiariaPct: typeof variacionDiariaPct === 'number' ? variacionDiariaPct : null,
     ultimos7Dias: seven?.value ?? null,
-    unMes: typeof variacionUnMesPct === 'number' ? variacionUnMesPct : (thirty?.value ?? null),
-    enElAnio: typeof variacionEnElAnioPct === 'number' ? variacionEnElAnioPct : null,
-    doceMeses: typeof variacionDoceMesesPct === 'number' ? variacionDoceMesesPct : null,
+    /** Rolling ~30D (no confundir con CNV unMes = vs fin de mes previo). */
+    unMes: thirty?.value ?? (typeof variacionUnMesPct === 'number' ? variacionUnMesPct : null),
+    noventaDias: ninety?.value ?? null,
+    cientoOchentaDias: oneEighty?.value ?? null,
+    enElAnio: ytd?.value ?? (typeof variacionEnElAnioPct === 'number' ? variacionEnElAnioPct : null),
+    doceMeses:
+      twelveMonths?.value ??
+      (typeof variacionDoceMesesPct === 'number' ? variacionDoceMesesPct : null),
     sevenDays: seven?.days ?? null,
     thirtyDays: thirty?.days ?? null,
+    ninetyDays: ninety?.days ?? null,
+    oneEightyDays: oneEighty?.days ?? null,
+    ytdDays: ytd?.days ?? null,
+    twelveMonthDays: twelveMonths?.days ?? null,
   }
 }

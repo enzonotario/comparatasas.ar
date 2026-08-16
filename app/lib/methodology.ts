@@ -99,7 +99,7 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Usamos el retorno de período `unMes` de la planilla CNV (columna de variación vs. fin de mes previo), el mismo criterio que exploradores como fonditos.',
+        text: 'En rankings curados usamos el retorno de período `unMes` de la planilla CNV (columna de variación vs. fin de mes previo).',
       },
       {
         type: 'formula',
@@ -116,6 +116,31 @@ export const methodologySections: MethodologySection[] = [
       {
         type: 'p',
         text: 'Ejemplo: si unMes = -9,85 → valor mostrado = -9,85%.',
+      },
+    ],
+  },
+  {
+    id: 'fci-detalle-periodos',
+    title: 'Rendimientos del detalle FCI (1D, 30D, YTD, 1Y…)',
+    category: 'fci',
+    categoryLabel: 'Fondos comunes de inversión',
+    source: 'CNV / Argentina Datos (serie de VCP)',
+    blocks: [
+      {
+        type: 'p',
+        text: 'En el detalle del fondo mostramos retornos de período rolling desde la serie de VCP: 7D/30D/90D/180D/1Y y YTD. La columna CNV `unMes` es variación vs fin de mes previo — no es 30D rolling — y `noventaDias`/`cientoOchentaDias` suelen venir anualizados.',
+      },
+      {
+        type: 'formula',
+        text: 'Rendimiento N días = (VCP_hoy ÷ VCP_hace_N) − 1',
+      },
+      {
+        type: 'formula',
+        text: 'Si falta histórico, fallback a columnas CNV de período (1D, 7D, YTD, 12M)',
+      },
+      {
+        type: 'p',
+        text: 'Ejemplo: unMes CNV ≈ 0,71% (desde fin de julio) vs 30D rolling ≈ 1,46% — en el detalle mostramos el rolling.',
       },
     ],
   },
