@@ -736,7 +736,7 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
     class="max-lg:h-auto max-lg:min-h-0 lg:h-full lg:min-h-0"
     :ui="{
       root: 'max-lg:!min-h-0 max-lg:h-auto lg:h-full lg:min-h-0 lg:!min-h-0',
-      body: 'max-lg:!overflow-visible max-lg:!flex-none lg:overflow-hidden lg:min-h-0',
+      body: 'max-lg:!overflow-visible max-lg:!flex-none lg:overflow-hidden lg:min-h-0 p-0! gap-0!',
     }"
   >
     <template #header>
@@ -779,197 +779,201 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
             root: 'bg-transparent',
           }"
         >
-        <template #left>
-          <UInput
-            v-model="searchQuery"
-            color="neutral"
-            icon="i-lucide-search"
-            placeholder="Buscar por nombre, administradora o depositaria..."
-            class="w-full max-w-sm"
-          />
-
-          <USelect
-            v-model="selectedTipo"
-            color="neutral"
-            :items="tipoItems"
-            value-key="value"
-            placeholder="Tipo"
-            class="w-44 hidden lg:block"
-            size="sm"
-          />
-
-          <USelect
-            v-model="selectedHorizonte"
-            color="neutral"
-            :items="horizonteItems"
-            value-key="value"
-            placeholder="Horizonte"
-            class="w-44 hidden xl:block"
-            size="sm"
-          />
-        </template>
-
-        <template #right>
-          <UButton
-            v-if="isFondosVista"
-            color="neutral"
-            :variant="groupByClass ? 'soft' : 'outline'"
-            icon="i-lucide-layers"
-            :label="groupByClass ? 'Agrupado' : 'Todas las clases'"
-            size="sm"
-            @click="groupByClass = !groupByClass"
-          />
-
-          <USlideover v-model:open="filtersOpen" title="Filtros del catálogo">
-            <UButton
+          <template #left>
+            <UInput
+              v-model="searchQuery"
               color="neutral"
-              variant="outline"
-              icon="i-lucide-sliders-horizontal"
-              label="Filtros"
-              size="sm"
-            >
-              <template v-if="activeFilterCount" #trailing>
-                <UKbd>{{ activeFilterCount }}</UKbd>
-              </template>
-            </UButton>
+              icon="i-lucide-search"
+              placeholder="Buscar por nombre, administradora o depositaria..."
+              class="w-full max-w-sm"
+            />
 
-            <template #body>
-              <div class="flex flex-col gap-4">
-                <div class="space-y-1.5">
-                  <p class="text-xs text-muted">Tipo</p>
-                  <USelect
-                    v-model="selectedTipo"
-                    color="neutral"
-                    :items="tipoItems"
-                    value-key="value"
-                    placeholder="Tipo"
-                    class="w-full"
-                  />
-                </div>
-
-                <div class="space-y-1.5">
-                  <p class="text-xs text-muted">Horizonte</p>
-                  <USelect
-                    v-model="selectedHorizonte"
-                    color="neutral"
-                    :items="horizonteItems"
-                    value-key="value"
-                    placeholder="Horizonte"
-                    class="w-full"
-                  />
-                </div>
-
-                <div class="space-y-1.5">
-                  <p class="text-xs text-muted">Moneda</p>
-                  <USelect
-                    v-model="selectedMoneda"
-                    color="neutral"
-                    :items="monedaItems"
-                    value-key="value"
-                    placeholder="Moneda"
-                    class="w-full"
-                  />
-                </div>
-
-                <div class="space-y-1.5">
-                  <p class="text-xs text-muted">Región</p>
-                  <USelect
-                    v-model="selectedRegion"
-                    color="neutral"
-                    :items="regionItems"
-                    value-key="value"
-                    placeholder="Región"
-                    class="w-full"
-                  />
-                </div>
-
-                <div class="space-y-1.5">
-                  <p class="text-xs text-muted">Administradora</p>
-                  <USelect
-                    v-model="selectedAdministradora"
-                    color="neutral"
-                    :items="administradoraItems"
-                    value-key="value"
-                    placeholder="Administradora"
-                    class="w-full"
-                  />
-                </div>
-
-                <div class="space-y-1.5">
-                  <p class="text-xs text-muted">Depositaria</p>
-                  <USelect
-                    v-model="selectedDepositaria"
-                    color="neutral"
-                    :items="depositariaItems"
-                    value-key="value"
-                    placeholder="Depositaria"
-                    class="w-full"
-                  />
-                </div>
-
-                <div class="space-y-1.5">
-                  <p class="text-xs text-muted">Plazo de liquidación</p>
-                  <USelect
-                    v-model="selectedPlazo"
-                    color="neutral"
-                    :items="plazoItems"
-                    value-key="value"
-                    placeholder="Plazo"
-                    class="w-full"
-                  />
-                </div>
-              </div>
-            </template>
-
-            <template #footer>
-              <div class="flex items-center justify-between gap-2 w-full">
-                <UButton
-                  color="neutral"
-                  variant="outline"
-                  label="Limpiar"
-                  :disabled="!hasActiveFilters"
-                  @click="clearFilters"
-                />
-                <UButton label="Aplicar" color="neutral" @click="filtersOpen = false" />
-              </div>
-            </template>
-          </USlideover>
-
-          <UButton
-            v-if="hasActiveFilters"
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-x"
-            label="Limpiar"
-            size="sm"
-            @click="clearFilters"
-          />
-
-          <UDropdownMenu v-if="isFondosVista" :items="displayMenuItems" :content="{ align: 'end' }">
-            <UButton
-              label="Columnas"
+            <USelect
+              v-model="selectedTipo"
               color="neutral"
-              variant="outline"
-              trailing-icon="i-lucide-settings-2"
+              :items="tipoItems"
+              value-key="value"
+              placeholder="Tipo"
+              class="w-44 hidden lg:block"
               size="sm"
             />
-          </UDropdownMenu>
 
-          <USelect
-            v-model="pageSize"
-            color="neutral"
-            :items="pageSizeOptions"
-            value-key="value"
-            class="w-36"
-            size="sm"
-          />
-        </template>
-      </UDashboardToolbar>
+            <USelect
+              v-model="selectedHorizonte"
+              color="neutral"
+              :items="horizonteItems"
+              value-key="value"
+              placeholder="Horizonte"
+              class="w-44 hidden xl:block"
+              size="sm"
+            />
+          </template>
+
+          <template #right>
+            <UButton
+              v-if="isFondosVista"
+              color="neutral"
+              :variant="groupByClass ? 'soft' : 'outline'"
+              icon="i-lucide-layers"
+              :label="groupByClass ? 'Agrupado' : 'Todas las clases'"
+              size="sm"
+              @click="groupByClass = !groupByClass"
+            />
+
+            <USlideover v-model:open="filtersOpen" title="Filtros del catálogo">
+              <UButton
+                color="neutral"
+                variant="outline"
+                icon="i-lucide-sliders-horizontal"
+                label="Filtros"
+                size="sm"
+              >
+                <template v-if="activeFilterCount" #trailing>
+                  <UKbd>{{ activeFilterCount }}</UKbd>
+                </template>
+              </UButton>
+
+              <template #body>
+                <div class="flex flex-col gap-4">
+                  <div class="space-y-1.5">
+                    <p class="text-xs text-muted">Tipo</p>
+                    <USelect
+                      v-model="selectedTipo"
+                      color="neutral"
+                      :items="tipoItems"
+                      value-key="value"
+                      placeholder="Tipo"
+                      class="w-full"
+                    />
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <p class="text-xs text-muted">Horizonte</p>
+                    <USelect
+                      v-model="selectedHorizonte"
+                      color="neutral"
+                      :items="horizonteItems"
+                      value-key="value"
+                      placeholder="Horizonte"
+                      class="w-full"
+                    />
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <p class="text-xs text-muted">Moneda</p>
+                    <USelect
+                      v-model="selectedMoneda"
+                      color="neutral"
+                      :items="monedaItems"
+                      value-key="value"
+                      placeholder="Moneda"
+                      class="w-full"
+                    />
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <p class="text-xs text-muted">Región</p>
+                    <USelect
+                      v-model="selectedRegion"
+                      color="neutral"
+                      :items="regionItems"
+                      value-key="value"
+                      placeholder="Región"
+                      class="w-full"
+                    />
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <p class="text-xs text-muted">Administradora</p>
+                    <USelect
+                      v-model="selectedAdministradora"
+                      color="neutral"
+                      :items="administradoraItems"
+                      value-key="value"
+                      placeholder="Administradora"
+                      class="w-full"
+                    />
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <p class="text-xs text-muted">Depositaria</p>
+                    <USelect
+                      v-model="selectedDepositaria"
+                      color="neutral"
+                      :items="depositariaItems"
+                      value-key="value"
+                      placeholder="Depositaria"
+                      class="w-full"
+                    />
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <p class="text-xs text-muted">Plazo de liquidación</p>
+                    <USelect
+                      v-model="selectedPlazo"
+                      color="neutral"
+                      :items="plazoItems"
+                      value-key="value"
+                      placeholder="Plazo"
+                      class="w-full"
+                    />
+                  </div>
+                </div>
+              </template>
+
+              <template #footer>
+                <div class="flex items-center justify-between gap-2 w-full">
+                  <UButton
+                    color="neutral"
+                    variant="outline"
+                    label="Limpiar"
+                    :disabled="!hasActiveFilters"
+                    @click="clearFilters"
+                  />
+                  <UButton label="Aplicar" color="neutral" @click="filtersOpen = false" />
+                </div>
+              </template>
+            </USlideover>
+
+            <UButton
+              v-if="hasActiveFilters"
+              color="neutral"
+              variant="ghost"
+              icon="i-lucide-x"
+              label="Limpiar"
+              size="sm"
+              @click="clearFilters"
+            />
+
+            <UDropdownMenu
+              v-if="isFondosVista"
+              :items="displayMenuItems"
+              :content="{ align: 'end' }"
+            >
+              <UButton
+                label="Columnas"
+                color="neutral"
+                variant="outline"
+                trailing-icon="i-lucide-settings-2"
+                size="sm"
+              />
+            </UDropdownMenu>
+
+            <USelect
+              v-model="pageSize"
+              color="neutral"
+              :items="pageSizeOptions"
+              value-key="value"
+              class="w-36"
+              size="sm"
+            />
+          </template>
+        </UDashboardToolbar>
       </div>
     </template>
 
     <template #body>
-      <div class="shrink-0 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="shrink-0 grid gap-2 sm:grid-cols-4 p-2">
         <UPageCard
           title="Clases cargadas"
           icon="i-lucide-database"
@@ -1093,7 +1097,7 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
       </UTable>
 
       <div
-        class="shrink-0 flex flex-col gap-3 md:flex-row md:items-center md:justify-between mt-1 pt-1 border-t border-default"
+        class="shrink-0 flex flex-col gap-3 md:flex-row md:items-center md:justify-between mt-1 p-2 border-t border-default"
       >
         <p class="text-sm text-muted">
           Mostrando {{ tablePageRange.from }}-{{ tablePageRange.to }} de
