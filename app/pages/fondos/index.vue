@@ -10,6 +10,7 @@ import {
   formatCurrency,
   formatDate,
   formatDecimal,
+  formatPercentAuto,
   metricTone,
 } from '~/lib/fci-fund-formatters'
 import {
@@ -394,20 +395,6 @@ const entityColumns: TableColumn<FundEntitySummary>[] = [
     sortingFn: 'basic',
   },
   {
-    id: 'avgTna',
-    accessorFn: (row) => finiteOrUndefined(isFundEntitySummary(row) ? row.avgTna : row.tna),
-    header: getSortableHeader('TNA', 'right'),
-    cell: ({ row }) => {
-      const original = row.original as FundEntitySummary | FundCatalogGroupRow
-      const value = isFundEntitySummary(original) ? original.avgTna : original.tna
-      const formatted = formatRatePercent(value)
-      if (!formatted) return mutedDash()
-      return h('div', { class: `text-right font-medium text-sm ${metricTone(value)}` }, formatted)
-    },
-    sortUndefined: 'last',
-    sortingFn: 'basic',
-  },
-  {
     id: 'patrimonio',
     accessorFn: (row) =>
       finiteOrUndefined(
@@ -534,33 +521,40 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
     },
   },
   {
-    id: 'tna',
-    accessorFn: (row) => finiteOrUndefined(row.tna),
-    header: getSortableHeader('TNA', 'right'),
+    id: 'retorno1d',
+    accessorFn: (row) => finiteOrUndefined(row.retorno1d),
+    header: getSortableHeader('1d', 'right'),
     cell: ({ row }) => {
-      const formatted = formatRatePercent(row.original.tna)
-      if (!formatted) return mutedDash()
-      return h(
-        'div',
-        { class: `text-right font-medium text-sm ${metricTone(row.original.tna)}` },
-        formatted,
-      )
+      const value = row.original.retorno1d
+      const formatted = formatPercentAuto(value)
+      if (formatted === '—') return mutedDash()
+      return h('div', { class: `text-right font-medium text-sm ${metricTone(value)}` }, formatted)
     },
     sortUndefined: 'last',
     sortingFn: 'basic',
   },
   {
-    id: 'tea',
-    accessorFn: (row) => finiteOrUndefined(row.tea),
-    header: getSortableHeader('TEA', 'right'),
+    id: 'retorno30d',
+    accessorFn: (row) => finiteOrUndefined(row.retorno30d),
+    header: getSortableHeader('30d', 'right'),
     cell: ({ row }) => {
-      const formatted = formatRatePercent(row.original.tea)
-      if (!formatted) return mutedDash()
-      return h(
-        'div',
-        { class: `text-right font-medium text-sm ${metricTone(row.original.tea)}` },
-        formatted,
-      )
+      const value = row.original.retorno30d
+      const formatted = formatPercentAuto(value)
+      if (formatted === '—') return mutedDash()
+      return h('div', { class: `text-right font-medium text-sm ${metricTone(value)}` }, formatted)
+    },
+    sortUndefined: 'last',
+    sortingFn: 'basic',
+  },
+  {
+    id: 'retornoYtd',
+    accessorFn: (row) => finiteOrUndefined(row.retornoYtd),
+    header: getSortableHeader('YTD', 'right'),
+    cell: ({ row }) => {
+      const value = row.original.retornoYtd
+      const formatted = formatPercentAuto(value)
+      if (formatted === '—') return mutedDash()
+      return h('div', { class: `text-right font-medium text-sm ${metricTone(value)}` }, formatted)
     },
     sortUndefined: 'last',
     sortingFn: 'basic',
@@ -654,6 +648,11 @@ const columnVisibility = ref<Record<string, boolean>>({
   expand: true,
   administradora: true,
   depositaria: true,
+  retorno1d: true,
+  retorno30d: true,
+  retornoYtd: true,
+  inversionMinima: false,
+  plazoLiquidacionDias: false,
   vcp: false,
   fecha: false,
   region: false,
@@ -694,8 +693,9 @@ const columnLabelMap: Record<string, string> = {
   displayName: 'Fondo',
   typeLabel: 'Tipo',
   horizonte: 'Horizonte',
-  tna: 'TNA',
-  tea: 'TEA',
+  retorno1d: '1d',
+  retorno30d: '30d',
+  retornoYtd: 'YTD',
   vcp: 'VCP',
   patrimonio: 'Patrimonio',
   inversionMinima: 'Inversión mínima',

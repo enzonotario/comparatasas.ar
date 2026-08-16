@@ -23,6 +23,12 @@ export interface FundCatalogRow {
   depositaria: string | null
   tna: number | null
   tea: number | null
+  /** Variación diaria CNV (%). */
+  retorno1d: number | null
+  /** Retorno ~30d / unMes CNV (%). */
+  retorno30d: number | null
+  /** Retorno en el año / YTD CNV (%). */
+  retornoYtd: number | null
   vcp: number | null
   patrimonio: number | null
   inversionMinima: number | null
@@ -83,6 +89,9 @@ export function mapCatalogToRows(response: FciFundsDetailsResponse): FundCatalog
         depositaria: fund.depositaria,
         tna,
         tea,
+        retorno1d: fund.rendimientos?.variacionDiariaPct ?? null,
+        retorno30d: fund.rendimientos?.unMes ?? null,
+        retornoYtd: fund.rendimientos?.enElAnio ?? null,
         vcp: fund.rendimientos?.valorCuotaparte ?? null,
         patrimonio: fund.patrimonio,
         inversionMinima: fund.inversionMinima,
