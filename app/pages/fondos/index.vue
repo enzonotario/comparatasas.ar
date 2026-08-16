@@ -18,6 +18,7 @@ import {
   toFlatFundCatalogRows,
   type FundCatalogGroupRow,
 } from '~/lib/fci-fund-groups'
+import type { FundCatalogRow } from '~/composables/useFondosCatalog'
 import {
   summarizeFundsByEntity,
   isFundEntitySummary,
@@ -85,6 +86,7 @@ function finiteOrUndefined(value: number | null | undefined) {
 
 const { allFundsCache, data: fundsData, fetch: fetchPageFunds } = useFunds()
 const { allFunds, loading, error } = useFondosCatalog()
+const { enrichFunds, applyRolling30d } = useCatalogRolling30d()
 const {
   searchQuery,
   selectedTipo,
@@ -114,25 +116,56 @@ const {
 
 const filtersOpen = ref(false)
 
+/** Catálogo con 30D rolling alineado al detalle (overlay sobre `unMes` CNV). */
+const catalogFunds = computed(() => applyRolling30d(filteredFunds.value))
+
 const tableData = computed(() => {
   if (groupByClass.value) {
-    return groupFundCatalogRows(filteredFunds.value)
+    return groupFundCatalogRows(catalogFunds.value)
   }
-  return toFlatFundCatalogRows(filteredFunds.value)
+  return toFlatFundCatalogRows(catalogFunds.value)
 })
 
 const entityTableData = computed(() => {
   if (catalogVista.value === 'administradoras') {
-    return summarizeFundsByEntity(filteredFunds.value, 'administradora')
+    return summarizeFundsByEntity(catalogFunds.value, 'administradora')
   }
   if (catalogVista.value === 'depositarias') {
-    return summarizeFundsByEntity(filteredFunds.value, 'depositaria')
+    return summarizeFundsByEntity(catalogFunds.value, 'depositaria')
   }
   return [] as FundEntitySummary[]
 })
 
 const activeTableData = computed(() =>
   isFondosVista.value ? tableData.value : entityTableData.value,
+)
+
+function collectPageLeafFunds(pageRows: FundCatalogGroupRow[]): FundCatalogRow[] {
+  const leaves: FundCatalogRow[] = []
+  for (const row of pageRows) {
+    if (row.children?.length) {
+      leaves.push(...row.children)
+    } else if (!row.isGroup) {
+      leaves.push(row)
+    }
+  }
+  return leaves
+}
+
+watch(
+  [activeTableData, currentPage, pageSize, catalogVista],
+  () => {
+    if (catalogVista.value !== 'fondos') return
+
+    const start = (currentPage.value - 1) * pageSize.value
+    const pageRows = activeTableData.value.slice(
+      start,
+      start + pageSize.value,
+    ) as FundCatalogGroupRow[]
+
+    void enrichFunds(collectPageLeafFunds(pageRows).slice(0, CATALOG_ROLLING_30D_MAX_FUNDS))
+  },
+  { immediate: true },
 )
 
 const groupedFundsCount = computed(() => tableData.value.length)

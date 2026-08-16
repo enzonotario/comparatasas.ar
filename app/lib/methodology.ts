@@ -99,15 +99,15 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'En rankings curados usamos el retorno de período `unMes` de la planilla CNV (columna de variación vs. fin de mes previo).',
+        text: 'En rankings curados usamos el retorno ~30D rolling desde la serie de VCP (campo `unMes` en la API). La columna CNV “un mes” (vs fin de mes previo) solo se usa si falta histórico suficiente.',
       },
       {
         type: 'formula',
-        text: 'Rendimiento base = unMes (si falta, 0)',
+        text: 'Rendimiento base = unMes rolling ~30D (si falta, 0)',
       },
       {
         type: 'formula',
-        text: 'TNA mostrada = rendimiento ÷ 100 (período CNV, sin proyectar a 365 días)',
+        text: 'TNA mostrada = rendimiento ÷ 100 (retorno de período, sin proyectar a 365 días)',
       },
       {
         type: 'formula',
@@ -115,7 +115,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'Ejemplo: si unMes = -9,85 → valor mostrado = -9,85%.',
+        text: 'Ejemplo: si el 30D rolling = 1,47% → valor mostrado = 1,47%.',
       },
     ],
   },
@@ -128,7 +128,7 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'En el detalle del fondo mostramos retornos de período rolling desde la serie de VCP: 7D/30D/90D/180D/1Y y YTD. La columna CNV `unMes` es variación vs fin de mes previo — no es 30D rolling — y `noventaDias`/`cientoOchentaDias` suelen venir anualizados.',
+        text: 'En el detalle del fondo y en el catálogo mostramos retornos de período rolling desde la serie de VCP: 7D/30D/90D/180D/1Y y YTD. La columna CNV “un mes” es variación vs fin de mes previo — no es 30D rolling — y solo se usa como fallback. Los `noventaDias`/`cientoOchentaDias` legacy de CAFCI suelen venir anualizados y no se usan como período.',
       },
       {
         type: 'formula',
@@ -136,11 +136,11 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'formula',
-        text: 'Si falta histórico, fallback a columnas CNV de período (1D, 7D, YTD, 12M)',
+        text: 'Si falta histórico, fallback a columnas CNV de período (1D, unMes, YTD, 12M)',
       },
       {
         type: 'p',
-        text: 'Ejemplo: unMes CNV ≈ 0,71% (desde fin de julio) vs 30D rolling ≈ 1,46% — en el detalle mostramos el rolling.',
+        text: 'Ejemplo: unMes CNV ≈ 0,65% (desde fin de mes previo) vs 30D rolling ≈ 1,47% — catálogo y detalle muestran el rolling.',
       },
     ],
   },

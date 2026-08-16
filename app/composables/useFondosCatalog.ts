@@ -25,7 +25,7 @@ export interface FundCatalogRow {
   tea: number | null
   /** Variación diaria CNV (%). */
   retorno1d: number | null
-  /** Retorno ~30d / unMes CNV (%). */
+  /** Retorno ~30d rolling (%). API `unMes` (CNV mes solo si falta histórico). */
   retorno30d: number | null
   /** Retorno en el año / YTD CNV (%). */
   retornoYtd: number | null
