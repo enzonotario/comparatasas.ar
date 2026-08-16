@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import type { TableColumn, TabsItem } from '@nuxt/ui'
+import { useRouteQuery } from '@vueuse/router'
 import type { FciFundHistory, FciFundHistoryItem } from '~/composables/useFciFundDetails'
 import FciFundEvolutionCharts from '~/components/funds/detail/FciFundEvolutionCharts.vue'
 import { recomputeHistoryReturns } from '~/lib/finance/fci-history-returns'
 import { formatCompactNumber, formatDate, formatDecimal } from '~/lib/fci-fund-formatters'
-
-type HistoryPeriod = '1m' | '3m' | '6m' | '1y' | 'ytd' | 'all'
+import {
+  DEFAULT_FUND_HISTORY_PERIOD,
+  isFundHistoryPeriod,
+  type FundHistoryPeriod,
+} from '~/lib/funds-detail'
 
 const props = defineProps<{
   fundHistory: FciFundHistory | null
@@ -18,7 +22,16 @@ const props = defineProps<{
   historyColumns: TableColumn<FciFundHistoryItem>[]
 }>()
 
-const selectedPeriod = ref<HistoryPeriod>('1y')
+const periodoQuery = useRouteQuery<string | undefined>('periodo', undefined)
+
+const selectedPeriod = computed({
+  get: (): FundHistoryPeriod =>
+    isFundHistoryPeriod(periodoQuery.value) ? periodoQuery.value : DEFAULT_FUND_HISTORY_PERIOD,
+  set: (value: string | number) => {
+    const period = isFundHistoryPeriod(value) ? value : DEFAULT_FUND_HISTORY_PERIOD
+    periodoQuery.value = period === DEFAULT_FUND_HISTORY_PERIOD ? undefined : period
+  },
+})
 
 const periodItems: TabsItem[] = [
   { label: '1M', value: '1m' },
@@ -35,7 +48,7 @@ function parseLocalDate(fecha: string) {
   return new Date(`${fecha}T00:00:00`)
 }
 
-function getPeriodCutoff(latest: Date, period: HistoryPeriod): Date | null {
+function getPeriodCutoff(latest: Date, period: FundHistoryPeriod): Date | null {
   if (period === 'all') return null
 
   if (period === 'ytd') {

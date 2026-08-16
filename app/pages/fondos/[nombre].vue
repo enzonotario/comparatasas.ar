@@ -12,7 +12,7 @@ import {
 } from '~/lib/fci-fund-formatters'
 import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
 import { parseFundClassName } from '~/lib/fci-fund-class'
-import { getFundDetailTo, type FundDetailTab } from '~/lib/funds-detail'
+import { getFundDetailTo, getFundDetailToOptionsFromQuery, type FundDetailTab } from '~/lib/funds-detail'
 import { getInstitutionUrl } from '~/lib/mappings/institutions'
 import { getFundMappingBySlug, getFundTypeInfo } from '~/lib/mappings/funds'
 
@@ -114,7 +114,7 @@ const classSwitcherItems = computed(() =>
   siblingInfo.value.siblings.map((row) => ({
     label: row.classLabel || row.fondo,
     value: row.fondo,
-    to: getFundDetailTo(row.fondo, { tab: selectedDetailTab.value }),
+    to: getFundDetailTo(row.fondo, getFundDetailToOptionsFromQuery(route.query)),
     active: row.fondo === fundDetail.value?.nombre,
   })),
 )

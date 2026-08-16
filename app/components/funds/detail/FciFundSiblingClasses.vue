@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getFundDetailTo } from '~/lib/funds-detail'
+import { getFundDetailTo, getFundDetailToOptionsFromQuery } from '~/lib/funds-detail'
 import { formatCompactNumber, formatCurrency, metricTone } from '~/lib/fci-fund-formatters'
 import { compareClassLabels } from '~/lib/fci-fund-class'
 import type { FundCatalogGroupRow } from '~/lib/fci-fund-groups'
@@ -20,8 +20,7 @@ const sortKey = ref<SortKey>('clase')
 const sortDir = ref<SortDir>('asc')
 
 function siblingDetailTo(fondo: string) {
-  const tab = typeof route.query.tab === 'string' ? route.query.tab : undefined
-  return getFundDetailTo(fondo, { tab })
+  return getFundDetailTo(fondo, getFundDetailToOptionsFromQuery(route.query))
 }
 
 function formatRate(value: number | null | undefined) {

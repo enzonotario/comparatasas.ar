@@ -3,7 +3,7 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 import type { FundCatalogRow } from '~/composables/useFondosCatalog'
 import { formatCompactNumber } from '~/lib/fci-fund-formatters'
 import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
-import { getFundDetailTo, normalizeFundSlug } from '~/lib/funds-detail'
+import { getFundDetailTo, getFundDetailToOptionsFromQuery, normalizeFundSlug } from '~/lib/funds-detail'
 
 const props = defineProps<{
   allFunds: FundCatalogRow[]
@@ -16,9 +16,7 @@ const emit = defineEmits<{
 const route = useRoute()
 const isDetailPage = computed(() => route.name === 'fondos-nombre')
 const detailSlug = computed(() => String(route.params.nombre || ''))
-const detailTab = computed(() =>
-  typeof route.query.tab === 'string' ? route.query.tab : undefined,
-)
+const detailToOptions = computed(() => getFundDetailToOptionsFromQuery(route.query))
 
 const PRESERVED_KEYS = ['agrupar', 'sort', 'pageSize'] as const
 
@@ -98,7 +96,7 @@ const claseChildren = computed<NavigationMenuItem[]>(() => {
     return {
       label: row.classLabel || row.fondo,
       icon: isActive ? 'i-lucide-circle-dot' : 'i-lucide-circle',
-      to: isActive ? undefined : getFundDetailTo(row.fondo, { tab: detailTab.value }),
+      to: isActive ? undefined : getFundDetailTo(row.fondo, detailToOptions.value),
       active: isActive,
       badge: patrimonio !== '—' ? patrimonio : undefined,
       onSelect: closeSidebar,
