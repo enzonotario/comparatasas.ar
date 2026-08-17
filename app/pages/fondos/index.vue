@@ -791,6 +791,15 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
           </template>
 
           <template #right>
+            <UButton
+              to="/fondos/mercado"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              icon="i-lucide-chart-pie"
+              label="Mercado"
+              class="max-md:hidden"
+            />
             <UTabs
               v-model="catalogVista"
               :items="vistaTabs"

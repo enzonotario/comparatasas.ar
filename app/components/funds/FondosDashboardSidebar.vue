@@ -15,6 +15,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const isDetailPage = computed(() => route.name === 'fondos-nombre')
+const isMarketPage = computed(() => route.path === '/fondos/mercado')
 const detailSlug = computed(() => String(route.params.nombre || ''))
 const detailToOptions = computed(() => getFundDetailToOptionsFromQuery(route.query))
 
@@ -161,6 +162,25 @@ const mainLinks = computed<NavigationMenuItem[]>(() => {
   }
 
   return [
+    {
+      label: 'Explorar',
+      type: 'label',
+    },
+    {
+      label: 'Catálogo',
+      icon: 'i-lucide-layout-list',
+      to: '/fondos',
+      exact: true,
+      active: route.path === '/fondos' && !selectedTipo.value,
+      onSelect: closeSidebar,
+    },
+    {
+      label: 'Mercado',
+      icon: 'i-lucide-chart-pie',
+      to: '/fondos/mercado',
+      active: isMarketPage.value,
+      onSelect: closeSidebar,
+    },
     {
       label: 'Tipos de fondo',
       type: 'label',
