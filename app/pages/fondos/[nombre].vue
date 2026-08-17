@@ -242,19 +242,19 @@ useSeoMeta({
         }"
       >
         <template #trailing>
-          <UBadge color="neutral" variant="outline" class="hidden sm:inline-flex">FCI</UBadge>
+          <UBadge color="neutral" variant="outline" class="max-sm:hidden">FCI</UBadge>
           <UBadge
             v-if="fundDetail?.tipoRenta"
             color="neutral"
             variant="subtle"
-            class="hidden sm:inline-flex"
+            class="max-sm:hidden"
             :label="tipoRentaLabel"
           />
           <UBadge
             v-if="fundDetail?.moneda"
             color="neutral"
             variant="subtle"
-            class="hidden md:inline-flex"
+            class="max-md:hidden"
             :label="normalizeCurrencyCode(fundDetail.moneda)"
           />
         </template>
@@ -274,7 +274,7 @@ useSeoMeta({
             variant="ghost"
             color="neutral"
             label="Volver"
-            class="hidden sm:inline-flex"
+            class="max-sm:hidden"
             @click="goBack"
           />
 
@@ -287,7 +287,7 @@ useSeoMeta({
             color="neutral"
             icon="i-lucide-external-link"
             :label="mappedFundLabel"
-            class="hidden md:inline-flex"
+            class="max-md:hidden"
           />
 
           <UButton
@@ -313,7 +313,7 @@ useSeoMeta({
             variant="outline"
             icon="i-lucide-external-link"
             label="CAFCI"
-            class="hidden sm:inline-flex"
+            class="max-sm:hidden"
           />
         </template>
       </UDashboardNavbar>
@@ -321,7 +321,7 @@ useSeoMeta({
       <!-- Desktop: quick class switcher in toolbar -->
       <UDashboardToolbar
         v-if="fundDetail && siblingInfo.siblings.length > 1"
-        class="hidden md:flex"
+        class="max-md:hidden"
       >
         <template #left>
           <div class="flex flex-wrap items-center gap-1.5 -ms-1">
@@ -376,7 +376,7 @@ useSeoMeta({
       </div>
 
       <!-- Desktop: KPI strip + tabs -->
-      <UDashboardToolbar v-if="fundDetail" class="hidden md:flex">
+      <UDashboardToolbar v-if="fundDetail" class="max-md:hidden">
         <template #left>
           <div class="flex flex-wrap items-center gap-2 -ms-1">
             <div

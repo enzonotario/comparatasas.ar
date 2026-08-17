@@ -147,7 +147,7 @@ const sortedSiblings = computed(() => {
 
       <div
         v-if="hasMultipleClasses"
-        class="hidden sm:block shrink-0 rounded-lg border border-default bg-default px-3 py-2 text-sm"
+        class="max-sm:hidden shrink-0 rounded-lg border border-default bg-default px-3 py-2 text-sm"
       >
         <p class="text-[10px] uppercase tracking-wide text-muted">Patrimonio total</p>
         <p class="text-lg font-semibold text-highlighted leading-tight">
@@ -161,8 +161,8 @@ const sortedSiblings = computed(() => {
       </div>
     </div>
 
-    <!-- Desktop: quick pills (toolbar also has them from md+) -->
-    <div class="hidden md:flex flex-wrap gap-1.5">
+    <!-- Desktop: pills. Prefer max-md:hidden over hidden md:flex (CSS order bug). -->
+    <div class="flex max-md:hidden flex-wrap gap-1.5">
       <UButton
         v-for="row in siblings"
         :key="row.fondo"
@@ -226,7 +226,7 @@ const sortedSiblings = computed(() => {
     </div>
 
     <!-- Desktop: sortable table -->
-    <div v-if="hasMultipleClasses" class="overflow-x-auto -mx-1 hidden md:block">
+    <div v-if="hasMultipleClasses" class="overflow-x-auto -mx-1 max-md:hidden">
       <table class="w-full text-sm min-w-[520px]">
         <thead>
           <tr class="text-left text-muted border-b border-default">
@@ -336,7 +336,7 @@ const sortedSiblings = computed(() => {
       </table>
     </div>
 
-    <p v-if="hasMultipleClasses" class="text-xs text-muted hidden md:block">
+    <p v-if="hasMultipleClasses" class="text-xs text-muted max-md:hidden">
       El patrimonio total suma todas las clases del mismo fondo. La TNA es propia de cada clase.
     </p>
   </div>
