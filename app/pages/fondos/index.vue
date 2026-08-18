@@ -35,6 +35,7 @@ definePageMeta({
 
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
+const NuxtLink = resolveComponent('NuxtLink')
 const table = useTemplateRef<{ tableApi?: any }>('table')
 
 const groupByClassQuery = useRouteQuery<'1' | '0'>('agrupar', '1')
@@ -78,6 +79,50 @@ function formatRatePercent(value: number | null | undefined) {
 
 function mutedDash() {
   return h('span', { class: 'text-muted' }, '—')
+}
+
+function renderFundCatalogNameCell(
+  original: FundCatalogGroupRow,
+  {
+    depthClass = '',
+    rowDepth = 0,
+    classBadgeAtDepth = null,
+  }: {
+    depthClass?: string
+    rowDepth?: number
+    classBadgeAtDepth?: number | null
+  } = {},
+) {
+  const label = original.displayName || original.fondo
+  const nameNode = original.isGroup
+    ? h('div', { class: 'font-medium text-highlighted truncate' }, label)
+    : h(
+        NuxtLink,
+        {
+          to: getFundDetailPath(original.fondo),
+          class:
+            'font-medium text-highlighted truncate hover:underline focus-visible:underline',
+          onClick: (event: Event) => event.stopPropagation(),
+        },
+        () => label,
+      )
+
+  return h('div', { class: `flex items-center gap-2 min-w-0 ${depthClass}` }, [
+    nameNode,
+    original.isGroup
+      ? h(
+          UBadge,
+          { color: 'neutral', variant: 'subtle', size: 'sm' },
+          () => `${original.classCount} clases`,
+        )
+      : original.classLabel && classBadgeAtDepth === rowDepth
+        ? h(
+            UBadge,
+            { color: 'neutral', variant: 'outline', size: 'sm' },
+            () => original.classLabel,
+          )
+        : null,
+  ])
 }
 
 function finiteOrUndefined(value: number | null | undefined) {
@@ -364,26 +409,11 @@ const entityColumns: TableColumn<FundEntitySummary>[] = [
         ])
       }
 
-      return h('div', { class: `flex items-center gap-2 min-w-0 ${depthClass}` }, [
-        h(
-          'div',
-          { class: 'font-medium text-highlighted truncate' },
-          original.displayName || original.fondo,
-        ),
-        original.isGroup
-          ? h(
-              UBadge,
-              { color: 'neutral', variant: 'subtle', size: 'sm' },
-              () => `${original.classCount} clases`,
-            )
-          : original.classLabel && row.depth === 1
-            ? h(
-                UBadge,
-                { color: 'neutral', variant: 'outline', size: 'sm' },
-                () => original.classLabel,
-              )
-            : null,
-      ])
+      return renderFundCatalogNameCell(original, {
+        depthClass,
+        rowDepth: row.depth,
+        classBadgeAtDepth: 1,
+      })
     },
   },
   {
@@ -489,26 +519,11 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
       const original = row.original
       const depthClass = row.depth === 1 ? 'pl-4' : row.depth > 1 ? 'pl-8' : ''
 
-      return h('div', { class: `flex items-center gap-2 min-w-0 ${depthClass}` }, [
-        h(
-          'div',
-          { class: 'font-medium text-highlighted truncate' },
-          original.displayName || original.fondo,
-        ),
-        original.isGroup
-          ? h(
-              UBadge,
-              { color: 'neutral', variant: 'subtle', size: 'sm' },
-              () => `${original.classCount} clases`,
-            )
-          : original.classLabel && row.depth === 0
-            ? h(
-                UBadge,
-                { color: 'neutral', variant: 'outline', size: 'sm' },
-                () => original.classLabel,
-              )
-            : null,
-      ])
+      return renderFundCatalogNameCell(original, {
+        depthClass,
+        rowDepth: row.depth,
+        classBadgeAtDepth: 0,
+      })
     },
     meta: {
       class: {
