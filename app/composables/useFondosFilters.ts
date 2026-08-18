@@ -1,9 +1,10 @@
-import { useRouteQuery } from '@vueuse/router'
 import type { FundCatalogRow } from '~/composables/useFondosCatalog'
 import { isFundReportActive } from '~/lib/fci-fund-active'
 import { parseFundClassName } from '~/lib/fci-fund-class'
 
 export type PlazoFilter = '0' | '1' | '2+'
+
+const FILTER_ALL = 'all'
 
 function uniqueSorted(values: Array<string | null | undefined>) {
   return Array.from(
@@ -13,25 +14,60 @@ function uniqueSorted(values: Array<string | null | undefined>) {
   ).sort((a, b) => a.localeCompare(b, 'es'))
 }
 
+function isActiveFilter(value: string) {
+  return Boolean(value) && value !== FILTER_ALL
+}
+
+function queryString(value: unknown): string | undefined {
+  if (typeof value === 'string') return value
+  if (Array.isArray(value) && typeof value[0] === 'string') return value[0]
+  return undefined
+}
+
+/** Lee siempre `useRoute().query` para seguir NuxtLink en la misma página. */
+function useQueryParam(name: string, defaultValue = '') {
+  const route = useRoute()
+  const router = useRouter()
+
+  return computed({
+    get() {
+      return queryString(route.query[name]) ?? defaultValue
+    },
+    set(value: string) {
+      const current = queryString(route.query[name]) ?? defaultValue
+      if (value === current) return
+
+      const query = { ...route.query }
+      if (value === defaultValue || value === '') {
+        delete query[name]
+      } else {
+        query[name] = value
+      }
+
+      router.replace({ query })
+    },
+  })
+}
+
 export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
-  const searchQuery = useRouteQuery('q', '')
+  const searchQuery = useQueryParam('q')
   const debouncedSearchQuery = refDebounced(searchQuery, 300)
-  const selectedTipo = useRouteQuery<string | undefined>('tipo', undefined)
-  const selectedHorizonte = useRouteQuery<string | undefined>('horizonte', undefined)
-  const selectedMoneda = useRouteQuery<string | undefined>('moneda', undefined)
-  const selectedRegion = useRouteQuery<string | undefined>('region', undefined)
-  const selectedAdministradora = useRouteQuery<string | undefined>('admin', undefined)
-  const selectedDepositaria = useRouteQuery<string | undefined>('depositaria', undefined)
-  const selectedPlazo = useRouteQuery<PlazoFilter | undefined>('plazo', undefined)
-  const onlyActiveQuery = useRouteQuery<'1' | '0'>('activos', '1')
+  const selectedTipo = useQueryParam('tipo', FILTER_ALL)
+  const selectedHorizonte = useQueryParam('horizonte', FILTER_ALL)
+  const selectedMoneda = useQueryParam('moneda', FILTER_ALL)
+  const selectedRegion = useQueryParam('region', FILTER_ALL)
+  const selectedAdministradora = useQueryParam('admin', FILTER_ALL)
+  const selectedDepositaria = useQueryParam('depositaria', FILTER_ALL)
+  const selectedPlazo = useQueryParam('plazo', FILTER_ALL)
+  const onlyActiveQuery = useQueryParam('activos', '1')
   const onlyActiveFunds = computed({
     get: () => onlyActiveQuery.value !== '0',
     set: (value: boolean) => {
       onlyActiveQuery.value = value ? '1' : '0'
     },
   })
-  const pageQuery = useRouteQuery('page', '1')
-  const pageSizeQuery = useRouteQuery('pageSize', '100')
+  const pageQuery = useQueryParam('page', '1')
+  const pageSizeQuery = useQueryParam('pageSize', '100')
 
   const pageSizeOptions = [
     { label: '50 por página', value: 50 },
@@ -86,12 +122,12 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
   )
 
   const tipoItems = computed(() => [
-    { label: 'Todos los tipos', value: undefined as string | undefined },
+    { label: 'Todos los tipos', value: FILTER_ALL },
     ...tiposDisponibles.value.map(({ value, label }) => ({ label, value })),
   ])
 
   const horizonteItems = computed(() => [
-    { label: 'Todos los horizontes', value: undefined as string | undefined },
+    { label: 'Todos los horizontes', value: FILTER_ALL },
     ...horizontesDisponibles.value.map((horizonte) => ({
       label: horizonte,
       value: horizonte,
@@ -99,30 +135,30 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
   ])
 
   const monedaItems = computed(() => [
-    { label: 'Todas las monedas', value: undefined as string | undefined },
+    { label: 'Todas las monedas', value: FILTER_ALL },
     ...monedasDisponibles.value.map((moneda) => ({ label: moneda, value: moneda })),
   ])
 
   const regionItems = computed(() => [
-    { label: 'Todas las regiones', value: undefined as string | undefined },
+    { label: 'Todas las regiones', value: FILTER_ALL },
     ...regionesDisponibles.value.map((region) => ({ label: region, value: region })),
   ])
 
   const administradoraItems = computed(() => [
-    { label: 'Todas las administradoras', value: undefined as string | undefined },
+    { label: 'Todas las administradoras', value: FILTER_ALL },
     ...administradorasDisponibles.value.map((admin) => ({ label: admin, value: admin })),
   ])
 
   const depositariaItems = computed(() => [
-    { label: 'Todas las depositarias', value: undefined as string | undefined },
+    { label: 'Todas las depositarias', value: FILTER_ALL },
     ...depositariasDisponibles.value.map((depositaria) => ({
       label: depositaria,
       value: depositaria,
     })),
   ])
 
-  const plazoItems: Array<{ label: string; value: PlazoFilter | undefined }> = [
-    { label: 'Todos los plazos', value: undefined },
+  const plazoItems: Array<{ label: string; value: PlazoFilter | typeof FILTER_ALL }> = [
+    { label: 'Todos los plazos', value: FILTER_ALL },
     { label: 'T+0', value: '0' },
     { label: 'T+1', value: '1' },
     { label: 'T+2 o más', value: '2+' },
@@ -142,31 +178,31 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
       })
     }
 
-    if (selectedTipo.value) {
+    if (isActiveFilter(selectedTipo.value)) {
       funds = funds.filter((fund) => fund.tipoFilterKey === selectedTipo.value)
     }
 
-    if (selectedHorizonte.value) {
+    if (isActiveFilter(selectedHorizonte.value)) {
       funds = funds.filter((fund) => fund.horizonte === selectedHorizonte.value)
     }
 
-    if (selectedMoneda.value) {
+    if (isActiveFilter(selectedMoneda.value)) {
       funds = funds.filter((fund) => fund.monedaInversion === selectedMoneda.value)
     }
 
-    if (selectedRegion.value) {
+    if (isActiveFilter(selectedRegion.value)) {
       funds = funds.filter((fund) => fund.region === selectedRegion.value)
     }
 
-    if (selectedAdministradora.value) {
+    if (isActiveFilter(selectedAdministradora.value)) {
       funds = funds.filter((fund) => fund.administradora === selectedAdministradora.value)
     }
 
-    if (selectedDepositaria.value) {
+    if (isActiveFilter(selectedDepositaria.value)) {
       funds = funds.filter((fund) => fund.depositaria === selectedDepositaria.value)
     }
 
-    if (selectedPlazo.value) {
+    if (isActiveFilter(selectedPlazo.value)) {
       funds = funds.filter((fund) => {
         const days = fund.plazoLiquidacionDias
         if (days == null || !Number.isFinite(days)) return false
@@ -186,38 +222,38 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
   const hasActiveFilters = computed(() => {
     return Boolean(
       searchQuery.value ||
-      selectedTipo.value ||
-      selectedHorizonte.value ||
-      selectedMoneda.value ||
-      selectedRegion.value ||
-      selectedAdministradora.value ||
-      selectedDepositaria.value ||
-      selectedPlazo.value,
+      isActiveFilter(selectedTipo.value) ||
+      isActiveFilter(selectedHorizonte.value) ||
+      isActiveFilter(selectedMoneda.value) ||
+      isActiveFilter(selectedRegion.value) ||
+      isActiveFilter(selectedAdministradora.value) ||
+      isActiveFilter(selectedDepositaria.value) ||
+      isActiveFilter(selectedPlazo.value),
     )
   })
 
   const activeFilterCount = computed(() => {
     let count = 0
     if (searchQuery.value) count += 1
-    if (selectedTipo.value) count += 1
-    if (selectedHorizonte.value) count += 1
-    if (selectedMoneda.value) count += 1
-    if (selectedRegion.value) count += 1
-    if (selectedAdministradora.value) count += 1
-    if (selectedDepositaria.value) count += 1
-    if (selectedPlazo.value) count += 1
+    if (isActiveFilter(selectedTipo.value)) count += 1
+    if (isActiveFilter(selectedHorizonte.value)) count += 1
+    if (isActiveFilter(selectedMoneda.value)) count += 1
+    if (isActiveFilter(selectedRegion.value)) count += 1
+    if (isActiveFilter(selectedAdministradora.value)) count += 1
+    if (isActiveFilter(selectedDepositaria.value)) count += 1
+    if (isActiveFilter(selectedPlazo.value)) count += 1
     return count
   })
 
   function clearFilters() {
     searchQuery.value = ''
-    selectedTipo.value = undefined
-    selectedHorizonte.value = undefined
-    selectedMoneda.value = undefined
-    selectedRegion.value = undefined
-    selectedAdministradora.value = undefined
-    selectedDepositaria.value = undefined
-    selectedPlazo.value = undefined
+    selectedTipo.value = FILTER_ALL
+    selectedHorizonte.value = FILTER_ALL
+    selectedMoneda.value = FILTER_ALL
+    selectedRegion.value = FILTER_ALL
+    selectedAdministradora.value = FILTER_ALL
+    selectedDepositaria.value = FILTER_ALL
+    selectedPlazo.value = FILTER_ALL
     onlyActiveFunds.value = true
     currentPage.value = 1
   }
