@@ -5,6 +5,7 @@ import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn, TabsItem } from '@nuxt/ui'
 import { ogUpdatedAtDate, top3Funds } from '~/utils/og-data'
 import { getFundDetailPath } from '~/lib/funds-detail'
+import { FUND_ACTIVE_REPORT_MAX_AGE_DAYS } from '~/lib/fci-fund-active'
 import {
   formatCompactNumber,
   formatCurrency,
@@ -100,8 +101,7 @@ function renderFundCatalogNameCell(
         NuxtLink,
         {
           to: getFundDetailPath(original.fondo),
-          class:
-            'font-medium text-highlighted truncate hover:underline focus-visible:underline',
+          class: 'font-medium text-highlighted truncate hover:underline focus-visible:underline',
           onClick: (event: Event) => event.stopPropagation(),
         },
         () => label,
@@ -116,11 +116,7 @@ function renderFundCatalogNameCell(
           () => `${original.classCount} clases`,
         )
       : original.classLabel && classBadgeAtDepth === rowDepth
-        ? h(
-            UBadge,
-            { color: 'neutral', variant: 'outline', size: 'sm' },
-            () => original.classLabel,
-          )
+        ? h(UBadge, { color: 'neutral', variant: 'outline', size: 'sm' }, () => original.classLabel)
         : null,
   ])
 }
@@ -148,6 +144,7 @@ const {
   administradoraItems,
   depositariaItems,
   plazoItems,
+  onlyActiveFunds,
   hasActiveFilters,
   activeFilterCount,
   clearFilters,
@@ -644,6 +641,15 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
     sortingFn: 'basic',
   },
   {
+    accessorKey: 'fecha',
+    header: getSortableHeader('Último reporte'),
+    cell: ({ row }) => {
+      const formatted = formatDate(row.original.fecha)
+      if (formatted === '—') return mutedDash()
+      return h('div', { class: 'text-sm tabular-nums whitespace-nowrap' }, formatted)
+    },
+  },
+  {
     id: 'inversionMinima',
     accessorFn: (row) => finiteOrUndefined(row.inversionMinima),
     header: getSortableHeader('Inversión mínima', 'right'),
@@ -680,15 +686,6 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
       return h('div', { class: 'text-sm' }, value)
     },
   },
-  {
-    accessorKey: 'fecha',
-    header: getSortableHeader('Fecha'),
-    cell: ({ row }) => {
-      const formatted = formatDate(row.original.fecha)
-      if (formatted === '—') return mutedDash()
-      return h('div', { class: 'text-sm' }, formatted)
-    },
-  },
 ]
 
 const sortQuery = useRouteQuery<string>('sort', '[{"id":"patrimonio","desc":true}]')
@@ -699,10 +696,10 @@ const columnVisibility = ref<Record<string, boolean>>({
   retorno1d: true,
   retorno30d: true,
   retornoYtd: true,
+  fecha: true,
   inversionMinima: false,
   plazoLiquidacionDias: false,
   vcp: false,
-  fecha: false,
   region: false,
 })
 
@@ -746,10 +743,10 @@ const columnLabelMap: Record<string, string> = {
   retornoYtd: 'YTD',
   vcp: 'VCP',
   patrimonio: 'Patrimonio',
+  fecha: 'Último reporte',
   inversionMinima: 'Inversión mínima',
   plazoLiquidacionDias: 'Plazo liquidación',
   region: 'Región',
-  fecha: 'Fecha',
   administradora: 'Administradora',
   depositaria: 'Depositaria',
 }
@@ -857,6 +854,17 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
             <UButton
               v-if="isFondosVista"
               color="neutral"
+              :variant="onlyActiveFunds ? 'soft' : 'outline'"
+              icon="i-lucide-activity"
+              :label="onlyActiveFunds ? 'Solo activos' : 'Incluye inactivos'"
+              size="sm"
+              :title="`Último reporte en los últimos ${FUND_ACTIVE_REPORT_MAX_AGE_DAYS} días`"
+              @click="onlyActiveFunds = !onlyActiveFunds"
+            />
+
+            <UButton
+              v-if="isFondosVista"
+              color="neutral"
               :variant="groupByClass ? 'soft' : 'outline'"
               icon="i-lucide-layers"
               :label="groupByClass ? 'Agrupado' : 'Todas las clases'"
@@ -879,6 +887,13 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
 
               <template #body>
                 <div class="flex flex-col gap-4">
+                  <USwitch
+                    v-model="onlyActiveFunds"
+                    color="neutral"
+                    label="Solo fondos activos"
+                    :description="`Último reporte en los últimos ${FUND_ACTIVE_REPORT_MAX_AGE_DAYS} días`"
+                  />
+
                   <div class="space-y-1.5">
                     <p class="text-xs text-muted">Tipo</p>
                     <USelect

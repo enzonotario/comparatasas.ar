@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { formatCurrency, formatPercentAuto, normalizeCurrencyCode } from './fci-fund-formatters'
+import {
+  formatCurrency,
+  formatDate,
+  formatPercentAuto,
+  normalizeCurrencyCode,
+} from './fci-fund-formatters'
 
 describe('formatPercentAuto', () => {
   it('formats fee values already in percentage points without scaling', () => {
@@ -45,5 +50,17 @@ describe('normalizeCurrencyCode', () => {
 describe('formatCurrency', () => {
   it('formats peso argentino labels without throwing', () => {
     expect(formatCurrency(1000, 'PESO ARGENTINO')).toMatch(/1\.000/)
+  })
+})
+
+describe('formatDate', () => {
+  it('formats YYYY-MM-DD as a local calendar date', () => {
+    expect(formatDate('2026-08-14')).toBe('14 ago 2026')
+  })
+
+  it('returns em dash for missing values', () => {
+    expect(formatDate(null)).toBe('—')
+    expect(formatDate(undefined)).toBe('—')
+    expect(formatDate('')).toBe('—')
   })
 })

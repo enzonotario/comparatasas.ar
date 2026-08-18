@@ -38,6 +38,17 @@ function sumPatrimonio(classes: FundCatalogRow[]): number | null {
   return hasValue ? total : null
 }
 
+function latestFecha(classes: FundCatalogRow[]): string | null {
+  let latest: string | null = null
+
+  for (const row of classes) {
+    if (!row.fecha) continue
+    if (!latest || row.fecha > latest) latest = row.fecha
+  }
+
+  return latest
+}
+
 function toClassRow(row: FundCatalogRow): FundCatalogGroupRow {
   const parsed = parseFundClassName(row.fondo)
 
@@ -98,6 +109,7 @@ export function groupFundCatalogRows(rows: FundCatalogRow[]): FundCatalogGroupRo
       classCount: sortedClasses.length,
       patrimonio: patrimonioTotal,
       patrimonioTotal,
+      fecha: latestFecha(sortedClasses),
       primaryFondo: primary.fondo,
       tna: primary.tna,
       tea: primary.tea,

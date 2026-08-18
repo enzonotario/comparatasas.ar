@@ -44,6 +44,21 @@ describe('groupFundCatalogRows', () => {
     expect(adcap?.primaryFondo).toBe('Adcap Ahorro Pesos Fondo de Dinero - Clase A')
   })
 
+  it('uses the latest reported date across classes', () => {
+    const grouped = groupFundCatalogRows([
+      row({
+        fondo: 'Adcap Ahorro Pesos Fondo de Dinero - Clase A',
+        fecha: '2026-08-10',
+      }),
+      row({
+        fondo: 'Adcap Ahorro Pesos Fondo de Dinero - Clase B',
+        fecha: '2026-08-14',
+      }),
+    ])
+
+    expect(grouped[0]?.fecha).toBe('2026-08-14')
+  })
+
   it('finds siblings by fondoId first', () => {
     const result = findSiblingFundClasses(
       [

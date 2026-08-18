@@ -1,5 +1,6 @@
 import { useRouteQuery } from '@vueuse/router'
 import type { FundCatalogRow } from '~/composables/useFondosCatalog'
+import { isFundReportActive } from '~/lib/fci-fund-active'
 import { parseFundClassName } from '~/lib/fci-fund-class'
 
 export type PlazoFilter = '0' | '1' | '2+'
@@ -22,6 +23,13 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
   const selectedAdministradora = useRouteQuery<string | undefined>('admin', undefined)
   const selectedDepositaria = useRouteQuery<string | undefined>('depositaria', undefined)
   const selectedPlazo = useRouteQuery<PlazoFilter | undefined>('plazo', undefined)
+  const onlyActiveQuery = useRouteQuery<'1' | '0'>('activos', '1')
+  const onlyActiveFunds = computed({
+    get: () => onlyActiveQuery.value !== '0',
+    set: (value: boolean) => {
+      onlyActiveQuery.value = value ? '1' : '0'
+    },
+  })
   const pageQuery = useRouteQuery('page', '1')
   const pageSizeQuery = useRouteQuery('pageSize', '100')
 
@@ -168,6 +176,10 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
       })
     }
 
+    if (onlyActiveFunds.value) {
+      funds = funds.filter((fund) => isFundReportActive(fund.fecha))
+    }
+
     return funds
   })
 
@@ -206,6 +218,7 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
     selectedAdministradora.value = undefined
     selectedDepositaria.value = undefined
     selectedPlazo.value = undefined
+    onlyActiveFunds.value = true
     currentPage.value = 1
   }
 
@@ -223,6 +236,7 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
       selectedAdministradora,
       selectedDepositaria,
       selectedPlazo,
+      onlyActiveFunds,
     ],
     () => {
       currentPage.value = 1
@@ -290,6 +304,7 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
     selectedAdministradora,
     selectedDepositaria,
     selectedPlazo,
+    onlyActiveFunds,
     pageSizeOptions,
     currentPage,
     pageSize,
