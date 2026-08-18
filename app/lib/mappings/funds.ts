@@ -658,7 +658,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'Pionero Acciones',
+    fundName: 'Pionero Acciones - Clase A',
     institutions: [
       {
         institution: 'macro',
@@ -756,7 +756,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'Crecer Renta Dólar - Clase A',
+    fundName: 'Crecer Renta Dólares - Clase A',
     institutions: [
       {
         institution: 'banco ciudad',
@@ -901,7 +901,7 @@ export const comparatasasFondosArs = [
   'iol-cash-management-clase-a',
   'mercado-fondo-clase-a',
   'mp-ahorro-clase-a',
-  'pionero-acciones',
+  'pionero-acciones-clase-a',
   'pionero-pesos-clase-a',
   'premier-renta-cp-en-pesos-clase-a',
   'sbs-acciones-argentina-clase-a',
@@ -922,7 +922,7 @@ export const comparatasasFondosUsd = [
   'balanz-money-market-usd-clase-a',
   'cocos-ahorro-dolares-clase-a',
   'cocos-dolares-plus-clase-a',
-  'crecer-renta-dolar-clase-a',
+  'crecer-renta-dolares-clase-a',
   'fima-premium-dolares-clase-a',
   'fima-renta-fija-dolares-clase-a',
   'gainvest-renta-fija-dolares-clase-a',
