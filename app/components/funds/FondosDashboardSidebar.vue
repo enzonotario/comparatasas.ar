@@ -18,7 +18,7 @@ const isDetailPage = computed(() => route.name === 'fondos-nombre')
 const detailSlug = computed(() => String(route.params.nombre || ''))
 const detailToOptions = computed(() => getFundDetailToOptionsFromQuery(route.query))
 
-const PRESERVED_KEYS = ['agrupar', 'sort', 'pageSize'] as const
+const PRESERVED_KEYS = ['agrupar', 'sort', 'pageSize', 'vista'] as const
 
 const TIPO_ICONS: Record<string, string> = {
   mercadoDinero: 'i-lucide-wallet',
