@@ -322,7 +322,11 @@ watch(
 
 <template>
   <div class="space-y-4">
-    <UCard>
+    <UCard
+      :ui="{
+        body: 'p-0!',
+      }"
+    >
       <template #header>
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
