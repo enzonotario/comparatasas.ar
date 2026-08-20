@@ -74,19 +74,19 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Es el método por defecto del sitio. La planilla CNV publica retornos de período; para money market estimamos la TNA anualizando la variación diaria (×365).',
+        text: 'Es el método por defecto del sitio. La planilla CNV publica retornos de período; para money market estimamos la TNA nominal a 365 días a partir del retorno ~30D (no de un solo día, que es ruidoso).',
       },
       {
         type: 'formula',
-        text: 'TNA = variacionDiariaPct × 365 (si falta, legacy unMes / ultimos7Dias)',
+        text: 'TNA = unMes × 365 / 30 (si falta: ultimos7Dias × 365 / 7; si falta: variacionDiariaPct × 365)',
       },
       {
         type: 'formula',
-        text: 'TEA = (1 + TNA ÷ 100)^12 − 1',
+        text: 'TEA = (1 + TNA ÷ 365)^365 − 1',
       },
       {
         type: 'p',
-        text: 'Ejemplo: si variacionDiariaPct = 0,05 → TNA mostrada = 18,25%.',
+        text: 'Ejemplo: si unMes = 1,54% → TNA mostrada = 18,73%.',
       },
     ],
   },
@@ -173,7 +173,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'La tabla de /fondos usa el catálogo CNV (retornos de período + TNA MM vía variación diaria); este método de series de VCP queda como alternativa para rankings y visualizaciones históricas.',
+        text: 'La tabla de /fondos usa el catálogo CNV (retornos de período + TNA MM vía unMes × 365/30); este método de series de VCP queda como alternativa para rankings y visualizaciones históricas.',
       },
     ],
   },

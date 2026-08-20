@@ -70,7 +70,7 @@ export function mapCatalogToRows(response: FciFundsDetailsResponse): FundCatalog
         )
 
         if (returnPercent != null) {
-          const rates = getComparatasasTnaAndTea(returnPercent)
+          const rates = getComparatasasTnaAndTea(returnPercent, fund.tipoRenta ?? '')
           tna = rates.tna
           tea = rates.tea
         }

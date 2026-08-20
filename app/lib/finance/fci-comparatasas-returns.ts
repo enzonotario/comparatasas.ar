@@ -1,8 +1,28 @@
 export interface FciComparatasasRendimientos {
   ultimos7Dias: number | null
   unMes: number | null
-  /** Variación diaria CNV en %; se usa para estimar TNA de money market. */
+  /** Variación diaria CNV en %; fallback de TNA MM si no hay 30D/7D. */
   variacionDiariaPct?: number | null
+}
+
+const DAYS_PER_YEAR = 365
+
+function finiteNumber(value: number | null | undefined): value is number {
+  return value != null && Number.isFinite(value)
+}
+
+/**
+ * CNV manda retorno de período; CAFCI legacy mandaba TNA ya anualizada.
+ * Un 30D > 8% o un 7D > 10% no es un período CNV plausible.
+ */
+function looksLikePeriodReturn(value: number, windowDays: number) {
+  const maxAbs = windowDays <= 1 ? 5 : windowDays <= 7 ? 10 : 8
+  return Math.abs(value) <= maxAbs
+}
+
+function annualizePeriodReturn(periodPercent: number, windowDays: number) {
+  if (!looksLikePeriodReturn(periodPercent, windowDays)) return periodPercent
+  return (periodPercent * DAYS_PER_YEAR) / windowDays
 }
 
 export function getComparatasasReturnPercent(
@@ -10,26 +30,33 @@ export function getComparatasasReturnPercent(
   tipoRenta: string,
 ) {
   if (tipoRenta === 'Mercado de Dinero') {
-    // CNV publica retornos de período; para MM la TNA ≈ variación diaria * 365.
-    if (
-      rendimientos.variacionDiariaPct != null &&
-      Number.isFinite(rendimientos.variacionDiariaPct)
-    ) {
-      return rendimientos.variacionDiariaPct * 365
+    // TNA nominal 30D: r30D × 365/30.
+    if (finiteNumber(rendimientos.unMes)) {
+      return annualizePeriodReturn(rendimientos.unMes, 30)
     }
 
-    // Legacy CAFCI: unMes/ultimos7Dias ya venían anualizados ~TNA.
-    return rendimientos.unMes ?? rendimientos.ultimos7Dias ?? 0
+    if (finiteNumber(rendimientos.ultimos7Dias)) {
+      return annualizePeriodReturn(rendimientos.ultimos7Dias, 7)
+    }
+
+    if (finiteNumber(rendimientos.variacionDiariaPct)) {
+      return annualizePeriodReturn(rendimientos.variacionDiariaPct, 1)
+    }
+
+    return 0
   }
 
   return rendimientos.unMes ?? 0
 }
 
-/** Convierte el rendimiento base (%) a TNA/TEA. No depende del tipo de renta. */
-export function getComparatasasTnaAndTea(returnPercent: number) {
+/** Convierte el rendimiento base (%) a TNA/TEA. */
+export function getComparatasasTnaAndTea(returnPercent: number, tipoRenta?: string) {
   const returnRate = returnPercent / 100
   const tna = returnRate
-  const tea = Math.pow(1 + returnRate, 12) - 1
+  const tea =
+    tipoRenta === 'Mercado de Dinero'
+      ? Math.pow(1 + returnRate / DAYS_PER_YEAR, DAYS_PER_YEAR) - 1
+      : Math.pow(1 + returnRate, 12) - 1
 
   return {
     tna: Number.isFinite(tna) ? tna : 0,
