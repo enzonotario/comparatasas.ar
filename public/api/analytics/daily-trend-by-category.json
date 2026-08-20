@@ -1,22 +1,43 @@
 [
   {
+    "date": "20260820",
+    "categories": {
+      "Otro": 34,
+      "Billetera": 17,
+      "Plazo Fijo": 21,
+      "Cuenta Remunerada": 24,
+      "Página Amiga": 7,
+      "Criptomonedas": 10,
+      "Money Market": 1,
+      "Billetera USD": 12,
+      "Cuenta Remunerada USD": 1,
+      "Frascos": 8,
+      "PF UVA pago periódico": 4,
+      "PF UVA precancelable": 2,
+      "General": 11,
+      "plazo fijo tradicional": 11,
+      "wARS": 1
+    },
+    "total": 164
+  },
+  {
     "date": "20260819",
     "categories": {
-      "Billetera": 15,
-      "Plazo Fijo": 25,
-      "Página Amiga": 7,
-      "Cuenta Remunerada": 34,
-      "Otro": 47,
-      "Money Market": 1,
-      "Billetera USD": 8,
-      "Frascos": 5,
-      "PF UVA pago periódico": 5,
-      "General": 11,
-      "Criptomonedas": 3,
-      "plazo fijo tradicional": 26,
-      "wARS": 6
+      "Billetera": 49,
+      "Plazo Fijo": 71,
+      "Página Amiga": 27,
+      "Cuenta Remunerada": 84,
+      "Otro": 126,
+      "Money Market": 2,
+      "Billetera USD": 19,
+      "Frascos": 12,
+      "PF UVA pago periódico": 7,
+      "General": 18,
+      "Criptomonedas": 9,
+      "plazo fijo tradicional": 40,
+      "wARS": 13
     },
-    "total": 193
+    "total": 477
   },
   {
     "date": "20260818",
@@ -62,31 +83,13 @@
   {
     "date": "20260816",
     "categories": {
-      "Otro": 59,
-      "Billetera": 25,
-      "Cuenta Remunerada": 25,
+      "Otro": 41,
+      "Billetera": 17,
+      "Cuenta Remunerada": 17,
       "Money Market": 2,
-      "Página Amiga": 24,
-      "Plazo Fijo": 27,
-      "Billetera USD": 6,
-      "Frascos": 2,
-      "General": 9,
-      "Criptomonedas": 11,
-      "plazo fijo tradicional": 9,
-      "wARS": 9
+      "Página Amiga": 19,
+      "Plazo Fijo": 9
     },
-    "total": 208
-  },
-  {
-    "date": "20260815",
-    "categories": {
-      "Página Amiga": 59,
-      "Billetera": 23,
-      "Plazo Fijo": 29,
-      "Cuenta Remunerada": 35,
-      "Otro": 67,
-      "Billetera USD": 8
-    },
-    "total": 221
+    "total": 105
   }
 ]
