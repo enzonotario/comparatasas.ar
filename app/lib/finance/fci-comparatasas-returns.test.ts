@@ -3,6 +3,7 @@ import {
   estimateNominalTnaFromReturnRows,
   getComparatasasReturnPercent,
   getComparatasasTnaAndTea,
+  getNominalTnaEstimateFromRendimientos,
 } from './fci-comparatasas-returns'
 
 describe('estimateNominalTnaFromReturnRows', () => {
@@ -14,6 +15,34 @@ describe('estimateNominalTnaFromReturnRows', () => {
       ]),
     ).toEqual({
       value: (1.5393 * 365) / 30,
+      period: '30D',
+      days: 30,
+      formula: 'Nominal 30D: r30D × 365/30',
+    })
+  })
+
+  it('uses effective days from the detail rows when present', () => {
+    expect(
+      estimateNominalTnaFromReturnRows([{ period: '30D', value: 1.5872, effectiveDays: 29 }]),
+    ).toEqual({
+      value: (1.5872 * 365) / 29,
+      period: '30D',
+      days: 29,
+      formula: 'Nominal 30D: r30D × 365/29',
+    })
+  })
+})
+
+describe('getNominalTnaEstimateFromRendimientos', () => {
+  it('anualiza el 30D con días fijos cuando no hay histórico', () => {
+    expect(
+      getNominalTnaEstimateFromRendimientos({
+        unMes: 1.5872,
+        ultimos7Dias: 0.3954,
+        variacionDiariaPct: 0.23,
+      }),
+    ).toEqual({
+      value: (1.5872 * 365) / 30,
       period: '30D',
       days: 30,
       formula: 'Nominal 30D: r30D × 365/30',
@@ -70,7 +99,16 @@ describe('getComparatasasReturnPercent', () => {
     ).toBe(18.4158)
   })
 
-  it('uses CNV period unMes for non money market funds', () => {
+  it('anualiza el 30D para renta mixta y demás tipos', () => {
+    expect(
+      getComparatasasReturnPercent(
+        { unMes: 1.5872, ultimos7Dias: 0.3954, variacionDiariaPct: 0.23 },
+        'Renta Mixta',
+      ),
+    ).toBeCloseTo((1.5872 * 365) / 30, 4)
+  })
+
+  it('keeps legacy CAFCI values for renta variable', () => {
     expect(
       getComparatasasReturnPercent(
         { unMes: -9.849, ultimos7Dias: -1.2, variacionDiariaPct: -1.514 },
@@ -79,25 +117,19 @@ describe('getComparatasasReturnPercent', () => {
     ).toBeCloseTo(-9.849, 3)
   })
 
-  it('does not fall back to ultimos7Dias for non money market funds', () => {
-    expect(getComparatasasReturnPercent({ unMes: null, ultimos7Dias: 18.4158 }, 'Renta Fija')).toBe(
-      0,
-    )
+  it('falls back to 7D for non money market funds when 30D is missing', () => {
+    expect(
+      getComparatasasReturnPercent({ unMes: null, ultimos7Dias: 0.3818 }, 'Renta Fija'),
+    ).toBeCloseTo((0.3818 * 365) / 7, 4)
   })
 })
 
 describe('getComparatasasTnaAndTea', () => {
-  it('uses the monthly return directly as TNA for non money market', () => {
-    expect(getComparatasasTnaAndTea(16.5)).toEqual({
+  it('compounds TEA from annual nominal TNA for all fund types', () => {
+    expect(getComparatasasTnaAndTea(16.5, 'Renta Mixta')).toEqual({
       tna: 0.165,
-      tea: Math.pow(1.165, 12) - 1,
+      tea: Math.pow(1 + 0.165 / 365, 365) - 1,
     })
-  })
-
-  it('does not linearly annualize the monthly return', () => {
-    const { tna, tea } = getComparatasasTnaAndTea(3)
-    expect(tna).toBeCloseTo(0.03)
-    expect(tea).toBeCloseTo(Math.pow(1.03, 12) - 1)
   })
 
   it('compounds TEA from annual TNA for money market', () => {

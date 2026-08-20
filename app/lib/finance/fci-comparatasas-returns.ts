@@ -1,11 +1,24 @@
 export interface FciComparatasasRendimientos {
   ultimos7Dias: number | null
   unMes: number | null
-  /** Variación diaria CNV en %; fallback de TNA MM si no hay 30D/7D. */
+  /** Variación diaria CNV en %; fallback de TNA si no hay 30D/7D. */
   variacionDiariaPct?: number | null
 }
 
 const DAYS_PER_YEAR = 365
+
+type NominalTnaPeriod = '30D' | '7D' | '1D'
+
+const NOMINAL_TNA_WINDOWS: Array<{
+  period: NominalTnaPeriod
+  token: string
+  fallbackDays: number
+  pick: (rendimientos: FciComparatasasRendimientos) => number | null | undefined
+}> = [
+  { period: '30D', token: 'r30D', fallbackDays: 30, pick: (r) => r.unMes },
+  { period: '7D', token: 'r7D', fallbackDays: 7, pick: (r) => r.ultimos7Dias },
+  { period: '1D', token: 'r1D', fallbackDays: 1, pick: (r) => r.variacionDiariaPct },
+]
 
 function finiteNumber(value: number | null | undefined): value is number {
   return value != null && Number.isFinite(value)
@@ -27,32 +40,28 @@ function annualizePeriodReturn(periodPercent: number, windowDays: number) {
 
 export function estimateNominalTnaPercent(periodPercent: number, windowDays: number) {
   if (!Number.isFinite(periodPercent) || !(windowDays > 0)) return null
-  return (periodPercent * DAYS_PER_YEAR) / windowDays
+  return annualizePeriodReturn(periodPercent, windowDays)
 }
 
 export type NominalTnaEstimate = {
   value: number
-  period: '30D' | '7D' | '1D'
+  period: NominalTnaPeriod
   days: number
   formula: string
 }
 
-export function estimateNominalTnaFromReturnRows(
-  rows: Array<{ period: string; value: number | null | undefined; effectiveDays: number | null }>,
+export function getNominalTnaEstimateFromRendimientos(
+  rendimientos: FciComparatasasRendimientos,
+  effectiveDays?: Partial<Record<NominalTnaPeriod, number | null>>,
 ): NominalTnaEstimate | null {
-  const windows = [
-    { period: '30D' as const, token: 'r30D', fallbackDays: 30 },
-    { period: '7D' as const, token: 'r7D', fallbackDays: 7 },
-    { period: '1D' as const, token: 'r1D', fallbackDays: 1 },
-  ]
+  for (const window of NOMINAL_TNA_WINDOWS) {
+    const raw = window.pick(rendimientos)
+    if (!finiteNumber(raw)) continue
 
-  for (const window of windows) {
-    const row = rows.find((item) => item.period === window.period)
-    if (row?.value == null || !Number.isFinite(row.value)) continue
-
-    const days = row.effectiveDays && row.effectiveDays > 0 ? row.effectiveDays : window.fallbackDays
-    const value = estimateNominalTnaPercent(row.value, days)
-    if (value == null) continue
+    const override = effectiveDays?.[window.period]
+    const days = override && override > 0 ? override : window.fallbackDays
+    const value = annualizePeriodReturn(raw, days)
+    if (!Number.isFinite(value)) continue
 
     return {
       value,
@@ -65,41 +74,58 @@ export function estimateNominalTnaFromReturnRows(
   return null
 }
 
-export function getComparatasasReturnPercent(
-  rendimientos: FciComparatasasRendimientos,
-  tipoRenta: string,
-) {
-  if (tipoRenta === 'Mercado de Dinero') {
-    // TNA nominal 30D: r30D × 365/30.
-    if (finiteNumber(rendimientos.unMes)) {
-      return annualizePeriodReturn(rendimientos.unMes, 30)
-    }
+export function estimateNominalTnaFromReturnRows(
+  rows: Array<{ period: string; value: number | null | undefined; effectiveDays: number | null }>,
+): NominalTnaEstimate | null {
+  const rendimientos: FciComparatasasRendimientos = {
+    unMes: null,
+    ultimos7Dias: null,
+    variacionDiariaPct: null,
+  }
+  const effectiveDays: Partial<Record<NominalTnaPeriod, number | null>> = {}
 
-    if (finiteNumber(rendimientos.ultimos7Dias)) {
-      return annualizePeriodReturn(rendimientos.ultimos7Dias, 7)
+  for (const row of rows) {
+    if (row.period === '30D') {
+      rendimientos.unMes = row.value ?? null
+      effectiveDays['30D'] = row.effectiveDays
+    } else if (row.period === '7D') {
+      rendimientos.ultimos7Dias = row.value ?? null
+      effectiveDays['7D'] = row.effectiveDays
+    } else if (row.period === '1D') {
+      rendimientos.variacionDiariaPct = row.value ?? null
+      effectiveDays['1D'] = row.effectiveDays
     }
-
-    if (finiteNumber(rendimientos.variacionDiariaPct)) {
-      return annualizePeriodReturn(rendimientos.variacionDiariaPct, 1)
-    }
-
-    return 0
   }
 
-  return rendimientos.unMes ?? 0
+  return getNominalTnaEstimateFromRendimientos(rendimientos, effectiveDays)
 }
 
-/** Convierte el rendimiento base (%) a TNA/TEA. */
-export function getComparatasasTnaAndTea(returnPercent: number, tipoRenta?: string) {
+/** TNA nominal estimada (%) desde retornos CNV; mismo criterio para todos los tipos de renta. */
+export function getComparatasasReturnPercent(
+  rendimientos: FciComparatasasRendimientos,
+  _tipoRenta?: string,
+) {
+  return getNominalTnaEstimateFromRendimientos(rendimientos)?.value ?? 0
+}
+
+/** Convierte la TNA nominal estimada (%) a decimal TNA/TEA. */
+export function getComparatasasTnaAndTea(returnPercent: number, _tipoRenta?: string) {
   const returnRate = returnPercent / 100
   const tna = returnRate
-  const tea =
-    tipoRenta === 'Mercado de Dinero'
-      ? Math.pow(1 + returnRate / DAYS_PER_YEAR, DAYS_PER_YEAR) - 1
-      : Math.pow(1 + returnRate, 12) - 1
+  const tea = Math.pow(1 + returnRate / DAYS_PER_YEAR, DAYS_PER_YEAR) - 1
 
   return {
     tna: Number.isFinite(tna) ? tna : 0,
     tea: Number.isFinite(tea) ? tea : 0,
   }
+}
+
+export function hasComparatasasRendimientos(rendimientos: FciComparatasasRendimientos | null | undefined) {
+  if (!rendimientos) return false
+
+  return (
+    rendimientos.variacionDiariaPct != null ||
+    rendimientos.unMes != null ||
+    rendimientos.ultimos7Dias != null
+  )
 }

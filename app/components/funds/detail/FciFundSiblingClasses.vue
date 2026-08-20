@@ -195,7 +195,7 @@ const sortedSiblings = computed(() => {
             <p class="text-sm font-semibold tabular-nums" :class="metricTone(row.tna)">
               {{ formatRate(row.tna) ?? '—' }}
             </p>
-            <p class="text-[10px] uppercase tracking-wide text-muted">TNA</p>
+            <p class="text-[10px] uppercase tracking-wide text-muted">TNA est.</p>
           </div>
         </NuxtLink>
 
@@ -219,7 +219,7 @@ const sortedSiblings = computed(() => {
             <p class="text-sm font-semibold tabular-nums" :class="metricTone(row.tna)">
               {{ formatRate(row.tna) ?? '—' }}
             </p>
-            <p class="text-[10px] uppercase tracking-wide text-muted">TNA</p>
+            <p class="text-[10px] uppercase tracking-wide text-muted">TNA est.</p>
           </div>
         </div>
       </template>
@@ -248,7 +248,7 @@ const sortedSiblings = computed(() => {
                   variant="ghost"
                   size="xs"
                   :icon="sortIcon('tna')"
-                  label="TNA"
+                  label="TNA est."
                   @click="toggleSort('tna')"
                 />
               </div>
@@ -337,7 +337,7 @@ const sortedSiblings = computed(() => {
     </div>
 
     <p v-if="hasMultipleClasses" class="text-xs text-muted max-md:hidden">
-      El patrimonio total suma todas las clases del mismo fondo. La TNA es propia de cada clase.
+      El patrimonio total suma todas las clases del mismo fondo. La TNA est. es propia de cada clase.
     </p>
   </div>
 </template>

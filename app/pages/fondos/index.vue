@@ -559,6 +559,22 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
     sortingFn: 'basic',
   },
   {
+    id: 'tna',
+    accessorFn: (row) => finiteOrUndefined(row.tna),
+    header: getSortableHeader('TNA est.', 'right'),
+    cell: ({ row }) => {
+      const formatted = formatRatePercent(row.original.tna)
+      if (!formatted) return mutedDash()
+      return h(
+        'div',
+        { class: `text-right font-semibold text-sm tabular-nums ${metricTone(row.original.tna != null ? row.original.tna * 100 : null)}` },
+        formatted,
+      )
+    },
+    sortUndefined: 'last',
+    sortingFn: 'basic',
+  },
+  {
     id: 'retornoYtd',
     accessorFn: (row) => finiteOrUndefined(row.retornoYtd),
     header: getSortableHeader('YTD', 'right'),
@@ -662,6 +678,7 @@ const columnVisibility = ref<Record<string, boolean>>({
   depositaria: true,
   retorno1d: true,
   retorno30d: true,
+  tna: true,
   retornoYtd: true,
   fecha: true,
   inversionMinima: false,
@@ -707,6 +724,7 @@ const columnLabelMap: Record<string, string> = {
   horizonte: 'Horizonte',
   retorno1d: '1d',
   retorno30d: '30d',
+  tna: 'TNA est.',
   retornoYtd: 'YTD',
   vcp: 'VCP',
   patrimonio: 'Patrimonio',

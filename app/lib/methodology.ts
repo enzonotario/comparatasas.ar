@@ -74,7 +74,7 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Es el método por defecto del sitio. La planilla CNV publica retornos de período; para money market estimamos la TNA nominal a 365 días a partir del retorno ~30D (no de un solo día, que es ruidoso).',
+        text: 'Es el método por defecto del sitio para todos los FCI. La planilla CNV publica retornos de período; estimamos la TNA nominal a 365 días a partir del retorno ~30D (no de un solo día, que es ruidoso).',
       },
       {
         type: 'formula',
@@ -99,23 +99,19 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'En rankings curados usamos el retorno ~30D rolling desde la serie de VCP (campo `unMes` en la API). La columna CNV “un mes” (vs fin de mes previo) solo se usa si falta histórico suficiente.',
+        text: 'Usamos la misma estimación de TNA nominal que en money market: retorno ~30D (rolling desde VCP en el detalle; columna CNV `unMes` en el catálogo si falta histórico), con fallback a 7D y 1D.',
       },
       {
         type: 'formula',
-        text: 'Rendimiento base = unMes rolling ~30D (si falta, 0)',
+        text: 'TNA = unMes × 365 / días (si falta: ultimos7Dias × 365 / 7; si falta: variacionDiariaPct × 365)',
       },
       {
         type: 'formula',
-        text: 'TNA mostrada = rendimiento ÷ 100 (retorno de período, sin proyectar a 365 días)',
-      },
-      {
-        type: 'formula',
-        text: 'TEA = (1 + rendimiento ÷ 100)^12 − 1',
+        text: 'TEA = (1 + TNA ÷ 365)^365 − 1',
       },
       {
         type: 'p',
-        text: 'Ejemplo: si el 30D rolling = 1,47% → valor mostrado = 1,47%.',
+        text: 'En el detalle, los días del divisor son los días efectivos del lookback VCP (p. ej. 29 en lugar de 30). Ejemplo: 30D = 1,59% → TNA ≈ 19,98% con 29 días.',
       },
     ],
   },
