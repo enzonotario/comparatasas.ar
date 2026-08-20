@@ -119,7 +119,10 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'cloudflare_pages',
     prerender: {
-      crawlLinks: true,
+      // Solo rutas explícitas (home + fondos curados). crawlLinks expandía
+      // hermanos del catálogo a ~700+ /fondos/* y ~9 min de generate.
+      crawlLinks: false,
+      concurrency: 16,
       failOnError: false,
       routes: [
         '/',
@@ -186,25 +189,11 @@ export default defineNuxtConfig({
   sitemap: {
     urls: async () => {
       const base = 'https://comparatasas.ar'
-      const urls: string[] = [base + '/']
-
-      const slugify = (name: string): string =>
-        name
-          .normalize('NFD')
-          .replace(/\p{Diacritic}/gu, '')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '')
-
-      try {
-        const res = await fetch('https://api.argentinadatos.com/v1/finanzas/fci/fondos')
-        const data = (await res.json()) as { fondos: Array<{ nombre: string }> }
-        for (const fondo of data.fondos) {
-          urls.push(`${base}/fondos/${slugify(fondo.nombre)}`)
-        }
-      } catch {}
-
-      return urls
+      // Solo rutas que realmente prerenderizamos (crawlLinks off).
+      // Listar los ~4700 FCI del catálogo generaba URLs sin HTML estático.
+      const { getPrerenderRoutes } = await import('./app/lib/prerender-routes')
+      const routes = await getPrerenderRoutes()
+      return routes.map((path) => `${base}${path === '/' ? '/' : path}`)
     },
   },
 })

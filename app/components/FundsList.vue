@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { getProviderSlug, getProviderApiName, hasHistory } from '~/composables/useAccountHistory'
 import { useAnalytics } from '~/composables/useAnalytics'
-import { getFundDetailPath } from '~/lib/funds-detail'
-import { fetchFciFundsCatalog } from '~/composables/useFciFundDetails'
+import { getFundDetailPath, normalizeFundSlug } from '~/lib/funds-detail'
+import { comparatasasFondos } from '~/lib/mappings/funds'
 import { formatPlazoTierTnaRange } from '~/lib/account-plazo-tiers'
 
 const { trackProviderClick } = useAnalytics()
@@ -22,18 +22,11 @@ const { days: simulatorDaysState } = useInvestmentSimulator()
 
 const resolvedSimulatorDays = computed(() => props.simulatorDays ?? simulatorDaysState.value)
 
-const { data: availableFundDetailSlugs } = await useAsyncData(
-  'fci-fund-detail-slugs',
-  async () => {
-    const response = await fetchFciFundsCatalog()
-    return (response.fondos ?? []).map((fund) => getFundDetailPath(fund.nombre))
-  },
-  {
-    default: () => [],
-  },
-)
-
-const availableFundDetailPathSet = computed(() => new Set(availableFundDetailSlugs.value ?? []))
+/** Solo fondos curados tienen detalle prerenderizado; evita fetch del catálogo completo en generate. */
+const availableFundDetailPathSet = computed(() => {
+  if (!props.showFundDetailLink) return new Set<string>()
+  return new Set(comparatasasFondos.map((slug) => `/fondos/${slug}`))
+})
 
 function isUvaSimulationOutOfRange(item: any): boolean {
   return !!(props.showSimulation && item.simulationDisabled)
@@ -72,7 +65,11 @@ function getFundDetailUrl(item: any): string | null {
   if (!item?.fondo || typeof item.fondo !== 'string') return null
 
   const detailPath = getFundDetailPath(item.fondo)
-  return availableFundDetailPathSet.value.has(detailPath) ? detailPath : null
+  if (availableFundDetailPathSet.value.has(detailPath)) return detailPath
+
+  // Fallback: si el slug del ítem está en el mapping curado
+  const slug = normalizeFundSlug(item.fondo)
+  return comparatasasFondos.includes(slug) ? `/fondos/${slug}` : null
 }
 
 function getHistoryUrl(item: any): string | null {
