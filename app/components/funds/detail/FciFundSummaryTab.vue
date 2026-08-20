@@ -6,7 +6,8 @@ import type { FciFundDetail } from '~/composables/useFciFundDetails'
 import type { ReturnRow } from '~/composables/useFciFundPresentation'
 import { CHART_COLORS, useChartTheme } from '~/composables/useChartConfig'
 import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
-import { formatCurrency, formatDate, formatPercentAuto } from '~/lib/fci-fund-formatters'
+import { formatCurrency, formatDate, formatPercentAuto, metricTone } from '~/lib/fci-fund-formatters'
+import { estimateNominalTnaFromReturnRows } from '~/lib/finance/fci-comparatasas-returns'
 
 const props = defineProps<{
   fundDetail: FciFundDetail
@@ -36,6 +37,8 @@ const compositionDonutDataset = computed<VueUiDonutDatasetItem[]>(() => {
     values: [segment.porcentaje ?? 0],
   }))
 })
+
+const estimatedTna = computed(() => estimateNominalTnaFromReturnRows(props.returnsRows))
 
 const visibleFeeRows = computed(() => {
   return props.feeRows.filter(([, value]) => {
@@ -150,10 +153,25 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
         }"
       >
         <template #header>
-          <h2 class="text-lg font-semibold">Rendimientos</h2>
+          <h2 class="text-lg font-semibold">Rendimientos Históricos</h2>
         </template>
 
         <UTable :data="props.returnsRows" :columns="props.returnsColumns" />
+
+        <template v-if="estimatedTna" #footer>
+          <div class="flex items-end justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-xs uppercase tracking-wide text-muted">TNA estimada</p>
+              <p class="mt-0.5 font-mono text-xs text-muted">{{ estimatedTna.formula }}</p>
+            </div>
+            <p
+              class="shrink-0 text-xl font-semibold tabular-nums"
+              :class="metricTone(estimatedTna.value)"
+            >
+              {{ formatPercentAuto(estimatedTna.value) }}
+            </p>
+          </div>
+        </template>
       </UCard>
 
       <div class="grid items-start gap-6 xl:grid-cols-2">

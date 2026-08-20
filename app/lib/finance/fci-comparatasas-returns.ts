@@ -25,6 +25,46 @@ function annualizePeriodReturn(periodPercent: number, windowDays: number) {
   return (periodPercent * DAYS_PER_YEAR) / windowDays
 }
 
+export function estimateNominalTnaPercent(periodPercent: number, windowDays: number) {
+  if (!Number.isFinite(periodPercent) || !(windowDays > 0)) return null
+  return (periodPercent * DAYS_PER_YEAR) / windowDays
+}
+
+export type NominalTnaEstimate = {
+  value: number
+  period: '30D' | '7D' | '1D'
+  days: number
+  formula: string
+}
+
+export function estimateNominalTnaFromReturnRows(
+  rows: Array<{ period: string; value: number | null | undefined; effectiveDays: number | null }>,
+): NominalTnaEstimate | null {
+  const windows = [
+    { period: '30D' as const, token: 'r30D', fallbackDays: 30 },
+    { period: '7D' as const, token: 'r7D', fallbackDays: 7 },
+    { period: '1D' as const, token: 'r1D', fallbackDays: 1 },
+  ]
+
+  for (const window of windows) {
+    const row = rows.find((item) => item.period === window.period)
+    if (row?.value == null || !Number.isFinite(row.value)) continue
+
+    const days = row.effectiveDays && row.effectiveDays > 0 ? row.effectiveDays : window.fallbackDays
+    const value = estimateNominalTnaPercent(row.value, days)
+    if (value == null) continue
+
+    return {
+      value,
+      period: window.period,
+      days,
+      formula: `Nominal ${window.period}: ${window.token} × 365/${days}`,
+    }
+  }
+
+  return null
+}
+
 export function getComparatasasReturnPercent(
   rendimientos: FciComparatasasRendimientos,
   tipoRenta: string,

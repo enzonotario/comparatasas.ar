@@ -1,5 +1,25 @@
 import { describe, expect, it } from 'vitest'
-import { getComparatasasReturnPercent, getComparatasasTnaAndTea } from './fci-comparatasas-returns'
+import {
+  estimateNominalTnaFromReturnRows,
+  getComparatasasReturnPercent,
+  getComparatasasTnaAndTea,
+} from './fci-comparatasas-returns'
+
+describe('estimateNominalTnaFromReturnRows', () => {
+  it('builds a 30D nominal TNA formula from return rows', () => {
+    expect(
+      estimateNominalTnaFromReturnRows([
+        { period: '1D', value: 0.225, effectiveDays: 1 },
+        { period: '30D', value: 1.5393, effectiveDays: 30 },
+      ]),
+    ).toEqual({
+      value: (1.5393 * 365) / 30,
+      period: '30D',
+      days: 30,
+      formula: 'Nominal 30D: r30D × 365/30',
+    })
+  })
+})
 
 describe('getComparatasasReturnPercent', () => {
   it('anualiza el 30D para money market (no el diario)', () => {
