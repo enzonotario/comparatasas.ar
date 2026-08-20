@@ -15,11 +15,6 @@ import { parseFundClassName } from '~/lib/fci-fund-class'
 import { getFundDetailTo, getFundDetailToOptionsFromQuery, type FundDetailTab } from '~/lib/funds-detail'
 import { getInstitutionUrl } from '~/lib/mappings/institutions'
 import { getFundMappingBySlug, getFundTypeInfo } from '~/lib/mappings/funds'
-import {
-  fetchFundNominalTnaEstimates,
-  seedFundNominalTnaEstimate,
-} from '~/composables/useFundNominalTnaCache'
-import { normalizeFundSlug } from '~/lib/funds-detail'
 
 definePageMeta({
   layout: 'fondos',
@@ -149,22 +144,6 @@ watch(
     if (!fundDetail.value) return
     // Histórico hace falta también en Resumen para 30D/90D/180D rolling (CNV unMes ≠ 30D).
     await ensureHistoryLoaded()
-  },
-  { immediate: true },
-)
-
-watch(
-  [fundDetail, fundHistory, () => siblingInfo.value.siblings],
-  async ([detail, history, siblings]) => {
-    if (!detail) return
-
-    if (history) {
-      seedFundNominalTnaEstimate(normalizeFundSlug(detail.nombre), detail, history)
-    }
-
-    if (siblings.length) {
-      await fetchFundNominalTnaEstimates(siblings.map((row) => row.fondo))
-    }
   },
   { immediate: true },
 )

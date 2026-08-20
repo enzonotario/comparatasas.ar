@@ -11,8 +11,9 @@ import {
   getComparatasasReturnPercent,
   getComparatasasTnaAndTea,
 } from '../lib/finance/fci-comparatasas-returns'
-import { getCachedFundNominalTnaEstimate, fetchFundNominalTnaEstimates } from '../composables/useFundNominalTnaCache'
 import type { ProcessedFund } from '../types/investments'
+import type { StaticNominalTnaFile } from './useStaticNominalTna'
+import { lookupStaticNominalTna } from './useStaticNominalTna'
 
 function generateSlug(name: string): string {
   return name
@@ -109,6 +110,7 @@ const defaultFundsData = (): Funds => ({
 
 async function transformComparatasasData(
   fondos: FciComparatasasResponse['fondos'],
+  staticTna?: StaticNominalTnaFile | null,
 ): Promise<ProcessedFund[]> {
   return fondos
     .filter((fondo) => {
@@ -125,11 +127,13 @@ async function transformComparatasasData(
       }
 
       return institutions.map((inst: FundInstitution) => {
-        const slug = generateSlug(fondo.nombre)
-        const cachedEstimate = getCachedFundNominalTnaEstimate(slug)
+        const staticEntry = lookupStaticNominalTna(staticTna, slug)
         const returnPercent =
-          cachedEstimate?.value ?? getComparatasasReturnPercent(fondo.rendimientos, fondo.tipoRenta)
-        const { tna, tea } = getComparatasasTnaAndTea(returnPercent, fondo.tipoRenta)
+          staticEntry?.estimate.value ??
+          getComparatasasReturnPercent(fondo.rendimientos, fondo.tipoRenta)
+        const { tna, tea } = staticEntry
+          ? { tna: staticEntry.tna, tea: staticEntry.tea }
+          : getComparatasasTnaAndTea(returnPercent, fondo.tipoRenta)
 
         return {
           fondo: fondo.nombre,
@@ -211,9 +215,10 @@ function categorizeFunds(funds: ProcessedFund[]) {
 
 async function getComparatasasFundsData() {
   try {
-    const response = await $fetch<FciComparatasasResponse>(
-      'https://api.argentinadatos.com/v1/finanzas/fci/comparatasas',
-    )
+    const [response, staticTna] = await Promise.all([
+      $fetch<FciComparatasasResponse>('https://api.argentinadatos.com/v1/finanzas/fci/comparatasas'),
+      $fetch<StaticNominalTnaFile>('/api/fci/nominal-tna.json').catch(() => null),
+    ])
 
     if (!response?.fondos) {
       throw new Error('Invalid response from comparatasas endpoint')
@@ -228,13 +233,7 @@ async function getComparatasasFundsData() {
       }
     }
 
-    const curatedSlugs = response.fondos
-      .filter((fondo) => comparatasasFondos.includes(generateSlug(fondo.nombre)))
-      .map((fondo) => generateSlug(fondo.nombre))
-
-    await fetchFundNominalTnaEstimates(curatedSlugs)
-
-    const funds = await transformComparatasasData(response.fondos)
+    const funds = await transformComparatasasData(response.fondos, staticTna)
 
     return categorizeFunds(funds)
   } catch (error) {

@@ -103,7 +103,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'formula',
-        text: 'TNA = unMes × 365 / días (si falta: ultimos7Dias × 365 / 7; si falta: variacionDiariaPct × 365). Los días del divisor son los efectivos del lookback VCP (~29–30) cuando hay histórico; sin histórico usamos 30.',
+        text: 'En listados usamos TNA precomputada en build (`public/api/fci/nominal-tna.json`) con días efectivos del lookback VCP para fondos curados y sus clases hermanas. El resto del catálogo cae a unMes × 365 / 30. El detalle recalcula con el histórico del fondo abierto.',
       },
       {
         type: 'formula',

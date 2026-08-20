@@ -3,9 +3,10 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
+    "build": "pnpm generate-fci-tna && nuxt build",
+    "generate": "pnpm generate-fci-tna && nuxt generate",
+    "generate-fci-tna": "tsx scripts/generate-fci-nominal-tna.ts",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",

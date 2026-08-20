@@ -11,10 +11,9 @@ import {
   type FciFundsDetailsResponse,
 } from '~/composables/useFciFundDetails'
 import {
-  fetchFundNominalTnaEstimates,
-  useEnrichedCatalogFunds,
-} from '~/composables/useFundNominalTnaCache'
-import { comparatasasFondos } from '~/lib/mappings/funds'
+  lookupStaticNominalTna,
+  type StaticNominalTnaFile,
+} from '~/composables/useStaticNominalTna'
 
 export interface FundCatalogRow {
   fondo: string
@@ -48,7 +47,10 @@ function hasComparatasasReturn(fund: FciFundDetail) {
   return hasComparatasasRendimientos(fund.rendimientos)
 }
 
-export function mapCatalogToRows(response: FciFundsDetailsResponse): FundCatalogRow[] {
+export function mapCatalogToRows(
+  response: FciFundsDetailsResponse,
+  staticTna?: StaticNominalTnaFile | null,
+): FundCatalogRow[] {
   return (response.fondos ?? [])
     .filter((fund) => Boolean(fund.nombre?.trim()))
     .map((fund) => {
@@ -59,7 +61,11 @@ export function mapCatalogToRows(response: FciFundsDetailsResponse): FundCatalog
       let tna: number | null = null
       let tea: number | null = null
 
-      if (hasComparatasasReturn(fund) && fund.rendimientos) {
+      const staticEntry = lookupStaticNominalTna(staticTna, fund.nombre)
+      if (staticEntry) {
+        tna = staticEntry.tna
+        tea = staticEntry.tea
+      } else if (hasComparatasasReturn(fund) && fund.rendimientos) {
         const returnPercent = sanitizeAnnualizedReturnPercent(
           getComparatasasReturnPercent(fund.rendimientos, fund.tipoRenta ?? ''),
         )
@@ -100,24 +106,23 @@ export function mapCatalogToRows(response: FciFundsDetailsResponse): FundCatalog
 
 export function useFondosCatalog() {
   const {
-    data: rawFunds,
+    data: allFunds,
     pending: loading,
     error,
     refresh,
   } = useAsyncData(
     'fci-funds-catalog',
     async () => {
-      const response = await fetchFciFundsCatalog()
-      const rows = mapCatalogToRows(response)
-      await fetchFundNominalTnaEstimates(comparatasasFondos)
-      return rows
+      const [catalog, staticTna] = await Promise.all([
+        fetchFciFundsCatalog(),
+        $fetch<StaticNominalTnaFile>('/api/fci/nominal-tna.json').catch(() => null),
+      ])
+      return mapCatalogToRows(catalog, staticTna)
     },
     {
       default: () => [] as FundCatalogRow[],
     },
   )
-
-  const allFunds = useEnrichedCatalogFunds(rawFunds)
 
   return {
     allFunds,
