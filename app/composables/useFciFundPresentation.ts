@@ -11,6 +11,7 @@ import {
   recomputeHistoryReturns,
   sanitizePeriodReturnPercent,
 } from '~/lib/finance/fci-history-returns'
+import { resolveFundNominalTnaEstimate } from '~/lib/finance/fci-nominal-tna'
 import {
   formatCompactNumber,
   formatDate,
@@ -168,6 +169,12 @@ export function useFciFundPresentation(
     () => returnsRows.value.find((row) => row.period === '30D')?.value ?? null,
   )
 
+  const nominalTnaEstimate = computed(() => {
+    const detail = fundDetail.value
+    if (!detail) return null
+    return resolveFundNominalTnaEstimate(detail, fundHistory.value)
+  })
+
   const returnsColumns: TableColumn<ReturnRow>[] = [
     {
       accessorKey: 'period',
@@ -323,6 +330,7 @@ export function useFciFundPresentation(
     feeRows,
     returnsRows,
     return30d,
+    nominalTnaEstimate,
     returnsColumns,
     historyColumns,
   }

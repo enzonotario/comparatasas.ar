@@ -10,6 +10,11 @@ import {
   type FciFundDetail,
   type FciFundsDetailsResponse,
 } from '~/composables/useFciFundDetails'
+import {
+  fetchFundNominalTnaEstimates,
+  useEnrichedCatalogFunds,
+} from '~/composables/useFundNominalTnaCache'
+import { comparatasasFondos } from '~/lib/mappings/funds'
 
 export interface FundCatalogRow {
   fondo: string
@@ -95,17 +100,24 @@ export function mapCatalogToRows(response: FciFundsDetailsResponse): FundCatalog
 
 export function useFondosCatalog() {
   const {
-    data: allFunds,
+    data: rawFunds,
     pending: loading,
     error,
     refresh,
   } = useAsyncData(
     'fci-funds-catalog',
-    async () => mapCatalogToRows(await fetchFciFundsCatalog()),
+    async () => {
+      const response = await fetchFciFundsCatalog()
+      const rows = mapCatalogToRows(response)
+      await fetchFundNominalTnaEstimates(comparatasasFondos)
+      return rows
+    },
     {
       default: () => [] as FundCatalogRow[],
     },
   )
+
+  const allFunds = useEnrichedCatalogFunds(rawFunds)
 
   return {
     allFunds,

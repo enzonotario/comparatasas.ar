@@ -103,7 +103,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'formula',
-        text: 'TNA = unMes × 365 / días (si falta: ultimos7Dias × 365 / 7; si falta: variacionDiariaPct × 365)',
+        text: 'TNA = unMes × 365 / días (si falta: ultimos7Dias × 365 / 7; si falta: variacionDiariaPct × 365). Los días del divisor son los efectivos del lookback VCP (~29–30) cuando hay histórico; sin histórico usamos 30.',
       },
       {
         type: 'formula',

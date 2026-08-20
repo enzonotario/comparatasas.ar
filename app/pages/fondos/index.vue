@@ -25,6 +25,8 @@ import {
   type CatalogVista,
   type FundEntitySummary,
 } from '~/lib/fci-fund-entity-views'
+import { useFundNominalTnaEnrichment } from '~/composables/useFundNominalTnaCache'
+import { normalizeFundSlug } from '~/lib/funds-detail'
 
 definePageMeta({
   layout: 'fondos',
@@ -126,6 +128,7 @@ function finiteOrUndefined(value: number | null | undefined) {
 
 const { allFundsCache, data: fundsData, fetch: fetchPageFunds } = useFunds()
 const { allFunds, loading, error } = useFondosCatalog()
+const { enrichSlugs } = useFundNominalTnaEnrichment()
 const {
   searchQuery,
   selectedTipo,
@@ -162,6 +165,38 @@ const tableData = computed(() => {
   }
   return toFlatFundCatalogRows(filteredFunds.value)
 })
+
+function collectVisibleFundSlugs(rows: FundCatalogGroupRow[], start: number, count: number) {
+  const slice = rows.slice(start, start + count)
+  const slugs = new Set<string>()
+
+  for (const row of slice) {
+    if (row.isGroup && row.children?.length) {
+      for (const child of row.children) {
+        slugs.add(normalizeFundSlug(child.fondo))
+      }
+      continue
+    }
+
+    slugs.add(normalizeFundSlug(row.primaryFondo || row.fondo))
+  }
+
+  return [...slugs]
+}
+
+watch(
+  [tableData, currentPage, pageSize, catalogVista],
+  async ([rows, page, size, vista]) => {
+    if (vista !== 'fondos' || !rows.length) return
+
+    const start = (page - 1) * size
+    const slugs = collectVisibleFundSlugs(rows, start, size)
+    if (!slugs.length) return
+
+    await enrichSlugs(slugs)
+  },
+  { immediate: true },
+)
 
 const entityTableData = computed(() => {
   if (catalogVista.value === 'administradoras') {

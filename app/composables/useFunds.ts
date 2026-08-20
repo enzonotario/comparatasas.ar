@@ -11,6 +11,7 @@ import {
   getComparatasasReturnPercent,
   getComparatasasTnaAndTea,
 } from '../lib/finance/fci-comparatasas-returns'
+import { getCachedFundNominalTnaEstimate, fetchFundNominalTnaEstimates } from '../composables/useFundNominalTnaCache'
 import type { ProcessedFund } from '../types/investments'
 
 function generateSlug(name: string): string {
@@ -124,7 +125,10 @@ async function transformComparatasasData(
       }
 
       return institutions.map((inst: FundInstitution) => {
-        const returnPercent = getComparatasasReturnPercent(fondo.rendimientos, fondo.tipoRenta)
+        const slug = generateSlug(fondo.nombre)
+        const cachedEstimate = getCachedFundNominalTnaEstimate(slug)
+        const returnPercent =
+          cachedEstimate?.value ?? getComparatasasReturnPercent(fondo.rendimientos, fondo.tipoRenta)
         const { tna, tea } = getComparatasasTnaAndTea(returnPercent, fondo.tipoRenta)
 
         return {
@@ -223,6 +227,12 @@ async function getComparatasasFundsData() {
         console.log('[FCI Fondos] Slugs en mappings pero no encontrados en API:', notFoundInApi)
       }
     }
+
+    const curatedSlugs = response.fondos
+      .filter((fondo) => comparatasasFondos.includes(generateSlug(fondo.nombre)))
+      .map((fondo) => generateSlug(fondo.nombre))
+
+    await fetchFundNominalTnaEstimates(curatedSlugs)
 
     const funds = await transformComparatasasData(response.fondos)
 
