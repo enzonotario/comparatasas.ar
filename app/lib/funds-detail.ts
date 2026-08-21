@@ -1,9 +1,15 @@
+/**
+ * Slug público de FCI alineado con Argentina Datos / CAFCI:
+ * espacios → `-`, el resto de no-alfanuméricos se elimina (p. ej. `27.743` → `27743`).
+ */
 export function normalizeFundSlug(name: string): string {
   return name
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '')
 }
 

@@ -1,3 +1,5 @@
+import { normalizeFundSlug } from '../funds-detail'
+
 export interface FundInstitution {
   institution: string
   displayName: string
@@ -30,12 +32,7 @@ export interface FundTypeInfo {
 }
 
 function slugifyFundName(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  return normalizeFundSlug(name)
 }
 
 function normalizeFundType(value: string) {

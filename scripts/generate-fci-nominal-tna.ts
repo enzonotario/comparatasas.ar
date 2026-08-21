@@ -7,6 +7,7 @@ import {
   resolveFundNominalTnaEstimate,
 } from '../app/lib/finance/fci-nominal-tna'
 import type { NominalTnaEstimate } from '../app/lib/finance/fci-comparatasas-returns'
+import { normalizeFundSlug } from '../app/lib/funds-detail'
 
 const API_BASE = 'https://api.argentinadatos.com/v1/finanzas/fci'
 const OUTPUT_PATH = join(process.cwd(), 'public', 'api', 'fci', 'nominal-tna.json')
@@ -29,12 +30,7 @@ export type StaticNominalTnaFile = {
 }
 
 function normalizeSlug(name: string): string {
-  return name
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  return normalizeFundSlug(name)
 }
 
 async function mapPool<T, R>(

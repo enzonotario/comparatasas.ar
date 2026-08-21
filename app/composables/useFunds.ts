@@ -11,17 +11,13 @@ import {
   getComparatasasReturnPercent,
   getComparatasasTnaAndTea,
 } from '../lib/finance/fci-comparatasas-returns'
+import { normalizeFundSlug } from '../lib/funds-detail'
 import type { ProcessedFund } from '../types/investments'
 import type { StaticNominalTnaFile } from './useStaticNominalTna'
 import { lookupStaticNominalTna } from './useStaticNominalTna'
 
 function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  return normalizeFundSlug(name)
 }
 
 function getProcessedFundTypeInfo(
