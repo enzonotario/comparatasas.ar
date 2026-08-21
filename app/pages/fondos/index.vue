@@ -16,6 +16,7 @@ import {
   formatPercentAuto,
   isUsdCurrency,
   metricTone,
+  normalizeCurrencyCode,
   toArsPatrimonio,
 } from '~/lib/fci-fund-formatters'
 import {
@@ -98,6 +99,7 @@ function renderFundCatalogNameCell(
   } = {},
 ) {
   const label = original.displayName || original.fondo
+  const currencyCode = normalizeCurrencyCode(original.monedaInversion || original.moneda)
   const nameNode = original.isGroup
     ? h('div', { class: 'font-medium text-highlighted truncate' }, label)
     : h(
@@ -112,14 +114,24 @@ function renderFundCatalogNameCell(
 
   return h('div', { class: `flex items-center gap-2 min-w-0 ${depthClass}` }, [
     nameNode,
+    h(
+      UBadge,
+      {
+        color: isUsdCurrency(currencyCode) ? 'primary' : 'neutral',
+        variant: 'subtle',
+        size: 'sm',
+        class: 'shrink-0 tabular-nums',
+      },
+      () => currencyCode,
+    ),
     original.isGroup
       ? h(
           UBadge,
-          { color: 'neutral', variant: 'subtle', size: 'sm' },
+          { color: 'neutral', variant: 'subtle', size: 'sm', class: 'shrink-0' },
           () => `${original.classCount} clases`,
         )
       : original.classLabel && classBadgeAtDepth === rowDepth
-        ? h(UBadge, { color: 'neutral', variant: 'outline', size: 'sm' }, () => original.classLabel)
+        ? h(UBadge, { color: 'neutral', variant: 'outline', size: 'sm', class: 'shrink-0' }, () => original.classLabel)
         : null,
   ])
 }

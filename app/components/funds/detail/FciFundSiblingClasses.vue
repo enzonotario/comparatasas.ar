@@ -4,7 +4,9 @@ import {
   formatArsEquivalentHint,
   formatCompactPatrimonio,
   formatCurrency,
+  isUsdCurrency,
   metricTone,
+  normalizeCurrencyCode,
 } from '~/lib/fci-fund-formatters'
 import { compareClassLabels } from '~/lib/fci-fund-class'
 import type { FundCatalogGroupRow } from '~/lib/fci-fund-groups'
@@ -27,6 +29,10 @@ const sortDir = ref<SortDir>('asc')
 
 function siblingCurrency(row?: FundCatalogGroupRow | null) {
   return row?.monedaInversion || row?.moneda || null
+}
+
+function siblingCurrencyCode(row?: FundCatalogGroupRow | null) {
+  return normalizeCurrencyCode(siblingCurrency(row))
 }
 
 function formatSiblingPatrimonio(value: number | null | undefined, row?: FundCatalogGroupRow | null) {
@@ -166,6 +172,14 @@ const sortedSiblings = computed(() => {
           <UBadge color="neutral" variant="subtle" size="sm">
             {{ siblings.length }} {{ siblings.length === 1 ? 'clase' : 'clases' }}
           </UBadge>
+          <UBadge
+            :color="isUsdCurrency(siblingCurrencyCode(siblings[0])) ? 'primary' : 'neutral'"
+            variant="subtle"
+            size="sm"
+            class="tabular-nums"
+          >
+            {{ siblingCurrencyCode(siblings[0]) }}
+          </UBadge>
         </div>
         <p class="text-sm text-muted truncate">{{ baseName }}</p>
       </div>
@@ -208,9 +222,18 @@ const sortedSiblings = computed(() => {
           class="flex items-center justify-between gap-3 rounded-lg border border-default bg-default px-3 py-2.5 active:bg-elevated/60"
         >
           <div class="min-w-0">
-            <p class="font-medium text-highlighted truncate">
-              {{ row.classLabel || row.fondo }}
-            </p>
+            <div class="flex items-center gap-1.5 min-w-0">
+              <p class="font-medium text-highlighted truncate">
+                {{ row.classLabel || row.fondo }}
+              </p>
+              <UBadge
+                :color="isUsdCurrency(siblingCurrencyCode(row)) ? 'primary' : 'neutral'"
+                variant="subtle"
+                size="sm"
+                class="shrink-0 tabular-nums"
+                :label="siblingCurrencyCode(row)"
+              />
+            </div>
             <p class="text-xs text-muted mt-0.5">
               {{ formatSiblingPatrimonio(row.patrimonio, row) }}
               <span v-if="shareOfFund(row) != null"> · {{ formatShare(row) }} del fondo</span>
@@ -229,10 +252,17 @@ const sortedSiblings = computed(() => {
           class="flex items-center justify-between gap-3 rounded-lg border border-default bg-default px-3 py-2.5 ring-1 ring-default"
         >
           <div class="min-w-0">
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 min-w-0">
               <p class="font-medium text-highlighted truncate">
                 {{ row.classLabel || row.fondo }}
               </p>
+              <UBadge
+                :color="isUsdCurrency(siblingCurrencyCode(row)) ? 'primary' : 'neutral'"
+                variant="subtle"
+                size="sm"
+                class="shrink-0 tabular-nums"
+                :label="siblingCurrencyCode(row)"
+              />
               <UBadge color="neutral" variant="subtle" size="sm" label="Actual" />
             </div>
             <p class="text-xs text-muted mt-0.5">
@@ -335,6 +365,13 @@ const sortedSiblings = computed(() => {
                 <span v-else class="font-medium text-highlighted truncate">
                   {{ row.classLabel || row.fondo }}
                 </span>
+                <UBadge
+                  :color="isUsdCurrency(siblingCurrencyCode(row)) ? 'primary' : 'neutral'"
+                  variant="subtle"
+                  size="sm"
+                  class="shrink-0 tabular-nums"
+                  :label="siblingCurrencyCode(row)"
+                />
                 <UBadge
                   v-if="row.fondo === currentFondo"
                   color="neutral"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
 import type { FundCatalogRow } from '~/composables/useFondosCatalog'
-import { formatCompactPatrimonio } from '~/lib/fci-fund-formatters'
+import { formatCompactPatrimonio, normalizeCurrencyCode } from '~/lib/fci-fund-formatters'
 import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
 import { getFundDetailTo, getFundDetailToOptionsFromQuery, normalizeFundSlug } from '~/lib/funds-detail'
 
@@ -93,13 +93,14 @@ const claseChildren = computed<NavigationMenuItem[]>(() => {
   return info.siblings.map((row) => {
     const isActive = normalizeFundSlug(row.fondo) === detailSlug.value
     const patrimonio = formatCompactPatrimonio(row.patrimonio, row.monedaInversion || row.moneda)
+    const currency = normalizeCurrencyCode(row.monedaInversion || row.moneda)
 
     return {
       label: row.classLabel || row.fondo,
       icon: isActive ? 'i-lucide-circle-dot' : 'i-lucide-circle',
       to: isActive ? undefined : getFundDetailTo(row.fondo, detailToOptions.value),
       active: isActive,
-      badge: patrimonio !== '—' ? patrimonio : undefined,
+      badge: patrimonio !== '—' ? `${currency} · ${patrimonio}` : currency,
       onSelect: closeSidebar,
     }
   })
