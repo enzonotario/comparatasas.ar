@@ -9,6 +9,7 @@ const STATIC_PRERENDER_ROUTES = [
   '/plazos-fijos/uva-pago-periodico',
   '/plazos-fijos/uva-precancelable',
   '/fondos',
+  '/fondos/mercado',
   '/usd',
   '/criptomonedas',
   '/criptopesos',

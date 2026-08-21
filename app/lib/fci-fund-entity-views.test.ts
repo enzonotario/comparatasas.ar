@@ -19,6 +19,7 @@ function row(partial: Partial<FundCatalogRow> & Pick<FundCatalogRow, 'fondo'>): 
     vcp: null,
     patrimonio: null,
     inversionMinima: null,
+    moneda: null,
     monedaInversion: null,
     plazoLiquidacionDias: null,
     region: null,
@@ -61,6 +62,7 @@ describe('summarizeFundsByEntity', () => {
       fondos: 1,
       clases: 1,
       patrimonio: 200,
+      patrimonioEnArs: false,
       tipos: 1,
     })
     expect(result[1]).toMatchObject({
@@ -68,11 +70,42 @@ describe('summarizeFundsByEntity', () => {
       fondos: 1,
       clases: 2,
       patrimonio: 150,
+      patrimonioEnArs: false,
       tipos: 1,
     })
     expect(result[1].avgTna).toBeCloseTo(0.15)
     expect(result[1].children).toHaveLength(1)
     expect(result[1].children[0]?.displayName).toBe('Fima Premium')
     expect(result[1].children[0]?.children).toHaveLength(2)
+  })
+
+  it('converts USD patrimonio to ARS with MEP rate when aggregating', () => {
+    const funds = [
+      row({
+        fondo: 'Pesos A',
+        administradora: 'Galicia',
+        patrimonio: 1_000_000,
+        moneda: 'Peso Argentino',
+      }),
+      row({
+        fondo: 'Dolares A',
+        administradora: 'Galicia',
+        patrimonio: 1_000,
+        moneda: 'Dolar Estadounidense',
+        monedaInversion: 'Dolar Estadounidense',
+      }),
+    ]
+
+    const withoutRate = summarizeFundsByEntity(funds, 'administradora')
+    expect(withoutRate[0]).toMatchObject({
+      patrimonio: 1_000_000,
+      patrimonioEnArs: false,
+    })
+
+    const withRate = summarizeFundsByEntity(funds, 'administradora', 1400)
+    expect(withRate[0]).toMatchObject({
+      patrimonio: 1_000_000 + 1_000 * 1400,
+      patrimonioEnArs: true,
+    })
   })
 })

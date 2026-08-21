@@ -1,6 +1,7 @@
 import { parseFundClassName } from './fci-fund-class'
 import { groupFundCatalogRows, type FundCatalogGroupRow } from './fci-fund-groups'
 import type { FundCatalogRow } from '../composables/useFondosCatalog'
+import { isUsdCurrency, toArsPatrimonio } from './fci-fund-formatters'
 
 export type CatalogVista = 'fondos' | 'administradoras' | 'depositarias'
 
@@ -8,7 +9,10 @@ export interface FundEntitySummary {
   name: string
   clases: number
   fondos: number
+  /** Patrimonio total en ARS (USD convertido con dólar bolsa / MEP cuando hay tipo de cambio). */
   patrimonio: number | null
+  /** true si el total incluye al menos un fondo USD convertido a ARS. */
+  patrimonioEnArs: boolean
   avgTna: number | null
   tipos: number
   children: FundCatalogGroupRow[]
@@ -44,9 +48,18 @@ function averageNullable(values: Array<number | null | undefined>) {
   return finite.reduce((sum, value) => sum + value, 0) / finite.length
 }
 
+function fundCurrency(fund: FundCatalogRow) {
+  return fund.monedaInversion || fund.moneda
+}
+
+/**
+ * Agrega fondos por administradora/depositaria.
+ * Los patrimonios en USD se convierten a ARS con `usdArsRate` (venta MEP) para poder sumar y ordenar.
+ */
 export function summarizeFundsByEntity(
   funds: FundCatalogRow[],
   field: 'administradora' | 'depositaria',
+  usdArsRate?: number | null,
 ): FundEntitySummary[] {
   const groups = new Map<
     string,
@@ -54,6 +67,7 @@ export function summarizeFundsByEntity(
       rows: FundCatalogRow[]
       fondoKeys: Set<string>
       patrimonios: Array<number | null>
+      convertedUsd: boolean
       tnas: Array<number | null>
       tipos: Set<string>
     }
@@ -69,6 +83,7 @@ export function summarizeFundsByEntity(
         rows: [],
         fondoKeys: new Set(),
         patrimonios: [],
+        convertedUsd: false,
         tnas: [],
         tipos: new Set(),
       }
@@ -77,7 +92,19 @@ export function summarizeFundsByEntity(
 
     group.rows.push(fund)
     group.fondoKeys.add(parseFundClassName(fund.fondo).groupKey || fund.fondo)
-    group.patrimonios.push(fund.patrimonio)
+
+    const currency = fundCurrency(fund)
+    if (isUsdCurrency(currency)) {
+      const converted = toArsPatrimonio(fund.patrimonio, currency, usdArsRate)
+      if (converted != null) {
+        group.convertedUsd = true
+        group.patrimonios.push(converted)
+      }
+      // Sin tipo de cambio, omitimos USD del total para no mezclar monedas.
+    } else {
+      group.patrimonios.push(fund.patrimonio)
+    }
+
     group.tnas.push(fund.tna)
     if (fund.tipoFilterKey) group.tipos.add(fund.tipoFilterKey)
   }
@@ -88,6 +115,7 @@ export function summarizeFundsByEntity(
       clases: group.rows.length,
       fondos: group.fondoKeys.size,
       patrimonio: sumNullable(group.patrimonios),
+      patrimonioEnArs: group.convertedUsd,
       avgTna: averageNullable(group.tnas),
       tipos: group.tipos.size,
       children: groupFundCatalogRows(group.rows),

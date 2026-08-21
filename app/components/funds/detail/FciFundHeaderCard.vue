@@ -2,7 +2,9 @@
 import type { FciFundDetail } from '~/composables/useFciFundDetails'
 import FciFundMetaBadge from '~/components/funds/detail/FciFundMetaBadge.vue'
 import {
+  formatArsEquivalentHint,
   formatCompactNumber,
+  formatCompactPatrimonio,
   formatDecimal,
   normalizeCurrencyCode,
 } from '~/lib/fci-fund-formatters'
@@ -66,8 +68,20 @@ const updatedAtLabel = computed(() => {
   return date.toLocaleDateString('es-AR')
 })
 
+const { usdArsRate } = useDolarBolsa()
+
+const fundCurrency = computed(
+  () => props.fundDetail.monedaInversion || props.fundDetail.moneda || null,
+)
+
 const patrimonioLabel = computed(() => {
-  return formatCompactNumber(props.fundDetail.patrimonio)
+  const primary = formatCompactPatrimonio(props.fundDetail.patrimonio, fundCurrency.value)
+  const hint = formatArsEquivalentHint(
+    props.fundDetail.patrimonio,
+    fundCurrency.value,
+    usdArsRate.value,
+  )
+  return hint ? `${primary} · ${hint}` : primary
 })
 
 const valorCuotaparteLabel = computed(() => {

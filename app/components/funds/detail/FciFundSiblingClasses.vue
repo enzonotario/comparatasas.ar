@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { getFundDetailTo, getFundDetailToOptionsFromQuery } from '~/lib/funds-detail'
-import { formatCompactNumber, formatCurrency, metricTone } from '~/lib/fci-fund-formatters'
+import {
+  formatArsEquivalentHint,
+  formatCompactPatrimonio,
+  formatCurrency,
+  metricTone,
+} from '~/lib/fci-fund-formatters'
 import { compareClassLabels } from '~/lib/fci-fund-class'
 import type { FundCatalogGroupRow } from '~/lib/fci-fund-groups'
 
@@ -16,8 +21,28 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
+const { usdArsRate } = useDolarBolsa()
 const sortKey = ref<SortKey>('clase')
 const sortDir = ref<SortDir>('asc')
+
+function siblingCurrency(row?: FundCatalogGroupRow | null) {
+  return row?.monedaInversion || row?.moneda || null
+}
+
+function formatSiblingPatrimonio(value: number | null | undefined, row?: FundCatalogGroupRow | null) {
+  const currency = siblingCurrency(row)
+  const primary = formatCompactPatrimonio(value, currency)
+  const hint = formatArsEquivalentHint(value, currency, usdArsRate.value)
+  return hint ? `${primary} · ${hint}` : primary
+}
+
+function siblingPatrimonioParts(row: FundCatalogGroupRow) {
+  const currency = siblingCurrency(row)
+  return {
+    primary: formatCompactPatrimonio(row.patrimonio, currency),
+    hint: formatArsEquivalentHint(row.patrimonio, currency, usdArsRate.value),
+  }
+}
 
 function siblingDetailTo(fondo: string) {
   return getFundDetailTo(fondo, getFundDetailToOptionsFromQuery(route.query))
@@ -151,10 +176,10 @@ const sortedSiblings = computed(() => {
       >
         <p class="text-[10px] uppercase tracking-wide text-muted">Patrimonio total</p>
         <p class="text-lg font-semibold text-highlighted leading-tight">
-          {{ formatCompactNumber(patrimonioTotal) }}
+          {{ formatSiblingPatrimonio(patrimonioTotal, siblings[0]) }}
         </p>
         <p v-if="classShare != null" class="text-xs text-muted">
-          Esta clase: {{ formatCompactNumber(currentPatrimonio) }} ({{
+          Esta clase: {{ formatSiblingPatrimonio(currentPatrimonio, siblings.find((s) => s.fondo === currentFondo)) }} ({{
             classShare.toFixed(1).replace('.', ',')
           }}%)
         </p>
@@ -187,7 +212,7 @@ const sortedSiblings = computed(() => {
               {{ row.classLabel || row.fondo }}
             </p>
             <p class="text-xs text-muted mt-0.5">
-              {{ formatCompactNumber(row.patrimonio) }}
+              {{ formatSiblingPatrimonio(row.patrimonio, row) }}
               <span v-if="shareOfFund(row) != null"> · {{ formatShare(row) }} del fondo</span>
             </p>
           </div>
@@ -211,7 +236,7 @@ const sortedSiblings = computed(() => {
               <UBadge color="neutral" variant="subtle" size="sm" label="Actual" />
             </div>
             <p class="text-xs text-muted mt-0.5">
-              {{ formatCompactNumber(row.patrimonio) }}
+              {{ formatSiblingPatrimonio(row.patrimonio, row) }}
               <span v-if="shareOfFund(row) != null"> · {{ formatShare(row) }} del fondo</span>
             </p>
           </div>
@@ -323,7 +348,13 @@ const sortedSiblings = computed(() => {
               <span :class="metricTone(row.tna)">{{ formatRate(row.tna) ?? '—' }}</span>
             </td>
             <td class="py-2.5 px-1 text-right font-medium">
-              {{ formatCompactNumber(row.patrimonio) }}
+              <div>{{ siblingPatrimonioParts(row).primary }}</div>
+              <div
+                v-if="siblingPatrimonioParts(row).hint"
+                class="text-[10px] text-muted font-normal"
+              >
+                {{ siblingPatrimonioParts(row).hint }}
+              </div>
             </td>
             <td class="py-2.5 px-1 text-right text-muted">
               {{ formatShare(row) }}
@@ -337,7 +368,8 @@ const sortedSiblings = computed(() => {
     </div>
 
     <p v-if="hasMultipleClasses" class="text-xs text-muted max-md:hidden">
-      El patrimonio total suma todas las clases del mismo fondo. La TNA est. es propia de cada clase.
+      El patrimonio total suma todas las clases del mismo fondo. En fondos USD también mostramos el
+      equivalente en ARS con dólar bolsa (MEP). La TNA est. es propia de cada clase.
     </p>
   </div>
 </template>

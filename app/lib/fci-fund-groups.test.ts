@@ -19,6 +19,7 @@ function row(partial: Partial<FundCatalogRow> & Pick<FundCatalogRow, 'fondo'>): 
     vcp: null,
     patrimonio: null,
     inversionMinima: 1,
+    moneda: 'ARS',
     monedaInversion: 'ARS',
     plazoLiquidacionDias: 0,
     region: null,

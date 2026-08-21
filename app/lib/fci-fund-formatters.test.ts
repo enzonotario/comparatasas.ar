@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
+  formatArsEquivalentHint,
+  formatCompactPatrimonio,
   formatCurrency,
   formatDate,
   formatPercentAuto,
   normalizeCurrencyCode,
+  toArsPatrimonio,
 } from './fci-fund-formatters'
 
 describe('formatPercentAuto', () => {
@@ -50,6 +53,29 @@ describe('normalizeCurrencyCode', () => {
 describe('formatCurrency', () => {
   it('formats peso argentino labels without throwing', () => {
     expect(formatCurrency(1000, 'PESO ARGENTINO')).toMatch(/1\.000/)
+  })
+})
+
+describe('toArsPatrimonio', () => {
+  it('leaves ARS amounts unchanged', () => {
+    expect(toArsPatrimonio(1000, 'Peso Argentino', 1400)).toBe(1000)
+  })
+
+  it('converts USD with MEP venta rate', () => {
+    expect(toArsPatrimonio(2, 'Dolar Estadounidense', 1400)).toBe(2800)
+  })
+
+  it('returns null for USD without a valid rate', () => {
+    expect(toArsPatrimonio(2, 'USD', null)).toBeNull()
+    expect(toArsPatrimonio(2, 'USD', 0)).toBeNull()
+  })
+})
+
+describe('formatCompactPatrimonio / formatArsEquivalentHint', () => {
+  it('adds USD suffix and ARS equivalent hint', () => {
+    expect(formatCompactPatrimonio(1_986_500_000, 'USD')).toMatch(/USD$/)
+    expect(formatArsEquivalentHint(1_000_000, 'USD', 1400)).toMatch(/ARS/)
+    expect(formatArsEquivalentHint(1_000_000, 'ARS', 1400)).toBeNull()
   })
 })
 

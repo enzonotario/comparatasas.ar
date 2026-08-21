@@ -37,6 +37,7 @@ export interface FundCatalogRow {
   vcp: number | null
   patrimonio: number | null
   inversionMinima: number | null
+  moneda: string | null
   monedaInversion: string | null
   plazoLiquidacionDias: number | null
   region: string | null
@@ -96,6 +97,7 @@ export function mapCatalogToRows(
         vcp: fund.rendimientos?.valorCuotaparte ?? null,
         patrimonio: fund.patrimonio,
         inversionMinima: fund.inversionMinima,
+        moneda: fund.moneda,
         monedaInversion: fund.monedaInversion,
         plazoLiquidacionDias: fund.plazoLiquidacionDias,
         region: fund.region,

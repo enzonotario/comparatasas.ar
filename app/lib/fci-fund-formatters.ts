@@ -87,6 +87,45 @@ export function formatCompactNumber(value: number | null | undefined) {
   }).format(value)
 }
 
+export function isUsdCurrency(currency: string | null | undefined) {
+  return normalizeCurrencyCode(currency) === 'USD'
+}
+
+/** Convierte un monto en moneda del fondo a ARS (dólar bolsa / MEP). */
+export function toArsPatrimonio(
+  value: number | null | undefined,
+  currency: string | null | undefined,
+  usdArsRate: number | null | undefined,
+) {
+  if (value == null || !Number.isFinite(value)) return null
+  if (!isUsdCurrency(currency)) return value
+  if (usdArsRate == null || !Number.isFinite(usdArsRate) || usdArsRate <= 0) return null
+  return value * usdArsRate
+}
+
+/** Compacto con sufijo USD cuando corresponde. */
+export function formatCompactPatrimonio(
+  value: number | null | undefined,
+  currency?: string | null,
+) {
+  const formatted = formatCompactNumber(value)
+  if (formatted === '—') return formatted
+  if (isUsdCurrency(currency)) return `${formatted} USD`
+  return formatted
+}
+
+/** Hint de equivalente ARS vía dólar bolsa (MEP) para patrimonios en USD. */
+export function formatArsEquivalentHint(
+  value: number | null | undefined,
+  currency: string | null | undefined,
+  usdArsRate: number | null | undefined,
+) {
+  if (!isUsdCurrency(currency)) return null
+  const ars = toArsPatrimonio(value, currency, usdArsRate)
+  if (ars == null) return null
+  return `≈ ${formatCompactNumber(ars)} ARS`
+}
+
 export function formatDecimal(value: number | null | undefined, digits = 4) {
   if (value == null || !Number.isFinite(value)) return '—'
   return new Intl.NumberFormat('es-AR', {

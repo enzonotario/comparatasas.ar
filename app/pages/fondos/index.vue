@@ -7,12 +7,16 @@ import { ogUpdatedAtDate, top3Funds } from '~/utils/og-data'
 import { getFundDetailPath } from '~/lib/funds-detail'
 import { FUND_ACTIVE_REPORT_MAX_AGE_DAYS } from '~/lib/fci-fund-active'
 import {
+  formatArsEquivalentHint,
   formatCompactNumber,
+  formatCompactPatrimonio,
   formatCurrency,
   formatDate,
   formatDecimal,
   formatPercentAuto,
+  isUsdCurrency,
   metricTone,
+  toArsPatrimonio,
 } from '~/lib/fci-fund-formatters'
 import {
   groupFundCatalogRows,
@@ -126,6 +130,7 @@ function finiteOrUndefined(value: number | null | undefined) {
 
 const { allFundsCache, data: fundsData, fetch: fetchPageFunds } = useFunds()
 const { allFunds, loading, error } = useFondosCatalog()
+const { usdArsRate } = useDolarBolsa()
 const {
   searchQuery,
   selectedTipo,
@@ -156,6 +161,54 @@ const {
 
 const filtersOpen = ref(false)
 
+function catalogRowCurrency(row: FundCatalogGroupRow) {
+  return row.monedaInversion || row.moneda
+}
+
+function catalogRowPatrimonioValue(row: FundCatalogGroupRow) {
+  return row.isGroup ? row.patrimonioTotal : row.patrimonio
+}
+
+/** Valor comparable en ARS para ordenar (USD → MEP). */
+function catalogRowPatrimonioSortValue(row: FundCatalogGroupRow) {
+  const value = catalogRowPatrimonioValue(row)
+  const currency = catalogRowCurrency(row)
+  if (isUsdCurrency(currency)) {
+    return toArsPatrimonio(value, currency, usdArsRate.value) ?? undefined
+  }
+  return finiteOrUndefined(value)
+}
+
+function renderPatrimonioCell(
+  value: number | null | undefined,
+  options: {
+    currency?: string | null
+    emphasize?: boolean
+    footnote?: string | null
+  } = {},
+) {
+  const currency = options.currency
+  const formatted = formatCompactPatrimonio(value, currency)
+
+  if (formatted === '—') return mutedDash()
+
+  const hint = formatArsEquivalentHint(value, currency, usdArsRate.value)
+
+  return h(
+    'div',
+    {
+      class: `text-right text-sm ${options.emphasize ? 'font-medium' : ''}`,
+    },
+    [
+      formatted,
+      hint ? h('span', { class: 'block text-[10px] text-muted font-normal' }, hint) : null,
+      options.footnote
+        ? h('span', { class: 'block text-[10px] text-muted font-normal' }, options.footnote)
+        : null,
+    ],
+  )
+}
+
 const tableData = computed(() => {
   if (groupByClass.value) {
     return groupFundCatalogRows(filteredFunds.value)
@@ -164,11 +217,12 @@ const tableData = computed(() => {
 })
 
 const entityTableData = computed(() => {
+  const rate = usdArsRate.value
   if (catalogVista.value === 'administradoras') {
-    return summarizeFundsByEntity(filteredFunds.value, 'administradora')
+    return summarizeFundsByEntity(filteredFunds.value, 'administradora', rate)
   }
   if (catalogVista.value === 'depositarias') {
-    return summarizeFundsByEntity(filteredFunds.value, 'depositaria')
+    return summarizeFundsByEntity(filteredFunds.value, 'depositaria', rate)
   }
   return [] as FundEntitySummary[]
 })
@@ -427,27 +481,30 @@ const entityColumns: TableColumn<FundEntitySummary>[] = [
       finiteOrUndefined(
         isFundEntitySummary(row)
           ? row.patrimonio
-          : row.isGroup
-            ? row.patrimonioTotal
-            : row.patrimonio,
+          : catalogRowPatrimonioSortValue(row),
       ),
     header: getSortableHeader('Patrimonio', 'right'),
     cell: ({ row }) => {
       const original = row.original as FundEntitySummary | FundCatalogGroupRow
-      const value = isFundEntitySummary(original)
-        ? original.patrimonio
-        : original.isGroup
-          ? original.patrimonioTotal
-          : original.patrimonio
-      const formatted = formatCompactNumber(value)
-      if (formatted === '—') return mutedDash()
-      return h(
-        'div',
-        {
-          class: `text-right text-sm ${isFundEntitySummary(original) || original.isGroup ? 'font-medium' : ''}`,
-        },
-        formatted,
-      )
+      if (isFundEntitySummary(original)) {
+        const formatted = formatCompactNumber(original.patrimonio)
+        if (formatted === '—') return mutedDash()
+        return h('div', { class: 'text-right text-sm font-medium' }, [
+          formatted,
+          original.patrimonioEnArs
+            ? h(
+                'span',
+                { class: 'block text-[10px] text-muted font-normal' },
+                'ARS · USD×MEP',
+              )
+            : null,
+        ])
+      }
+      return renderPatrimonioCell(catalogRowPatrimonioValue(original), {
+        currency: catalogRowCurrency(original),
+        emphasize: original.isGroup,
+        footnote: original.isGroup ? 'suma clases' : null,
+      })
     },
     sortUndefined: 'last',
     sortingFn: 'basic',
@@ -601,25 +658,14 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
   },
   {
     id: 'patrimonio',
-    accessorFn: (row) => finiteOrUndefined(row.isGroup ? row.patrimonioTotal : row.patrimonio),
+    accessorFn: (row) => catalogRowPatrimonioSortValue(row),
     header: getSortableHeader('Patrimonio', 'right'),
-    cell: ({ row }) => {
-      const value = row.original.isGroup ? row.original.patrimonioTotal : row.original.patrimonio
-      const formatted = formatCompactNumber(value)
-      if (formatted === '—') return mutedDash()
-      return h(
-        'div',
-        {
-          class: `text-right text-sm ${row.original.isGroup ? 'font-medium' : ''}`,
-        },
-        [
-          formatted,
-          row.original.isGroup
-            ? h('span', { class: 'block text-[10px] text-muted font-normal' }, 'suma clases')
-            : null,
-        ],
-      )
-    },
+    cell: ({ row }) =>
+      renderPatrimonioCell(catalogRowPatrimonioValue(row.original), {
+        currency: catalogRowCurrency(row.original),
+        emphasize: row.original.isGroup,
+        footnote: row.original.isGroup ? 'suma clases' : null,
+      }),
     sortUndefined: 'last',
     sortingFn: 'basic',
   },
@@ -788,6 +834,15 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
           </template>
 
           <template #right>
+            <UButton
+              to="/fondos/mercado"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              icon="i-lucide-chart-pie"
+              label="Mercado"
+              class="max-md:hidden"
+            />
             <UTabs
               v-model="catalogVista"
               :items="vistaTabs"

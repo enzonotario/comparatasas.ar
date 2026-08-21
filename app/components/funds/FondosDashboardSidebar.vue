@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
 import type { FundCatalogRow } from '~/composables/useFondosCatalog'
-import { formatCompactNumber } from '~/lib/fci-fund-formatters'
+import { formatCompactPatrimonio } from '~/lib/fci-fund-formatters'
 import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
 import { getFundDetailTo, getFundDetailToOptionsFromQuery, normalizeFundSlug } from '~/lib/funds-detail'
 
@@ -15,6 +15,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const isDetailPage = computed(() => route.name === 'fondos-nombre')
+const isMarketPage = computed(() => route.path === '/fondos/mercado')
 const detailSlug = computed(() => String(route.params.nombre || ''))
 const detailToOptions = computed(() => getFundDetailToOptionsFromQuery(route.query))
 
@@ -91,7 +92,7 @@ const claseChildren = computed<NavigationMenuItem[]>(() => {
 
   return info.siblings.map((row) => {
     const isActive = normalizeFundSlug(row.fondo) === detailSlug.value
-    const patrimonio = formatCompactNumber(row.patrimonio)
+    const patrimonio = formatCompactPatrimonio(row.patrimonio, row.monedaInversion || row.moneda)
 
     return {
       label: row.classLabel || row.fondo,
@@ -161,6 +162,25 @@ const mainLinks = computed<NavigationMenuItem[]>(() => {
   }
 
   return [
+    {
+      label: 'Explorar',
+      type: 'label',
+    },
+    {
+      label: 'Catálogo',
+      icon: 'i-lucide-layout-list',
+      to: '/fondos',
+      exact: true,
+      active: route.path === '/fondos' && !selectedTipo.value,
+      onSelect: closeSidebar,
+    },
+    {
+      label: 'Mercado',
+      icon: 'i-lucide-chart-pie',
+      to: '/fondos/mercado',
+      active: isMarketPage.value,
+      onSelect: closeSidebar,
+    },
     {
       label: 'Tipos de fondo',
       type: 'label',

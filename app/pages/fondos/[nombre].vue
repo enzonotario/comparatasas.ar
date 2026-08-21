@@ -5,7 +5,8 @@ import FciFundHistoryTab from '~/components/funds/detail/FciFundHistoryTab.vue'
 import FciFundSummaryTab from '~/components/funds/detail/FciFundSummaryTab.vue'
 import FciFundSiblingClasses from '~/components/funds/detail/FciFundSiblingClasses.vue'
 import {
-  formatCompactNumber,
+  formatArsEquivalentHint,
+  formatCompactPatrimonio,
   formatDecimal,
   formatPercentAuto,
   normalizeCurrencyCode,
@@ -94,6 +95,11 @@ const { fundDetail, fundHistory, status, error, historyStatus, historyError, ens
   useFciFundDetailPage(slug)
 
 const { allFunds } = useFondosCatalog()
+const { usdArsRate } = useDolarBolsa()
+
+const fundCurrency = computed(
+  () => fundDetail.value?.monedaInversion || fundDetail.value?.moneda || null,
+)
 
 const siblingInfo = computed(() => {
   const name = fundDetail.value?.nombre
@@ -161,6 +167,12 @@ const tipoRentaLabel = computed(() => {
   return getFundTypeInfo(fundDetail.value.tipoRenta)?.typeLabel || fundDetail.value.tipoRenta || '—'
 })
 
+function formatPatrimonioKpi(value: number | null | undefined) {
+  const primary = formatCompactPatrimonio(value, fundCurrency.value)
+  const hint = formatArsEquivalentHint(value, fundCurrency.value, usdArsRate.value)
+  return hint ? `${primary} (${hint})` : primary
+}
+
 const kpiItems = computed(() => {
   if (!fundDetail.value) return []
 
@@ -168,7 +180,7 @@ const kpiItems = computed(() => {
   const items = [
     {
       label: 'Patrimonio clase',
-      value: formatCompactNumber(fundDetail.value.patrimonio),
+      value: formatPatrimonioKpi(fundDetail.value.patrimonio),
       icon: 'i-lucide-landmark',
     },
     {
@@ -194,7 +206,7 @@ const kpiItems = computed(() => {
   if (siblingInfo.value.siblings.length > 1) {
     items.unshift({
       label: 'Patrimonio total',
-      value: formatCompactNumber(siblingInfo.value.patrimonioTotal),
+      value: formatPatrimonioKpi(siblingInfo.value.patrimonioTotal),
       icon: 'i-lucide-layers',
     })
   }
@@ -342,9 +354,9 @@ useSeoMeta({
         <template #right>
           <div class="text-xs text-muted text-right">
             <span class="font-medium text-highlighted">
-              {{ formatCompactNumber(siblingInfo.patrimonioTotal) }}
+              {{ formatPatrimonioKpi(siblingInfo.patrimonioTotal) }}
             </span>
-            patrimonio total · {{ siblingInfo.siblings.length }} clases
+            · {{ siblingInfo.siblings.length }} clases
           </div>
         </template>
       </UDashboardToolbar>
