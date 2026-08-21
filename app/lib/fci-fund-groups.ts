@@ -145,13 +145,29 @@ export function findSiblingFundClasses(
   const parsed = parseFundClassName(fundName)
   const fondoId = options?.fondoId?.trim() || null
 
-  const byFondoId =
-    fondoId != null ? allFunds.filter((row) => row.fondoId != null && row.fondoId === fondoId) : []
+  // Misma lógica de familia que el catálogo (groupKey), más cualquier clase
+  // que comparta fondoId CNV. Algunos FCI (ej. Mills) tienen clases del mismo
+  // nombre base con distinto fondoId; si solo filtramos por id se pierden.
+  const byGroupKey = parsed.groupKey
+    ? allFunds.filter((row) => parseFundClassName(row.fondo).groupKey === parsed.groupKey)
+    : []
 
-  const matched =
-    byFondoId.length > 0
-      ? byFondoId
-      : allFunds.filter((row) => parseFundClassName(row.fondo).groupKey === parsed.groupKey)
+  const byFondoId =
+    fondoId != null
+      ? allFunds.filter((row) => row.fondoId != null && row.fondoId === fondoId)
+      : []
+
+  const seen = new Set<string>()
+  const matched: FundCatalogRow[] = []
+  for (const row of [...byGroupKey, ...byFondoId]) {
+    const key =
+      row.fondoId != null && row.claseId != null
+        ? `${row.fondoId}:${row.claseId}`
+        : row.fondo
+    if (seen.has(key)) continue
+    seen.add(key)
+    matched.push(row)
+  }
 
   const siblings = matched
     .sort((a, b) =>

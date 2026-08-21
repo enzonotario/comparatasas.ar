@@ -60,22 +60,25 @@ describe('groupFundCatalogRows', () => {
     expect(grouped[0]?.fecha).toBe('2026-08-14')
   })
 
-  it('finds siblings by fondoId first', () => {
+  it('finds siblings by fondoId and also by groupKey', () => {
     const result = findSiblingFundClasses(
       [
         row({
           fondo: 'Mercado Fondo - Clase A',
           fondoId: '798',
+          claseId: '1',
           patrimonio: 100,
         }),
         row({
           fondo: 'Mercado Fondo - Clase B',
           fondoId: '798',
+          claseId: '2',
           patrimonio: 20,
         }),
         row({
           fondo: 'Otro - Clase A',
           fondoId: '1',
+          claseId: '9',
           patrimonio: 999,
         }),
       ],
@@ -85,5 +88,46 @@ describe('groupFundCatalogRows', () => {
 
     expect(result.siblings).toHaveLength(2)
     expect(result.patrimonioTotal).toBe(120)
+  })
+
+  it('includes same base-name classes even when CNV fondoId differs (Mills-style)', () => {
+    const result = findSiblingFundClasses(
+      [
+        row({
+          fondo: 'Mills Renta Fija Pesos - Clase XDA1',
+          fondoId: '1830',
+          claseId: '6290',
+          patrimonio: 100,
+        }),
+        row({
+          fondo: 'Mills Renta Fija Pesos - Clase XDA2',
+          fondoId: '1873',
+          claseId: '6640',
+          patrimonio: 0,
+        }),
+        row({
+          fondo: 'Mills Renta Fija Pesos - Clase XDB1',
+          fondoId: '1830',
+          claseId: '6291',
+          patrimonio: 200,
+        }),
+        row({
+          fondo: 'Mills Renta Fija Pesos - Clase XDB2',
+          fondoId: '1830',
+          claseId: '6292',
+          patrimonio: 0,
+        }),
+      ],
+      'Mills Renta Fija Pesos - Clase XDB1',
+      { fondoId: '1830' },
+    )
+
+    expect(result.siblings.map((s) => s.classLabel)).toEqual([
+      'Clase XDA1',
+      'Clase XDA2',
+      'Clase XDB1',
+      'Clase XDB2',
+    ])
+    expect(result.patrimonioTotal).toBe(300)
   })
 })
