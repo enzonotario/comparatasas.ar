@@ -85,6 +85,12 @@ export const useNavigationPages = () => {
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/criptopesos.png',
         },
         {
+          to: '/cauciones',
+          label: 'Cauciones',
+          icon: 'i-lucide-handshake',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cauciones.png',
+        },
+        {
           to: '/creditos-hipotecarios-uva',
           label: 'Créditos Hipotecarios UVA',
           icon: 'i-lucide-home',
@@ -113,12 +119,6 @@ export const useNavigationPages = () => {
           label: 'LECAPs',
           icon: 'i-lucide-banknote',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/letras.png',
-        },
-        {
-          to: '/cauciones',
-          label: 'Cauciones',
-          icon: 'i-lucide-handshake',
-          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cauciones.png',
         },
         {
           to: '/bonos-cer',
