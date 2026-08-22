@@ -2,15 +2,15 @@
 import { jsonLdScript, sitePublisher } from '~/lib/json-ld'
 
 definePageMeta({
-  pageTitle: 'Privacy',
+  pageTitle: 'Privacidad',
   pageDescription: 'Política de privacidad de comparatasas.ar.',
 })
 
 useSeoMeta({
-  title: 'Privacy',
+  title: 'Privacidad',
   description:
     'Cómo Compara Tasas trata datos de navegación, analytics y enlaces a terceros. No pedimos claves bancarias para comparar tasas.',
-  ogTitle: 'Privacy - Compara Tasas',
+  ogTitle: 'Privacidad - Compara Tasas',
   ogDescription:
     'Cómo Compara Tasas trata datos de navegación, analytics y enlaces a terceros. No pedimos claves bancarias para comparar tasas.',
 })
@@ -25,7 +25,7 @@ useHead({
     jsonLdScript({
       '@context': 'https://schema.org',
       '@type': 'WebPage',
-      name: 'Privacy - Compara Tasas',
+      name: 'Privacidad - Compara Tasas',
       url: 'https://comparatasas.ar/privacy',
       description: 'Política de privacidad de comparatasas.ar.',
       publisher: sitePublisher,
@@ -70,7 +70,7 @@ useHead({
     <p>
       Preguntas de privacidad:
       <a href="mailto:hi@enzonotario.me">hi@enzonotario.me</a>
-      o la página <NuxtLink to="/contact">/contact</NuxtLink>.
+      o la página <NuxtLink to="/contact">Contacto</NuxtLink>.
     </p>
   </div>
 </template>

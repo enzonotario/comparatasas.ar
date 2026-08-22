@@ -38,9 +38,9 @@ Compará tasas de interés y rendimientos en Argentina: cuentas remuneradas, pla
 - [Plazos fijos](https://comparatasas.ar/plazos-fijos)
 - [Fondos (FCI)](https://comparatasas.ar/fondos)
 - [Metodología](https://comparatasas.ar/metodologia)
-- [About](https://comparatasas.ar/about)
-- [Contact](https://comparatasas.ar/contact)
-- [Privacy](https://comparatasas.ar/privacy)
+- [Acerca de](https://comparatasas.ar/about)
+- [Contacto](https://comparatasas.ar/contact)
+- [Privacidad](https://comparatasas.ar/privacy)
 - [llms.txt](https://comparatasas.ar/llms.txt)
 - [Sitemap](https://comparatasas.ar/sitemap.xml)
 
@@ -54,32 +54,32 @@ Compará tasas de interés y rendimientos en Argentina: cuentas remuneradas, pla
 Data sources include Argentina Datos and entity-published rates. Always show the as-of date when present.
 `
 
-const ABOUT_MARKDOWN = `# About Compara Tasas
+const ABOUT_MARKDOWN = `# Acerca de Compara Tasas
 
 Compara Tasas (comparatasas.ar) is an independent, open-source rate comparison site for Argentina. It helps people compare interest rates and yields across banks, digital wallets, money-market funds, fixed terms, crypto products, and related instruments — without opening accounts or selling financial products.
 
 The project is maintained by Enzo Notario and contributors on GitHub. Listings for providers that integrate via public endpoints are free through the Sumarse flow. Numbers come from public APIs and entity-published rates; they are informational, not personalized advice.
 
-- Site: https://comparatasas.ar
-- Source: https://github.com/enzonotario/comparatasas.ar
-- Contact: https://comparatasas.ar/contact
-- Privacy: https://comparatasas.ar/privacy
-- Methodology: https://comparatasas.ar/metodologia
+- Sitio: https://comparatasas.ar
+- Código: https://github.com/enzonotario/comparatasas.ar
+- Contacto: https://comparatasas.ar/contact
+- Privacidad: https://comparatasas.ar/privacy
+- Metodología: https://comparatasas.ar/metodologia
 `
 
-const CONTACT_MARKDOWN = `# Contact Compara Tasas
+const CONTACT_MARKDOWN = `# Contacto — Compara Tasas
 
 For integration requests, corrections, or general questions about comparatasas.ar:
 
 - Email: hi@enzonotario.me
-- Integrations / Sumarse: https://comparatasas.ar/sumarse
+- Integraciones / Sumarse: https://comparatasas.ar/sumarse
 - GitHub issues: https://github.com/enzonotario/comparatasas.ar/issues
 - X/Twitter: https://x.com/comparatasas
 
 Please include the product section (plazos fijos, FCI, cuentas, etc.), the entity name, and a link to the official rate source when reporting data issues. We do not provide personalized investment advice or account support for third-party banks or wallets.
 `
 
-const PRIVACY_MARKDOWN = `# Privacy — Compara Tasas
+const PRIVACY_MARKDOWN = `# Privacidad — Compara Tasas
 
 comparatasas.ar is a public comparison website. We do not require an account to browse rates. We do not sell personal financial products and we do not hold customer balances.
 
@@ -95,9 +95,9 @@ comparatasas.ar is a public comparison website. We do not require an account to 
 - We do not sell personal browsing profiles as a product
 - Outbound links to banks, wallets, or brokers are subject to those providers’ own privacy policies
 
-## Contact
+## Contacto
 
-Privacy questions: hi@enzonotario.me — see also https://comparatasas.ar/contact
+Consultas de privacidad: hi@enzonotario.me — también https://comparatasas.ar/contact
 `
 
 const METODOLOGIA_MARKDOWN = `# Metodología — Compara Tasas
@@ -129,9 +129,9 @@ That path does not exist on comparatasas.ar.
 - [llms.txt](https://comparatasas.ar/llms.txt) — agent index and when-to-use
 - [Sitemap](https://comparatasas.ar/sitemap.xml)
 - [Home / cuentas remuneradas](https://comparatasas.ar/)
-- [About](https://comparatasas.ar/about)
-- [Contact](https://comparatasas.ar/contact)
-- [Privacy](https://comparatasas.ar/privacy)
+- [Acerca de](https://comparatasas.ar/about)
+- [Contacto](https://comparatasas.ar/contact)
+- [Privacidad](https://comparatasas.ar/privacy)
 - [Metodología](https://comparatasas.ar/metodologia)
 `
 
