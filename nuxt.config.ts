@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { getPrerenderRoutes } from './app/lib/prerender-routes'
+import { jsonLdScript, siteOrganization } from './app/lib/json-ld'
 
 export default defineNuxtConfig({
   modules: [
@@ -70,6 +71,7 @@ export default defineNuxtConfig({
         { rel: 'icon', href: '/favicon.ico' },
         { rel: 'apple-touch-icon', href: '/icons/icon-192x192.png' },
         { rel: 'manifest', href: '/manifest.json' },
+        { rel: 'llms', href: '/llms.txt' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://api.argentinadatos.com' },
         { rel: 'preconnect', href: 'https://api.iconify.design' },
@@ -79,19 +81,7 @@ export default defineNuxtConfig({
           href: 'https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap',
         },
       ],
-      script: [
-        {
-          type: 'application/ld+json',
-          children: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            name: 'Compara Tasas',
-            url: 'https://comparatasas.ar',
-            logo: 'https://comparatasas.ar/icons/icon-512x512.png',
-            sameAs: ['https://x.com/comparatasas'],
-          }),
-        },
-      ],
+      script: [jsonLdScript(siteOrganization)],
     },
   },
 
@@ -119,13 +109,15 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'cloudflare_pages',
     prerender: {
-      // Solo rutas explícitas (home + fondos curados). crawlLinks expandía
-      // hermanos del catálogo a ~700+ /fondos/* y ~9 min de generate.
+      // Solo rutas explícitas (fondos curados + páginas estáticas). crawlLinks
+      // expandía hermanos del catálogo a ~700+ /fondos/* y ~9 min de generate.
+      // `/` se sirve por el Worker (SSR) para poder negociar Accept: text/markdown.
       crawlLinks: false,
       concurrency: 16,
       failOnError: false,
       routes: [
-        '/',
+        // Trust + home stay on the Worker so Accept: text/markdown can negotiate.
+        '/metodologia',
         '/cuentas-billeteras',
         '/cuentas-billeteras/graficos',
         '/plazos-fijos',

@@ -1,0 +1,40 @@
+# Compara Tasas
+
+> Compará tasas de interés y rendimientos en Argentina: cuentas remuneradas, plazos fijos, FCI, crypto, LECAPs y más. Sitio independiente y open source en https://comparatasas.ar
+
+## When to use Compara Tasas
+
+Use this site when an agent or user needs **current Argentine retail rate comparisons**:
+
+- Ranking de **cuentas remuneradas / billeteras** (TNA/TEA, topes, condiciones)
+- **Plazos fijos** tradicionales y UVA (precancelable o pago periódico)
+- **Fondos comunes de inversión (FCI)**, especialmente money market y clases comparables
+- Panorama de **USD, crypto, criptopesos, remesas, préstamos, LECAPs, bonos CER**
+- Entender **cómo se calculan** las cifras vía la metodología pública
+
+### How an agent should call this site
+
+1. Start at [llms.txt](https://comparatasas.ar/llms.txt) (this file) for the index.
+2. Fetch the relevant HTML page, or send \`Accept: text/markdown\` on the same URL for a compact representation.
+3. Prefer citing the live URL and any “as of” / vigencia date shown on the page — rates change.
+4. For integration of a provider feed, use [Sumarse](https://comparatasas.ar/sumarse) and email hi@enzonotario.me.
+
+## When not to use Compara Tasas
+
+- No es un banco, broker ni billetera: **no abre cuentas ni ejecuta inversiones**
+- No brinda **asesoramiento financiero personalizado**
+- No reemplaza el sitio oficial de una entidad para contratar un producto
+- No es una API de trading ni un MCP de ejecución de órdenes
+
+## Optional
+
+- [Home / cuentas remuneradas](https://comparatasas.ar/): ranking principal de billeteras y cuentas
+- [Plazos fijos](https://comparatasas.ar/plazos-fijos): TNA de plazos fijos
+- [Fondos](https://comparatasas.ar/fondos): catálogo y detalle de FCI
+- [Metodología](https://comparatasas.ar/metodologia): fuentes y criterios de cálculo
+- [About](https://comparatasas.ar/about): qué es el proyecto
+- [Contact](https://comparatasas.ar/contact): email y canales
+- [Privacy](https://comparatasas.ar/privacy): privacidad
+- [Sumarse](https://comparatasas.ar/sumarse): integrar un endpoint de tasas
+- [Sitemap](https://comparatasas.ar/sitemap.xml): mapa de URLs
+- [GitHub](https://github.com/enzonotario/comparatasas.ar): código fuente

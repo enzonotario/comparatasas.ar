@@ -240,11 +240,35 @@ const showProductScenariosRail = computed(() => {
                     Metodología de cálculos
                   </NuxtLink>
                   <NuxtLink
+                    to="/about"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    Acerca de
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/contact"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    Contacto
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/privacy"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    Privacidad
+                  </NuxtLink>
+                  <NuxtLink
                     to="/sumarse"
                     class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
                   >
                     Sumarse
                   </NuxtLink>
+                  <a
+                    href="/llms.txt"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    llms.txt
+                  </a>
                 </div>
               </div>
             </div>
