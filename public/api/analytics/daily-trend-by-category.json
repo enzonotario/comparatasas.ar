@@ -1,22 +1,41 @@
 [
   {
+    "date": "20260822",
+    "categories": {
+      "Otro": 18,
+      "Página Amiga": 7,
+      "Billetera": 8,
+      "Plazo Fijo": 7,
+      "Cuenta Remunerada": 24,
+      "Criptomonedas": 4,
+      "ARGt": 2,
+      "Billetera USD": 7,
+      "Cuenta Remunerada USD": 2,
+      "Frascos": 11,
+      "General": 7,
+      "plazo fijo tradicional": 9,
+      "wARS": 4
+    },
+    "total": 110
+  },
+  {
     "date": "20260821",
     "categories": {
-      "Página Amiga": 18,
-      "Billetera": 24,
-      "Plazo Fijo": 29,
-      "Cuenta Remunerada": 38,
-      "Otro": 29,
-      "Billetera USD": 15,
+      "Página Amiga": 41,
+      "Billetera": 53,
+      "Plazo Fijo": 72,
+      "Cuenta Remunerada": 111,
+      "Otro": 86,
+      "Billetera USD": 17,
       "Cuenta Remunerada USD": 1,
-      "Frascos": 6,
-      "PF UVA pago periódico": 4,
-      "General": 17,
-      "Criptomonedas": 3,
-      "plazo fijo tradicional": 20,
-      "wARS": 5
+      "Frascos": 19,
+      "PF UVA pago periódico": 7,
+      "General": 22,
+      "Criptomonedas": 14,
+      "plazo fijo tradicional": 32,
+      "wARS": 10
     },
-    "total": 209
+    "total": 485
   },
   {
     "date": "20260820",
@@ -61,34 +80,13 @@
   {
     "date": "20260818",
     "categories": {
-      "Billetera": 43,
-      "Money Market": 8,
-      "Plazo Fijo": 69,
-      "Otro": 92,
-      "Cuenta Remunerada": 49,
-      "Página Amiga": 32,
-      "ARGt": 1,
-      "Billetera USD": 19,
-      "Cuenta Remunerada USD": 1,
-      "Frascos": 11,
-      "PF UVA pago periódico": 2,
-      "General": 9,
-      "Criptomonedas": 7,
-      "plazo fijo tradicional": 38,
-      "wARS": 4
+      "Billetera": 15,
+      "Money Market": 2,
+      "Plazo Fijo": 25,
+      "Otro": 29,
+      "Cuenta Remunerada": 15,
+      "Página Amiga": 10
     },
-    "total": 385
-  },
-  {
-    "date": "20260817",
-    "categories": {
-      "Página Amiga": 8,
-      "Billetera": 13,
-      "Money Market": 1,
-      "Plazo Fijo": 8,
-      "Cuenta Remunerada": 19,
-      "Otro": 18
-    },
-    "total": 67
+    "total": 96
   }
 ]
