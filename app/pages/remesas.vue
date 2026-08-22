@@ -475,7 +475,7 @@ const rows = computed<RemesaRow[]>(() => {
         displayName,
         initials: getInitials(displayName),
         logo: getInstitutionLogo(item.compania) || getInstitutionLogo(displayName),
-        providerUrl: getInstitutionUrl(item.compania),
+        providerUrl: getInstitutionUrl(item.compania, 'remesas'),
         averageRating,
         averageRatingLabel: ratingCount > 0 ? `${formatRating(averageRating)}★` : '—',
         costoRecibirPagosSort: getSortableNumericValue(item.costoRecibirPagos),
@@ -842,7 +842,7 @@ const columns: TableColumn<RemesaRow>[] = [
       <p class="text-sm text-neutral-500">
         Fuente:
         <a
-          href="https://www.dolarito.ar/remotito"
+          href="https://www.dolarito.ar/remotito?utm_source=comparatasas&utm_medium=remesas&ref=comparatasas"
           target="_blank"
           rel="noopener noreferrer"
           class="font-medium text-primary-600 hover:underline dark:text-primary-400"
@@ -1227,7 +1227,7 @@ const columns: TableColumn<RemesaRow>[] = [
           <p class="text-sm text-neutral-500">
             Mirá el comparador de
             <a
-              href="https://comparadolar.ar/"
+              href="https://comparadolar.ar/?utm_source=comparatasas&utm_medium=remesas&ref=comparatasas"
               target="_blank"
               rel="noopener noreferrer"
               class="font-medium text-primary-600 hover:underline dark:text-primary-400"
@@ -1239,7 +1239,7 @@ const columns: TableColumn<RemesaRow>[] = [
         </div>
 
         <UButton
-          to="https://comparadolar.ar/"
+          to="https://comparadolar.ar/?utm_source=comparatasas&utm_medium=remesas&ref=comparatasas"
           external
           target="_blank"
           rel="noopener noreferrer"

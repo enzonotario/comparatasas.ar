@@ -15,6 +15,7 @@ import { normalizeFundSlug } from '../lib/funds-detail'
 import type { ProcessedFund } from '../types/investments'
 import type { StaticNominalTnaFile } from './useStaticNominalTna'
 import { lookupStaticNominalTna } from './useStaticNominalTna'
+import { withOutboundUtm } from '~/lib/outbound-url'
 
 function generateSlug(name: string): string {
   return normalizeFundSlug(name)
@@ -141,7 +142,10 @@ async function transformComparatasasData(
           patrimonio: fondo.patrimonio,
           valorCuotaparte: fondo.rendimientos.valorCuotaparte,
           logo: getLogoForEntity(inst.institution) || getInstitutionLogo(inst.institution),
-          url: inst.fundUrl || getInstitutionUrl(inst.institution),
+          url: withOutboundUtm(
+            inst.fundUrl || getInstitutionUrl(inst.institution, 'fondos') || '#',
+            'fondos',
+          ),
           ...(getProcessedFundTypeInfo(fondo, inst) ?? {}),
           meta: {
             showInFunds: inst.showInFunds || false,

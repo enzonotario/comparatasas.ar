@@ -68,7 +68,7 @@ const orderedCryptoYields = computed(() => {
 })
 
 function handleExchangeClick(entidad: string, crypto?: string) {
-  const url = getInstitutionUrl(entidad)
+  const url = getInstitutionUrl(entidad, 'criptomonedas')
   if (url) {
     trackProviderClick({
       providerName: getInstitutionShortName(entidad),
@@ -195,7 +195,7 @@ useHead({
                             ? 'soft'
                             : 'outline'
                         "
-                        :href="getInstitutionUrl(entity.entidad)"
+                        :href="getInstitutionUrl(entity.entidad, 'criptomonedas')"
                         target="_blank"
                         rel="noopener noreferrer"
                         @click="handleExchangeClick(entity.entidad, crypto)"
@@ -225,7 +225,7 @@ useHead({
         >
           <template #header>
             <NuxtLink
-              :to="getInstitutionUrl(entity.entidad)"
+              :to="getInstitutionUrl(entity.entidad, 'criptomonedas')"
               target="_blank"
               rel="noopener noreferrer"
               @click="handleExchangeClick(entity.entidad)"
@@ -263,7 +263,7 @@ useHead({
                 <UButton
                   color="primary"
                   variant="soft"
-                  :href="getInstitutionUrl(entity.entidad)"
+                  :href="getInstitutionUrl(entity.entidad, 'criptomonedas')"
                   target="_blank"
                   rel="noopener noreferrer"
                   @click="handleExchangeClick(entity.entidad, cryptoYield.moneda)"

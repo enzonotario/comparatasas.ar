@@ -339,7 +339,7 @@ useHead({
             <p class="text-xs text-muted">
               Fuente:
               <a
-                href="https://www.bcra.gob.ar/archivos/Pdfs/BCRAyVos/PERSONALES.CSV"
+                href="https://www.bcra.gob.ar/archivos/Pdfs/BCRAyVos/PERSONALES.CSV?utm_source=comparatasas&utm_medium=prestamos-personales&ref=comparatasas"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="underline underline-offset-2"

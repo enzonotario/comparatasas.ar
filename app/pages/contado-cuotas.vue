@@ -13,6 +13,7 @@ import type { AccountItem } from '~/composables/useAccounts'
 import type { FciVariableUltimoFund } from '~/composables/useFciVariablesUltimo'
 import type { ProcessedFund } from '~/types/investments'
 import { ogUpdatedAtDate } from '~/utils/og-data'
+import { withOutboundUtm } from '~/lib/outbound-url'
 import {
   simulateInvestmentCarry,
   type InvestmentCarryOption,
@@ -1165,7 +1166,7 @@ const carrySectionLoading = computed(() => {
                         </div>
 
                         <UButton
-                          :to="selectedProductScenario.affiliateUrl"
+                          :to="withOutboundUtm(selectedProductScenario.affiliateUrl, 'contado-cuotas')"
                           external
                           target="_blank"
                           rel="noopener noreferrer"

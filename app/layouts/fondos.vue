@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FondosDashboardSidebar from '~/components/funds/FondosDashboardSidebar.vue'
+import { withOutboundUtm } from '~/lib/outbound-url'
 
 const nuxtApp = useNuxtApp()
 const route = useRoute()
@@ -108,7 +109,7 @@ const isDetailPage = computed(() => route.name === 'fondos-nombre')
 
         <template #footer>
           <NuxtLink
-            to="https://argentinadatos.com"
+            :to="withOutboundUtm('https://argentinadatos.com/', 'fondos')"
             target="_blank"
             rel="noopener noreferrer"
             class="flex items-center gap-2 w-full min-w-0 rounded-md hover:bg-elevated/50 transition-colors px-1 py-0.5"

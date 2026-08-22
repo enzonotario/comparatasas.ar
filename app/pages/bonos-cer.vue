@@ -329,7 +329,7 @@ const textoActualizacion = computed(() => {
             Para la definición oficial y la serie histórica conviene consultar la documentación del
             <a
               class="text-primary-600 dark:text-primary-400 underline underline-offset-2"
-              href="https://www.bcra.gob.ar/"
+              href="https://www.bcra.gob.ar/?utm_source=comparatasas&utm_medium=bonos-cer&ref=comparatasas"
               target="_blank"
               rel="noopener noreferrer"
               >BCRA</a

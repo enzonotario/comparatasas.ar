@@ -145,7 +145,7 @@ const usdAccountsForFundsList = computed(() => {
   return (usdAccounts.value ?? [])
     .map((account) => {
       const logo = getInstitutionLogo(account.entidad)
-      const url = getInstitutionUrl(account.entidad)
+      const url = getInstitutionUrl(account.entidad, 'usd')
 
       return {
         institution: getInstitutionShortName(account.entidad),
@@ -166,7 +166,7 @@ const usdYieldsForFundsList = computed(() => {
     .flatMap((entity) =>
       entity.rendimientos.map((rendimiento) => {
         const logo = getInstitutionLogo(entity.entidad)
-        const url = getInstitutionUrl(entity.entidad)
+        const url = getInstitutionUrl(entity.entidad, 'usd')
 
         return {
           institution: getInstitutionShortName(entity.entidad),

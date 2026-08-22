@@ -13,6 +13,7 @@ import {
   getPlazoFijoUrl,
 } from '../lib/mappings/plazo-fijo'
 import type { PlazoFijo, PlazoFijoTableRow } from '../types/investments'
+import { withOutboundUtm } from '~/lib/outbound-url'
 
 function mapEntityToTableRow(plazoFijo: PlazoFijo): PlazoFijoTableRow | null {
   const institution = getPlazoFijoShortName(plazoFijo.entidad)
@@ -44,7 +45,7 @@ function mapEntityToTableRow(plazoFijo: PlazoFijo): PlazoFijoTableRow | null {
     rowKey: plazoFijo.entidad,
     institution,
     logo: getPlazoFijoLogo(plazoFijo.entidad) || plazoFijo.logo || '',
-    url: plazoFijo.enlace || getPlazoFijoUrl(plazoFijo.entidad) || '#',
+    url: withOutboundUtm(plazoFijo.enlace || getPlazoFijoUrl(plazoFijo.entidad) || '#', 'plazos-fijos'),
     fecha: plazoFijo.fecha,
     fechaAnterior: plazoFijo.fechaAnterior,
     condicionesCorto:

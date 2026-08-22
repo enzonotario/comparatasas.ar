@@ -54,6 +54,25 @@ const EXTRA_URL_TO_PROVIDER: Record<string, string> = {
   'https://enqueinvierto.ar': 'enqueinvierto.ar',
   'https://betece.app/': 'betece.app',
   'https://betece.app': 'betece.app',
+  'https://www.dolarya.info/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
+    'dolarya.info',
+  'https://argentinadatos.com/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
+    'argentinadatos.com',
+  'https://www.dolarito.ar/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
+    'dolarito.ar',
+  'https://www.impuestito.org/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
+    'impuestito.org',
+  'https://comparadolar.ar/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
+    'comparadolar.ar',
+  'https://comparapix.ar/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
+    'comparapix.ar',
+  'https://www.comparatiendas.com.ar/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
+    'comparatiendas.com.ar',
+  'https://icons.com.ar/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas': 'icons.com.ar',
+  'https://enqueinvierto.ar/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
+    'enqueinvierto.ar',
+  'https://betece.app/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas': 'betece.app',
+  // Legacy ref-only (eventos históricos)
   'https://www.dolarya.info/?ref=comparatasas': 'dolarya.info',
   'https://argentinadatos.com/?ref=comparatasas': 'argentinadatos.com',
   'https://www.dolarito.ar/?ref=comparatasas': 'dolarito.ar',

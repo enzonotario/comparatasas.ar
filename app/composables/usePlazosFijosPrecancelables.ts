@@ -4,6 +4,7 @@ import {
   getPlazoFijoUrl,
 } from '../lib/mappings/plazo-fijo'
 import type { PlazoFijoPrecancelable } from '../types/investments'
+import { withOutboundUtm } from '~/lib/outbound-url'
 
 export interface PlazoFijoPrecancelableItem {
   institution: string
@@ -55,7 +56,10 @@ export function usePlazosFijosPrecancelables() {
           plazoFijo.tnaPrecancelacion == null ? null : plazoFijo.tnaPrecancelacion * 100,
         teaPrecancelacion:
           plazoFijo.teaPrecancelacion == null ? null : plazoFijo.teaPrecancelacion * 100,
-        url: plazoFijo.enlace || getPlazoFijoUrl(plazoFijo.entidad) || '#',
+        url: withOutboundUtm(
+          plazoFijo.enlace || getPlazoFijoUrl(plazoFijo.entidad) || '#',
+          'plazos-fijos-uva-precancelable',
+        ),
         type: 'plazoFijoPrecancelable' as const,
         typeLabel: 'PF UVA precancelable',
         plazoMinDias: plazoFijo.plazoMinDias,

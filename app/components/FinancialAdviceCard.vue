@@ -1,4 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { withOutboundUtm } from '~/lib/outbound-url'
+
+const adviceFormUrl = withOutboundUtm(
+  'https://docs.google.com/forms/d/e/1FAIpQLSfSe5TgzbjWIAhK3G9ywzo-O0knx_wky8KcC8RKpEIaJYeZeg/viewform?usp=pp_url&entry.946569307=Compara+Tasas',
+  'asesoramiento',
+)
+</script>
 
 <template>
   <UCard data-financial-advice-card class="max-w-3xl mx-auto">
@@ -12,11 +19,7 @@
     </p>
 
     <template #footer>
-      <NuxtLink
-        href="https://docs.google.com/forms/d/e/1FAIpQLSfSe5TgzbjWIAhK3G9ywzo-O0knx_wky8KcC8RKpEIaJYeZeg/viewform?usp=pp_url&entry.946569307=Compara+Tasas"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <NuxtLink :href="adviceFormUrl" target="_blank" rel="noopener noreferrer">
         <UButton class="gap-2">
           <UIcon name="i-lucide-handshake" class="size-4" />
           Pedir asesoramiento

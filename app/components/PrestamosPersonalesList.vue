@@ -10,6 +10,7 @@ import {
   getInstitutionShortName,
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
+import { withOutboundUtm } from '~/lib/outbound-url'
 
 const props = withDefaults(
   defineProps<{
@@ -55,7 +56,7 @@ const items = computed(() => {
       ...prestamo,
       logo,
       institution,
-      url,
+      url: withOutboundUtm(url, 'prestamos-personales'),
       key,
     }
   })

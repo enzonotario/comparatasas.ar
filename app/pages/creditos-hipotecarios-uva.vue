@@ -199,6 +199,7 @@ const uvaDolarSenalCopy = computed(() => {
               nombre="Andrés Salinas"
               avatar="https://pbs.twimg.com/profile_images/1802830575759224832/vKHC7OK1_400x400.jpg"
               url="https://x.com/SalinasAndres"
+              medium="creditos-hipotecarios-uva"
             />
           </div>
         </div>

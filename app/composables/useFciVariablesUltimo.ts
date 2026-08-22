@@ -44,7 +44,7 @@ function mapRow(row: FciVariableUltimoRow): FciVariableUltimoFund {
     tea: row.tea,
     fecha: row.fecha,
     logo: getLogoForEntity(label) || getLogoForEntity(rawEntity) || getInstitutionLogo(rawEntity),
-    url: getInstitutionUrl(rawEntity),
+    url: getInstitutionUrl(rawEntity, 'fondos'),
     type: 'fciVariablesUltimo',
     typeLabel: row.tipo === 'billetera' ? 'Billetera' : 'Renta variable',
     tope: row.tope,

@@ -126,7 +126,7 @@ const groups = [
         label: 'GitHub',
         suffix: 'Código abierto',
         icon: 'i-lucide-github',
-        href: 'https://github.com/enzonotario/comparatasas.ar',
+        href: 'https://github.com/enzonotario/comparatasas.ar?utm_source=comparatasas&utm_medium=search&ref=comparatasas',
         target: '_blank',
       },
       {
@@ -134,7 +134,7 @@ const groups = [
         label: 'ComparaDolar.ar',
         suffix: 'Sitio amigo',
         icon: 'i-lucide-arrow-up-right',
-        href: 'https://comparadolar.ar',
+        href: 'https://comparadolar.ar/?utm_source=comparatasas&utm_medium=search&ref=comparatasas',
         target: '_blank',
       },
     ],

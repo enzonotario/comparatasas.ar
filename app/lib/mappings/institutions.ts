@@ -1,3 +1,5 @@
+import { withOutboundUtm } from '../outbound-url'
+
 export interface InstitutionInfo {
   logo: string
   url?: string
@@ -674,12 +676,13 @@ export function getInstitutionShortName(name: string): string {
   return name
 }
 
-export function getInstitutionUrl(name: string): string | undefined {
+export function getInstitutionUrl(name: string, medium = 'referral'): string | undefined {
   const key = name.trim().toLowerCase()
 
   for (const inst of institutions) {
     if (inst.names.map((n) => n.toLowerCase()).includes(key)) {
-      return inst.url
+      if (!inst.url || inst.url === '#') return inst.url
+      return withOutboundUtm(inst.url, medium)
     }
   }
 

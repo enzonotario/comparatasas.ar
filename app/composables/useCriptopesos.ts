@@ -43,7 +43,7 @@ export function useCriptopesos() {
       logo: getLogoForEntity(a.entidad) || getInstitutionLogo(a.entidad),
       type: 'criptopeso',
       typeLabel: a.token,
-      url: getInstitutionUrl(a.entidad),
+      url: getInstitutionUrl(a.entidad, 'criptopesos'),
     }
   }
 

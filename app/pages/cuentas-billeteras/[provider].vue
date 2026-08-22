@@ -54,7 +54,7 @@ const providerApiName = computed(() => {
 
 const displayName = computed(() => getInstitutionShortName(providerApiName.value))
 const logo = computed(() => getInstitutionLogo(providerApiName.value))
-const providerUrl = computed(() => getInstitutionUrl(providerApiName.value))
+const providerUrl = computed(() => getInstitutionUrl(providerApiName.value, 'cuentas-billeteras'))
 const providerSlug = computed(() => providerParam.toLowerCase())
 
 const { data: history, loading, error } = useAccountHistory(providerSlug)

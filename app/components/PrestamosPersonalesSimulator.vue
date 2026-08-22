@@ -16,6 +16,7 @@ import {
   type CuotaIngresoRisk,
 } from '~/lib/finance/prestamo-personal'
 import { getInstitutionShortName, getInstitutionUrl } from '~/lib/mappings/institutions'
+import { withOutboundUtm } from '~/lib/outbound-url'
 
 const monto = defineModel<number>('monto', { required: true })
 const plazo = defineModel<number>('plazo', { required: true })
@@ -167,8 +168,10 @@ const ofertaLabel = computed(() => {
 const ofertaUrl = computed(() => {
   const oferta = props.ofertaSeleccionada
   if (!oferta) return null
-  const mapped = getInstitutionUrl(oferta.entidad) || getInstitutionUrl(oferta.nombreComercial)
-  const url = oferta.enlace || mapped
+  const mapped =
+    getInstitutionUrl(oferta.entidad, 'prestamos-personales') ||
+    getInstitutionUrl(oferta.nombreComercial, 'prestamos-personales')
+  const url = withOutboundUtm(oferta.enlace || mapped || '#', 'prestamos-personales')
   return url && url !== '#' ? url : null
 })
 
@@ -629,7 +632,7 @@ onMounted(() => {
             <template v-if="remPublicacionUrl">
               ·
               <a
-                :href="remPublicacionUrl"
+                :href="withOutboundUtm(remPublicacionUrl, 'prestamos-personales')"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="underline underline-offset-2"

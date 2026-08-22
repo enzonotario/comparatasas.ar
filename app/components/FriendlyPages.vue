@@ -1,44 +1,46 @@
 <script setup lang="ts">
+import { withOutboundUtm } from '~/lib/outbound-url'
+
 const friendlyPages = [
   {
     label: 'comparadolar.ar',
-    to: 'https://comparadolar.ar',
+    to: withOutboundUtm('https://comparadolar.ar', 'friendly'),
   },
   {
     label: 'comparapix.ar',
-    to: 'https://comparapix.ar',
+    to: withOutboundUtm('https://comparapix.ar', 'friendly'),
   },
   {
     label: 'comparatiendas.com.ar',
-    to: 'https://www.comparatiendas.com.ar/',
+    to: withOutboundUtm('https://www.comparatiendas.com.ar/', 'friendly'),
   },
   {
     label: 'icons.com.ar',
-    to: 'https://icons.com.ar',
+    to: withOutboundUtm('https://icons.com.ar', 'friendly'),
   },
   {
     label: 'dolarya.info',
-    to: 'https://www.dolarya.info/?ref=comparatasas',
+    to: withOutboundUtm('https://www.dolarya.info/', 'friendly'),
   },
   {
     label: 'argentinadatos.com',
-    to: 'https://argentinadatos.com/?ref=comparatasas',
+    to: withOutboundUtm('https://argentinadatos.com/', 'friendly'),
   },
   {
     label: 'dolarito.ar',
-    to: 'https://www.dolarito.ar/?ref=comparatasas',
+    to: withOutboundUtm('https://www.dolarito.ar/', 'friendly'),
   },
   {
     label: 'impuestito.org',
-    to: 'https://www.impuestito.org/?ref=comparatasas',
+    to: withOutboundUtm('https://www.impuestito.org/', 'friendly'),
   },
   {
     label: 'enqueinvierto.ar',
-    to: 'https://enqueinvierto.ar',
+    to: withOutboundUtm('https://enqueinvierto.ar', 'friendly'),
   },
   {
     label: 'betece.app',
-    to: 'https://betece.app',
+    to: withOutboundUtm('https://betece.app', 'friendly'),
   },
 ]
 </script>

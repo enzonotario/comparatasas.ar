@@ -56,14 +56,18 @@ useHead({
       El listado es gratuito. La guía de campos y ejemplos está en
       <NuxtLink to="/sumarse">/sumarse</NuxtLink>. También podés abrir un issue en
       <a
-        href="https://github.com/enzonotario/comparatasas.ar/issues"
+        href="https://github.com/enzonotario/comparatasas.ar/issues?utm_source=comparatasas&utm_medium=contact&ref=comparatasas"
         target="_blank"
         rel="noopener noreferrer"
       >
         GitHub
       </a>
       o seguir novedades en
-      <a href="https://x.com/comparatasas" target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://x.com/comparatasas?utm_source=comparatasas&utm_medium=contact&ref=comparatasas"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         @comparatasas
       </a>.
     </p>

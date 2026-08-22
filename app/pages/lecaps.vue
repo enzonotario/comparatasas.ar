@@ -286,7 +286,7 @@ function formatDate(value: string): string {
       <div class="text-xs text-muted">
         Fuente:
         <a
-          href="https://data912.apidocs.ar/"
+          href="https://data912.apidocs.ar/?utm_source=comparatasas&utm_medium=lecaps&ref=comparatasas"
           target="_blank"
           rel="noopener noreferrer"
           class="text-primary-600 dark:text-primary-400 font-medium"
@@ -297,7 +297,7 @@ function formatDate(value: string): string {
         y
 
         <a
-          href="https://x.com/arielsbdar"
+          href="https://x.com/arielsbdar?utm_source=comparatasas&utm_medium=lecaps&ref=comparatasas"
           target="_blank"
           rel="noopener noreferrer"
           class="text-primary-600 dark:text-primary-400 font-medium"
@@ -307,7 +307,7 @@ function formatDate(value: string): string {
 
         vía
         <a
-          href="https://argentinadatos.com"
+          href="https://argentinadatos.com/?utm_source=comparatasas&utm_medium=lecaps&ref=comparatasas"
           target="_blank"
           rel="noopener noreferrer"
           class="text-primary-600 dark:text-primary-400 font-medium"

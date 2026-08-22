@@ -5,6 +5,7 @@ import { useMediaQuery } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 import { formatCurrency } from '~/lib/fci-fund-formatters'
 import { getInstitutionLogo, getInstitutionUrl } from '~/lib/mappings/institutions'
+import { withOutboundUtm } from '~/lib/outbound-url'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { ComisionCobroOption } from '~/composables/useComisionesCobro'
 import type { ComisionCobroSimulada } from '~/composables/useComisionesCobroSimulator'
@@ -169,8 +170,13 @@ const rows = computed<ComisionRow[]>(() => {
   return comisiones.value.map((item) => {
     const displayName = item.nombreComercial || item.entidad
     const logo = getInstitutionLogo(item.entidad) || getInstitutionLogo(displayName) || undefined
-    const providerUrl =
-      getInstitutionUrl(item.entidad) || getInstitutionUrl(displayName) || item.enlace || undefined
+    const providerUrl = withOutboundUtm(
+      getInstitutionUrl(item.entidad, 'comisiones-cobro') ||
+        getInstitutionUrl(displayName, 'comisiones-cobro') ||
+        item.enlace ||
+        '#',
+      'comisiones-cobro',
+    )
     const acreditacion = normalizeAcreditacion(item)
 
     return {
@@ -178,7 +184,10 @@ const rows = computed<ComisionRow[]>(() => {
       displayName,
       initials: getInitials(displayName),
       logo,
-      providerUrl,
+      providerUrl: providerUrl !== '#' ? providerUrl : undefined,
+      enlace: item.enlace
+        ? withOutboundUtm(item.enlace, 'comisiones-cobro')
+        : item.enlace,
       arancelSort:
         typeof item.arancelPorcentaje === 'number'
           ? item.arancelPorcentaje

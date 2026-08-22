@@ -62,7 +62,7 @@ function buildFrascosAccountItem(frascosRaw: ApiAccount[]): AccountItem | null {
     typeLabel: 'Frascos',
     condiciones: first.condiciones,
     condicionesCorto: 'Rendimiento según plazo elegido (7, 14 o 28 días)',
-    url: getInstitutionUrl('NARANJA X'),
+    url: getInstitutionUrl('NARANJA X', 'cuentas-billeteras'),
     plazoTiers: tiers,
   }
 }
@@ -91,7 +91,7 @@ export function useAccounts() {
         : 'Cuenta Remunerada',
       condiciones: a.condiciones,
       condicionesCorto: a.condicionesCorto,
-      url: getInstitutionUrl(a.fondo),
+      url: getInstitutionUrl(a.fondo, 'cuentas-billeteras'),
       plazoMinDias: a.plazoMinDias ?? undefined,
       plazoMaxDias: a.plazoMaxDias ?? undefined,
     }

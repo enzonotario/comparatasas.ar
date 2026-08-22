@@ -1,16 +1,22 @@
 <script setup>
+import { withOutboundUtm } from '~/lib/outbound-url'
+
 const { width } = useWindowSize()
+
+const cocosLink = withOutboundUtm('https://rs710.app.link/app-cocos-capital', 'banner', {
+  campaign: 'cocos',
+})
 
 const desktopAds = [
   {
     src: '/assets/cocos-desktop.jpeg',
-    link: 'https://rs710.app.link/app-cocos-capital?ref=comparatasas',
+    link: cocosLink,
   },
 ]
 const mobileAds = [
   {
     src: '/assets/cocos-mobile.jpeg',
-    link: 'https://rs710.app.link/app-cocos-capital?ref=comparatasas',
+    link: cocosLink,
   },
 ]
 

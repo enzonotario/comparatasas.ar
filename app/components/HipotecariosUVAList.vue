@@ -16,8 +16,8 @@ const items = computed(() => {
       getInstitutionLogo(hipotecario.entidad) || getInstitutionLogo(hipotecario.nombreComercial)
     const institution = getInstitutionShortName(hipotecario.entidad) || hipotecario.nombreComercial
     const url =
-      getInstitutionUrl(hipotecario.entidad) ||
-      getInstitutionUrl(hipotecario.nombreComercial) ||
+      getInstitutionUrl(hipotecario.entidad, 'creditos-hipotecarios-uva') ||
+      getInstitutionUrl(hipotecario.nombreComercial, 'creditos-hipotecarios-uva') ||
       '#'
 
     return {

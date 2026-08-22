@@ -15,6 +15,7 @@ import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
 import { parseFundClassName } from '~/lib/fci-fund-class'
 import { getFundDetailTo, getFundDetailToOptionsFromQuery, type FundDetailTab } from '~/lib/funds-detail'
 import { getInstitutionUrl } from '~/lib/mappings/institutions'
+import { withOutboundUtm } from '~/lib/outbound-url'
 import { getFundMappingBySlug, getFundTypeInfo } from '~/lib/mappings/funds'
 
 definePageMeta({
@@ -30,7 +31,7 @@ const fundMapping = computed(() => getFundMappingBySlug(slug.value))
 const mappedFundInstitution = computed(
   () =>
     fundMapping.value?.institutions.find(
-      (item) => item.fundUrl || item.url || getInstitutionUrl(item.institution),
+      (item) => item.fundUrl || item.url || getInstitutionUrl(item.institution, 'fondos'),
     ) || null,
 )
 
@@ -38,14 +39,17 @@ const mappedFundUrl = computed(() => {
   const institution = mappedFundInstitution.value
   if (!institution) return null
 
-  const url = institution.fundUrl || institution.url || getInstitutionUrl(institution.institution)
-  return url || null
+  const url = institution.fundUrl || institution.url || getInstitutionUrl(institution.institution, 'fondos')
+  return url ? withOutboundUtm(url, 'fondos') : null
 })
 
 const cafciUrl = computed(() => {
   if (!fundDetail.value) return null
 
-  return `https://estadisticas.cafci.org.ar/fondos/${fundDetail.value.fondoId}?clase=${fundDetail.value.claseId}`
+  return withOutboundUtm(
+    `https://estadisticas.cafci.org.ar/fondos/${fundDetail.value.fondoId}?clase=${fundDetail.value.claseId}`,
+    'fondos',
+  )
 })
 
 function goBack() {

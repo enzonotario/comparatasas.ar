@@ -206,7 +206,7 @@ const columns: TableColumn<CaucionRow>[] = [
         <div class="text-xs text-muted">
           Fuente:
           <a
-            href="https://www.invertironline.com/?ref=comparatasas"
+            href="https://www.invertironline.com/?utm_source=comparatasas&utm_medium=cauciones&ref=comparatasas"
             target="_blank"
             rel="noopener noreferrer"
             class="text-primary-800 dark:text-primary-200 font-medium"
@@ -215,7 +215,7 @@ const columns: TableColumn<CaucionRow>[] = [
           </a>
           vía
           <a
-            href="https://argentinadatos.com/?ref=comparatasas"
+            href="https://argentinadatos.com/?utm_source=comparatasas&utm_medium=cauciones&ref=comparatasas"
             target="_blank"
             rel="noopener noreferrer"
             class="text-primary-800 dark:text-primary-200 font-medium"

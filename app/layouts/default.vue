@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { withOutboundUtm } from '~/lib/outbound-url'
+
 const nuxtApp = useNuxtApp()
 
 useFunds()
@@ -207,7 +209,7 @@ const showProductScenariosRail = computed(() => {
                   Ayudame a mantener y mejorar este proyecto con una donación.
                 </p>
                 <UButton
-                  to="https://cafecito.app/enzonotario"
+                  :to="withOutboundUtm('https://cafecito.app/enzonotario', 'footer')"
                   external
                   target="_blank"
                   rel="noopener noreferrer"
@@ -281,7 +283,7 @@ const showProductScenariosRail = computed(() => {
                 Este proyecto es de código abierto. Contribuciones y sugerencias son bienvenidas.
               </p>
               <UButton
-                href="https://github.com/enzonotario/comparatasas.ar"
+                :href="withOutboundUtm('https://github.com/enzonotario/comparatasas.ar', 'footer')"
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="outline"
