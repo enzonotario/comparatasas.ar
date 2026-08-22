@@ -134,6 +134,7 @@ export default defineNuxtConfig({
         '/contado-cuotas',
         '/remesas',
         '/lecaps',
+        '/cauciones',
         '/bonos-cer',
         '/sumarse',
       ],

@@ -19,6 +19,7 @@ const STATIC_PRERENDER_ROUTES = [
   '/contado-cuotas',
   '/remesas',
   '/lecaps',
+  '/cauciones',
   '/bonos-cer',
   '/metodologia',
   '/sumarse',

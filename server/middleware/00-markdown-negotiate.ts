@@ -53,6 +53,7 @@ function isAppRoute(path: string) {
     '/contado-cuotas',
     '/remesas',
     '/lecaps',
+    '/cauciones',
     '/bonos-cer',
   ]
   return prefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))

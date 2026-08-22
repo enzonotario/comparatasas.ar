@@ -88,6 +88,13 @@ const groups = [
         icon: 'i-lucide-file-chart-column',
         to: '/lecaps',
       },
+      {
+        id: 'cauciones',
+        label: 'Cauciones',
+        suffix: 'Comparador',
+        icon: 'i-lucide-handshake',
+        to: '/cauciones',
+      },
     ],
   },
   {

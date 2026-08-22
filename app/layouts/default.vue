@@ -40,6 +40,7 @@ const isWideLayout = computed(() => {
     'remesas',
     'cuentas-billeteras-graficos',
     'lecaps',
+    'cauciones',
     'bonos-cer',
     'metodologia',
   ].includes(route.name as string)
@@ -64,6 +65,7 @@ const productScenarioRailPaths = new Set([
   '/prestamos-personales',
   '/comisiones-cobro',
   '/lecaps',
+  '/cauciones',
   '/bonos-cer',
 ])
 

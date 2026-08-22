@@ -257,6 +257,23 @@ export const methodologySections: MethodologySection[] = [
     ],
   },
   {
+    id: 'cauciones',
+    title: 'Cauciones',
+    category: 'titulos',
+    categoryLabel: 'Títulos públicos',
+    source: 'ArgentinaDatos (mercado de cauciones)',
+    blocks: [
+      {
+        type: 'p',
+        text: 'Mostramos plazo en días, tasa actual, tasa min./max. del día, monto contado, fecha de operación y vencimiento para cauciones en ARS y USD, tal como publica ArgentinaDatos. Omitimos filas cuyo plazo no calza con el vencimiento (series espurias de la fuente).',
+      },
+      {
+        type: 'p',
+        text: 'En la curva usamos la tasa actual vs plazo; el tamaño del punto refleja el monto contado relativo de cada plazo.',
+      },
+    ],
+  },
+  {
     id: 'bonos-cer',
     title: 'Bonos CER',
     category: 'titulos',

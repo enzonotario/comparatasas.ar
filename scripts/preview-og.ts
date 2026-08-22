@@ -17,6 +17,7 @@ const routes = [
   { path: '/comisiones-cobro', name: 'comisiones-cobro' },
   { path: '/contado-cuotas', name: 'contado-cuotas' },
   { path: '/lecaps', name: 'lecaps' },
+  { path: '/cauciones', name: 'cauciones' },
   { path: '/bonos-cer', name: 'bonos-cer' },
 ]
 

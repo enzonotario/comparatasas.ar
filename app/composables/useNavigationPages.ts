@@ -18,6 +18,11 @@ function getPagePath(to: string): string {
   return i === -1 ? to : to.slice(0, i)
 }
 
+function getPageQuery(to: string): URLSearchParams {
+  const i = to.indexOf('?')
+  return new URLSearchParams(i === -1 ? '' : to.slice(i + 1))
+}
+
 function normalizeNavigationAlias(path: string): string {
   const trimmed = path.replace(/\/$/, '') || '/'
   if (
@@ -41,7 +46,16 @@ export const useNavigationPages = () => {
   const isPageActive = (page: NavigationPage): boolean => {
     const normalizedPath = normalizeRoute(route.path)
     const pagePath = normalizeRoute(getPagePath(page.to))
-    return pagePath === normalizedPath
+    if (pagePath !== normalizedPath) return false
+
+    // /cauciones vive en ARS y USD: el query `moneda` distingue la entrada activa.
+    if (pagePath === '/cauciones') {
+      const pageMoneda = getPageQuery(page.to).get('moneda') === 'usd' ? 'usd' : 'ars'
+      const routeMoneda = route.query.moneda === 'usd' ? 'usd' : 'ars'
+      return pageMoneda === routeMoneda
+    }
+
+    return true
   }
 
   const categories: NavigationCategory[] = [
@@ -49,7 +63,7 @@ export const useNavigationPages = () => {
       id: 'ars',
       label: 'ARS',
       ariaLabel:
-        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, contado vs cuotas, LECAPs, bonos CER, créditos hipotecarios UVA y préstamos personales',
+        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, contado vs cuotas, LECAPs, cauciones, bonos CER, créditos hipotecarios UVA y préstamos personales',
       icon: 'flag-ars',
       pages: [
         {
@@ -101,6 +115,12 @@ export const useNavigationPages = () => {
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/letras.png',
         },
         {
+          to: '/cauciones',
+          label: 'Cauciones',
+          icon: 'i-lucide-handshake',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cauciones.png',
+        },
+        {
           to: '/bonos-cer',
           label: 'Bonos CER',
           icon: 'i-lucide-trending-up',
@@ -118,6 +138,12 @@ export const useNavigationPages = () => {
           to: '/usd',
           label: 'Inversiones en USD',
           icon: 'i-lucide-dollar-sign',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
+        },
+        {
+          to: '/cauciones?moneda=usd',
+          label: 'Cauciones',
+          icon: 'i-lucide-handshake',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
         },
         {
@@ -148,12 +174,7 @@ export const useNavigationPages = () => {
   const pages: NavigationPage[] = categories.flatMap((category) => category.pages)
 
   const getCurrentCategory = (): NavigationCategory | null => {
-    const currentPath = normalizeRoute(route.path)
-    return (
-      categories.find((category) =>
-        category.pages.some((page) => normalizeRoute(getPagePath(page.to)) === currentPath),
-      ) ?? null
-    )
+    return categories.find((category) => category.pages.some((page) => isPageActive(page))) ?? null
   }
 
   const getCurrentPage = (): NavigationPage | null => {
@@ -161,6 +182,11 @@ export const useNavigationPages = () => {
   }
 
   const getCategoryByRoute = (routePath: string): NavigationCategory | null => {
+    // Prefer active page (incluye query moneda en /cauciones); fallback por path.
+    const active = getCurrentCategory()
+    if (active && normalizeRoute(route.path) === normalizeRoute(routePath)) {
+      return active
+    }
     const normalizedPath = normalizeRoute(routePath)
     return (
       categories.find((category) =>
@@ -226,6 +252,9 @@ export const useNavigationPages = () => {
   const isActive = (page: NavigationPage): boolean => isPageActive(page)
 
   const isCategoryActive = (category: NavigationCategory, currentRoute: string): boolean => {
+    if (normalizeRoute(currentRoute) === normalizeRoute(route.path)) {
+      return category.pages.some((page) => isPageActive(page))
+    }
     const normalizedRoute = normalizeRoute(currentRoute)
     return category.pages.some((page) => normalizeRoute(getPagePath(page.to)) === normalizedRoute)
   }
