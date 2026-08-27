@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { h, resolveComponent } from 'vue'
+import { h } from 'vue'
 import { UButton } from '#components'
 import CaucionYieldCurveChart from '~/components/charts/CaucionYieldCurveChart.vue'
+import CaucionesBrokerSelect from '~/components/CaucionesBrokerSelect.vue'
 import CaucionesComisionesBrokers from '~/components/CaucionesComisionesBrokers.vue'
 import { useCaucionesBrokerSelection } from '~/composables/useCaucionesBrokerSelection'
 import { useComisionesCaucionesBrokers } from '~/composables/useComisionesCaucionesBrokers'
@@ -128,8 +129,6 @@ function formatTasaRango(min: number, max: number): string {
   return `${formatPercentAuto(min)} – ${formatPercentAuto(max)}`
 }
 
-const USelect = resolveComponent('USelect')
-
 function createSortableHeader(label: string) {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
@@ -172,19 +171,16 @@ function createTasaNetaHeader() {
       return headerLabel
     }
 
-    return h('div', { class: 'flex flex-col gap-1.5 min-w-[9.5rem] max-w-[11rem]' }, [
+    return h('div', { class: 'flex flex-col gap-1.5 min-w-[10.5rem] max-w-[13rem]' }, [
       headerLabel,
-      h(USelect, {
+      h(CaucionesBrokerSelect, {
         modelValue: selectedEntidad.value,
         'onUpdate:modelValue': (value: string) => {
           selectedEntidad.value = value
         },
         items: brokerOptions.value,
-        valueKey: 'value',
-        labelKey: 'label',
         size: 'xs',
         class: 'w-full',
-        ui: { content: 'min-w-40' },
       }),
     ])
   }
@@ -337,14 +333,11 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
         class="sm:hidden flex items-center justify-between gap-3 rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-2"
       >
         <span class="text-xs font-medium text-muted shrink-0">Tasa neta</span>
-        <USelect
+        <CaucionesBrokerSelect
           v-model="selectedEntidad"
           :items="brokerOptions"
-          value-key="value"
-          label-key="label"
           size="sm"
           class="min-w-40 flex-1 max-w-xs"
-          :ui="{ content: 'min-w-40' }"
         />
       </div>
 

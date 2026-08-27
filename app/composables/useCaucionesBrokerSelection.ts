@@ -3,6 +3,7 @@ import { useRouteQuery } from '@vueuse/router'
 import type { CaucionMoneda } from '~/composables/useCauciones'
 import {
   filterComisionesCauciones,
+  formatTasaPublicada,
   getComisionBroker,
   type ComisionCaucionBrokerApi,
   type OperacionCaucionFilter,
@@ -12,6 +13,14 @@ import { getInstitutionShortName } from '~/lib/mappings/institutions'
 export interface BrokerOption {
   label: string
   value: string
+  /** Comisión / tasa publicada, visible al desplegar el select. */
+  description: string
+}
+
+function formatBrokerComisionDescription(row: ComisionCaucionBrokerApi): string {
+  const tasa = formatTasaPublicada(row)
+  if (tasa === 'Consultar') return tasa
+  return row.ivaAdicional ? `${tasa} + IVA` : tasa
 }
 
 export function useCaucionesBrokerSelection(
@@ -39,6 +48,7 @@ export function useCaucionesBrokerSelection(
         getInstitutionShortName(row.nombreComercial) ||
         row.nombreComercial ||
         row.entidad,
+      description: formatBrokerComisionDescription(row),
     }))
   })
 
