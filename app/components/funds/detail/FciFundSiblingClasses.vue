@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getFundDetailTo, getFundDetailToOptionsFromQuery } from '~/lib/funds-detail'
+import { getFundDetailTo, getFundDetailToOptionsFromRoute } from '~/lib/funds-detail'
 import {
   formatArsEquivalentHint,
   formatCompactPatrimonio,
@@ -51,7 +51,7 @@ function siblingPatrimonioParts(row: FundCatalogGroupRow) {
 }
 
 function siblingDetailTo(fondo: string) {
-  return getFundDetailTo(fondo, getFundDetailToOptionsFromQuery(route.query))
+  return getFundDetailTo(fondo, getFundDetailToOptionsFromRoute(route))
 }
 
 function formatRate(value: number | null | undefined) {

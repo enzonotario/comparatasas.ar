@@ -1,7 +1,4 @@
-<script setup lang="ts">
-import type { TabsItem } from '@nuxt/ui'
-
-type EndpointTab =
+export type EndpointTab =
   | 'plazos-fijos'
   | 'plazos-fijos-uva-periodico'
   | 'plazos-fijos-uva-precancelable'
@@ -15,12 +12,12 @@ type EndpointTab =
   | 'prestamos-personales'
   | 'comisiones-cobro'
 
-interface EndpointField {
+export interface EndpointField {
   name: string
   description: string
 }
 
-interface EndpointSpec {
+export interface EndpointSpec {
   id: EndpointTab
   label: string
   description: string
@@ -29,46 +26,9 @@ interface EndpointSpec {
   notes?: string[]
 }
 
-definePageMeta({
-  pageTitle: 'Integrar tu servicio',
-  pageDescription:
-    'El listado en ComparaTasas.ar es gratuito. Integrá tu app o servicio de tasas proveyendo un endpoint con tus datos.',
-})
+export const SUMARSE_DEFAULT_ENDPOINT: EndpointTab = 'plazos-fijos'
 
-useSeoMeta({
-  title: 'Integrar tu servicio',
-  description:
-    'Integrá tu servicio de tasas en Compara Tasas. Listado gratuito para proveedores de tasas de interés y entidades financieras.',
-  ogTitle: 'Integrar tu servicio - ComparaTasas.ar',
-  ogDescription:
-    'Integrá tu servicio de tasas en Compara Tasas. Listado gratuito para proveedores de tasas de interés y entidades financieras.',
-})
-
-useHead({
-  link: [
-    { rel: 'canonical', href: 'https://comparatasas.ar/sumarse' },
-    { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar/sumarse' },
-    { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar/sumarse' },
-  ],
-  script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebPage',
-        name: 'Integrar tu servicio - Compara Tasas',
-        description: 'Sumá tu entidad financiera o servicio de tasas a Compara Tasas.',
-        publisher: {
-          '@type': 'Organization',
-          name: 'Compara Tasas',
-          url: 'https://comparatasas.ar',
-        },
-      }),
-    },
-  ],
-})
-
-const endpointSpecs: EndpointSpec[] = [
+export const endpointSpecs: EndpointSpec[] = [
   {
     id: 'plazos-fijos',
     label: 'Plazos Fijos',
@@ -480,162 +440,8 @@ const endpointSpecs: EndpointSpec[] = [
   },
 ]
 
-const endpointTabs: TabsItem[] = endpointSpecs.map((spec) => ({
-  label: spec.label,
-  value: spec.id,
-  slot: spec.id,
-}))
+export const sumarseEndpointIds = endpointSpecs.map((spec) => spec.id)
 
-const validEndpointTabs = new Set<EndpointTab>(endpointSpecs.map((spec) => spec.id))
-
-const endpointTabQuery = useRouteQuery<EndpointTab>('tab', 'plazos-fijos')
-
-const selectedEndpointTab = computed<EndpointTab>({
-  get: () =>
-    validEndpointTabs.has(endpointTabQuery.value as EndpointTab)
-      ? (endpointTabQuery.value as EndpointTab)
-      : 'plazos-fijos',
-  set: (value) => {
-    endpointTabQuery.value = value
-  },
-})
-</script>
-
-<template>
-  <div class="mx-auto max-w-4xl space-y-8">
-    <div class="mb-8 flex items-center gap-4">
-      <UButton to="/" icon="i-heroicons-arrow-left" variant="ghost" color="neutral" size="lg">
-        Volver
-      </UButton>
-    </div>
-
-    <div class="space-y-8">
-      <UCard>
-        <template #header>
-          <h2 class="text-2xl font-semibold">Requisitos</h2>
-        </template>
-        <ul class="list-inside list-disc space-y-3 text-zinc-700 dark:text-zinc-300">
-          <li>Nombre de tu app o servicio</li>
-          <li>Endpoint con tasas / datos del producto</li>
-          <li>Isologo cuadrado (SVG o PNG)</li>
-        </ul>
-      </UCard>
-
-      <UCard>
-        <template #header>
-          <h2 class="text-2xl font-semibold">Especificación del endpoint</h2>
-        </template>
-        <div class="space-y-4">
-          <p class="text-zinc-700 dark:text-zinc-300">
-            El formato es flexible. Abajo están ejemplos alineados a los schemas que hoy consume
-            Compara Tasas para cada sección:
-          </p>
-
-          <UTabs
-            v-model="selectedEndpointTab"
-            :items="endpointTabs"
-            variant="link"
-            class="w-full"
-            :ui="{
-              list: 'flex-nowrap overflow-x-auto overflow-y-hidden',
-              indicator: 'hidden',
-              trigger: 'whitespace-nowrap shrink-0',
-            }"
-          >
-            <template v-for="spec in endpointSpecs" :key="spec.id" #[spec.id]>
-              <div class="mt-4 space-y-4">
-                <p class="text-sm text-zinc-600 dark:text-zinc-400">
-                  {{ spec.description }}
-                </p>
-
-                <div class="overflow-x-auto rounded-lg bg-zinc-900 p-4 dark:bg-zinc-950">
-                  <pre class="text-sm text-zinc-100"><code>{{ spec.example }}</code></pre>
-                </div>
-
-                <div class="grid gap-4 md:grid-cols-2">
-                  <div class="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
-                    <h3 class="mb-2 font-semibold text-zinc-900 dark:text-white">
-                      Campos esperados
-                    </h3>
-                    <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
-                      <li v-for="field in spec.fields" :key="field.name">
-                        <code>{{ field.name }}</code
-                        >: {{ field.description }}
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div class="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
-                    <h3 class="mb-2 font-semibold text-zinc-900 dark:text-white">Notas</h3>
-                    <ul
-                      v-if="spec.notes?.length"
-                      class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400"
-                    >
-                      <li v-for="(note, index) in spec.notes" :key="index">
-                        {{ note }}
-                      </li>
-                    </ul>
-                    <p v-else class="text-sm text-zinc-600 dark:text-zinc-400">
-                      Si algún campo no aplica, enviá <code>null</code> o omitilo. Preferimos JSON
-                      estable y fechas en <code>YYYY-MM-DD</code>.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </template>
-          </UTabs>
-        </div>
-      </UCard>
-
-      <UCard>
-        <template #header>
-          <h2 class="text-2xl font-semibold">Detalles de integración</h2>
-        </template>
-        <div class="space-y-4">
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <div class="mb-1 font-semibold text-zinc-900 dark:text-white">
-                Frecuencia de polling
-              </div>
-              <div class="text-zinc-600 dark:text-zinc-400">5 minutos</div>
-            </div>
-            <div>
-              <div class="mb-1 font-semibold text-zinc-900 dark:text-white">Timeout de polling</div>
-              <div class="text-zinc-600 dark:text-zinc-400">15 segundos</div>
-            </div>
-            <div>
-              <div class="mb-1 font-semibold text-zinc-900 dark:text-white">Autenticación</div>
-              <div class="text-zinc-600 dark:text-zinc-400">Headers custom (opcional)</div>
-            </div>
-            <div>
-              <div class="mb-1 font-semibold text-zinc-900 dark:text-white">IPs de origen</div>
-              <div class="text-zinc-600 dark:text-zinc-400">GitHub/CloudFlare IPs</div>
-            </div>
-          </div>
-        </div>
-      </UCard>
-
-      <UCard>
-        <template #header>
-          <h2 class="text-2xl font-semibold">Solicitar integración</h2>
-        </template>
-        <div class="space-y-4">
-          <p class="text-zinc-700 dark:text-zinc-300">
-            Enviá un email con el nombre de tu app, la URL del endpoint, la sección a la que aplica
-            (plazos fijos, préstamos, comisiones, etc.) y un logo cuadrado (SVG o PNG).
-          </p>
-          <UButton
-            :to="`mailto:hi@enzonotario.me?subject=Solicitud de integración - ComparaTasas.ar&body=Hola,%0D%0A%0D%0AQuiero integrar mi servicio en ComparaTasas.ar.%0D%0A%0D%0ANombre de la app:%0D%0ASección:%0D%0AEndpoint:%0D%0ALogo: (adjuntar archivo)%0D%0A%0D%0ASaludos`"
-            icon="i-heroicons-envelope"
-            size="lg"
-            color="primary"
-            rel="nofollow"
-            external
-          >
-            hi@enzonotario.me
-          </UButton>
-        </div>
-      </UCard>
-    </div>
-  </div>
-</template>
+export function getSumarseEndpoint(id: string): EndpointSpec | undefined {
+  return endpointSpecs.find((spec) => spec.id === id)
+}

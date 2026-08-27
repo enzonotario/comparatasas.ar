@@ -25,12 +25,9 @@ function getPageQuery(to: string): URLSearchParams {
 
 function normalizeNavigationAlias(path: string): string {
   const trimmed = path.replace(/\/$/, '') || '/'
-  if (
-    trimmed === '/plazos-fijos/uva-pago-periodico' ||
-    trimmed === '/plazos-fijos/uva-precancelable'
-  ) {
-    return '/plazos-fijos'
-  }
+  if (trimmed.startsWith('/plazos-fijos/')) return '/plazos-fijos'
+  if (trimmed.startsWith('/creditos-hipotecarios-uva/')) return '/creditos-hipotecarios-uva'
+  if (trimmed.startsWith('/prestamos-personales/')) return '/prestamos-personales'
   return trimmed
 }
 

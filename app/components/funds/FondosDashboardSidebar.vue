@@ -3,7 +3,7 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 import type { FundCatalogRow } from '~/composables/useFondosCatalog'
 import { formatCompactPatrimonio, normalizeCurrencyCode } from '~/lib/fci-fund-formatters'
 import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
-import { getFundDetailTo, getFundDetailToOptionsFromQuery, normalizeFundSlug } from '~/lib/funds-detail'
+import { getFundDetailTo, getFundDetailToOptionsFromRoute, normalizeFundSlug } from '~/lib/funds-detail'
 
 const props = defineProps<{
   allFunds: FundCatalogRow[]
@@ -14,10 +14,12 @@ const emit = defineEmits<{
 }>()
 
 const route = useRoute()
-const isDetailPage = computed(() => route.name === 'fondos-nombre')
+const isDetailPage = computed(
+  () => route.name === 'fondos-nombre' || route.name === 'fondos-nombre-historico',
+)
 const isMarketPage = computed(() => route.path === '/fondos/mercado')
 const detailSlug = computed(() => String(route.params.nombre || ''))
-const detailToOptions = computed(() => getFundDetailToOptionsFromQuery(route.query))
+const detailToOptions = computed(() => getFundDetailToOptionsFromRoute(route))
 
 const PRESERVED_KEYS = ['agrupar', 'sort', 'pageSize', 'vista'] as const
 

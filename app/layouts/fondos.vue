@@ -18,7 +18,9 @@ onMounted(() => {
   initialize()
 })
 
-const isDetailPage = computed(() => route.name === 'fondos-nombre')
+const isDetailPage = computed(
+  () => route.name === 'fondos-nombre' || route.name === 'fondos-nombre-historico',
+)
 </script>
 
 <template>

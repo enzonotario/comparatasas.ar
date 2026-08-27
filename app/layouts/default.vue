@@ -16,7 +16,9 @@ const { initialize } = useHotjar()
 const route = useRoute()
 const { showProductScenarios } = useProductScenarios()
 
-const isSumarsePage = computed(() => route.path === '/sumarse')
+const isSumarsePage = computed(
+  () => route.path === '/sumarse' || route.path.startsWith('/sumarse/'),
+)
 
 const useSponsorBanner = computed(() => {
   const cutoffDate = new Date('2026-01-01')
@@ -29,22 +31,26 @@ onMounted(() => {
 })
 
 const isWideLayout = computed(() => {
-  if (route.path === '/plazos-fijos') return true
+  const p = route.path.replace(/\/$/, '') || '/'
+  // Solo el ranking tradicional usa contenedor ancho; UVA pago periódico /
+  // precancelable siguen en max-w-3xl como antes.
+  if (p === '/plazos-fijos') return true
+  if (p === '/creditos-hipotecarios-uva' || p.startsWith('/creditos-hipotecarios-uva/')) return true
+  if (p === '/prestamos-personales' || p.startsWith('/prestamos-personales/')) return true
+  if (p === '/metodologia' || p.startsWith('/metodologia/')) return true
 
   return [
     'criptomonedas',
-    'creditos-hipotecarios-uva',
-    'prestamos-personales',
     'comisiones-cobro',
     'contado-cuotas',
     'fondos',
     'fondos-nombre',
+    'fondos-nombre-historico',
     'remesas',
     'cuentas-billeteras-graficos',
     'lecaps',
     'cauciones',
     'bonos-cer',
-    'metodologia',
   ].includes(route.name as string)
 })
 

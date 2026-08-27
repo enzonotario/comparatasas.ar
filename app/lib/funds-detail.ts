@@ -47,12 +47,9 @@ export function getFundDetailTo(
   nameOrSlug: string,
   options?: FundDetailToOptions,
 ): string | { path: string; query: Record<string, string> } {
-  const path = getFundDetailPath(nameOrSlug)
+  const base = getFundDetailPath(nameOrSlug)
+  const path = options?.tab === 'historico' ? `${base}/historico` : base
   const query: Record<string, string> = {}
-
-  if (options?.tab === 'historico') {
-    query.tab = 'historico'
-  }
 
   if (
     isFundHistoryPeriod(options?.periodo) &&
@@ -63,6 +60,19 @@ export function getFundDetailTo(
 
   if (Object.keys(query).length === 0) return path
   return { path, query }
+}
+
+/** Prefer this for sibling class links when the full route is available. */
+export function getFundDetailToOptionsFromRoute(route: {
+  path: string
+  query: Record<string, unknown>
+}): FundDetailToOptions {
+  const path = route.path.replace(/\/$/, '')
+  const isHistorico = /\/historico$/.test(path)
+  return {
+    tab: isHistorico ? 'historico' : undefined,
+    periodo: typeof route.query.periodo === 'string' ? route.query.periodo : undefined,
+  }
 }
 
 /** Lee tab/periodo actuales de la query para armar links entre clases. */

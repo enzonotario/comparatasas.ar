@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { TabsItem } from '@nuxt/ui'
 import FciFundHeaderCard from '~/components/funds/detail/FciFundHeaderCard.vue'
 import FciFundHistoryTab from '~/components/funds/detail/FciFundHistoryTab.vue'
 import FciFundSummaryTab from '~/components/funds/detail/FciFundSummaryTab.vue'
 import FciFundSiblingClasses from '~/components/funds/detail/FciFundSiblingClasses.vue'
+import FciFundDetailNavTabs from '~/components/funds/detail/FciFundDetailNavTabs.vue'
 import {
   formatArsEquivalentHint,
   formatCompactPatrimonio,
@@ -13,16 +13,16 @@ import {
 } from '~/lib/fci-fund-formatters'
 import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
 import { parseFundClassName } from '~/lib/fci-fund-class'
-import { getFundDetailTo, getFundDetailToOptionsFromQuery, type FundDetailTab } from '~/lib/funds-detail'
+import {
+  getFundDetailTo,
+  getFundDetailToOptionsFromRoute,
+  type FundDetailTab,
+} from '~/lib/funds-detail'
 import { getInstitutionUrl } from '~/lib/mappings/institutions'
 import { withOutboundUtm } from '~/lib/outbound-url'
 import { getFundMappingBySlug, getFundTypeInfo } from '~/lib/mappings/funds'
 
-definePageMeta({
-  layout: 'fondos',
-  pageTitle: 'Detalle de FCI',
-  pageDescription: 'Información detallada de un fondo común de inversión.',
-})
+const props = defineProps<{ tab: FundDetailTab }>()
 
 const route = useRoute()
 const router = useRouter()
@@ -67,27 +67,6 @@ function goBack() {
   router.push('/fondos')
 }
 
-const detailTabQuery = useRouteQuery<FundDetailTab | undefined>('tab', undefined)
-const selectedDetailTab = computed({
-  get: (): FundDetailTab => (detailTabQuery.value === 'historico' ? 'historico' : 'resumen'),
-  set: (value: string) => {
-    detailTabQuery.value = value === 'historico' ? 'historico' : undefined
-  },
-})
-
-const detailTabs: TabsItem[] = [
-  {
-    label: 'Resumen',
-    value: 'resumen',
-    slot: 'resumen' as const,
-  },
-  {
-    label: 'Histórico',
-    value: 'historico',
-    slot: 'historico' as const,
-  },
-]
-
 const mappedFundLabel = computed(() => {
   const institution = mappedFundInstitution.value
   if (!institution) return 'Ver sitio del fondo'
@@ -120,11 +99,13 @@ const siblingInfo = computed(() => {
   })
 })
 
+const detailToOptions = computed(() => getFundDetailToOptionsFromRoute(route))
+
 const classSwitcherItems = computed(() =>
   siblingInfo.value.siblings.map((row) => ({
     label: row.classLabel || row.fondo,
     value: row.fondo,
-    to: getFundDetailTo(row.fondo, getFundDetailToOptionsFromQuery(route.query)),
+    to: getFundDetailTo(row.fondo, detailToOptions.value),
     active: row.fondo === fundDetail.value?.nombre,
   })),
 )
@@ -228,7 +209,9 @@ useSeoMeta({
     fundDetail.value ? `${fundDetail.value.nombre} - Fondo común de inversión` : 'Detalle de FCI',
   description: () =>
     fundDetail.value
-      ? `Detalle, composición, rendimientos e histórico de ${fundDetail.value.nombre}.`
+      ? props.tab === 'historico'
+        ? `Histórico de rendimientos y evolución de ${fundDetail.value.nombre}.`
+        : `Detalle, composición, rendimientos e histórico de ${fundDetail.value.nombre}.`
       : 'Información detallada de un fondo común de inversión.',
   ogTitle: () =>
     fundDetail.value
@@ -236,7 +219,9 @@ useSeoMeta({
       : 'Detalle de FCI - Compara Tasas',
   ogDescription: () =>
     fundDetail.value
-      ? `Consultá rendimientos, composición, honorarios e histórico de ${fundDetail.value.nombre}.`
+      ? props.tab === 'historico'
+        ? `Consultá la evolución histórica de ${fundDetail.value.nombre}.`
+        : `Consultá rendimientos, composición, honorarios e histórico de ${fundDetail.value.nombre}.`
       : 'Información detallada de un fondo común de inversión.',
 })
 </script>
@@ -381,15 +366,7 @@ useSeoMeta({
           </div>
         </div>
 
-        <UTabs
-          v-model="selectedDetailTab"
-          :items="detailTabs"
-          :content="false"
-          color="neutral"
-          size="sm"
-          class="w-full"
-          :ui="{ list: 'w-full', trigger: 'flex-1' }"
-        />
+        <FciFundDetailNavTabs :tab="tab" :slug="slug" full-width />
       </div>
 
       <!-- Desktop: KPI strip + tabs -->
@@ -413,14 +390,7 @@ useSeoMeta({
         </template>
 
         <template #right>
-          <UTabs
-            v-model="selectedDetailTab"
-            :items="detailTabs"
-            :content="false"
-            color="neutral"
-            size="xs"
-            class="w-auto"
-          />
+          <FciFundDetailNavTabs :tab="tab" :slug="slug" size="xs" />
         </template>
       </UDashboardToolbar>
     </template>
@@ -451,7 +421,7 @@ useSeoMeta({
           compact
         />
 
-        <div v-show="selectedDetailTab === 'resumen'" class="space-y-4">
+        <div v-if="tab === 'resumen'" class="space-y-4">
           <FciFundSiblingClasses
             :base-name="siblingInfo.baseName"
             :current-fondo="fundDetail.nombre"
@@ -471,7 +441,7 @@ useSeoMeta({
           />
         </div>
 
-        <div v-show="selectedDetailTab === 'historico'">
+        <div v-else-if="tab === 'historico'">
           <FciFundHistoryTab
             :fund-history="fundHistory"
             :history-status="historyStatus"
