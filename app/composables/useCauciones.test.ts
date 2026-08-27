@@ -53,6 +53,11 @@ describe('isPlazoCoherentWithVencimiento', () => {
     expect(isPlazoCoherentWithVencimiento(162, '2026-08-22', '2026-08-24T00:00:00')).toBe(false)
     expect(isPlazoCoherentWithVencimiento(69, '2026-08-22', '2026-10-28T00:00:00')).toBe(true)
   })
+
+  it('acepta overnight/T+1 con vencimiento un día antes (glitch de fuente)', () => {
+    expect(isPlazoCoherentWithVencimiento(1, '2026-08-27', '2026-08-26T00:00:00')).toBe(true)
+    expect(isPlazoCoherentWithVencimiento(160, '2026-08-27', '2026-08-28T00:00:00')).toBe(false)
+  })
 })
 
 describe('mapCaucionItems', () => {
@@ -63,5 +68,35 @@ describe('mapCaucionItems', () => {
     expect(rows[0]?.fechaVencimientoDate).toBe('2026-08-24')
     expect(rows[0]?.diasAlVencimiento).toBe(2)
     expect(rows[0]?.fechaActualizacion).toBe('2026-08-22T19:20:23.874Z')
+  })
+
+  it('incluye plazo 1 aunque el vencimiento venga un día atrás', () => {
+    const rows = mapCaucionItems(
+      [
+        {
+          plazo: 1,
+          montoContado: 4_982_631_325_411,
+          tasaActual: 19.5,
+          tasaMinDia: 12,
+          tasaMaxDia: 21.1,
+          fechaOperacion: '2026-08-27',
+          fechaActualizacion: '2026-08-27T18:29:48.002Z',
+          fechaVencimiento: '2026-08-26T00:00:00',
+        },
+        {
+          plazo: 160,
+          montoContado: 7_536_677,
+          tasaActual: 21.1,
+          tasaMinDia: 20.1,
+          tasaMaxDia: 21.1,
+          fechaOperacion: '2026-08-27',
+          fechaActualizacion: '2026-08-27T18:29:48.002Z',
+          fechaVencimiento: '2026-08-28T00:00:00',
+        },
+      ],
+      'ars',
+    )
+    expect(rows.map((row) => row.plazo)).toEqual([1])
+    expect(rows[0]?.tasaActual).toBe(19.5)
   })
 })

@@ -43,7 +43,9 @@ export function daysBetweenDateOnly(from: string, to: string): number {
 }
 
 /**
- * Descarta plazos que no calzan con la fecha de vencimiento (p. ej. 162d con vto. en 2 días).
+ * Descarta plazos inflados que no calzan con el vencimiento (p. ej. 162d con vto. en 2 días).
+ * Acepta desfaces chicos (±tolerancia), incluido vencimiento un día en el pasado por glitches
+ * de la fuente en overnight / T+1 (plazo 1 con vto. = operación − 1).
  */
 export function isPlazoCoherentWithVencimiento(
   plazo: number,
@@ -52,7 +54,7 @@ export function isPlazoCoherentWithVencimiento(
   tolerancia = PLAZO_CALENDARIO_TOLERANCIA,
 ): boolean {
   const dias = daysBetweenDateOnly(fechaOperacion, fechaVencimiento)
-  if (!Number.isFinite(dias) || dias < 0) return false
+  if (!Number.isFinite(dias)) return false
   return Math.abs(plazo - dias) <= tolerancia
 }
 
