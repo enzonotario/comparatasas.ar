@@ -1,7 +1,15 @@
 <script setup lang="ts">
+import { h, resolveComponent } from 'vue'
 import { UButton } from '#components'
 import CaucionYieldCurveChart from '~/components/charts/CaucionYieldCurveChart.vue'
+import CaucionesComisionesBrokers from '~/components/CaucionesComisionesBrokers.vue'
+import { useCaucionesBrokerSelection } from '~/composables/useCaucionesBrokerSelection'
+import { useComisionesCaucionesBrokers } from '~/composables/useComisionesCaucionesBrokers'
 import { type CaucionMoneda, type CaucionRow, useCauciones } from '~/composables/useCauciones'
+import {
+  calcularTasaNetaCaucion,
+  type OperacionCaucionFilter,
+} from '~/lib/finance/comision-caucion-broker'
 import {
   formatCompactNumber,
   formatCurrency,
@@ -45,6 +53,43 @@ const moneda = computed<CaucionMoneda>({
 
 const { items, loading, error, fetch, fechaOperacion, fechaActualizacion } = useCauciones(moneda)
 await fetch()
+
+const operacionQuery = useRouteQuery<OperacionCaucionFilter>('rol', 'colocadora')
+const operacion = computed<OperacionCaucionFilter>({
+  get: () => (operacionQuery.value === 'tomadora' ? 'tomadora' : 'colocadora'),
+  set: (value) => {
+    operacionQuery.value = value
+  },
+})
+
+const {
+  comisiones: comisionesBrokers,
+  fetch: fetchComisionesBrokers,
+} = useComisionesCaucionesBrokers()
+await fetchComisionesBrokers().catch(() => undefined)
+
+const { brokerOptions, selectedEntidad, selectedComision } =
+  useCaucionesBrokerSelection(moneda, operacion, comisionesBrokers)
+
+interface CaucionRowConNeta extends CaucionRow {
+  tasaNeta: number | null
+}
+
+const tableRows = computed<CaucionRowConNeta[]>(() =>
+  items.value.map((row) => ({
+    ...row,
+    tasaNeta: calcularTasaNetaCaucion(
+      row.tasaActual,
+      row.plazo,
+      selectedComision.value,
+      operacion.value,
+    ),
+  })),
+)
+
+const operacionLabel = computed(() =>
+  operacion.value === 'tomadora' ? 'tomadora' : 'colocadora',
+)
 
 function formatUpdatedAt(value: string | null): string {
   if (!value) return ogUpdatedAtDate()
@@ -95,6 +140,8 @@ function formatTasaRango(min: number, max: number): string {
   return `${formatPercentAuto(min)} – ${formatPercentAuto(max)}`
 }
 
+const USelect = resolveComponent('USelect')
+
 function createSortableHeader(label: string) {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
@@ -113,68 +160,127 @@ function createSortableHeader(label: string) {
   }
 }
 
-const columns: TableColumn<CaucionRow>[] = [
-  {
-    accessorKey: 'plazo',
-    header: createSortableHeader('Plazo'),
-    cell: ({ row }) =>
-      h(
-        'span',
-        { class: 'font-bold text-neutral-900 dark:text-white tabular-nums' },
-        `${row.getValue('plazo')} días`,
-      ),
-  },
-  {
-    accessorKey: 'tasaActual',
-    header: createSortableHeader('Tasa actual'),
-    cell: ({ row }) =>
-      h(
-        'div',
-        { class: 'font-bold tabular-nums text-green-800 dark:text-green-200' },
-        formatPercentAuto(row.getValue('tasaActual') as number),
-      ),
-  },
-  {
-    accessorKey: 'tasaMinDia',
-    header: createSortableHeader('Tasa min. día'),
-    cell: ({ row }) =>
-      h(
-        'div',
-        { class: 'tabular-nums text-neutral-700 dark:text-neutral-300' },
-        formatPercentAuto(row.getValue('tasaMinDia') as number),
-      ),
-  },
-  {
-    accessorKey: 'tasaMaxDia',
-    header: createSortableHeader('Tasa max. día'),
-    cell: ({ row }) =>
-      h(
-        'div',
-        { class: 'tabular-nums text-neutral-700 dark:text-neutral-300' },
-        formatPercentAuto(row.getValue('tasaMaxDia') as number),
-      ),
-  },
-  {
-    accessorKey: 'montoContado',
-    header: createSortableHeader('Monto contado'),
-    cell: ({ row }) =>
-      h(
-        'div',
-        { class: 'tabular-nums text-primary-800 dark:text-primary-200 font-medium' },
-        formatMonto(row.getValue('montoContado') as number),
-      ),
-  },
-  {
-    accessorKey: 'fechaOperacionDate',
-    header: createSortableHeader('Operación'),
-    cell: ({ row }) => h('div', {}, formatDate(row.getValue('fechaOperacionDate') as string)),
-  },
-  {
-    accessorKey: 'fechaVencimientoDate',
-    header: createSortableHeader('Vencimiento'),
-    cell: ({ row }) => h('div', {}, formatDate(row.getValue('fechaVencimientoDate') as string)),
-  },
-]
+function createTasaNetaHeader() {
+  return ({ column }: { column: any }) => {
+    const isSorted = column.getIsSorted()
+    const sortButton = h(UButton, {
+      color: 'neutral',
+      variant: 'ghost',
+      icon: isSorted
+        ? isSorted === 'asc'
+          ? 'i-lucide-arrow-up-narrow-wide'
+          : 'i-lucide-arrow-down-wide-narrow'
+        : 'i-lucide-arrow-up-down',
+      class: 'shrink-0 -mr-1',
+      onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+    })
+
+    const headerLabel = h('div', { class: 'flex items-center gap-0.5' }, [
+      h('span', { class: 'font-bold whitespace-nowrap' }, 'Tasa neta'),
+      sortButton,
+    ])
+
+    if (!brokerOptions.value.length) {
+      return headerLabel
+    }
+
+    return h('div', { class: 'flex flex-col gap-1.5 min-w-[9.5rem] max-w-[11rem]' }, [
+      headerLabel,
+      h(USelect, {
+        modelValue: selectedEntidad.value,
+        'onUpdate:modelValue': (value: string) => {
+          selectedEntidad.value = value
+        },
+        items: brokerOptions.value,
+        valueKey: 'value',
+        labelKey: 'label',
+        size: 'xs',
+        class: 'w-full',
+        ui: { content: 'min-w-40' },
+      }),
+    ])
+  }
+}
+
+const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
+  return [
+    {
+      accessorKey: 'plazo',
+      header: createSortableHeader('Plazo'),
+      cell: ({ row }) =>
+        h(
+          'span',
+          { class: 'font-bold text-neutral-900 dark:text-white tabular-nums' },
+          `${row.getValue('plazo')} días`,
+        ),
+    },
+    {
+      accessorKey: 'tasaActual',
+      header: createSortableHeader('Tasa actual'),
+      cell: ({ row }) =>
+        h(
+          'div',
+          { class: 'font-bold tabular-nums text-green-800 dark:text-green-200' },
+          formatPercentAuto(row.getValue('tasaActual') as number),
+        ),
+    },
+    {
+      accessorKey: 'tasaNeta',
+      header: createTasaNetaHeader(),
+      cell: ({ row }) => {
+        const neta = row.original.tasaNeta
+        if (neta == null) {
+          return h('span', { class: 'text-muted' }, '—')
+        }
+        return h(
+          'div',
+          { class: 'font-bold tabular-nums text-primary-800 dark:text-primary-200' },
+          formatPercentAuto(neta),
+        )
+      },
+    },
+    {
+      accessorKey: 'tasaMinDia',
+      header: createSortableHeader('Tasa min. día'),
+      cell: ({ row }) =>
+        h(
+          'div',
+          { class: 'tabular-nums text-neutral-700 dark:text-neutral-300' },
+          formatPercentAuto(row.getValue('tasaMinDia') as number),
+        ),
+    },
+    {
+      accessorKey: 'tasaMaxDia',
+      header: createSortableHeader('Tasa max. día'),
+      cell: ({ row }) =>
+        h(
+          'div',
+          { class: 'tabular-nums text-neutral-700 dark:text-neutral-300' },
+          formatPercentAuto(row.getValue('tasaMaxDia') as number),
+        ),
+    },
+    {
+      accessorKey: 'montoContado',
+      header: createSortableHeader('Monto contado'),
+      cell: ({ row }) =>
+        h(
+          'div',
+          { class: 'tabular-nums text-primary-800 dark:text-primary-200 font-medium' },
+          formatMonto(row.getValue('montoContado') as number),
+        ),
+    },
+    {
+      accessorKey: 'fechaOperacionDate',
+      header: createSortableHeader('Operación'),
+      cell: ({ row }) => h('div', {}, formatDate(row.getValue('fechaOperacionDate') as string)),
+    },
+    {
+      accessorKey: 'fechaVencimientoDate',
+      header: createSortableHeader('Vencimiento'),
+      cell: ({ row }) => h('div', {}, formatDate(row.getValue('fechaVencimientoDate') as string)),
+    },
+  ]
+})
 </script>
 
 <template>
@@ -189,6 +295,20 @@ const columns: TableColumn<CaucionRow>[] = [
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
+        <UFieldGroup size="sm" class="shrink-0">
+          <UButton
+            label="Colocadora"
+            color="neutral"
+            :variant="operacion === 'colocadora' ? 'solid' : 'outline'"
+            @click="operacion = 'colocadora'"
+          />
+          <UButton
+            label="Tomadora"
+            color="neutral"
+            :variant="operacion === 'tomadora' ? 'solid' : 'outline'"
+            @click="operacion = 'tomadora'"
+          />
+        </UFieldGroup>
         <UFieldGroup size="sm" class="shrink-0">
           <UButton
             label="ARS"
@@ -226,15 +346,36 @@ const columns: TableColumn<CaucionRow>[] = [
       </div>
     </div>
 
+    <p v-if="brokerOptions.length" class="text-xs text-muted -mt-2">
+      Tasa neta como {{ operacionLabel }}: mercado ajustado por comisión (+ IVA si aplica) y derecho
+      de mercado prorrateado al plazo (BYMA c/90d cuando aplica).
+    </p>
+
     <UAlert v-if="error" color="error" variant="soft" title="Error cargando cauciones" />
 
     <FundsLoading v-if="loading && !items.length" />
 
     <div v-else-if="items.length" class="space-y-6">
       <!-- Mobile: lista -->
+      <div
+        v-if="brokerOptions.length"
+        class="sm:hidden flex items-center justify-between gap-3 rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-2"
+      >
+        <span class="text-xs font-medium text-muted shrink-0">Tasa neta</span>
+        <USelect
+          v-model="selectedEntidad"
+          :items="brokerOptions"
+          value-key="value"
+          label-key="label"
+          size="sm"
+          class="min-w-40 flex-1 max-w-xs"
+          :ui="{ content: 'min-w-40' }"
+        />
+      </div>
+
       <div class="sm:hidden flex flex-col gap-3">
         <div
-          v-for="item in items"
+          v-for="item in tableRows"
           :key="`${item.plazo}-${item.fechaVencimientoDate}-${item.montoContado}`"
           class="rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-3"
         >
@@ -255,11 +396,18 @@ const columns: TableColumn<CaucionRow>[] = [
               </p>
             </div>
 
-            <div class="text-right space-y-0.5 shrink-0">
+            <div class="text-right space-y-1 shrink-0">
               <div class="font-bold tabular-nums text-green-800 dark:text-green-200">
                 {{ formatPercentAuto(item.tasaActual) }}
               </div>
-              <div class="text-xs text-muted">Tasa actual</div>
+              <div class="text-xs text-muted">Mercado</div>
+              <div
+                v-if="item.tasaNeta != null"
+                class="font-bold tabular-nums text-primary-800 dark:text-primary-200"
+              >
+                {{ formatPercentAuto(item.tasaNeta) }}
+              </div>
+              <div v-if="item.tasaNeta != null" class="text-xs text-muted">Neta</div>
             </div>
           </div>
         </div>
@@ -267,7 +415,7 @@ const columns: TableColumn<CaucionRow>[] = [
 
       <!-- sm+: tabla -->
       <div class="hidden sm:block border border-default rounded-lg overflow-hidden">
-        <UTable v-model:sorting="sorting" :data="items" :columns="columns" :loading="loading">
+        <UTable v-model:sorting="sorting" :data="tableRows" :columns="columns" :loading="loading">
           <template #empty>
             <div class="py-12 text-center text-muted">No hay cauciones disponibles.</div>
           </template>
@@ -280,6 +428,8 @@ const columns: TableColumn<CaucionRow>[] = [
         </h3>
         <CaucionYieldCurveChart :items="items" :moneda="moneda" />
       </div>
+
+      <CaucionesComisionesBrokers :moneda="moneda" />
     </div>
 
     <div v-else-if="!loading" class="text-center py-12 text-muted">
@@ -307,6 +457,25 @@ const columns: TableColumn<CaucionRow>[] = [
             agregados por ArgentinaDatos, en pesos (ARS) y dólares (USD). Filtramos filas cuyo
             plazo no es coherente con la fecha de vencimiento. Son valores
             <strong>orientativos</strong> de mercado; no constituyen asesoramiento financiero.
+          </p>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
+            Comisiones de brokers
+          </h3>
+          <p>
+            Además de la tasa de mercado, cada ALyC cobra una comisión por operar cauciones. En la
+            tabla comparamos aranceles retail (canal web/app) de IOL, Balanz, Bull Market, Cocos,
+            PPI y Fiwind, según ArgentinaDatos. Mostramos la tasa publicada y su equivalente anual
+            para comparar entre bases mensuales, anuales o TNA. Podés alternar
+            <strong>colocadora</strong> y <strong>tomadora</strong>; los valores son orientativos y
+            pueden variar por plan, mínimos o IVA.
+          </p>
+          <p>
+            En la tabla de mercado podés elegir un <strong>broker</strong> y ver la
+            <strong>tasa neta</strong> por plazo: TNA de mercado ajustada por comisión (+ IVA si
+            corresponde) y derecho de mercado, según rol colocadora o tomadora. El selector arranca
+            con un broker al azar y queda en la URL (`?broker=`).
           </p>
         </div>
         <div class="space-y-4">

@@ -271,6 +271,14 @@ export const methodologySections: MethodologySection[] = [
         type: 'p',
         text: 'En la curva usamos la tasa actual vs plazo; el tamaño del punto refleja el monto contado relativo de cada plazo.',
       },
+      {
+        type: 'p',
+        text: 'Comparamos también las comisiones de brokers (IOL, Balanz, Bull Market, Cocos, PPI y Fiwind) para cauciones en ARS y USD, según el tarifario retail publicado en ArgentinaDatos (/v1/finanzas/brokers/comisiones). Mostramos tasa publicada y equivalente anual; podés alternar colocadora vs tomadora.',
+      },
+      {
+        type: 'p',
+        text: 'En la tabla de mercado, la columna «Tasa neta» resta (colocadora) o suma (tomadora) comisión + IVA y derecho de mercado al TNA de mercado, prorrateados al plazo de cada fila. Podés elegir broker en el selector (uno aleatorio por defecto; persiste en ?broker=).',
+      },
     ],
   },
   {

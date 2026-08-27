@@ -231,7 +231,7 @@ export const institutions: Array<{
     url: 'https://nexo.go.link/5luH7',
   },
   {
-    names: ['Fiwind', 'FIWIND'],
+    names: ['Fiwind', 'FIWIND', 'fiwind'],
     logo: 'https://api.argentinadatos.com/static/logos/fiwind.png',
     shortName: 'Fiwind',
     url: 'https://www.fiwind.io/?ref=comparatasas',
@@ -273,7 +273,7 @@ export const institutions: Array<{
     url: 'https://www.banza.com.ar/?ref=comparatasas',
   },
   {
-    names: ['Balanz'],
+    names: ['Balanz', 'balanz'],
     logo: 'https://api.argentinadatos.com/static/logos/balanz.svg',
     shortName: 'Balanz',
     url: 'https://balanz.com/?ref=comparatasas',
@@ -423,7 +423,7 @@ export const institutions: Array<{
     url: 'https://masventas.com.ar/?ref=comparatasas',
   },
   {
-    names: ['Iol'],
+    names: ['Iol', 'iol', 'InvertirOnline', 'invertironline'],
     logo: 'https://api.argentinadatos.com/static/logos/iol.jpg',
     shortName: 'IOL',
     url: 'https://www.invertironline.com/?ref=comparatasas',
@@ -519,10 +519,16 @@ export const institutions: Array<{
     url: 'https://www.stonex.com/en/?ref=comparatasas',
   },
   {
-    names: ['Bull Market'],
+    names: ['Bull Market', 'bullmarket', 'Bull Market Brokers'],
     logo: 'https://api.argentinadatos.com/static/logos/bull-market.png',
     shortName: 'Bull Market',
     url: 'https://bullmarketbrokers.com/?ref=comparatasas',
+  },
+  {
+    names: ['PPI', 'ppi', 'Portfolio Personal', 'Portfolio Personal Inversiones'],
+    logo: '',
+    shortName: 'PPI',
+    url: 'https://www.portfoliopersonal.com/?ref=comparatasas',
   },
   {
     names: ['Galileo'],
