@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import { useRouteQuery } from '@vueuse/router'
 import { useComisionesCaucionesBrokers } from '~/composables/useComisionesCaucionesBrokers'
 import type { CaucionMoneda } from '~/composables/useCauciones'
 import {
@@ -11,7 +10,6 @@ import {
   formatTasaPublicada,
   tasaComparableAnual,
   type ComisionCaucionBrokerApi,
-  type OperacionCaucionFilter,
 } from '~/lib/finance/comision-caucion-broker'
 import { formatPercentAuto } from '~/lib/fci-fund-formatters'
 import {
@@ -28,13 +26,8 @@ const props = defineProps<{
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 
-const operacionQuery = useRouteQuery<OperacionCaucionFilter>('rol', 'colocadora')
-const operacion = computed<OperacionCaucionFilter>({
-  get: () => (operacionQuery.value === 'tomadora' ? 'tomadora' : 'colocadora'),
-  set: (value) => {
-    operacionQuery.value = value
-  },
-})
+/** Las tasas de mercado informadas son solo colocadora. */
+const OPERACION_CAUCION = 'colocadora' as const
 
 const { comisiones, fechaActualizacion, loading, error, fetch } = useComisionesCaucionesBrokers()
 await fetch().catch(() => undefined)
@@ -68,7 +61,7 @@ const operacionLabels: Record<string, string> = {
 const rows = computed<ComisionRow[]>(() => {
   const filtered = filterComisionesCauciones(comisiones.value, {
     moneda: currencyCode.value,
-    operacion: operacion.value,
+    operacion: OPERACION_CAUCION,
   })
 
   return filtered.map((item) => {
@@ -250,9 +243,9 @@ function formatBrokerUpdatedAt(value: string | null): string {
           Comisiones de brokers (cauciones {{ currencyCode }})
         </h3>
         <p class="text-xs text-muted max-w-2xl">
-          Aranceles retail (canal web/app) publicados por cada ALyC. Ordenamos por tasa anual
-          equivalente: a menor comisión, mejor para quien opera. Una fila por broker (mejor tarifa
-          disponible). Rol colocadora/tomadora: selector arriba en la tabla de mercado.
+          Aranceles retail (canal web/app) publicados por cada ALyC para caución
+          <strong>colocadora</strong>. Ordenamos por tasa anual equivalente: a menor comisión,
+          mejor para quien coloca. Una fila por broker (mejor tarifa disponible).
         </p>
         <p v-if="fechaActualizacion" class="text-xs text-muted">
           Tarifarios actualizados al {{ formatBrokerUpdatedAt(fechaActualizacion) }} ·
@@ -341,8 +334,7 @@ function formatBrokerUpdatedAt(value: string | null): string {
     </div>
 
     <p v-else class="text-sm text-muted py-4">
-      No hay comisiones publicadas para cauciones en {{ currencyCode }} como
-      {{ operacion === 'colocadora' ? 'colocadora' : 'tomadora' }}.
+      No hay comisiones publicadas para cauciones en {{ currencyCode }} como colocadora.
     </p>
   </section>
 </template>

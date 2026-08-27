@@ -6,10 +6,7 @@ import CaucionesComisionesBrokers from '~/components/CaucionesComisionesBrokers.
 import { useCaucionesBrokerSelection } from '~/composables/useCaucionesBrokerSelection'
 import { useComisionesCaucionesBrokers } from '~/composables/useComisionesCaucionesBrokers'
 import { type CaucionMoneda, type CaucionRow, useCauciones } from '~/composables/useCauciones'
-import {
-  calcularTasaNetaCaucion,
-  type OperacionCaucionFilter,
-} from '~/lib/finance/comision-caucion-broker'
+import { calcularTasaNetaCaucion } from '~/lib/finance/comision-caucion-broker'
 import {
   formatCompactNumber,
   formatCurrency,
@@ -54,13 +51,8 @@ const moneda = computed<CaucionMoneda>({
 const { items, loading, error, fetch, fechaOperacion, fechaActualizacion } = useCauciones(moneda)
 await fetch()
 
-const operacionQuery = useRouteQuery<OperacionCaucionFilter>('rol', 'colocadora')
-const operacion = computed<OperacionCaucionFilter>({
-  get: () => (operacionQuery.value === 'tomadora' ? 'tomadora' : 'colocadora'),
-  set: (value) => {
-    operacionQuery.value = value
-  },
-})
+/** Las tasas de mercado informadas son solo colocadora. */
+const OPERACION_CAUCION = 'colocadora' as const
 
 const {
   comisiones: comisionesBrokers,
@@ -69,7 +61,7 @@ const {
 await fetchComisionesBrokers().catch(() => undefined)
 
 const { brokerOptions, selectedEntidad, selectedComision } =
-  useCaucionesBrokerSelection(moneda, operacion, comisionesBrokers)
+  useCaucionesBrokerSelection(moneda, OPERACION_CAUCION, comisionesBrokers)
 
 interface CaucionRowConNeta extends CaucionRow {
   tasaNeta: number | null
@@ -82,13 +74,9 @@ const tableRows = computed<CaucionRowConNeta[]>(() =>
       row.tasaActual,
       row.plazo,
       selectedComision.value,
-      operacion.value,
+      OPERACION_CAUCION,
     ),
   })),
-)
-
-const operacionLabel = computed(() =>
-  operacion.value === 'tomadora' ? 'tomadora' : 'colocadora',
 )
 
 function formatUpdatedAt(value: string | null): string {
@@ -297,20 +285,6 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
       <div class="flex flex-wrap items-center gap-3">
         <UFieldGroup size="sm" class="shrink-0">
           <UButton
-            label="Colocadora"
-            color="neutral"
-            :variant="operacion === 'colocadora' ? 'solid' : 'outline'"
-            @click="operacion = 'colocadora'"
-          />
-          <UButton
-            label="Tomadora"
-            color="neutral"
-            :variant="operacion === 'tomadora' ? 'solid' : 'outline'"
-            @click="operacion = 'tomadora'"
-          />
-        </UFieldGroup>
-        <UFieldGroup size="sm" class="shrink-0">
-          <UButton
             label="ARS"
             color="neutral"
             :variant="moneda === 'ars' ? 'solid' : 'outline'"
@@ -347,8 +321,9 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
     </div>
 
     <p v-if="brokerOptions.length" class="text-xs text-muted -mt-2">
-      Tasa neta como {{ operacionLabel }}: mercado ajustado por comisión (+ IVA si aplica) y derecho
-      de mercado prorrateado al plazo (BYMA c/90d cuando aplica).
+      Tasa neta colocadora: mercado ajustado por comisión (+ IVA si aplica) y derecho de mercado
+      prorrateado al plazo (BYMA c/90d cuando aplica). Las tasas de mercado informadas son
+      colocadora.
     </p>
 
     <UAlert v-if="error" color="error" variant="soft" title="Error cargando cauciones" />
@@ -467,15 +442,15 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
             Además de la tasa de mercado, cada ALyC cobra una comisión por operar cauciones. En la
             tabla comparamos aranceles retail (canal web/app) de IOL, Balanz, Bull Market, Cocos,
             PPI y Fiwind, según ArgentinaDatos. Mostramos la tasa publicada y su equivalente anual
-            para comparar entre bases mensuales, anuales o TNA. Podés alternar
-            <strong>colocadora</strong> y <strong>tomadora</strong>; los valores son orientativos y
-            pueden variar por plan, mínimos o IVA.
+            para comparar entre bases mensuales, anuales o TNA, en rol
+            <strong>colocadora</strong> (las tasas de mercado que informamos son colocadora). Los
+            valores son orientativos y pueden variar por plan, mínimos o IVA.
           </p>
           <p>
             En la tabla de mercado podés elegir un <strong>broker</strong> y ver la
-            <strong>tasa neta</strong> por plazo: TNA de mercado ajustada por comisión (+ IVA si
-            corresponde) y derecho de mercado, según rol colocadora o tomadora. El selector arranca
-            con un broker al azar y queda en la URL (`?broker=`).
+            <strong>tasa neta</strong> por plazo: TNA de mercado menos comisión (+ IVA si
+            corresponde) y derecho de mercado. El selector arranca con un broker al azar y queda en
+            la URL (`?broker=`).
           </p>
         </div>
         <div class="space-y-4">
