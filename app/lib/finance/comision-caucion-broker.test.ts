@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   calcularTasaNetaCaucion,
   filterComisionesCauciones,
+  formatMembresiaMensual,
   formatTasaPublicada,
   matchesOperacionFilter,
   pickBestComisionPorEntidad,
@@ -136,6 +137,19 @@ describe('formatTasaPublicada', () => {
     expect(formatTasaPublicada(sample[0]!)).toBe('0,15% mensual')
     expect(formatTasaPublicada(sample[1]!)).toBe('0,15% mensual')
     expect(formatTasaPublicada(sample[2]!)).toBe('Hasta 0,50% anual')
+  })
+})
+
+describe('formatMembresiaMensual', () => {
+  it('formatea membresía ARS con IVA y omite si no hay', () => {
+    expect(formatMembresiaMensual(sample[0]!)).toBeNull()
+    expect(
+      formatMembresiaMensual({
+        moneda: 'ARS',
+        membresiaMensual: 5000,
+        membresiaIvaAdicional: true,
+      }),
+    ).toMatch(/\$\s?5\.?000\/mes \+ IVA/)
   })
 })
 

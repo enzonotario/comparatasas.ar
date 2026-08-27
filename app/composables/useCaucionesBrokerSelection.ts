@@ -4,6 +4,7 @@ import type { CaucionMoneda } from '~/composables/useCauciones'
 import {
   filterComisionesCauciones,
   formatTasaPublicada,
+  formatMembresiaMensual,
   getComisionBroker,
   type ComisionCaucionBrokerApi,
   type OperacionCaucionFilter,
@@ -19,8 +20,15 @@ export interface BrokerOption {
 
 function formatBrokerComisionDescription(row: ComisionCaucionBrokerApi): string {
   const tasa = formatTasaPublicada(row)
-  if (tasa === 'Consultar') return tasa
-  return row.ivaAdicional ? `${tasa} + IVA` : tasa
+  const partes: string[] = []
+  if (tasa !== 'Consultar') {
+    partes.push(row.ivaAdicional ? `${tasa} + IVA` : tasa)
+  } else {
+    partes.push(tasa)
+  }
+  const membresia = formatMembresiaMensual(row)
+  if (membresia) partes.push(`membresía ${membresia}`)
+  return partes.join(' · ')
 }
 
 export function useCaucionesBrokerSelection(

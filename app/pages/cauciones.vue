@@ -341,7 +341,8 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
     <p v-if="brokerOptions.length" class="text-xs text-muted -mt-2">
       Tasa neta colocadora: mercado ajustado por comisión (+ IVA si aplica) y derecho de mercado
       prorrateado al plazo (BYMA c/90d cuando aplica). Las tasas de mercado informadas son
-      colocadora.
+      colocadora. Si el broker cobra membresía de plan (monto fijo mensual), aparece en el selector
+      y en la tabla de comisiones; no se prorratea en la tasa neta.
     </p>
 
     <UAlert v-if="error" color="error" variant="soft" title="Error cargando cauciones" />

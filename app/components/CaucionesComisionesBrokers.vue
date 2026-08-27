@@ -5,6 +5,7 @@ import { useComisionesCaucionesBrokers } from '~/composables/useComisionesCaucio
 import type { CaucionMoneda } from '~/composables/useCauciones'
 import {
   filterComisionesCauciones,
+  formatMembresiaMensual,
   formatPlanLabel,
   formatTasaAnualComparable,
   formatTasaPublicada,
@@ -42,6 +43,7 @@ interface ComisionRow extends ComisionCaucionBrokerApi {
   tasaPublicada: string
   tasaAnualLabel: string
   tasaAnualSort: number
+  membresiaLabel: string | null
   planLabel: string | null
   operacionLabel: string
 }
@@ -92,6 +94,7 @@ const rows = computed<ComisionRow[]>(() => {
       tasaPublicada: formatTasaPublicada(item),
       tasaAnualLabel: formatTasaAnualComparable(item),
       tasaAnualSort: tasaComparableAnual(item) ?? Number.POSITIVE_INFINITY,
+      membresiaLabel: formatMembresiaMensual(item),
       planLabel: formatPlanLabel(item.plan),
       operacionLabel: operacionLabels[item.operacion] ?? item.operacion,
     }
@@ -195,6 +198,13 @@ const columns: TableColumn<ComisionRow>[] = [
       }
       return h('div', { class: 'space-y-1' }, [
         h('p', { class: 'font-semibold tabular-nums' }, item.tasaPublicada),
+        item.membresiaLabel
+          ? h(
+              'p',
+              { class: 'text-xs text-muted tabular-nums' },
+              `Membresía ${item.membresiaLabel} (si operás)`,
+            )
+          : null,
         badges.length ? h('div', { class: 'flex flex-wrap gap-1' }, badges) : null,
       ])
     },
@@ -316,6 +326,9 @@ function formatBrokerUpdatedAt(value: string | null): string {
             <div>
               <p class="font-semibold tabular-nums">{{ row.tasaPublicada }}</p>
               <p class="text-xs text-muted tabular-nums">{{ row.tasaAnualLabel }}</p>
+              <p v-if="row.membresiaLabel" class="text-xs text-muted tabular-nums">
+                Membresía {{ row.membresiaLabel }} (si operás)
+              </p>
             </div>
             <div v-if="row.derechoMercado != null" class="text-right text-xs text-muted tabular-nums">
               BYMA {{ formatPercentAuto(row.derechoMercado * 100) }}

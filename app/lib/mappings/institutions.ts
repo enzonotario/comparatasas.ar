@@ -279,7 +279,7 @@ export const institutions: Array<{
     url: 'https://balanz.com/?ref=comparatasas',
   },
   {
-    names: ['ieb', 'IEB'],
+    names: ['ieb', 'IEB', 'iebmas', 'IEB+', 'IEB MAS', 'iebmas.com.ar'],
     logo: 'https://api.argentinadatos.com/static/logos/ieb.png',
     shortName: 'IEB+',
     url: 'https://www.iebmas.com.ar/?ref=comparatasas',

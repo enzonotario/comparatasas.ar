@@ -26,6 +26,9 @@ export interface ComisionCaucionBrokerApi {
   ivaAdicional: boolean
   prorrateoDias: number | null
   comisionMinima: number | null
+  /** Costo fijo de plan/membresía en la moneda de la fila (null si no aplica). */
+  membresiaMensual?: number | null
+  membresiaIvaAdicional?: boolean
   derechoMercado: number | null
   enlace: string | null
   metadata?: Record<string, unknown> | null
@@ -42,6 +45,9 @@ const PLAN_LABELS: Record<string, string> = {
   platinum: 'Platinum',
   black: 'Black',
   personas_humanas: 'Personas humanas',
+  investor: 'Investor',
+  rookie: 'Rookie',
+  global_markets: 'Global Markets',
 }
 
 const PLAN_PRIORITY: Record<string, number> = {
@@ -86,6 +92,23 @@ export function formatTasaAnualComparable(row: ComisionCaucionBrokerApi): string
   const anual = tasaComparableAnual(row)
   if (anual == null) return '—'
   return `${formatPercentAuto(anual * 100)} anual equiv.`
+}
+
+/** Membresía/plan en moneda de la fila, p. ej. "$5.000/mes + IVA". */
+export function formatMembresiaMensual(
+  row: Pick<ComisionCaucionBrokerApi, 'membresiaMensual' | 'membresiaIvaAdicional' | 'moneda'>,
+): string | null {
+  const monto = row.membresiaMensual
+  if (monto == null || !Number.isFinite(monto)) return null
+
+  const formatted = new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: row.moneda === 'USD' ? 'USD' : 'ARS',
+    maximumFractionDigits: monto % 1 === 0 ? 0 : 2,
+  }).format(monto)
+
+  const iva = row.membresiaIvaAdicional ? ' + IVA' : ''
+  return `${formatted}/mes${iva}`
 }
 
 export function formatPlanLabel(plan: string | null | undefined): string | null {

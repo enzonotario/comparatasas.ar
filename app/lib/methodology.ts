@@ -273,7 +273,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'Comparamos también las comisiones de brokers (IOL, Balanz, Bull Market, Cocos, PPI y Fiwind) para cauciones en ARS y USD, según el tarifario retail publicado en ArgentinaDatos (/v1/finanzas/brokers/comisiones). Mostramos tasa publicada y equivalente anual en rol colocadora (las tasas de mercado informadas son colocadora).',
+        text: 'Comparamos también las comisiones de brokers (IOL, Balanz, Bull Market, Cocos, PPI, Fiwind e IEB+) para cauciones en ARS y USD, según el tarifario retail publicado en ArgentinaDatos (/v1/finanzas/brokers/comisiones). Mostramos tasa publicada y equivalente anual en rol colocadora (las tasas de mercado informadas son colocadora). Si el broker tiene membresía de plan (p. ej. IEB+), la mostramos junto a la comisión.',
       },
       {
         type: 'p',
