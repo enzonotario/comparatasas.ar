@@ -23,6 +23,8 @@ const spec = resolved ?? endpointSpecs[0]!
 
 const seoTitle = `Integrar: ${spec.label}`
 
+route.meta.pageTitle = seoTitle
+
 useSeoMeta({
   title: seoTitle,
   description:

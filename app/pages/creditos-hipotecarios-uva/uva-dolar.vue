@@ -7,7 +7,7 @@ import {
 } from '~/composables/useDolarHistorico'
 
 definePageMeta({
-  pageTitle: 'Créditos Hipotecarios UVA',
+  pageTitle: 'UVA vs dólar — Créditos Hipotecarios UVA',
   pageDescription:
     'Comparativa de tasas hipotecarias UVA en Argentina y proyección de cuotas mensuales.',
 })

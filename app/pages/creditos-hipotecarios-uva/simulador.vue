@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-  pageTitle: 'Créditos Hipotecarios UVA',
+  pageTitle: 'Simulador — Créditos Hipotecarios UVA',
   pageDescription:
     'Simulador de cuotas para créditos hipotecarios UVA con inflación histórica y proyecciones.',
 })

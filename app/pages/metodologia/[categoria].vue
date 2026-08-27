@@ -21,6 +21,8 @@ if (categoria === METODOLOGIA_DEFAULT_CATEGORY || !isValidMetodologiaCategory(ca
 const categoryLabel = getMetodologiaCategoryLabel(categoria) ?? categoria
 const seoTitle = `Metodología: ${categoryLabel}`
 
+route.meta.pageTitle = seoTitle
+
 useSeoMeta({
   title: seoTitle,
   description:

@@ -21,32 +21,54 @@ import { useRouteQuery } from '@vueuse/router'
 definePageMeta({
   pageTitle: 'Cauciones',
   pageDescription:
-    'Tasas actuales, min./max. del día y montos de cauciones en pesos y dólares en el mercado argentino.',
+    'Tasas actuales, min./max. del día y montos de cauciones en el mercado argentino.',
 })
 
-useSeoMeta({
-  title: 'Cauciones ARS y USD',
-  description:
-    'Consultá tasa actual, tasa min./max. del día, plazos y montos operados de cauciones en ARS y USD.',
-  ogTitle: 'Cauciones — ARS y USD',
-  ogDescription:
-    'Tasa actual, min./max. del día, plazos y volumen de cauciones en pesos y dólares según ArgentinaDatos.',
-})
-
-useHead({
-  link: [
-    { rel: 'canonical', href: 'https://comparatasas.ar/cauciones' },
-    { rel: 'alternate', hreflang: 'es-AR', href: 'https://comparatasas.ar/cauciones' },
-    { rel: 'alternate', hreflang: 'x-default', href: 'https://comparatasas.ar/cauciones' },
-  ],
-})
-
+const route = useRoute()
 const monedaQuery = useRouteQuery<CaucionMoneda>('moneda', 'ars')
 const moneda = computed<CaucionMoneda>({
   get: () => (monedaQuery.value === 'usd' ? 'usd' : 'ars'),
   set: (value) => {
     monedaQuery.value = value
   },
+})
+
+const currencyCode = computed(() => (moneda.value === 'usd' ? 'USD' : 'ARS'))
+const pageTitle = computed(() => `Cauciones ${currencyCode.value}`)
+const pageDescription = computed(() =>
+  moneda.value === 'usd'
+    ? 'Tasas actuales, min./max. del día y montos de cauciones en dólares (USD) en el mercado argentino.'
+    : 'Tasas actuales, min./max. del día y montos de cauciones en pesos (ARS) en el mercado argentino.',
+)
+const seoDescription = computed(() =>
+  moneda.value === 'usd'
+    ? 'Consultá tasa actual, tasa min./max. del día, plazos y montos operados de cauciones en USD.'
+    : 'Consultá tasa actual, tasa min./max. del día, plazos y montos operados de cauciones en ARS.',
+)
+const canonicalUrl = computed(() =>
+  moneda.value === 'usd'
+    ? 'https://comparatasas.ar/cauciones?moneda=usd'
+    : 'https://comparatasas.ar/cauciones',
+)
+
+watchEffect(() => {
+  route.meta.pageTitle = pageTitle.value
+  route.meta.pageDescription = pageDescription.value
+})
+
+useSeoMeta({
+  title: pageTitle,
+  description: seoDescription,
+  ogTitle: pageTitle,
+  ogDescription: seoDescription,
+})
+
+useHead({
+  link: computed(() => [
+    { rel: 'canonical', href: canonicalUrl.value },
+    { rel: 'alternate', hreflang: 'es-AR', href: canonicalUrl.value },
+    { rel: 'alternate', hreflang: 'x-default', href: canonicalUrl.value },
+  ]),
 })
 
 const { items, loading, error, fetch, fechaOperacion, fechaActualizacion } = useCauciones(moneda)
@@ -95,15 +117,17 @@ function formatUpdatedAt(value: string | null): string {
 const formattedUpdatedAt = computed(() => formatUpdatedAt(fechaActualizacion.value))
 
 defineOgImage('ComparaTasas.takumi', {
-  title: `Cauciones ${moneda.value.toUpperCase()}`,
-  items: [...items.value]
-    .sort((a, b) => b.tasaActual - a.tasaActual)
-    .slice(0, 3)
-    .map((row) => ({
-      name: `${row.plazo} días`,
-      rate: formatPercentAuto(row.tasaActual),
-    })),
-  updatedAt: formattedUpdatedAt.value,
+  title: pageTitle,
+  items: computed(() =>
+    [...items.value]
+      .sort((a, b) => b.tasaActual - a.tasaActual)
+      .slice(0, 3)
+      .map((row) => ({
+        name: `${row.plazo} días`,
+        rate: formatPercentAuto(row.tasaActual),
+      })),
+  ),
+  updatedAt: formattedUpdatedAt,
 })
 
 const sorting = ref([
@@ -112,8 +136,6 @@ const sorting = ref([
     desc: false,
   },
 ])
-
-const currencyCode = computed(() => (moneda.value === 'usd' ? 'USD' : 'ARS'))
 
 function formatMonto(value: number): string {
   return formatCurrency(value, currencyCode.value)
@@ -421,9 +443,10 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
           <p>
             En esta página se muestran <strong>plazo</strong>, <strong>tasa actual</strong>,
             <strong>tasa mínima y máxima del día</strong>, <strong>monto contado</strong>,
-            <strong>fecha de operación</strong> y <strong>vencimiento</strong>, según datos
-            agregados por ArgentinaDatos, en pesos (ARS) y dólares (USD). Filtramos filas cuyo
-            plazo no es coherente con la fecha de vencimiento. Son valores
+            <strong>fecha de operación</strong> y <strong>vencimiento</strong> de cauciones en
+            <strong>{{ currencyCode }}</strong>, según datos agregados por ArgentinaDatos. Podés
+            cambiar entre ARS y USD con el selector de moneda. Filtramos filas cuyo plazo no es
+            coherente con la fecha de vencimiento. Son valores
             <strong>orientativos</strong> de mercado; no constituyen asesoramiento financiero.
           </p>
         </div>
