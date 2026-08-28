@@ -268,7 +268,7 @@ export const institutions: Array<{
   },
   {
     names: ['Banza'],
-    logo: 'https://api.argentinadatos.com/static/logos/banza.svg',
+    logo: 'https://api.argentinadatos.com/static/logos/banza.png',
     shortName: 'Banza',
     url: 'https://www.banza.com.ar/?ref=comparatasas',
   },
@@ -526,7 +526,7 @@ export const institutions: Array<{
   },
   {
     names: ['PPI', 'ppi', 'Portfolio Personal', 'Portfolio Personal Inversiones'],
-    logo: '',
+    logo: 'https://api.argentinadatos.com/static/logos/ppi.png',
     shortName: 'PPI',
     url: 'https://www.portfoliopersonal.com/?ref=comparatasas',
   },
