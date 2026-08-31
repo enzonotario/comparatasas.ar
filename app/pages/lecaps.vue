@@ -354,8 +354,8 @@ function formatDate(value: string): string {
       ]"
     />
 
-    <div class="flex items-center justify-between mb-2">
-      <h2 id="lecaps" class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+      <h2 class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">
         LECAPs y BONCAPs
       </h2>
       <div class="text-xs text-muted">
@@ -364,7 +364,7 @@ function formatDate(value: string): string {
           href="https://data912.apidocs.ar/?utm_source=comparatasas&utm_medium=lecaps&ref=comparatasas"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-primary-600 dark:text-primary-400 font-medium"
+          class="text-primary-800 dark:text-primary-200 font-medium"
         >
           Data912
         </a>
@@ -375,7 +375,7 @@ function formatDate(value: string): string {
           href="https://x.com/arielsbdar?utm_source=comparatasas&utm_medium=lecaps&ref=comparatasas"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-primary-600 dark:text-primary-400 font-medium"
+          class="text-primary-800 dark:text-primary-200 font-medium"
         >
           @arielsbdar
         </a>
@@ -385,7 +385,7 @@ function formatDate(value: string): string {
           href="https://argentinadatos.com/?utm_source=comparatasas&utm_medium=lecaps&ref=comparatasas"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-primary-600 dark:text-primary-400 font-medium"
+          class="text-primary-800 dark:text-primary-200 font-medium"
         >
           ArgentinaDatos
         </a>

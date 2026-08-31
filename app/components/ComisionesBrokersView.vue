@@ -483,18 +483,27 @@ const hasActiveFilters = computed(
 
     <template v-else>
       <div class="space-y-6">
-        <div class="space-y-3">
-          <div class="flex flex-wrap items-start justify-between gap-3">
-            <div class="min-w-0">
-              <h2 class="text-lg font-semibold">Tabla comparativa</h2>
-              <p class="text-sm text-muted">
-                Ordenado por menor comisión
-                <template v-if="showEquivAnual"> (equiv. anual cuando aplica) </template>
-                .
-              </p>
-            </div>
-            <div class="flex shrink-0 flex-col items-end gap-1 text-right text-xs text-muted">
-              <p v-if="formattedUpdatedAt">Actualizado {{ formattedUpdatedAt }}</p>
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+          <div class="min-w-0 space-y-0.5">
+            <h2 class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">
+              Comisiones — {{ productoLabel }}
+            </h2>
+            <p class="text-xs text-muted">
+              Ordenado por menor comisión
+              <template v-if="showEquivAnual"> (equiv. anual cuando aplica)</template>.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <UButton
+              v-if="hasActiveFilters"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              label="Limpiar filtros"
+              @click="clearFilters"
+            />
+            <div class="text-xs text-muted text-right">
+              <p v-if="formattedUpdatedAt">Act. {{ formattedUpdatedAt }}</p>
               <p>
                 Fuente:
                 <a
@@ -506,73 +515,64 @@ const hasActiveFilters = computed(
                   ArgentinaDatos
                 </a>
               </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="space-y-2">
+            <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Producto</p>
+            <div class="flex flex-wrap gap-2">
               <UButton
-                v-if="hasActiveFilters"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                label="Limpiar filtros"
-                class="mt-1"
-                @click="clearFilters"
-              />
+                v-for="option in productoOptions"
+                :key="`producto-${option.value}`"
+                size="sm"
+                :to="productoTo(option.value)"
+                :color="producto === option.value ? 'primary' : 'neutral'"
+                :variant="producto === option.value ? 'soft' : 'outline'"
+              >
+                {{ option.label }}
+              </UButton>
             </div>
           </div>
 
-          <div class="space-y-3">
+          <div class="grid gap-3 md:grid-cols-2">
             <div class="space-y-2">
-              <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Producto</p>
+              <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Moneda</p>
               <div class="flex flex-wrap gap-2">
                 <UButton
-                  v-for="option in productoOptions"
-                  :key="`producto-${option.value}`"
+                  v-for="option in monedaOptions"
+                  :key="`moneda-${option.value}`"
                   size="sm"
-                  :to="productoTo(option.value)"
-                  :color="producto === option.value ? 'primary' : 'neutral'"
-                  :variant="producto === option.value ? 'soft' : 'outline'"
+                  :color="monedaFilter === option.value ? 'primary' : 'neutral'"
+                  :variant="monedaFilter === option.value ? 'soft' : 'outline'"
+                  @click="monedaFilter = option.value"
                 >
                   {{ option.label }}
                 </UButton>
               </div>
             </div>
 
-            <div class="grid gap-3 md:grid-cols-2">
-              <div class="space-y-2">
-                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Moneda</p>
-                <div class="flex flex-wrap gap-2">
-                  <UButton
-                    v-for="option in monedaOptions"
-                    :key="`moneda-${option.value}`"
-                    size="sm"
-                    :color="monedaFilter === option.value ? 'primary' : 'neutral'"
-                    :variant="monedaFilter === option.value ? 'soft' : 'outline'"
-                    @click="monedaFilter = option.value"
-                  >
-                    {{ option.label }}
-                  </UButton>
-                </div>
-              </div>
-
-              <div v-if="showOperacionFilter" class="space-y-2">
-                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                  Operación
-                </p>
-                <div class="flex flex-wrap gap-2">
-                  <UButton
-                    v-for="option in [{ value: 'all', label: 'Todas' }, ...operacionOptions]"
-                    :key="`operacion-${option.value}`"
-                    size="sm"
-                    :color="effectiveOperacionFilter === option.value ? 'primary' : 'neutral'"
-                    :variant="effectiveOperacionFilter === option.value ? 'soft' : 'outline'"
-                    @click="operacionFilter = option.value"
-                  >
-                    {{ option.label }}
-                  </UButton>
-                </div>
+            <div v-if="showOperacionFilter" class="space-y-2">
+              <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
+                Operación
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <UButton
+                  v-for="option in [{ value: 'all', label: 'Todas' }, ...operacionOptions]"
+                  :key="`operacion-${option.value}`"
+                  size="sm"
+                  :color="effectiveOperacionFilter === option.value ? 'primary' : 'neutral'"
+                  :variant="effectiveOperacionFilter === option.value ? 'soft' : 'outline'"
+                  @click="operacionFilter = option.value"
+                >
+                  {{ option.label }}
+                </UButton>
               </div>
             </div>
           </div>
 
-          <p class="text-xs text-neutral-500">{{ sortedRows.length }} resultados</p>
+          <p class="text-xs text-muted">{{ sortedRows.length }} resultados</p>
         </div>
 
         <UAlert
@@ -583,15 +583,15 @@ const hasActiveFilters = computed(
           description="Probá otro producto, moneda u operación."
         />
 
-        <div v-if="isDesktop" class="overflow-x-auto">
+        <div v-if="isDesktop" class="border border-default rounded-lg overflow-x-auto">
           <UTable v-model:sorting="sorting" :data="rows" :columns="columns" class="min-w-full" />
         </div>
 
-        <div v-else class="space-y-3">
-          <article
+        <div v-else class="flex flex-col gap-3">
+          <div
             v-for="row in sortedRows"
             :key="`${row.entidad}-${row.producto}-${row.operacion}-${row.plan}-${row.moneda}-${row.tasaPublicada}`"
-            class="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800"
+            class="rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-3"
           >
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-center gap-3">
@@ -677,7 +677,7 @@ const hasActiveFilters = computed(
             >
               Ver tarifario
             </a>
-          </article>
+          </div>
         </div>
       </div>
     </template>

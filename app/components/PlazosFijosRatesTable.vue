@@ -302,7 +302,8 @@ function handleProviderClick(row: PlazoFijoTableRow) {
 
 <template>
   <div>
-    <div v-if="isDesktop" class="border border-default rounded-lg overflow-x-auto">
+    <div v-if="isDesktop" class="border border-default rounded-lg overflow-hidden">
+      <div class="overflow-x-auto">
       <UTable
         v-model:sorting="sorting"
         :data="rowsWithSimulation"
@@ -364,13 +365,14 @@ function handleProviderClick(row: PlazoFijoTableRow) {
           </div>
         </template>
       </UTable>
+      </div>
     </div>
 
     <div v-else class="flex flex-col gap-3">
-      <UCard
+      <div
         v-for="row in rowsWithSimulation"
         :key="row.rowKey"
-        :ui="{ body: '!p-4' }"
+        class="rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-3"
         :class="row.simulationDisabled && showSimulation ? 'opacity-60' : ''"
       >
         <div class="flex items-start gap-3">
@@ -476,7 +478,7 @@ function handleProviderClick(row: PlazoFijoTableRow) {
             </UBadge>
           </div>
         </div>
-      </UCard>
+      </div>
     </div>
   </div>
 </template>

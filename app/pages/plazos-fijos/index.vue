@@ -63,7 +63,7 @@ const plazosFijosChartItems = computed(() => chartItemsForDays(days.value))
 </script>
 
 <template>
-  <div class="flex flex-col space-y-6 max-w-4xl mx-auto">
+  <UContainer class="w-full mx-auto space-y-6 max-w-6xl px-0">
     <InvestmentSimulator
       :default-days="30"
       :preset-days="[
@@ -76,16 +76,30 @@ const plazosFijosChartItems = computed(() => chartItemsForDays(days.value))
       days-field-description="Elegí un plazo para resaltar la columna correspondiente y simular la ganancia con interés simple."
     />
 
-    <div class="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-2">
-      <h2 id="plazos-fijos" class="text-lg font-medium scroll-mt-16">Plazos Fijos</h2>
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+      <h2
+        id="plazos-fijos"
+        class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white"
+      >
+        Plazos Fijos
+      </h2>
+      <div class="text-xs text-muted">
+        Fuente:
+        <a
+          href="https://argentinadatos.com/?utm_source=comparatasas&utm_medium=plazos-fijos&ref=comparatasas"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-medium text-primary-800 dark:text-primary-200"
+        >
+          ArgentinaDatos
+        </a>
+      </div>
     </div>
 
     <PlazosFijosNavTabs />
 
-    <div class="space-y-4">
-      <p
-        class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-sm text-neutral-600 dark:text-neutral-400"
-      >
+    <div class="space-y-6">
+      <p class="text-xs text-muted">
         Tasas nominales anuales (TNA) por plazo informadas por cada entidad. Algunas entidades
         publican tramos por monto o rango de días distintos dentro de la misma columna.
       </p>
@@ -111,21 +125,18 @@ const plazosFijosChartItems = computed(() => chartItemsForDays(days.value))
         <p class="text-muted">No hay plazos fijos disponibles en este momento.</p>
       </div>
 
-      <UCard v-if="!loading && plazosFijosChartItems.length > 0">
-        <template #header>
-          <div class="flex items-center gap-2">
-            <UIcon
-              name="i-lucide-bar-chart-3"
-              class="size-5 text-primary-600 dark:text-primary-400"
-            />
-            <h3 class="font-semibold text-lg">TNA por entidad ({{ days }} días)</h3>
-          </div>
-        </template>
+      <div
+        v-if="!loading && plazosFijosChartItems.length > 0"
+        class="border border-default rounded-lg p-4 bg-white dark:bg-neutral-900"
+      >
+        <h3 class="mb-4 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+          TNA por entidad ({{ days }} días)
+        </h3>
         <PlazosFijosTnaBarChart
           :items="plazosFijosChartItems"
           :parent-group-name="`Plazo fijo tradicional · ${days} días`"
         />
-      </UCard>
+      </div>
     </div>
 
     <section
@@ -174,5 +185,5 @@ const plazosFijosChartItems = computed(() => chartItemsForDays(days.value))
         </div>
       </div>
     </section>
-  </div>
+  </UContainer>
 </template>

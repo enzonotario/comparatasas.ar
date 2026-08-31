@@ -188,8 +188,11 @@ const textoActualizacion = computed(() => {
 
 <template>
   <UContainer class="w-full mx-auto space-y-6 max-w-6xl px-0">
-    <div class="flex items-center justify-between mb-2">
-      <h2 class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">Bonos CER</h2>
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+      <div class="min-w-0 space-y-0.5">
+        <h2 class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">Bonos CER</h2>
+        <p v-if="textoActualizacion" class="text-xs text-muted">Act. {{ textoActualizacion }}</p>
+      </div>
       <div class="text-xs text-muted">
         Fuente:
         <a

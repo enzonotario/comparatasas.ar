@@ -631,96 +631,111 @@ const hasActiveFilters = computed(
     </div>
 
     <template v-else>
-      <UCard>
-        <template #header>
-          <div class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 class="text-lg font-semibold">Tabla comparativa</h2>
-                <p v-if="isSimulating" class="text-sm text-muted">
-                  Costo y neto estimados sobre el monto simulado. Ordenado por menor costo.
-                </p>
-              </div>
-              <UButton
-                v-if="hasActiveFilters"
-                color="neutral"
-                variant="ghost"
-                size="sm"
-                label="Limpiar filtros"
-                @click="clearFilters"
-              />
-            </div>
-
-            <div class="grid gap-4 xl:grid-cols-[minmax(0,280px)_1fr]">
-              <UFormField label="Buscar">
-                <UInput
-                  v-model="searchQuery"
-                  icon="i-lucide-search"
-                  placeholder="Entidad, débito, QR..."
-                />
-              </UFormField>
-
-              <div class="grid gap-3 md:grid-cols-3">
-                <div class="space-y-2">
-                  <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Canal</p>
-                  <div class="flex flex-wrap gap-2">
-                    <UButton
-                      v-for="option in [{ value: 'all', label: 'Todos' }, ...canalOptions]"
-                      :key="`canal-${option.value}`"
-                      size="sm"
-                      :color="canalFilter === option.value ? 'primary' : 'neutral'"
-                      :variant="canalFilter === option.value ? 'soft' : 'outline'"
-                      @click="canalFilter = option.value"
-                    >
-                      {{ option.label }}
-                    </UButton>
-                  </div>
-                </div>
-
-                <div class="space-y-2">
-                  <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                    Medio de pago
-                  </p>
-                  <div class="flex flex-wrap gap-2">
-                    <UButton
-                      v-for="option in [{ value: 'all', label: 'Todos' }, ...medioOptions]"
-                      :key="`medio-${option.value}`"
-                      size="sm"
-                      :color="medioFilter === option.value ? 'primary' : 'neutral'"
-                      :variant="medioFilter === option.value ? 'soft' : 'outline'"
-                      @click="medioFilter = option.value"
-                    >
-                      {{ option.label }}
-                    </UButton>
-                  </div>
-                </div>
-
-                <div class="space-y-2">
-                  <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                    Acreditación
-                  </p>
-                  <div class="flex flex-wrap gap-2">
-                    <UButton
-                      v-for="option in [{ value: 'all', label: 'Todas' }, ...acreditacionOptions]"
-                      :key="`acred-${option.value}`"
-                      size="sm"
-                      :color="acreditacionFilter === option.value ? 'primary' : 'neutral'"
-                      :variant="acreditacionFilter === option.value ? 'soft' : 'outline'"
-                      @click="acreditacionFilter = option.value"
-                    >
-                      {{ option.label }}
-                    </UButton>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <p class="text-xs text-neutral-500">
-              {{ sortedRows.length }} resultados
-              <span v-if="formattedUpdatedAt"> · Actualizado {{ formattedUpdatedAt }}</span>
+      <div class="space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+          <div class="min-w-0 space-y-0.5">
+            <h2 class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">
+              Comisiones de cobro
+            </h2>
+            <p v-if="isSimulating" class="text-xs text-muted">
+              Costo y neto estimados sobre el monto simulado. Ordenado por menor costo.
             </p>
           </div>
-        </template>
+          <div class="flex flex-wrap items-center gap-3">
+            <UButton
+              v-if="hasActiveFilters"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              label="Limpiar filtros"
+              @click="clearFilters"
+            />
+            <div class="text-xs text-muted text-right">
+              <p v-if="formattedUpdatedAt">Act. {{ formattedUpdatedAt }}</p>
+              <p>
+                Fuente:
+                <a
+                  href="https://argentinadatos.com/?utm_source=comparatasas&utm_medium=comisiones-cobro&ref=comparatasas"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-medium text-primary-800 dark:text-primary-200"
+                >
+                  ArgentinaDatos
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="grid gap-4 xl:grid-cols-[minmax(0,280px)_1fr]">
+            <UFormField label="Buscar">
+              <UInput
+                v-model="searchQuery"
+                icon="i-lucide-search"
+                placeholder="Entidad, débito, QR..."
+              />
+            </UFormField>
+
+            <div class="grid gap-3 md:grid-cols-3">
+              <div class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Canal</p>
+                <div class="flex flex-wrap gap-2">
+                  <UButton
+                    v-for="option in [{ value: 'all', label: 'Todos' }, ...canalOptions]"
+                    :key="`canal-${option.value}`"
+                    size="sm"
+                    :color="canalFilter === option.value ? 'primary' : 'neutral'"
+                    :variant="canalFilter === option.value ? 'soft' : 'outline'"
+                    @click="canalFilter = option.value"
+                  >
+                    {{ option.label }}
+                  </UButton>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
+                  Medio de pago
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <UButton
+                    v-for="option in [{ value: 'all', label: 'Todos' }, ...medioOptions]"
+                    :key="`medio-${option.value}`"
+                    size="sm"
+                    :color="medioFilter === option.value ? 'primary' : 'neutral'"
+                    :variant="medioFilter === option.value ? 'soft' : 'outline'"
+                    @click="medioFilter = option.value"
+                  >
+                    {{ option.label }}
+                  </UButton>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
+                  Acreditación
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <UButton
+                    v-for="option in [{ value: 'all', label: 'Todas' }, ...acreditacionOptions]"
+                    :key="`acred-${option.value}`"
+                    size="sm"
+                    :color="acreditacionFilter === option.value ? 'primary' : 'neutral'"
+                    :variant="acreditacionFilter === option.value ? 'soft' : 'outline'"
+                    @click="acreditacionFilter = option.value"
+                  >
+                    {{ option.label }}
+                  </UButton>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-xs text-muted">
+            {{ sortedRows.length }} resultados
+          </p>
+        </div>
 
         <UAlert
           v-if="filteredRows.length === 0"
@@ -728,10 +743,9 @@ const hasActiveFilters = computed(
           variant="soft"
           title="Sin resultados"
           description="Probá aflojar algún filtro o limpiar la búsqueda."
-          class="mb-4"
         />
 
-        <div v-if="isDesktop" class="overflow-hidden">
+        <div v-if="isDesktop" class="border border-default rounded-lg overflow-x-auto">
           <UTable
             v-model:sorting="sorting"
             :data="filteredRows"
@@ -740,11 +754,11 @@ const hasActiveFilters = computed(
           />
         </div>
 
-        <div v-else class="space-y-3">
-          <article
+        <div v-else class="flex flex-col gap-3">
+          <div
             v-for="row in sortedRows"
             :key="`${row.entidad}-${row.producto}-${row.canal}-${row.medioPago}-${row.acreditacionTipo}-${row.arancelLabel}`"
-            class="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800"
+            class="rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-3"
             :class="rowClass(row)"
           >
             <div class="flex items-start justify-between gap-3">
@@ -868,9 +882,9 @@ const hasActiveFilters = computed(
             >
               Ver fuente
             </a>
-          </article>
+          </div>
         </div>
-      </UCard>
+      </div>
     </template>
   </UContainer>
 </template>

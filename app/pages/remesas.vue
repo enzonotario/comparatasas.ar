@@ -834,22 +834,23 @@ const columns: TableColumn<RemesaRow>[] = [
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <UBadge color="neutral" variant="outline" size="lg">
-        Actualizado {{ formattedUpdatedAt }}
-      </UBadge>
-      <p class="text-sm text-neutral-500">
+  <UContainer class="w-full mx-auto space-y-6 max-w-6xl px-0">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+      <div class="min-w-0 space-y-0.5">
+        <h2 class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">Remesas</h2>
+        <p class="text-xs text-muted">Act. {{ formattedUpdatedAt }}</p>
+      </div>
+      <div class="text-xs text-muted">
         Fuente:
         <a
           href="https://www.dolarito.ar/remotito?utm_source=comparatasas&utm_medium=remesas&ref=comparatasas"
           target="_blank"
           rel="noopener noreferrer"
-          class="font-medium text-primary-600 hover:underline dark:text-primary-400"
+          class="font-medium text-primary-800 dark:text-primary-200"
         >
           Dolarito
         </a>
-      </p>
+      </div>
     </div>
 
     <UAlert
@@ -873,97 +874,94 @@ const columns: TableColumn<RemesaRow>[] = [
     </div>
 
     <template v-else>
-      <UCard>
-        <template #header>
-          <div class="space-y-3">
-            <h2 class="text-lg font-semibold">Tabla comparativa</h2>
-            <div class="grid gap-4 xl:grid-cols-[minmax(0,320px)_1fr]">
-              <UFormField label="Buscar plataforma">
-                <UInput
-                  v-model="searchQuery"
-                  icon="i-lucide-search"
-                  placeholder="ARQ, Wallbit, AstroPay..."
-                />
-              </UFormField>
+      <div class="space-y-6">
+        <div class="space-y-3">
+          <div class="grid gap-4 xl:grid-cols-[minmax(0,320px)_1fr]">
+            <UFormField label="Buscar plataforma">
+              <UInput
+                v-model="searchQuery"
+                icon="i-lucide-search"
+                placeholder="Plataforma, fiat, cripto..."
+              />
+            </UFormField>
 
-              <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                <div class="space-y-2">
-                  <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Moneda</p>
-                  <div class="flex flex-wrap gap-2">
-                    <UButton
-                      v-for="option in ['all', 'FIAT', 'CRIPTO']"
-                      :key="option"
-                      size="sm"
-                      :color="monedaFilter === option ? 'primary' : 'neutral'"
-                      :variant="monedaFilter === option ? 'soft' : 'outline'"
-                      @click="monedaFilter = option"
-                    >
-                      {{ option === 'all' ? 'Todas' : option === 'FIAT' ? 'Fiat' : 'Cripto' }}
-                    </UButton>
-                  </div>
+            <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <div class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Moneda</p>
+                <div class="flex flex-wrap gap-2">
+                  <UButton
+                    v-for="option in ['all', 'FIAT', 'CRIPTO']"
+                    :key="option"
+                    size="sm"
+                    :color="monedaFilter === option ? 'primary' : 'neutral'"
+                    :variant="monedaFilter === option ? 'soft' : 'outline'"
+                    @click="monedaFilter = option"
+                  >
+                    {{ option === 'all' ? 'Todas' : option === 'FIAT' ? 'Fiat' : 'Cripto' }}
+                  </UButton>
                 </div>
+              </div>
 
-                <div class="space-y-2">
-                  <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                    Cuenta propia
-                  </p>
-                  <div class="flex flex-wrap gap-2">
-                    <UButton
-                      v-for="option in ['all', 'si', 'no']"
-                      :key="`propia-${option}`"
-                      size="sm"
-                      :color="cuentaPropiaFilter === option ? 'primary' : 'neutral'"
-                      :variant="cuentaPropiaFilter === option ? 'soft' : 'outline'"
-                      @click="cuentaPropiaFilter = option"
-                    >
-                      {{ option === 'all' ? 'Todas' : option === 'si' ? 'Sí' : 'No' }}
-                    </UButton>
-                  </div>
+              <div class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
+                  Cuenta propia
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <UButton
+                    v-for="option in ['all', 'si', 'no']"
+                    :key="`propia-${option}`"
+                    size="sm"
+                    :color="cuentaPropiaFilter === option ? 'primary' : 'neutral'"
+                    :variant="cuentaPropiaFilter === option ? 'soft' : 'outline'"
+                    @click="cuentaPropiaFilter = option"
+                  >
+                    {{ option === 'all' ? 'Todas' : option === 'si' ? 'Sí' : 'No' }}
+                  </UButton>
                 </div>
+              </div>
 
-                <div class="space-y-2">
-                  <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                    Inversiones
-                  </p>
-                  <div class="flex flex-wrap gap-2">
-                    <UButton
-                      v-for="option in ['all', 'si', 'no']"
-                      :key="`inv-${option}`"
-                      size="sm"
-                      :color="inversionesFilter === option ? 'primary' : 'neutral'"
-                      :variant="inversionesFilter === option ? 'soft' : 'outline'"
-                      @click="inversionesFilter = option"
-                    >
-                      {{ option === 'all' ? 'Todas' : option === 'si' ? 'Sí' : 'No' }}
-                    </UButton>
-                  </div>
+              <div class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
+                  Inversiones
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <UButton
+                    v-for="option in ['all', 'si', 'no']"
+                    :key="`inv-${option}`"
+                    size="sm"
+                    :color="inversionesFilter === option ? 'primary' : 'neutral'"
+                    :variant="inversionesFilter === option ? 'soft' : 'outline'"
+                    @click="inversionesFilter = option"
+                  >
+                    {{ option === 'all' ? 'Todas' : option === 'si' ? 'Sí' : 'No' }}
+                  </UButton>
                 </div>
+              </div>
 
-                <div class="space-y-2">
-                  <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                    Tarjeta EEUU
-                  </p>
-                  <div class="flex flex-wrap gap-2">
-                    <UButton
-                      v-for="option in ['all', 'si', 'no']"
-                      :key="`tarjeta-${option}`"
-                      size="sm"
-                      :color="tarjetaFilter === option ? 'primary' : 'neutral'"
-                      :variant="tarjetaFilter === option ? 'soft' : 'outline'"
-                      @click="tarjetaFilter = option"
-                    >
-                      {{ option === 'all' ? 'Todas' : option === 'si' ? 'Sí' : 'No' }}
-                    </UButton>
-                  </div>
+              <div class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
+                  Tarjeta EEUU
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <UButton
+                    v-for="option in ['all', 'si', 'no']"
+                    :key="`tarjeta-${option}`"
+                    size="sm"
+                    :color="tarjetaFilter === option ? 'primary' : 'neutral'"
+                    :variant="tarjetaFilter === option ? 'soft' : 'outline'"
+                    @click="tarjetaFilter = option"
+                  >
+                    {{ option === 'all' ? 'Todas' : option === 'si' ? 'Sí' : 'No' }}
+                  </UButton>
                 </div>
               </div>
             </div>
-            <p class="text-xs text-neutral-500">
-              Si una plataforma tiene aclaraciones, aparecen como <strong>Detalle</strong> dentro de
-              la celda.
-            </p>
           </div>
-        </template>
+          <p class="text-xs text-muted">
+            Si una plataforma tiene aclaraciones, aparecen como <strong>Detalle</strong> dentro de
+            la celda.
+          </p>
+        </div>
 
         <UAlert
           v-if="filteredRows.length === 0"
@@ -971,10 +969,9 @@ const columns: TableColumn<RemesaRow>[] = [
           variant="soft"
           title="Sin resultados"
           description="Probá aflojar algún filtro o limpiar la búsqueda."
-          class="mb-4"
         />
 
-        <div class="hidden lg:block">
+        <div class="hidden lg:block border border-default rounded-lg overflow-x-auto">
           <UTable v-model:sorting="sorting" :data="filteredRows" :columns="columns">
             <template #empty>
               <div class="py-10 text-center text-sm text-neutral-500">
@@ -1006,11 +1003,11 @@ const columns: TableColumn<RemesaRow>[] = [
             />
           </div>
 
-          <div class="space-y-3">
+          <div class="flex flex-col gap-3">
             <div
               v-for="row in sortedFilteredRows"
               :key="row.compania"
-              class="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
+              class="rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-3"
             >
               <div class="flex items-center gap-3 mb-3">
                 <a
@@ -1215,22 +1212,24 @@ const columns: TableColumn<RemesaRow>[] = [
             No hay plataformas que coincidan con los filtros actuales.
           </div>
         </div>
-      </UCard>
+      </div>
     </template>
 
-    <UCard class="w-full max-w-4xl mx-auto">
+    <div
+      class="w-full border border-default rounded-lg p-4 bg-white dark:bg-neutral-900"
+    >
       <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div class="space-y-1">
-          <p class="text-sm font-semibold text-neutral-900 dark:text-white">
+          <p class="text-sm font-medium text-neutral-900 dark:text-white">
             ¿También querés comparar dólar cripto, MEP y otras cotizaciones?
           </p>
-          <p class="text-sm text-neutral-500">
+          <p class="text-xs text-muted">
             Mirá el comparador de
             <a
               href="https://comparadolar.ar/?utm_source=comparatasas&utm_medium=remesas&ref=comparatasas"
               target="_blank"
               rel="noopener noreferrer"
-              class="font-medium text-primary-600 hover:underline dark:text-primary-400"
+              class="font-medium text-primary-800 dark:text-primary-200"
             >
               comparadolar.ar
             </a>
@@ -1250,6 +1249,6 @@ const columns: TableColumn<RemesaRow>[] = [
           Comparar dólar
         </UButton>
       </div>
-    </UCard>
-  </div>
+    </div>
+  </UContainer>
 </template>
