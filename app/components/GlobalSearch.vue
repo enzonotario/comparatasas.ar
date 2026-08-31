@@ -90,10 +90,19 @@ const groups = [
       },
       {
         id: 'lecaps',
-        label: 'Lecaps',
+        label: 'LECAPs y BONCAPs',
         suffix: 'Comparador',
         icon: 'i-lucide-file-chart-column',
         to: '/lecaps',
+        keywords: [
+          'letras',
+          'letra',
+          'letras del tesoro',
+          'boncaps',
+          'boncap',
+          'lecap',
+          'lecaps',
+        ],
       },
       {
         id: 'cauciones',
@@ -182,7 +191,7 @@ function onSelect(val: any) {
         :groups="groups"
         :fuse="{
           fuseOptions: {
-            keys: ['label', 'suffix'],
+            keys: ['label', 'suffix', 'keywords'],
             threshold: 0.3,
             ignoreLocation: true,
           },
