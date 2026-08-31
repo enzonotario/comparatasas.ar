@@ -23,7 +23,7 @@ if (
 
 const productoLabel = getComisionesBrokersProductoLabel(producto)
 route.meta.pageTitle = `Comisiones de brokers — ${productoLabel}`
-route.meta.pageDescription = `Compará comisiones de ALyC para ${productoLabel.toLowerCase()} en ARS y USD. Incluye planes IOL, IEB+ y tarifarios retail de ArgentinaDatos.`
+route.meta.pageDescription = `Compará comisiones de ALyC para ${productoLabel.toLowerCase()} en ARS y USD.`
 </script>
 
 <template>

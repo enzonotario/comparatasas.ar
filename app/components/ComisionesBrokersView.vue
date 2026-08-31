@@ -167,9 +167,7 @@ const rows = computed<ComisionRow[]>(() => {
       item.nombreComercial ||
       item.entidad
     const logo =
-      getInstitutionLogo(item.entidad) ||
-      getInstitutionLogo(item.nombreComercial) ||
-      undefined
+      getInstitutionLogo(item.entidad) || getInstitutionLogo(item.nombreComercial) || undefined
     const providerUrl = withOutboundUtm(
       getInstitutionUrl(item.entidad, 'comisiones-brokers') ||
         getInstitutionUrl(item.nombreComercial, 'comisiones-brokers') ||
@@ -184,9 +182,7 @@ const rows = computed<ComisionRow[]>(() => {
       initials: getInitials(displayName),
       logo,
       providerUrl: providerUrl !== '#' ? providerUrl : undefined,
-      enlace: item.enlace
-        ? withOutboundUtm(item.enlace, 'comisiones-brokers')
-        : item.enlace,
+      enlace: item.enlace ? withOutboundUtm(item.enlace, 'comisiones-brokers') : item.enlace,
       tasaPublicada: formatTasaPublicada(item),
       tasaAnualLabel: formatTasaAnualComparable(item),
       tasaSort: sortKeyComisionBroker(item),
@@ -196,9 +192,7 @@ const rows = computed<ComisionRow[]>(() => {
       productoLabel: formatProductoLabel(item.producto),
       ivaLabel: item.ivaAdicional ? '+ IVA' : item.incluyeIva ? 'Incluye IVA' : 'Sin IVA',
       minimoLabel:
-        item.comisionMinima != null
-          ? formatCurrency(item.comisionMinima, item.moneda)
-          : '—',
+        item.comisionMinima != null ? formatCurrency(item.comisionMinima, item.moneda) : '—',
       derechoLabel:
         item.derechoMercado != null ? formatPercentAuto(item.derechoMercado * 100) : '—',
     }
@@ -247,8 +241,8 @@ const seoTitle = computed(() =>
 
 const seoDescription = computed(() =>
   props.producto === 'cauciones'
-    ? 'Compará comisiones de brokers argentinos (IOL, Balanz, Bull Market, Cocos, PPI, Fiwind e IEB+) por producto, moneda y operación. Incluye membresía de plan cuando aplica.'
-    : `Compará comisiones de ALyC para ${productoLabel.value.toLowerCase()} en ARS y USD. Incluye planes IOL, IEB+ y tarifarios retail de ArgentinaDatos.`,
+    ? 'Compará comisiones de brokers argentinos por producto, moneda y operación. Incluye membresía de plan cuando aplica.'
+    : `Compará comisiones de ALyC para ${productoLabel.value.toLowerCase()} en ARS y USD.`,
 )
 
 const canonicalUrl = computed(
@@ -256,14 +250,12 @@ const canonicalUrl = computed(
 )
 
 const ogItems = computed(() => {
-  return [...sortedRows.value]
-    .slice(0, 3)
-    .map((item) => ({
-      name: `${item.displayName}${item.planLabel ? ` · ${item.planLabel}` : ''}`,
-      rate: item.membresiaLabel
-        ? `${item.tasaPublicada} · membresía ${item.membresiaLabel}`
-        : item.tasaPublicada,
-    }))
+  return [...sortedRows.value].slice(0, 3).map((item) => ({
+    name: `${item.displayName}${item.planLabel ? ` · ${item.planLabel}` : ''}`,
+    rate: item.membresiaLabel
+      ? `${item.tasaPublicada} · membresía ${item.membresiaLabel}`
+      : item.tasaPublicada,
+  }))
 })
 
 defineOgImage('ComparaTasas.takumi', {
@@ -338,9 +330,7 @@ function renderBrokerCell(row: ComisionRow) {
 
   const content = h('div', { class: 'min-w-0' }, [
     title,
-    row.planLabel
-      ? h('p', { class: 'text-xs text-neutral-500' }, row.planLabel)
-      : null,
+    row.planLabel ? h('p', { class: 'text-xs text-neutral-500' }, row.planLabel) : null,
   ])
 
   if (!row.providerUrl) {
@@ -407,8 +397,7 @@ const columns = computed<TableColumn<ComisionRow>[]>(() => {
     cols.push({
       accessorKey: 'tasaAnualLabel',
       header: 'Equiv. anual',
-      cell: ({ row }) =>
-        h('p', { class: 'tabular-nums text-sm' }, row.original.tasaAnualLabel),
+      cell: ({ row }) => h('p', { class: 'tabular-nums text-sm' }, row.original.tasaAnualLabel),
     })
   }
 
@@ -439,14 +428,12 @@ const columns = computed<TableColumn<ComisionRow>[]>(() => {
     {
       accessorKey: 'derechoMercado',
       header: 'Derecho mercado',
-      cell: ({ row }) =>
-        h('span', { class: 'tabular-nums text-sm' }, row.original.derechoLabel),
+      cell: ({ row }) => h('span', { class: 'tabular-nums text-sm' }, row.original.derechoLabel),
     },
     {
       accessorKey: 'comisionMinima',
       header: 'Mínimo',
-      cell: ({ row }) =>
-        h('span', { class: 'tabular-nums text-sm' }, row.original.minimoLabel),
+      cell: ({ row }) => h('span', { class: 'tabular-nums text-sm' }, row.original.minimoLabel),
     },
     {
       accessorKey: 'enlace',
@@ -502,16 +489,12 @@ const hasActiveFilters = computed(
               <h2 class="text-lg font-semibold">Tabla comparativa</h2>
               <p class="text-sm text-muted">
                 Ordenado por menor comisión
-                <template v-if="showEquivAnual">
-                  (equiv. anual cuando aplica)
-                </template>
+                <template v-if="showEquivAnual"> (equiv. anual cuando aplica) </template>
                 .
               </p>
             </div>
             <div class="flex shrink-0 flex-col items-end gap-1 text-right text-xs text-muted">
-              <p v-if="formattedUpdatedAt">
-                Actualizado {{ formattedUpdatedAt }}
-              </p>
+              <p v-if="formattedUpdatedAt">Actualizado {{ formattedUpdatedAt }}</p>
               <p>
                 Fuente:
                 <a
@@ -537,9 +520,7 @@ const hasActiveFilters = computed(
 
           <div class="space-y-3">
             <div class="space-y-2">
-              <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                Producto
-              </p>
+              <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Producto</p>
               <div class="flex flex-wrap gap-2">
                 <UButton
                   v-for="option in productoOptions"
@@ -556,9 +537,7 @@ const hasActiveFilters = computed(
 
             <div class="grid gap-3 md:grid-cols-2">
               <div class="space-y-2">
-                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                  Moneda
-                </p>
+                <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Moneda</p>
                 <div class="flex flex-wrap gap-2">
                   <UButton
                     v-for="option in monedaOptions"
@@ -593,9 +572,7 @@ const hasActiveFilters = computed(
             </div>
           </div>
 
-          <p class="text-xs text-neutral-500">
-            {{ sortedRows.length }} resultados
-          </p>
+          <p class="text-xs text-neutral-500">{{ sortedRows.length }} resultados</p>
         </div>
 
         <UAlert
@@ -607,12 +584,7 @@ const hasActiveFilters = computed(
         />
 
         <div v-if="isDesktop" class="overflow-x-auto">
-          <UTable
-            v-model:sorting="sorting"
-            :data="rows"
-            :columns="columns"
-            class="min-w-full"
-          />
+          <UTable v-model:sorting="sorting" :data="rows" :columns="columns" class="min-w-full" />
         </div>
 
         <div v-else class="space-y-3">
@@ -681,10 +653,7 @@ const hasActiveFilters = computed(
                 >
                   {{ row.tasaAnualLabel }}
                 </p>
-                <p
-                  v-if="row.membresiaLabel"
-                  class="mt-1 text-xs tabular-nums text-neutral-500"
-                >
+                <p v-if="row.membresiaLabel" class="mt-1 text-xs tabular-nums text-neutral-500">
                   Membresía {{ row.membresiaLabel }} (si operás)
                 </p>
               </div>
