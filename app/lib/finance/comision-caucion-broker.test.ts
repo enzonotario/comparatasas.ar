@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   calcularTasaNetaCaucion,
+  calcularTasaNetaLecap,
   filterComisionesBrokers,
   filterComisionesCauciones,
   formatMembresiaMensual,
@@ -207,6 +208,39 @@ describe('calcularTasaNetaCaucion', () => {
     const neta = calcularTasaNetaCaucion(12, 1, fiwind, 'colocadora')
     expect(neta).not.toBeNull()
     expect(neta!).toBeGreaterThan(0)
+  })
+})
+
+describe('calcularTasaNetaLecap', () => {
+  const letras: ComisionBrokerApi = {
+    entidad: 'iol',
+    nombreComercial: 'InvertirOnline',
+    producto: 'letras',
+    operacion: 'compra',
+    moneda: 'ARS',
+    canal: 'web',
+    plan: 'gold',
+    tasa: 0.006,
+    tasaBase: 'tna',
+    tasaAnualEquivalente: 0.006,
+    tasaEsTope: false,
+    incluyeIva: false,
+    ivaAdicional: true,
+    prorrateoDias: null,
+    comisionMinima: null,
+    derechoMercado: 0.0001,
+    enlace: null,
+  }
+
+  it('descuenta comisión de compra sobre TNA decimal', () => {
+    const neta = calcularTasaNetaLecap(0.45, 90, letras)
+    expect(neta).not.toBeNull()
+    expect(neta!).toBeLessThan(0.45)
+    expect(neta!).toBeGreaterThan(0)
+  })
+
+  it('sin comisión devuelve TNA de mercado', () => {
+    expect(calcularTasaNetaLecap(0.45, 90, null)).toBe(0.45)
   })
 })
 

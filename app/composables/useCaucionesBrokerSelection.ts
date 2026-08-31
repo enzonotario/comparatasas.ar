@@ -33,12 +33,14 @@ function formatBrokerComisionDescription(row: ComisionCaucionBrokerApi): string 
 
 export function useCaucionesBrokerSelection(
   moneda: MaybeRefOrGetter<CaucionMoneda>,
-  operacion: MaybeRefOrGetter<OperacionCaucionFilter>,
+  operacion: MaybeRefOrGetter<OperacionCaucionFilter | 'compra' | 'venta'>,
   comisiones: MaybeRefOrGetter<ComisionCaucionBrokerApi[]>,
+  producto: MaybeRefOrGetter<string> = 'cauciones',
 ) {
   const monedaRef = computed(() => toValue(moneda))
   const operacionRef = computed(() => toValue(operacion))
   const comisionesRef = computed(() => toValue(comisiones))
+  const productoRef = computed(() => toValue(producto))
 
   const currencyCode = computed(() => (monedaRef.value === 'usd' ? 'USD' : 'ARS'))
 
@@ -48,6 +50,7 @@ export function useCaucionesBrokerSelection(
     const rows = filterComisionesCauciones(comisionesRef.value, {
       moneda: currencyCode.value,
       operacion: operacionRef.value,
+      producto: productoRef.value,
     })
     return rows.map((row) => ({
       value: row.entidad,
@@ -80,6 +83,7 @@ export function useCaucionesBrokerSelection(
           selectedEntidad.value,
           currencyCode.value,
           operacionRef.value,
+          productoRef.value,
         )
       : null,
   )

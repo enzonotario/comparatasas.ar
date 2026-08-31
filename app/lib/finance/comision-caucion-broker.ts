@@ -177,7 +177,7 @@ export function sortComisionesBrokers(rows: ComisionBrokerApi[]): ComisionBroker
 
 export function matchesOperacionFilter(
   operacion: string,
-  filter: OperacionCaucionFilter,
+  filter: OperacionCaucionFilter | 'compra' | 'venta',
 ): boolean {
   if (operacion === 'ambas') return true
   return operacion === filter
@@ -311,13 +311,15 @@ export function filterComisionesCauciones(
   comisiones: ComisionBrokerApi[] | null | undefined,
   options: {
     moneda: 'ARS' | 'USD'
-    operacion: OperacionCaucionFilter
+    operacion: OperacionCaucionFilter | 'compra' | 'venta'
+    producto?: string
     dedupePorEntidad?: boolean
   },
 ): ComisionBrokerApi[] {
+  const producto = options.producto ?? 'cauciones'
   const filtered = (comisiones ?? []).filter(
     (row) =>
-      row.producto === 'cauciones' &&
+      row.producto === producto &&
       row.moneda === options.moneda &&
       matchesOperacionFilter(row.operacion, options.operacion),
   )
@@ -329,16 +331,17 @@ export function filterComisionesCauciones(
   return pickBestComisionPorEntidad(filtered)
 }
 
-/** Mejor fila de comisión para un broker, moneda y rol. */
+/** Mejor fila de comisión para un broker, moneda, operación y producto. */
 export function getComisionBroker(
   comisiones: ComisionBrokerApi[] | null | undefined,
   entidad: string,
   moneda: 'ARS' | 'USD',
-  operacion: OperacionCaucionFilter,
+  operacion: OperacionCaucionFilter | 'compra' | 'venta',
+  producto = 'cauciones',
 ): ComisionBrokerApi | null {
   const rows = (comisiones ?? []).filter(
     (row) =>
-      row.producto === 'cauciones' &&
+      row.producto === producto &&
       row.moneda === moneda &&
       row.entidad === entidad &&
       matchesOperacionFilter(row.operacion, operacion),
@@ -423,4 +426,23 @@ export function calcularTasaNetaCaucion(
       : rendimientoPeriodo - costoTotal
 
   return netoPeriodo * (DIAS_BASE_TNA / plazo)
+}
+
+/**
+ * TNA neta de LECAP/BONCAP (decimal, p. ej. 0,45 = 45%) descontando
+ * comisión + IVA y derecho de mercado de la compra de letras.
+ */
+export function calcularTasaNetaLecap(
+  tasaMercadoTna: number,
+  plazo: number,
+  comision: ComisionBrokerApi | null | undefined,
+): number | null {
+  const netaPuntos = calcularTasaNetaCaucion(
+    tasaMercadoTna * 100,
+    plazo,
+    comision,
+    'colocadora',
+  )
+  if (netaPuntos == null) return null
+  return netaPuntos / 100
 }

@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { UBadge, UButton } from '#components'
+import CaucionesBrokerSelect from '~/components/CaucionesBrokerSelect.vue'
 import LecapYieldCurveChart, {
   type LecapYieldMode,
 } from '~/components/charts/LecapYieldCurveChart.vue'
+import { useCaucionesBrokerSelection } from '~/composables/useCaucionesBrokerSelection'
+import { calcularTasaNetaLecap } from '~/lib/finance/comision-caucion-broker'
+import { getComisionesBrokersProductoPath } from '~/lib/comisiones-brokers-nav'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { TableColumn } from '@nuxt/ui'
 import { useRouteQuery } from '@vueuse/router'
@@ -31,6 +35,18 @@ useHead({
 
 const { lecapsItems, loading, error, fetch } = useLecaps()
 await fetch()
+
+const OPERACION_LECAP = 'compra' as const
+const { comisiones: comisionesBrokers, fetch: fetchComisionesBrokers } =
+  useComisionesCaucionesBrokers()
+await fetchComisionesBrokers().catch(() => undefined)
+
+const { brokerOptions, selectedEntidad, selectedComision } = useCaucionesBrokerSelection(
+  'ars',
+  OPERACION_LECAP,
+  comisionesBrokers,
+  'letras',
+)
 
 const { amount, days, calculateCompoundInterest, isSimulating } = useInvestmentSimulator()
 
@@ -65,9 +81,14 @@ const lecapsWithSimulation = computed(() => {
     const effectiveDays = Math.max(1, Math.min(days.value, itemDays))
     const rate = item.tir || 0
     const simulationResult = calculateCompoundInterest(amount.value, rate, effectiveDays)
+    const tnaNeta =
+      item.days > 0
+        ? calcularTasaNetaLecap(item.tna, item.days, selectedComision.value)
+        : null
 
     return {
       ...item,
+      tnaNeta,
       simulation: {
         initialAmount: amount.value,
         finalAmount: simulationResult.finalAmount,
@@ -106,6 +127,45 @@ function createSortableHeader(label: string, accessorKey: string) {
       class: '-mx-2.5 font-bold',
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
+  }
+}
+
+function createTasaNetaHeader() {
+  return ({ column }: { column: any }) => {
+    const isSorted = column.getIsSorted()
+    const sortButton = h(UButton, {
+      color: 'neutral',
+      variant: 'ghost',
+      icon: isSorted
+        ? isSorted === 'asc'
+          ? 'i-lucide-arrow-up-narrow-wide'
+          : 'i-lucide-arrow-down-wide-narrow'
+        : 'i-lucide-arrow-up-down',
+      class: 'shrink-0 -mr-1',
+      onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+    })
+
+    const headerLabel = h('div', { class: 'flex items-center gap-0.5' }, [
+      h('span', { class: 'font-bold whitespace-nowrap' }, 'TNA neta'),
+      sortButton,
+    ])
+
+    if (!brokerOptions.value.length) {
+      return headerLabel
+    }
+
+    return h('div', { class: 'flex flex-col gap-1.5 min-w-[10.5rem] max-w-[13rem]' }, [
+      headerLabel,
+      h(CaucionesBrokerSelect, {
+        modelValue: selectedEntidad.value,
+        'onUpdate:modelValue': (value: string) => {
+          selectedEntidad.value = value
+        },
+        items: brokerOptions.value,
+        size: 'xs',
+        class: 'w-full',
+      }),
+    ])
   }
 }
 
@@ -174,6 +234,21 @@ const baseColumns: TableColumn<any>[] = [
         { class: `${getRowToneClass(row.original)} font-bold` },
         formatPercent(row.getValue('tna') as number),
       ),
+  },
+  {
+    accessorKey: 'tnaNeta',
+    header: createTasaNetaHeader(),
+    cell: ({ row }) => {
+      const neta = (row.original as { tnaNeta?: number | null }).tnaNeta
+      if (neta == null) {
+        return h('span', { class: `${getRowToneClass(row.original)} text-muted` }, '—')
+      }
+      return h(
+        'div',
+        { class: `${getRowToneClass(row.original)} font-bold tabular-nums text-primary-800 dark:text-primary-200` },
+        formatPercent(neta),
+      )
+    },
   },
   {
     accessorKey: 'tir',
@@ -317,11 +392,30 @@ function formatDate(value: string): string {
       </div>
     </div>
 
+    <p v-if="brokerOptions.length" class="text-xs text-muted -mt-2">
+      TNA neta: mercado ajustado por comisión de compra de letras (+ IVA si aplica) y derecho de
+      mercado prorrateado a los días al vencimiento. Si el broker cobra membresía de plan (monto
+      fijo mensual), aparece en el selector; no se prorratea en la TNA neta.
+    </p>
+
     <UAlert v-if="error" color="error" variant="soft" title="Error cargando datos de LECAPs" />
 
     <FundsLoading v-if="loading && !lecapsItems.length" />
 
     <div v-else-if="lecapsItems.length" class="space-y-6">
+      <div
+        v-if="brokerOptions.length"
+        class="sm:hidden flex items-center justify-between gap-3 rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-2"
+      >
+        <span class="text-xs font-medium text-muted shrink-0">TNA neta</span>
+        <CaucionesBrokerSelect
+          v-model="selectedEntidad"
+          :items="brokerOptions"
+          size="sm"
+          class="min-w-40 flex-1 max-w-xs"
+        />
+      </div>
+
       <!-- Mobile: lista -->
       <div class="sm:hidden flex flex-col gap-3">
         <div
@@ -363,6 +457,12 @@ function formatDate(value: string): string {
                 TEM {{ formatPercent(item.tem) }}
               </div>
               <div class="text-xs text-muted tabular-nums">TNA {{ formatPercent(item.tna) }}</div>
+              <div
+                v-if="item.tnaNeta != null"
+                class="text-xs font-bold tabular-nums text-primary-800 dark:text-primary-200"
+              >
+                Neta {{ formatPercent(item.tnaNeta) }}
+              </div>
             </div>
           </div>
 
@@ -419,6 +519,17 @@ function formatDate(value: string): string {
         </UTable>
       </div>
 
+      <div class="flex justify-end">
+        <UButton
+          :to="getComisionesBrokersProductoPath('letras')"
+          color="neutral"
+          variant="outline"
+          size="sm"
+          label="Ver comisiones de letras"
+          trailing-icon="i-lucide-arrow-right"
+        />
+      </div>
+
       <div class="border border-default rounded-lg p-4 bg-white dark:bg-neutral-900">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h3 class="text-sm font-medium text-neutral-700 dark:text-neutral-300">
@@ -467,6 +578,12 @@ function formatDate(value: string): string {
             Son una alternativa popular al plazo fijo para inversores que buscan liquidez inmediata
             (se pueden vender en el mercado secundario en cualquier momento) y tasas que suelen
             estar alineadas o superar a las de los bancos.
+          </p>
+          <p>
+            En la tabla podés elegir un <strong>broker</strong> y ver la <strong>TNA neta</strong>:
+            TNA de mercado menos comisión de compra de letras (+ IVA si corresponde) y derecho de
+            mercado, prorrateados a los días al vencimiento. El selector arranca con un broker al
+            azar y queda en la URL (`?broker=`).
           </p>
         </div>
         <div class="space-y-4">

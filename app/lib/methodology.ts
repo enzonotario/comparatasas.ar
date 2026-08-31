@@ -254,6 +254,10 @@ export const methodologySections: MethodologySection[] = [
         type: 'p',
         text: 'En el simulador, la ganancia compuesta usa la TIR como tasa anual efectiva y limita los días al mínimo entre tu horizonte y los días al vencimiento del papel.',
       },
+      {
+        type: 'p',
+        text: 'En la tabla, la columna «TNA neta» resta comisión + IVA y derecho de mercado al TNA de mercado, prorrateados a los días al vencimiento (compra de letras). Podés elegir broker en el selector (uno aleatorio por defecto; persiste en ?broker=). La membresía de plan no se prorratea en la TNA neta.',
+      },
     ],
   },
   {
