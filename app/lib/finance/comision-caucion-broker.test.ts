@@ -1,16 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import {
   calcularTasaNetaCaucion,
+  filterComisionesBrokers,
   filterComisionesCauciones,
   formatMembresiaMensual,
+  formatProductoLabel,
+  formatTasaAnualComparable,
   formatTasaPublicada,
   matchesOperacionFilter,
   pickBestComisionPorEntidad,
+  sortKeyComisionBroker,
   tasaComparableAnual,
-  type ComisionCaucionBrokerApi,
+  type ComisionBrokerApi,
 } from './comision-caucion-broker'
 
-const sample: ComisionCaucionBrokerApi[] = [
+const sample: ComisionBrokerApi[] = [
   {
     entidad: 'iol',
     nombreComercial: 'InvertirOnline',
@@ -181,7 +185,7 @@ describe('calcularTasaNetaCaucion', () => {
   })
 
   it('Fiwind 1d prorratea derecho BYMA default 90d', () => {
-    const fiwind: ComisionCaucionBrokerApi = {
+    const fiwind: ComisionBrokerApi = {
       entidad: 'fiwind',
       nombreComercial: 'Fiwind',
       producto: 'cauciones',
@@ -203,5 +207,35 @@ describe('calcularTasaNetaCaucion', () => {
     const neta = calcularTasaNetaCaucion(12, 1, fiwind, 'colocadora')
     expect(neta).not.toBeNull()
     expect(neta!).toBeGreaterThan(0)
+  })
+})
+
+describe('filterComisionesBrokers', () => {
+  it('filtra producto y moneda sin dedupe', () => {
+    const rows = filterComisionesBrokers(sample, {
+      producto: 'cauciones',
+      moneda: 'ARS',
+    })
+    expect(rows.every((row) => row.producto === 'cauciones')).toBe(true)
+    expect(rows.filter((row) => row.entidad === 'iol')).toHaveLength(2)
+  })
+
+  it('prioriza tasaAnualEquivalente en el sort key', () => {
+    const conTae = sample[0]!
+    const sinTae = sample[3]!
+    expect(sortKeyComisionBroker(conTae)).toBe(0.018)
+    expect(sortKeyComisionBroker(sinTae)).toBe(0.006)
+  })
+})
+
+describe('formatProductoLabel / formatTasaAnualComparable', () => {
+  it('etiqueta productos conocidos', () => {
+    expect(formatProductoLabel('acciones')).toBe('Acciones')
+    expect(formatProductoLabel('obligaciones_negociables')).toBe('Obligaciones negociables')
+  })
+
+  it('no inventa equiv. anual sin base ni TAE', () => {
+    expect(formatTasaAnualComparable(sample[3]!)).toBe('—')
+    expect(formatTasaAnualComparable(sample[0]!)).toContain('anual equiv.')
   })
 })

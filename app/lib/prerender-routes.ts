@@ -1,4 +1,5 @@
 import { ACCOUNT_HISTORY_PROVIDER_SLUGS } from '../composables/useAccountHistory'
+import { comisionesBrokersPrerenderRoutes } from '../lib/comisiones-brokers-nav'
 import { comparatasasFondos } from '../lib/mappings/funds'
 import { metodologiaNavTabs, METODOLOGIA_DEFAULT_CATEGORY } from '../lib/metodologia-nav'
 import { sumarseNavTabs } from '../lib/sumarse-nav'
@@ -22,6 +23,8 @@ const STATIC_PRERENDER_ROUTES = [
   '/prestamos-personales',
   '/prestamos-personales/bcra',
   '/comisiones-cobro',
+  '/comisiones-brokers',
+  ...comisionesBrokersPrerenderRoutes,
   '/contado-cuotas',
   '/remesas',
   '/lecaps',

@@ -28,6 +28,7 @@ function normalizeNavigationAlias(path: string): string {
   if (trimmed.startsWith('/plazos-fijos/')) return '/plazos-fijos'
   if (trimmed.startsWith('/creditos-hipotecarios-uva/')) return '/creditos-hipotecarios-uva'
   if (trimmed.startsWith('/prestamos-personales/')) return '/prestamos-personales'
+  if (trimmed.startsWith('/comisiones-brokers/')) return '/comisiones-brokers'
   return trimmed
 }
 
@@ -60,7 +61,7 @@ export const useNavigationPages = () => {
       id: 'ars',
       label: 'ARS',
       ariaLabel:
-        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, contado vs cuotas, LECAPs, cauciones, bonos CER, créditos hipotecarios UVA y préstamos personales',
+        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, contado vs cuotas, LECAPs, cauciones, bonos CER, créditos hipotecarios UVA, préstamos personales y comisiones',
       icon: 'flag-ars',
       pages: [
         {
@@ -104,6 +105,12 @@ export const useNavigationPages = () => {
           label: 'Comisiones de cobro',
           icon: 'i-lucide-receipt',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/cobros.png',
+        },
+        {
+          to: '/comisiones-brokers',
+          label: 'Comisiones de brokers',
+          icon: 'i-lucide-briefcase-business',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/brokers.png',
         },
         {
           to: '/contado-cuotas',

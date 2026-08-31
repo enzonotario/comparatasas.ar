@@ -134,6 +134,7 @@ export default defineNuxtConfig({
         '/prestamos-personales',
         '/prestamos-personales/bcra',
         '/comisiones-cobro',
+        '/comisiones-brokers',
         '/contado-cuotas',
         '/remesas',
         '/lecaps',

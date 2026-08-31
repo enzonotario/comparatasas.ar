@@ -32,6 +32,8 @@ Use this site when an agent or user needs **current Argentine retail rate compar
 - [Plazos fijos](https://comparatasas.ar/plazos-fijos): TNA de plazos fijos
 - [Fondos](https://comparatasas.ar/fondos): catálogo y detalle de FCI
 - [Cauciones](https://comparatasas.ar/cauciones): tasas y montos de cauciones ARS/USD
+- [Comisiones de brokers](https://comparatasas.ar/comisiones-brokers): aranceles de ALyC por producto (cauciones en index; acciones, bonos, etc. en `/comisiones-brokers/{producto}`)
+- [Comisiones de cobro](https://comparatasas.ar/comisiones-cobro): MDR de adquirentes y billeteras
 - [Metodología](https://comparatasas.ar/metodologia): fuentes y criterios de cálculo
 - [Acerca de](https://comparatasas.ar/about): qué es el proyecto
 - [Contacto](https://comparatasas.ar/contact): email y canales

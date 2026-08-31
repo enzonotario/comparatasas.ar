@@ -50,6 +50,7 @@ function isAppRoute(path: string) {
     '/creditos-hipotecarios-uva',
     '/prestamos-personales',
     '/comisiones-cobro',
+    '/comisiones-brokers',
     '/contado-cuotas',
     '/remesas',
     '/lecaps',

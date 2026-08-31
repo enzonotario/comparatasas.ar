@@ -269,6 +269,18 @@ function formatBrokerUpdatedAt(value: string | null): string {
           </a>
         </p>
       </div>
+      <UButton
+        :to="
+          currencyCode === 'USD'
+            ? '/comisiones-brokers?moneda=USD'
+            : '/comisiones-brokers'
+        "
+        color="neutral"
+        variant="outline"
+        size="sm"
+        label="Ver todas las comisiones de brokers"
+        trailing-icon="i-lucide-arrow-right"
+      />
     </div>
 
     <UAlert

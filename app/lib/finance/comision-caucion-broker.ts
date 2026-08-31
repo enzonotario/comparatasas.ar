@@ -7,14 +7,33 @@ export const DIAS_MES_COMISION = 30
 /** BYMA cauciones: derecho de mercado suele prorratearse (IOL c/ 90d). */
 export const DIAS_PRORRATEO_DERECHO_DEFAULT = 90
 
-export type OperacionCaucionBroker = 'colocadora' | 'tomadora' | 'ambas'
+export type OperacionBroker =
+  | 'colocadora'
+  | 'tomadora'
+  | 'ambas'
+  | 'compra'
+  | 'venta'
+
+export type OperacionCaucionBroker = Extract<
+  OperacionBroker,
+  'colocadora' | 'tomadora' | 'ambas'
+>
+
 export type OperacionCaucionFilter = 'colocadora' | 'tomadora'
 
-export interface ComisionCaucionBrokerApi {
+export type OperacionBrokerFilter =
+  | 'all'
+  | 'colocadora'
+  | 'tomadora'
+  | 'compra'
+  | 'venta'
+  | 'ambas'
+
+export interface ComisionBrokerApi {
   entidad: string
   nombreComercial: string
   producto: string
-  operacion: OperacionCaucionBroker | string
+  operacion: OperacionBroker | string
   moneda: string
   canal: string
   plan: string | null
@@ -32,6 +51,48 @@ export interface ComisionCaucionBrokerApi {
   derechoMercado: number | null
   enlace: string | null
   metadata?: Record<string, unknown> | null
+}
+
+/** @deprecated Usar `ComisionBrokerApi`. */
+export type ComisionCaucionBrokerApi = ComisionBrokerApi
+
+export const PRODUCTO_BROKER_LABELS: Record<string, string> = {
+  acciones: 'Acciones',
+  cedears: 'CEDEARs',
+  bonos: 'Bonos',
+  obligaciones_negociables: 'Obligaciones negociables',
+  letras: 'Letras',
+  cauciones: 'Cauciones',
+  opciones: 'Opciones',
+  futuros: 'Futuros',
+  fci: 'FCI',
+  cheques: 'Cheques',
+  licitaciones: 'Licitaciones',
+  alquiler_titulos: 'Alquiler de títulos',
+}
+
+/** Orden preferido de productos en chips/filtros. */
+export const PRODUCTO_BROKER_ORDER = [
+  'cauciones',
+  'acciones',
+  'cedears',
+  'bonos',
+  'obligaciones_negociables',
+  'letras',
+  'opciones',
+  'futuros',
+  'fci',
+  'cheques',
+  'licitaciones',
+  'alquiler_titulos',
+] as const
+
+export const OPERACION_BROKER_LABELS: Record<string, string> = {
+  colocadora: 'Colocadora',
+  tomadora: 'Tomadora',
+  ambas: 'Colocadora y tomadora',
+  compra: 'Compra',
+  venta: 'Venta',
 }
 
 const TASA_BASE_LABELS: Record<string, string> = {
@@ -55,10 +116,26 @@ const PLAN_PRIORITY: Record<string, number> = {
   gold: 1,
   platinum: 2,
   black: 3,
+  rookie: 4,
+  investor: 5,
+  global_markets: 6,
 }
 
+export function formatProductoLabel(producto: string | null | undefined): string {
+  if (!producto) return '—'
+  return PRODUCTO_BROKER_LABELS[producto] ?? producto.replace(/_/g, ' ')
+}
+
+export function formatOperacionLabel(operacion: string | null | undefined): string {
+  if (!operacion) return '—'
+  return OPERACION_BROKER_LABELS[operacion] ?? operacion.replace(/_/g, ' ')
+}
+
+/** @deprecated Usar `formatOperacionLabel`. */
+export const formatOperacionBrokerLabel = formatOperacionLabel
+
 /** Tasa anual comparable para ordenar (decimal, ej. 0.018 = 1,8% anual). */
-export function tasaComparableAnual(row: ComisionCaucionBrokerApi): number | null {
+export function tasaComparableAnual(row: ComisionBrokerApi): number | null {
   if (typeof row.tasaAnualEquivalente === 'number' && Number.isFinite(row.tasaAnualEquivalente)) {
     return row.tasaAnualEquivalente
   }
@@ -66,6 +143,36 @@ export function tasaComparableAnual(row: ComisionCaucionBrokerApi): number | nul
   if (row.tasaBase === 'mensual') return row.tasa * 12
   if (row.tasaBase === 'anual' || row.tasaBase === 'tna') return row.tasa
   return row.tasa
+}
+
+/**
+ * Clave de orden: prioriza `tasaAnualEquivalente` cuando existe;
+ * si no, ordena por `tasa` publicada.
+ */
+export function sortKeyComisionBroker(row: ComisionBrokerApi): number {
+  if (
+    typeof row.tasaAnualEquivalente === 'number' &&
+    Number.isFinite(row.tasaAnualEquivalente)
+  ) {
+    return row.tasaAnualEquivalente
+  }
+  if (row.tasa == null || !Number.isFinite(row.tasa)) return Number.POSITIVE_INFINITY
+  return row.tasa
+}
+
+export function sortComisionesBrokers(rows: ComisionBrokerApi[]): ComisionBrokerApi[] {
+  return [...rows].sort((a, b) => {
+    const ka = sortKeyComisionBroker(a)
+    const kb = sortKeyComisionBroker(b)
+    if (ka !== kb) return ka - kb
+    const ta = a.tasa ?? Number.POSITIVE_INFINITY
+    const tb = b.tasa ?? Number.POSITIVE_INFINITY
+    if (ta !== tb) return ta - tb
+    return (a.nombreComercial || a.entidad).localeCompare(
+      b.nombreComercial || b.entidad,
+      'es',
+    )
+  })
 }
 
 export function matchesOperacionFilter(
@@ -76,7 +183,44 @@ export function matchesOperacionFilter(
   return operacion === filter
 }
 
-export function formatTasaPublicada(row: ComisionCaucionBrokerApi): string {
+export function matchesOperacionBrokerFilter(
+  operacion: string,
+  filter: OperacionBrokerFilter,
+): boolean {
+  if (filter === 'all') return true
+  if (filter === 'ambas') return operacion === 'ambas'
+  if (operacion === 'ambas') {
+    return filter === 'colocadora' || filter === 'tomadora'
+  }
+  return operacion === filter
+}
+
+export function filterComisionesBrokers(
+  comisiones: ComisionBrokerApi[] | null | undefined,
+  options: {
+    producto?: string | 'all'
+    moneda?: 'ARS' | 'USD' | 'all'
+    operacion?: OperacionBrokerFilter | string
+  },
+): ComisionBrokerApi[] {
+  const filtered = (comisiones ?? []).filter((row) => {
+    if (options.producto && options.producto !== 'all' && row.producto !== options.producto) {
+      return false
+    }
+    if (options.moneda && options.moneda !== 'all' && row.moneda !== options.moneda) {
+      return false
+    }
+    const op = options.operacion ?? 'all'
+    if (op !== 'all' && !matchesOperacionBrokerFilter(row.operacion, op as OperacionBrokerFilter)) {
+      return false
+    }
+    return true
+  })
+
+  return sortComisionesBrokers(filtered)
+}
+
+export function formatTasaPublicada(row: ComisionBrokerApi): string {
   if (row.tasa == null || !Number.isFinite(row.tasa)) return 'Consultar'
 
   const pct = row.tasa * 100
@@ -88,7 +232,18 @@ export function formatTasaPublicada(row: ComisionCaucionBrokerApi): string {
   return `${prefix}${formatted}`
 }
 
-export function formatTasaAnualComparable(row: ComisionCaucionBrokerApi): string {
+export function hasTasaAnualComparable(row: ComisionBrokerApi): boolean {
+  if (
+    typeof row.tasaAnualEquivalente === 'number' &&
+    Number.isFinite(row.tasaAnualEquivalente)
+  ) {
+    return true
+  }
+  return row.tasaBase === 'mensual' || row.tasaBase === 'anual' || row.tasaBase === 'tna'
+}
+
+export function formatTasaAnualComparable(row: ComisionBrokerApi): string {
+  if (!hasTasaAnualComparable(row)) return '—'
   const anual = tasaComparableAnual(row)
   if (anual == null) return '—'
   return `${formatPercentAuto(anual * 100)} anual equiv.`
@@ -96,7 +251,7 @@ export function formatTasaAnualComparable(row: ComisionCaucionBrokerApi): string
 
 /** Membresía/plan en moneda de la fila, p. ej. "$5.000/mes + IVA". */
 export function formatMembresiaMensual(
-  row: Pick<ComisionCaucionBrokerApi, 'membresiaMensual' | 'membresiaIvaAdicional' | 'moneda'>,
+  row: Pick<ComisionBrokerApi, 'membresiaMensual' | 'membresiaIvaAdicional' | 'moneda'>,
 ): string | null {
   const monto = row.membresiaMensual
   if (monto == null || !Number.isFinite(monto)) return null
@@ -123,9 +278,9 @@ function planSortKey(plan: string | null | undefined): number {
 
 /** Una fila por broker: la comisión retail más baja (mejor para el usuario). */
 export function pickBestComisionPorEntidad(
-  rows: ComisionCaucionBrokerApi[],
-): ComisionCaucionBrokerApi[] {
-  const byEntidad = new Map<string, ComisionCaucionBrokerApi[]>()
+  rows: ComisionBrokerApi[],
+): ComisionBrokerApi[] {
+  const byEntidad = new Map<string, ComisionBrokerApi[]>()
 
   for (const row of rows) {
     const list = byEntidad.get(row.entidad) ?? []
@@ -133,7 +288,7 @@ export function pickBestComisionPorEntidad(
     byEntidad.set(row.entidad, list)
   }
 
-  const picked: ComisionCaucionBrokerApi[] = []
+  const picked: ComisionBrokerApi[] = []
 
   for (const group of byEntidad.values()) {
     const sorted = [...group].sort((a, b) => {
@@ -153,13 +308,13 @@ export function pickBestComisionPorEntidad(
 }
 
 export function filterComisionesCauciones(
-  comisiones: ComisionCaucionBrokerApi[] | null | undefined,
+  comisiones: ComisionBrokerApi[] | null | undefined,
   options: {
     moneda: 'ARS' | 'USD'
     operacion: OperacionCaucionFilter
     dedupePorEntidad?: boolean
   },
-): ComisionCaucionBrokerApi[] {
+): ComisionBrokerApi[] {
   const filtered = (comisiones ?? []).filter(
     (row) =>
       row.producto === 'cauciones' &&
@@ -168,11 +323,7 @@ export function filterComisionesCauciones(
   )
 
   if (options.dedupePorEntidad === false) {
-    return [...filtered].sort((a, b) => {
-      const ta = tasaComparableAnual(a) ?? Number.POSITIVE_INFINITY
-      const tb = tasaComparableAnual(b) ?? Number.POSITIVE_INFINITY
-      return ta - tb
-    })
+    return sortComisionesBrokers(filtered)
   }
 
   return pickBestComisionPorEntidad(filtered)
@@ -180,11 +331,11 @@ export function filterComisionesCauciones(
 
 /** Mejor fila de comisión para un broker, moneda y rol. */
 export function getComisionBroker(
-  comisiones: ComisionCaucionBrokerApi[] | null | undefined,
+  comisiones: ComisionBrokerApi[] | null | undefined,
   entidad: string,
   moneda: 'ARS' | 'USD',
   operacion: OperacionCaucionFilter,
-): ComisionCaucionBrokerApi | null {
+): ComisionBrokerApi | null {
   const rows = (comisiones ?? []).filter(
     (row) =>
       row.producto === 'cauciones' &&
@@ -201,7 +352,7 @@ export function getComisionBroker(
  * Respeta la base publicada (mensual vs anual/TNA), no solo el equivalente anual.
  */
 export function comisionCostoPctPlazo(
-  comision: ComisionCaucionBrokerApi,
+  comision: ComisionBrokerApi,
   plazo: number,
 ): number {
   if (!Number.isFinite(plazo) || plazo <= 0) return 0
@@ -227,7 +378,7 @@ export function comisionCostoPctPlazo(
  * Usa prorrateoDias del tarifario o 90d BYMA por defecto en cauciones.
  */
 export function derechoMercadoPct(
-  comision: ComisionCaucionBrokerApi,
+  comision: ComisionBrokerApi,
   plazo: number,
 ): number {
   if (comision.derechoMercado == null || !Number.isFinite(comision.derechoMercado)) {
@@ -253,7 +404,7 @@ export function derechoMercadoPct(
 export function calcularTasaNetaCaucion(
   tasaMercadoTna: number,
   plazo: number,
-  comision: ComisionCaucionBrokerApi | null | undefined,
+  comision: ComisionBrokerApi | null | undefined,
   operacion: OperacionCaucionFilter = 'colocadora',
 ): number | null {
   if (!Number.isFinite(tasaMercadoTna) || !Number.isFinite(plazo) || plazo <= 0) {

@@ -75,6 +75,13 @@ const groups = [
         to: '/comisiones-cobro',
       },
       {
+        id: 'comisiones-brokers',
+        label: 'Comisiones de brokers',
+        suffix: 'Comparador',
+        icon: 'i-lucide-briefcase-business',
+        to: '/comisiones-brokers',
+      },
+      {
         id: 'bonos-cer',
         label: 'Bonos CER',
         suffix: 'Comparador',

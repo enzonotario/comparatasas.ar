@@ -273,11 +273,32 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'Comparamos también las comisiones de brokers (IOL, Balanz, Bull Market, Cocos, PPI, Fiwind e IEB+) para cauciones en ARS y USD, según el tarifario retail publicado en ArgentinaDatos (/v1/finanzas/brokers/comisiones). Mostramos tasa publicada y equivalente anual en rol colocadora (las tasas de mercado informadas son colocadora). Si el broker tiene membresía de plan (p. ej. IEB+), la mostramos junto a la comisión.',
+        text: 'Comparamos también las comisiones de brokers (IOL, Balanz, Bull Market, Cocos, PPI, Fiwind e IEB+) para cauciones en ARS y USD, según el tarifario retail publicado en ArgentinaDatos (/v1/finanzas/brokers/comisiones). Mostramos tasa publicada y equivalente anual en rol colocadora (las tasas de mercado informadas son colocadora). Si el broker tiene membresía de plan (p. ej. IEB+), la mostramos junto a la comisión. La comparación completa de todos los productos está en /comisiones-brokers.',
       },
       {
         type: 'p',
         text: 'En la tabla de mercado, la columna «Tasa neta» resta comisión + IVA y derecho de mercado al TNA de mercado colocadora, prorrateados al plazo de cada fila. Podés elegir broker en el selector (uno aleatorio por defecto; persiste en ?broker=).',
+      },
+    ],
+  },
+  {
+    id: 'comisiones-brokers',
+    title: 'Comisiones de brokers',
+    category: 'otros',
+    categoryLabel: 'Otros productos',
+    source: 'ArgentinaDatos (/v1/finanzas/brokers/comisiones)',
+    blocks: [
+      {
+        type: 'p',
+        text: 'Comparamos aranceles retail de ALyC (IOL, Balanz, Bull Market, Cocos, PPI, Fiwind e IEB+) por producto: acciones, CEDEARs, bonos, obligaciones negociables, letras, cauciones, opciones, futuros, FCI, cheques, licitaciones y alquiler de títulos. Los datos vienen de ArgentinaDatos y se actualizan cuando cambia el tarifario publicado.',
+      },
+      {
+        type: 'p',
+        text: 'Mostramos todas las filas del filtro (incluye planes IOL Gold/Platinum/Black e IEB+ Investor/Rookie), sin deduplicar por entidad. Ordenamos por menor comisión publicada; si hay tasaAnualEquivalente (p. ej. cauciones), esa es la clave principal de orden. La membresía mensual condicional (membresiaMensual) aparece en cada fila cuando aplica — no es comisión por operación.',
+      },
+      {
+        type: 'p',
+        text: 'Marcamos tope cuando la fuente publica “hasta X%”, e IVA adicional cuando el arancel no lo incluye. El derecho de mercado y el mínimo pueden alterar el costo final; siempre conviene contrastar con el tarifario oficial del broker.',
       },
     ],
   },

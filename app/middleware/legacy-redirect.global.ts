@@ -4,15 +4,22 @@ function tabQueryFirst(tab: unknown): string | undefined {
   return undefined
 }
 
-function queryWithoutTab(query: Record<string, unknown>): Record<string, string | string[]> {
+function queryWithoutKeys(
+  query: Record<string, unknown>,
+  omit: string[],
+): Record<string, string | string[]> {
   const next: Record<string, string | string[]> = {}
   for (const [key, value] of Object.entries(query)) {
-    if (key === 'tab') continue
+    if (omit.includes(key)) continue
     if (typeof value === 'string' || Array.isArray(value)) {
       next[key] = value
     }
   }
   return next
+}
+
+function queryWithoutTab(query: Record<string, unknown>): Record<string, string | string[]> {
+  return queryWithoutKeys(query, ['tab'])
 }
 
 function redirectDroppingTab(path: string, query: Record<string, unknown>) {
@@ -28,6 +35,29 @@ function redirectDroppingTab(path: string, query: Record<string, unknown>) {
 
 export default defineNuxtRouteMiddleware((to) => {
   const path = to.path.replace(/\/$/, '') || '/'
+
+  // Comisiones brokers: ?producto= → /comisiones-brokers/:producto (preserva moneda/operación/sort)
+  if (path === '/comisiones-brokers' && to.query.producto) {
+    const productoRaw = to.query.producto
+    const producto =
+      typeof productoRaw === 'string'
+        ? productoRaw
+        : Array.isArray(productoRaw) && typeof productoRaw[0] === 'string'
+          ? productoRaw[0]
+          : undefined
+    const rest = queryWithoutKeys(to.query, ['producto'])
+    const target =
+      producto && producto !== 'cauciones'
+        ? `/comisiones-brokers/${producto}`
+        : '/comisiones-brokers'
+    return navigateTo(
+      { path: target, query: rest },
+      {
+        redirectCode: 301,
+        replace: true,
+      },
+    )
+  }
 
   // Legacy: PF UVA pago periódico vivía en ?tab=uvaPeriodico (producción)
   if (path === '/plazos-fijos' && tabQueryFirst(to.query.tab) === 'uvaPeriodico') {

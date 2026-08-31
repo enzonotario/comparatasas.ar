@@ -38,6 +38,7 @@ const isWideLayout = computed(() => {
   if (p === '/creditos-hipotecarios-uva' || p.startsWith('/creditos-hipotecarios-uva/')) return true
   if (p === '/prestamos-personales' || p.startsWith('/prestamos-personales/')) return true
   if (p === '/metodologia' || p.startsWith('/metodologia/')) return true
+  if (p === '/comisiones-brokers' || p.startsWith('/comisiones-brokers/')) return true
 
   return [
     'criptomonedas',
@@ -72,6 +73,7 @@ const productScenarioRailPaths = new Set([
   '/creditos-hipotecarios-uva',
   '/prestamos-personales',
   '/comisiones-cobro',
+  '/comisiones-brokers',
   '/lecaps',
   '/cauciones',
   '/bonos-cer',
@@ -84,7 +86,8 @@ const showProductScenariosRail = computed(() => {
     return false
   }
 
-  return productScenarioRailPaths.has(route.path)
+  return productScenarioRailPaths.has(route.path) ||
+    route.path.startsWith('/comisiones-brokers/')
 })
 </script>
 
