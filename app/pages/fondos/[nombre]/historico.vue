@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import FciFundDetailView from '~/components/funds/detail/FciFundDetailView.vue'
+
 definePageMeta({
   layout: 'fondos',
   pageTitle: 'Histórico de FCI',
