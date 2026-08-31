@@ -14,8 +14,7 @@
         </p>
         <p>
           El simulador estima la cuota con sistema francés sobre la TNA y una referencia con CFT
-          TEA, usando la tasa del tramo de plazo publicado por el banco (Bancor, BBVA, BNA,
-          Chubut, Ciudad, Galicia, Hipotecario, Macro, Patagonia y Santander). Si cargás ingresos
+          TEA, usando la tasa del tramo de plazo publicado por cada banco. Si cargás ingresos
           (opcional), muestra la relación cuota/ingreso y una proyección con aumentos salariales o
           escenario de estrés. Algunas ofertas exigen ser cliente. Las tasas son de referencia y
           están sujetas a aprobación crediticia.

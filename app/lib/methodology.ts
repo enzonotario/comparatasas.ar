@@ -277,7 +277,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'Comparamos también las comisiones de brokers (IOL, Balanz, Bull Market, Cocos, PPI, Fiwind e IEB+) para cauciones en ARS y USD, según el tarifario retail publicado en ArgentinaDatos (/v1/finanzas/brokers/comisiones). Mostramos tasa publicada y equivalente anual en rol colocadora (las tasas de mercado informadas son colocadora). Si el broker tiene membresía de plan (p. ej. IEB+), la mostramos junto a la comisión. La comparación completa de todos los productos está en /comisiones-brokers.',
+        text: 'Comparamos también las comisiones de brokers para cauciones en ARS y USD, según el tarifario retail publicado en ArgentinaDatos (/v1/finanzas/brokers/comisiones). Mostramos tasa publicada y equivalente anual en rol colocadora (las tasas de mercado informadas son colocadora). Si el broker tiene membresía de plan, la mostramos junto a la comisión. La comparación completa de todos los productos está en /comisiones-brokers.',
       },
       {
         type: 'p',
@@ -294,11 +294,11 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Comparamos aranceles retail de ALyC (IOL, Balanz, Bull Market, Cocos, PPI, Fiwind e IEB+) por producto: acciones, CEDEARs, bonos, obligaciones negociables, letras, cauciones, opciones, futuros, FCI, cheques, licitaciones y alquiler de títulos. Los datos vienen de ArgentinaDatos y se actualizan cuando cambia el tarifario publicado.',
+        text: 'Comparamos aranceles retail de ALyC por producto: acciones, CEDEARs, bonos, obligaciones negociables, letras, cauciones, opciones, futuros, FCI, cheques, licitaciones y alquiler de títulos. Los datos vienen de ArgentinaDatos y se actualizan cuando cambia el tarifario publicado.',
       },
       {
         type: 'p',
-        text: 'Mostramos todas las filas del filtro (incluye planes IOL Gold/Platinum/Black e IEB+ Investor/Rookie), sin deduplicar por entidad. Ordenamos por menor comisión publicada; si hay tasaAnualEquivalente (p. ej. cauciones), esa es la clave principal de orden. La membresía mensual condicional (membresiaMensual) aparece en cada fila cuando aplica — no es comisión por operación.',
+        text: 'Mostramos todas las filas del filtro (incluye planes con distintos niveles y membresías cuando aplica), sin deduplicar por entidad. Ordenamos por menor comisión publicada; si hay tasaAnualEquivalente (p. ej. cauciones), esa es la clave principal de orden. La membresía mensual condicional (membresiaMensual) aparece en cada fila cuando aplica — no es comisión por operación.',
       },
       {
         type: 'p',
@@ -389,7 +389,7 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Comparamos aranceles (MDR) de cobro publicados por adquirentes y billeteras: Getnet, Mercado Pago, Ualá Bis, Payway, Banco Provincia, Fiserv, Nave, Openpay, Viumi, +Pagos Nación, Naranja X, Bezza Pay y Sipago. Los valores vienen de Argentina Datos (/v1/finanzas/cobros/comisiones) y se actualizan mensualmente.',
+        text: 'Comparamos aranceles (MDR) de cobro publicados por adquirentes y billeteras. Los valores vienen de Argentina Datos (/v1/finanzas/cobros/comisiones) y se actualizan mensualmente.',
       },
       {
         type: 'p',

@@ -697,11 +697,11 @@ const hasActiveFilters = computed(
           </p>
           <p>
             Los valores provienen de tarifarios retail publicados vía
-            <strong>ArgentinaDatos</strong>. Algunos brokers publican varios planes (p. ej. IOL
-            Gold, Platinum y Black): mostramos todas las filas. Si el broker cobra membresía de plan
-            (p. ej. IEB+ con comisión 0% y abono mensual condicional), la mostramos en cada fila
-            junto a la comisión por operación. El IVA, los mínimos y el derecho de mercado pueden
-            modificar el costo final; verificá siempre el tarifario oficial antes de operar.
+            <strong>ArgentinaDatos</strong>. Algunos brokers publican varios planes: mostramos
+            todas las filas. Si el broker cobra membresía de plan (comisión baja o 0% con abono
+            mensual condicional), la mostramos en cada fila junto a la comisión por operación. El
+            IVA, los mínimos y el derecho de mercado pueden modificar el costo final; verificá
+            siempre el tarifario oficial antes de operar.
           </p>
         </div>
       </div>

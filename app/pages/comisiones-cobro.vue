@@ -13,7 +13,7 @@ import type { ComisionCobroSimulada } from '~/composables/useComisionesCobroSimu
 definePageMeta({
   pageTitle: 'Comisiones de cobro',
   pageDescription:
-    'Compará aranceles (MDR) de Getnet, Mercado Pago, Ualá Bis, Payway, Banco Provincia, Fiserv, Nave, Openpay, Viumi, +Pagos Nación, Naranja X, Bezza Pay y Sipago por canal, medio de pago y acreditación.',
+    'Compará aranceles (MDR) de adquirentes y billeteras por canal, medio de pago y acreditación.',
 })
 
 const UBadge = resolveComponent('UBadge')
@@ -330,7 +330,7 @@ defineOgImage('ComparaTasas.takumi', {
 useSeoMeta({
   title: 'Comisiones de cobro',
   description:
-    'Compará aranceles de cobro (POS, QR, link y checkout) de Getnet, Mercado Pago, Ualá Bis, Payway, Banco Provincia, Fiserv, Nave, Openpay, Viumi, +Pagos Nación, Naranja X, Bezza Pay y Sipago.',
+    'Compará aranceles de cobro (POS, QR, link y checkout) de adquirentes y billeteras en Argentina.',
   ogTitle: 'Comisiones de cobro - Compara Tasas',
   ogDescription: 'Ranking de comisiones de cobro por canal, medio de pago y plazo de acreditación.',
 })
@@ -615,7 +615,7 @@ const hasActiveFilters = computed(
 </script>
 
 <template>
-  <div class="space-y-6">
+  <UContainer class="w-full mx-auto space-y-6 max-w-7xl px-0">
     <ComisionesCobroSimulator />
 
     <UAlert
@@ -656,7 +656,7 @@ const hasActiveFilters = computed(
                 <UInput
                   v-model="searchQuery"
                   icon="i-lucide-search"
-                  placeholder="Getnet, débito, QR..."
+                  placeholder="Entidad, débito, QR..."
                 />
               </UFormField>
 
@@ -872,5 +872,5 @@ const hasActiveFilters = computed(
         </div>
       </UCard>
     </template>
-  </div>
+  </UContainer>
 </template>

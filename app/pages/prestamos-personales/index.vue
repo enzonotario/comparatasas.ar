@@ -4,7 +4,7 @@ import { ogUpdatedAtDate } from '~/utils/og-data'
 definePageMeta({
   pageTitle: 'Préstamos Personales',
   pageDescription:
-    'Compará TNA, TEA y CFT TEA de préstamos personales con tasas por plazo (Bancor, BBVA, BNA, Chubut, Ciudad, Galicia, Hipotecario, Macro, Patagonia, Santander)',
+    'Compará TNA, TEA y CFT TEA de préstamos personales con tasas por plazo en Argentina.',
 })
 
 const { prestamosPersonales, loading, error } = usePrestamosPersonales()
@@ -77,7 +77,7 @@ defineOgImage('ComparaTasas.takumi', {
 useSeoMeta({
   title: 'Préstamos Personales',
   description:
-    'Compará tasas de préstamos personales en Argentina con tablas por plazo: TNA, TEA y CFT TEA de Bancor, BBVA, BNA, Chubut, Ciudad, Galicia, Hipotecario, Macro, Patagonia y Santander.',
+    'Compará tasas de préstamos personales en Argentina con tablas por plazo: TNA, TEA y CFT TEA.',
   ogTitle: 'Préstamos Personales - Compara Tasas Argentina',
   ogDescription: 'Compará préstamos personales por CFT TEA con tasas por tramo de plazo.',
 })

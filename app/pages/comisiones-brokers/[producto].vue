@@ -8,7 +8,7 @@ import {
 definePageMeta({
   pageTitle: 'Comisiones de brokers',
   pageDescription:
-    'Compará comisiones de IOL, Balanz, Bull Market, Cocos, PPI, Fiwind e IEB+ por producto: acciones, CEDEARs, bonos, cauciones, letras y más.',
+    'Compará comisiones de brokers (ALyC) por producto: acciones, CEDEARs, bonos, cauciones, letras y más.',
 })
 
 const route = useRoute()

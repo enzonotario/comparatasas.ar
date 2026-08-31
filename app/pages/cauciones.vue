@@ -457,11 +457,10 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
           </h3>
           <p>
             Además de la tasa de mercado, cada ALyC cobra una comisión por operar cauciones. En la
-            tabla comparamos aranceles retail (canal web/app) de IOL, Balanz, Bull Market, Cocos,
-            PPI y Fiwind, según ArgentinaDatos. Mostramos la tasa publicada y su equivalente anual
-            para comparar entre bases mensuales, anuales o TNA, en rol
-            <strong>colocadora</strong> (las tasas de mercado que informamos son colocadora). Los
-            valores son orientativos y pueden variar por plan, mínimos o IVA.
+            tabla comparamos aranceles retail (canal web/app) según ArgentinaDatos. Mostramos la
+            tasa publicada y su equivalente anual para comparar entre bases mensuales, anuales o
+            TNA, en rol <strong>colocadora</strong> (las tasas de mercado que informamos son
+            colocadora). Los valores son orientativos y pueden variar por plan, mínimos o IVA.
           </p>
           <p>
             En la tabla de mercado podés elegir un <strong>broker</strong> y ver la
