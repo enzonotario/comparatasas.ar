@@ -5,7 +5,6 @@ const nuxtApp = useNuxtApp()
 
 useFunds()
 useAccounts()
-useFciVariablesUltimo()
 useCrypto()
 usePlazosFijos()
 usePlazosFijosUvaPagoPeriodico()

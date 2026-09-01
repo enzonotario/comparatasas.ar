@@ -8,7 +8,6 @@ const { initialize } = useHotjar()
 
 useFunds()
 useAccounts()
-useFciVariablesUltimo()
 
 const open = ref(false)
 

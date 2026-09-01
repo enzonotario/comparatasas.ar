@@ -49,23 +49,6 @@ export const methodologySections: MethodologySection[] = [
     ],
   },
   {
-    id: 'cuentas-fci-variables',
-    title: 'Rendimiento variable publicado por plataforma',
-    category: 'cuentas',
-    categoryLabel: 'Cuentas y billeteras',
-    source: 'CAFCI / plataformas',
-    blocks: [
-      {
-        type: 'p',
-        text: 'Algunas billeteras y cuentas con rendimiento variable publican TNA y TEA directamente; no las derivamos comparando valores cuotaparte día a día.',
-      },
-      {
-        type: 'p',
-        text: 'Los mostramos tal como vienen de la fuente, con sus condiciones y topes cuando existen.',
-      },
-    ],
-  },
-  {
     id: 'fci-mercado-dinero',
     title: 'FCI de mercado de dinero',
     category: 'fci',

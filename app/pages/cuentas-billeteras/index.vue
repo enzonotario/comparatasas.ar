@@ -55,18 +55,13 @@ useHead({
 
 const { allFundsCache, data, loading, error } = useFunds()
 const { accounts, loading: loadingAccounts, specialAccounts } = useAccounts()
-const {
-  funds: fciVariablesFunds,
-  loading: loadingFciVariables,
-  error: fciVariablesError,
-} = useFciVariablesUltimo()
 
 const { calculateResults, isSimulating, days } = useInvestmentSimulator()
 
 const resolvedFundsAccounts = computed(() => {
   const accountsFunds = allFundsCache.value.filter((i) => i?.meta?.showInAccounts)
   const mercadoDineroFunds = data.value.mercadoDinero.filter((i) => i?.meta?.showInFunds)
-  const combined = [...accountsFunds, ...mercadoDineroFunds, ...fciVariablesFunds.value]
+  const combined = [...accountsFunds, ...mercadoDineroFunds]
 
   const seen = new Set<string>()
   const unique = combined.filter((item) => {
@@ -98,7 +93,7 @@ const fundsByRisk = computed(() => {
       fund.fondo === 'Cocos Pesos Plus - Clase A'
     ) {
       grouped['Riesgo bajo'].push(fund)
-    } else if (t === 'mercadoDinero' || t === 'fciVariablesUltimo') {
+    } else if (t === 'mercadoDinero') {
       grouped['Riesgo muy bajo'].push(fund)
     } else if (t === 'rentaFija') {
       grouped['Riesgo bajo'].push(fund)
@@ -232,7 +227,7 @@ const fundsByRiskWithSimulation = computed(() => {
           </div>
 
           <UAlert
-            v-if="error || fciVariablesError"
+            v-if="error"
             color="red"
             variant="soft"
             title="Error cargando fondos"
@@ -270,7 +265,7 @@ const fundsByRiskWithSimulation = computed(() => {
               link-text="Ver gráficos y análisis"
             />
 
-            <FundsLoading v-if="loading || loadingAccounts || loadingFciVariables" />
+            <FundsLoading v-if="loading || loadingAccounts" />
           </div>
         </div>
       </div>

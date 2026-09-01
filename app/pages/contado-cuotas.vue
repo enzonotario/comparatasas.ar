@@ -10,7 +10,7 @@ import {
 import ContadoCuotasCarryAllocationChart from '~/components/charts/ContadoCuotasCarryAllocationChart.vue'
 import ContadoCuotasCarryBalanceChart from '~/components/charts/ContadoCuotasCarryBalanceChart.vue'
 import type { AccountItem } from '~/composables/useAccounts'
-import type { FciVariableUltimoFund } from '~/composables/useFciVariablesUltimo'
+import type { ProcessedFund } from '~/types/investments'
 import type { ProcessedFund } from '~/types/investments'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 import { withOutboundUtm } from '~/lib/outbound-url'
@@ -98,15 +98,9 @@ const {
   error: errorAccounts,
   fetch: fetchAccounts,
 } = useAccounts()
-const {
-  funds: fciVariablesFunds,
-  loading: loadingFciVariables,
-  error: errorFciVariables,
-  fetch: fetchFciVariablesUltimo,
-} = useFciVariablesUltimo()
 const { allFundsCache, data: fundsData, loading: loadingFunds, error: errorFunds } = useFunds()
 
-await Promise.all([fetchInflacionRem(), fetchAccounts(), fetchFciVariablesUltimo()])
+await Promise.all([fetchInflacionRem(), fetchAccounts()])
 
 const carrySelectionInitialized = ref(false)
 
@@ -577,7 +571,7 @@ function mapAccountCarryOption(
 }
 
 function mapFundCarryOption(
-  item: ProcessedFund | FciVariableUltimoFund,
+  item: ProcessedFund,
   category: CarrySelectableOption['category'],
 ): CarrySelectableOption {
   const label = item.displayName || item.fondo
@@ -595,7 +589,7 @@ function mapFundCarryOption(
 const resolvedFundsAccounts = computed<ProcessedFund[]>(() => {
   const accountsFunds = allFundsCache.value.filter((item) => item?.meta?.showInAccounts)
   const mercadoDineroFunds = fundsData.value.mercadoDinero.filter((item) => item?.meta?.showInFunds)
-  const combined = [...accountsFunds, ...mercadoDineroFunds, ...fciVariablesFunds.value]
+  const combined = [...accountsFunds, ...mercadoDineroFunds]
 
   const seen = new Set<string>()
   return combined
@@ -615,7 +609,7 @@ const carryOptionGroups = computed<CarryOptionGroup[]>(() => {
   const veryLowRisk = resolvedFundsAccounts.value
     .filter((fund) => {
       const type = fund.type || ''
-      return type === 'mercadoDinero' || type === 'fciVariablesUltimo' || type === ''
+      return type === 'mercadoDinero' || type === ''
     })
     .map((fund) => mapFundCarryOption(fund, 'variable-muy-bajo'))
 
@@ -836,7 +830,7 @@ const carryExplanationText = computed(() => {
 })
 
 const carrySectionLoading = computed(() => {
-  return loadingAccounts.value || loadingFciVariables.value || loadingFunds.value
+  return loadingAccounts.value || loadingFunds.value
 })
 </script>
 
@@ -854,7 +848,7 @@ const carrySectionLoading = computed(() => {
     />
 
     <UAlert
-      v-if="errorAccounts || errorFciVariables || errorFunds"
+      v-if="errorAccounts || errorFunds"
       color="warning"
       variant="soft"
       title="Algunas opciones de inversión no pudieron cargarse"

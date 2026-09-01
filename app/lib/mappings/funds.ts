@@ -172,6 +172,20 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
+    fundName: 'Vinci Compass Liquidez - Clase E',
+    institutions: [
+      {
+        institution: 'Global66',
+        displayName: 'Global66',
+        showInAccounts: true,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+      },
+    ],
+  },
+  {
     fundName: 'Vinci Compass Liquidez - Clase F',
     institutions: [
       {
@@ -892,6 +906,7 @@ export const comparatasasFondosArs = [
   'delta-pesos-clase-a',
   'delta-pesos-clase-x',
   'fima-premium-clase-a',
+  'vinci-compass-liquidez-clase-e',
   'vinci-compass-liquidez-clase-f',
   'ciclo-nova-ahorro-clase-a',
   'ciclo-nova-value-clase-a',
