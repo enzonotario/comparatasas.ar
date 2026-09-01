@@ -11,7 +11,6 @@ import ContadoCuotasCarryAllocationChart from '~/components/charts/ContadoCuotas
 import ContadoCuotasCarryBalanceChart from '~/components/charts/ContadoCuotasCarryBalanceChart.vue'
 import type { AccountItem } from '~/composables/useAccounts'
 import type { ProcessedFund } from '~/types/investments'
-import type { ProcessedFund } from '~/types/investments'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 import { withOutboundUtm } from '~/lib/outbound-url'
 import {
