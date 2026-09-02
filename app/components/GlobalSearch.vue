@@ -94,15 +94,7 @@ const groups = [
         suffix: 'Comparador',
         icon: 'i-lucide-file-chart-column',
         to: '/lecaps',
-        keywords: [
-          'letras',
-          'letra',
-          'letras del tesoro',
-          'boncaps',
-          'boncap',
-          'lecap',
-          'lecaps',
-        ],
+        keywords: ['letras', 'letra', 'letras del tesoro', 'boncaps', 'boncap', 'lecap', 'lecaps'],
       },
       {
         id: 'cauciones',

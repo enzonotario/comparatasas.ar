@@ -20,16 +20,18 @@ export function shortManagerName(name: string | null | undefined) {
   const raw = (name || '').trim()
   if (!raw) return '—'
 
-  return raw
-    .replace(/\s+Asset Managemet\b/i, '')
-    .replace(/\s+Asset Management\b.*$/i, '')
-    .replace(/\s+Fondos Administrados\b.*$/i, '')
-    .replace(/\s+Administradora de Activos\b.*$/i, '')
-    .replace(/\s+Administradora de Fondos\b.*$/i, '')
-    .replace(/\s+Investments Argentina\b.*$/i, '')
-    .replace(/\s+Inversora\b.*$/i, '')
-    .replace(/\s+Fondos\b.*$/i, '')
-    .replace(/\s+S\.?G\.?F\.?C\.?I\.?.*$/i, '')
-    .replace(/\s+S\.?A\.?.*$/i, '')
-    .trim() || raw
+  return (
+    raw
+      .replace(/\s+Asset Managemet\b/i, '')
+      .replace(/\s+Asset Management\b.*$/i, '')
+      .replace(/\s+Fondos Administrados\b.*$/i, '')
+      .replace(/\s+Administradora de Activos\b.*$/i, '')
+      .replace(/\s+Administradora de Fondos\b.*$/i, '')
+      .replace(/\s+Investments Argentina\b.*$/i, '')
+      .replace(/\s+Inversora\b.*$/i, '')
+      .replace(/\s+Fondos\b.*$/i, '')
+      .replace(/\s+S\.?G\.?F\.?C\.?I\.?.*$/i, '')
+      .replace(/\s+S\.?A\.?.*$/i, '')
+      .trim() || raw
+  )
 }

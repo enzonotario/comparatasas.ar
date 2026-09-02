@@ -1,4 +1,8 @@
-import { getAgentMarkdown, NOT_FOUND_MARKDOWN, normalizeAgentPath } from '../../app/lib/agent-markdown'
+import {
+  getAgentMarkdown,
+  NOT_FOUND_MARKDOWN,
+  normalizeAgentPath,
+} from '../../app/lib/agent-markdown'
 import { preferredType, prefersMarkdown } from '../../app/lib/accept-markdown'
 
 function appendVaryAccept(event: Parameters<typeof setHeader>[0]) {
@@ -17,18 +21,18 @@ function appendVaryAccept(event: Parameters<typeof setHeader>[0]) {
 
 function isStaticAsset(path: string) {
   return (
-    path.startsWith('/_nuxt/')
-    || path.startsWith('/assets/')
-    || path.startsWith('/icons/')
-    || path.startsWith('/api/')
-    || path.startsWith('/_og')
-    || path === '/favicon.ico'
-    || path === '/sw.js'
-    || path === '/manifest.json'
-    || path === '/robots.txt'
-    || path === '/sitemap.xml'
-    || path === '/meta-imagen.png'
-    || /\.[a-z0-9]{2,8}$/i.test(path)
+    path.startsWith('/_nuxt/') ||
+    path.startsWith('/assets/') ||
+    path.startsWith('/icons/') ||
+    path.startsWith('/api/') ||
+    path.startsWith('/_og') ||
+    path === '/favicon.ico' ||
+    path === '/sw.js' ||
+    path === '/manifest.json' ||
+    path === '/robots.txt' ||
+    path === '/sitemap.xml' ||
+    path === '/meta-imagen.png' ||
+    /\.[a-z0-9]{2,8}$/i.test(path)
   )
 }
 

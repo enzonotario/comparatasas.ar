@@ -7,27 +7,13 @@ export const DIAS_MES_COMISION = 30
 /** BYMA cauciones: derecho de mercado suele prorratearse (IOL c/ 90d). */
 export const DIAS_PRORRATEO_DERECHO_DEFAULT = 90
 
-export type OperacionBroker =
-  | 'colocadora'
-  | 'tomadora'
-  | 'ambas'
-  | 'compra'
-  | 'venta'
+export type OperacionBroker = 'colocadora' | 'tomadora' | 'ambas' | 'compra' | 'venta'
 
-export type OperacionCaucionBroker = Extract<
-  OperacionBroker,
-  'colocadora' | 'tomadora' | 'ambas'
->
+export type OperacionCaucionBroker = Extract<OperacionBroker, 'colocadora' | 'tomadora' | 'ambas'>
 
 export type OperacionCaucionFilter = 'colocadora' | 'tomadora'
 
-export type OperacionBrokerFilter =
-  | 'all'
-  | 'colocadora'
-  | 'tomadora'
-  | 'compra'
-  | 'venta'
-  | 'ambas'
+export type OperacionBrokerFilter = 'all' | 'colocadora' | 'tomadora' | 'compra' | 'venta' | 'ambas'
 
 export interface ComisionBrokerApi {
   entidad: string
@@ -150,10 +136,7 @@ export function tasaComparableAnual(row: ComisionBrokerApi): number | null {
  * si no, ordena por `tasa` publicada.
  */
 export function sortKeyComisionBroker(row: ComisionBrokerApi): number {
-  if (
-    typeof row.tasaAnualEquivalente === 'number' &&
-    Number.isFinite(row.tasaAnualEquivalente)
-  ) {
+  if (typeof row.tasaAnualEquivalente === 'number' && Number.isFinite(row.tasaAnualEquivalente)) {
     return row.tasaAnualEquivalente
   }
   if (row.tasa == null || !Number.isFinite(row.tasa)) return Number.POSITIVE_INFINITY
@@ -168,10 +151,7 @@ export function sortComisionesBrokers(rows: ComisionBrokerApi[]): ComisionBroker
     const ta = a.tasa ?? Number.POSITIVE_INFINITY
     const tb = b.tasa ?? Number.POSITIVE_INFINITY
     if (ta !== tb) return ta - tb
-    return (a.nombreComercial || a.entidad).localeCompare(
-      b.nombreComercial || b.entidad,
-      'es',
-    )
+    return (a.nombreComercial || a.entidad).localeCompare(b.nombreComercial || b.entidad, 'es')
   })
 }
 
@@ -225,7 +205,7 @@ export function formatTasaPublicada(row: ComisionBrokerApi): string {
 
   const pct = row.tasa * 100
   const formatted = formatPercentAuto(pct)
-  const base = row.tasaBase ? TASA_BASE_LABELS[row.tasaBase] ?? row.tasaBase : null
+  const base = row.tasaBase ? (TASA_BASE_LABELS[row.tasaBase] ?? row.tasaBase) : null
   const prefix = row.tasaEsTope ? 'Hasta ' : ''
 
   if (base) return `${prefix}${formatted} ${base}`
@@ -233,10 +213,7 @@ export function formatTasaPublicada(row: ComisionBrokerApi): string {
 }
 
 export function hasTasaAnualComparable(row: ComisionBrokerApi): boolean {
-  if (
-    typeof row.tasaAnualEquivalente === 'number' &&
-    Number.isFinite(row.tasaAnualEquivalente)
-  ) {
+  if (typeof row.tasaAnualEquivalente === 'number' && Number.isFinite(row.tasaAnualEquivalente)) {
     return true
   }
   return row.tasaBase === 'mensual' || row.tasaBase === 'anual' || row.tasaBase === 'tna'
@@ -277,9 +254,7 @@ function planSortKey(plan: string | null | undefined): number {
 }
 
 /** Una fila por broker: la comisión retail más baja (mejor para el usuario). */
-export function pickBestComisionPorEntidad(
-  rows: ComisionBrokerApi[],
-): ComisionBrokerApi[] {
+export function pickBestComisionPorEntidad(rows: ComisionBrokerApi[]): ComisionBrokerApi[] {
   const byEntidad = new Map<string, ComisionBrokerApi[]>()
 
   for (const row of rows) {
@@ -354,10 +329,7 @@ export function getComisionBroker(
  * Costo de comisión del broker como % del capital en el plazo.
  * Respeta la base publicada (mensual vs anual/TNA), no solo el equivalente anual.
  */
-export function comisionCostoPctPlazo(
-  comision: ComisionBrokerApi,
-  plazo: number,
-): number {
+export function comisionCostoPctPlazo(comision: ComisionBrokerApi, plazo: number): number {
   if (!Number.isFinite(plazo) || plazo <= 0) return 0
   if (comision.tasa == null || !Number.isFinite(comision.tasa)) return 0
 
@@ -380,10 +352,7 @@ export function comisionCostoPctPlazo(
  * Derecho de mercado prorrateado al plazo (no one-shot completo en 1 día).
  * Usa prorrateoDias del tarifario o 90d BYMA por defecto en cauciones.
  */
-export function derechoMercadoPct(
-  comision: ComisionBrokerApi,
-  plazo: number,
-): number {
+export function derechoMercadoPct(comision: ComisionBrokerApi, plazo: number): number {
   if (comision.derechoMercado == null || !Number.isFinite(comision.derechoMercado)) {
     return 0
   }
@@ -421,9 +390,7 @@ export function calcularTasaNetaCaucion(
   const costoTotal = costoComision + costoDerecho
 
   const netoPeriodo =
-    operacion === 'tomadora'
-      ? rendimientoPeriodo + costoTotal
-      : rendimientoPeriodo - costoTotal
+    operacion === 'tomadora' ? rendimientoPeriodo + costoTotal : rendimientoPeriodo - costoTotal
 
   return netoPeriodo * (DIAS_BASE_TNA / plazo)
 }
@@ -437,12 +404,7 @@ export function calcularTasaNetaLecap(
   plazo: number,
   comision: ComisionBrokerApi | null | undefined,
 ): number | null {
-  const netaPuntos = calcularTasaNetaCaucion(
-    tasaMercadoTna * 100,
-    plazo,
-    comision,
-    'colocadora',
-  )
+  const netaPuntos = calcularTasaNetaCaucion(tasaMercadoTna * 100, plazo, comision, 'colocadora')
   if (netaPuntos == null) return null
   return netaPuntos / 100
 }

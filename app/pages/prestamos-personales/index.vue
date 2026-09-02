@@ -117,10 +117,7 @@ useHead({
 
 <template>
   <div class="space-y-6">
-    <div
-      class="w-full mx-auto"
-      :class="isSimulating && isOpen ? 'max-w-6xl' : 'max-w-3xl'"
-    >
+    <div class="w-full mx-auto" :class="isSimulating && isOpen ? 'max-w-6xl' : 'max-w-3xl'">
       <PrestamosPersonalesNavTabs
         :plazo-count="prestamosPersonales.length || undefined"
         :bcra-count="prestamosPersonalesBcra.length || undefined"

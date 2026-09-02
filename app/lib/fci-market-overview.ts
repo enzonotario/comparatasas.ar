@@ -88,9 +88,7 @@ function sumFinite(values: Array<number | null | undefined>) {
   return hasValue ? total : 0
 }
 
-function weightedAverage(
-  items: Array<{ value: number | null | undefined; weight: number }>,
-) {
+function weightedAverage(items: Array<{ value: number | null | undefined; weight: number }>) {
   let weighted = 0
   let weight = 0
   for (const item of items) {
@@ -168,7 +166,14 @@ export function buildFciMarketUniverse(
   >()
   const fundMap = new Map<
     string,
-    { fondo: string; primaryFondo: string; primaryAum: number; tipo: string; value: number; count: number }
+    {
+      fondo: string
+      primaryFondo: string
+      primaryAum: number
+      tipo: string
+      value: number
+      count: number
+    }
   >()
   const typeReturns = new Map<
     string,
@@ -259,7 +264,10 @@ export function buildFciMarketUniverse(
       itemsTna: [],
     }
     returnsBucket.patrimonio += aum
-    returnsBucket.items1d.push({ value: fondo.rendimientos?.variacionDiariaPct ?? null, weight: aum })
+    returnsBucket.items1d.push({
+      value: fondo.rendimientos?.variacionDiariaPct ?? null,
+      weight: aum,
+    })
     returnsBucket.items30d.push({ value: fondo.rendimientos?.unMes ?? null, weight: aum })
     returnsBucket.itemsYtd.push({ value: fondo.rendimientos?.enElAnio ?? null, weight: aum })
     const tnaSource =

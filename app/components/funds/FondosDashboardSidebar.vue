@@ -3,7 +3,11 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 import type { FundCatalogRow } from '~/composables/useFondosCatalog'
 import { formatCompactPatrimonio, normalizeCurrencyCode } from '~/lib/fci-fund-formatters'
 import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
-import { getFundDetailTo, getFundDetailToOptionsFromRoute, normalizeFundSlug } from '~/lib/funds-detail'
+import {
+  getFundDetailTo,
+  getFundDetailToOptionsFromRoute,
+  normalizeFundSlug,
+} from '~/lib/funds-detail'
 
 const props = defineProps<{
   allFunds: FundCatalogRow[]
@@ -74,9 +78,7 @@ const selectedTipo = computed(() => queryValue('tipo'))
 
 const currentCatalogFund = computed(() => {
   if (!isDetailPage.value || !detailSlug.value) return null
-  return (
-    props.allFunds.find((fund) => normalizeFundSlug(fund.fondo) === detailSlug.value) ?? null
-  )
+  return props.allFunds.find((fund) => normalizeFundSlug(fund.fondo) === detailSlug.value) ?? null
 })
 
 const detailSiblingInfo = computed(() => {
@@ -203,16 +205,7 @@ const secondaryLinks = computed<NavigationMenuItem[]>(() => [
 </script>
 
 <template>
-  <UNavigationMenu
-    :items="mainLinks"
-    orientation="vertical"
-    color="neutral"
-  />
+  <UNavigationMenu :items="mainLinks" orientation="vertical" color="neutral" />
 
-  <UNavigationMenu
-    :items="secondaryLinks"
-    orientation="vertical"
-    color="neutral"
-    class="mt-auto"
-  />
+  <UNavigationMenu :items="secondaryLinks" orientation="vertical" color="neutral" class="mt-auto" />
 </template>

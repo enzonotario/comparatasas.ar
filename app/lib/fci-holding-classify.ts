@@ -35,11 +35,7 @@ export function classifyHolding(nombre: string | null | undefined): HoldingKind 
   if (!name) return 'otros'
 
   if (/cedear|\badr\b/.test(name)) return 'cedears'
-  if (
-    name.includes('obligacion negociable') ||
-    name.startsWith('on ') ||
-    /\bon\b/.test(name)
-  ) {
+  if (name.includes('obligacion negociable') || name.startsWith('on ') || /\bon\b/.test(name)) {
     return 'ons'
   }
   if (/pzo fi|plazo fi|plazo fijo/.test(name)) return 'plazosFijos'

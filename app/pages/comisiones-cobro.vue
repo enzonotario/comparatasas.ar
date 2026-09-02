@@ -185,9 +185,7 @@ const rows = computed<ComisionRow[]>(() => {
       initials: getInitials(displayName),
       logo,
       providerUrl: providerUrl !== '#' ? providerUrl : undefined,
-      enlace: item.enlace
-        ? withOutboundUtm(item.enlace, 'comisiones-cobro')
-        : item.enlace,
+      enlace: item.enlace ? withOutboundUtm(item.enlace, 'comisiones-cobro') : item.enlace,
       arancelSort:
         typeof item.arancelPorcentaje === 'number'
           ? item.arancelPorcentaje
@@ -732,9 +730,7 @@ const hasActiveFilters = computed(
             </div>
           </div>
 
-          <p class="text-xs text-muted">
-            {{ sortedRows.length }} resultados
-          </p>
+          <p class="text-xs text-muted">{{ sortedRows.length }} resultados</p>
         </div>
 
         <UAlert

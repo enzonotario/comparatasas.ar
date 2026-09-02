@@ -1,7 +1,4 @@
-import {
-  formatProductoLabel,
-  PRODUCTO_BROKER_ORDER,
-} from './finance/comision-caucion-broker'
+import { formatProductoLabel, PRODUCTO_BROKER_ORDER } from './finance/comision-caucion-broker'
 
 export const COMISIONES_BROKERS_DEFAULT_PRODUCTO = 'cauciones'
 

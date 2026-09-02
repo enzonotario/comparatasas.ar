@@ -41,7 +41,9 @@ describe('getFundDetailTo', () => {
   })
 
   it('returns historico sibling route without query.tab', () => {
-    expect(getFundDetailTo(slug, { tab: 'historico' })).toBe('/fondos/fima-premium-clase-a/historico')
+    expect(getFundDetailTo(slug, { tab: 'historico' })).toBe(
+      '/fondos/fima-premium-clase-a/historico',
+    )
   })
 
   it('preserves non-default periodo in query on historico route', () => {

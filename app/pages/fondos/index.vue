@@ -131,7 +131,11 @@ function renderFundCatalogNameCell(
           () => `${original.classCount} clases`,
         )
       : original.classLabel && classBadgeAtDepth === rowDepth
-        ? h(UBadge, { color: 'neutral', variant: 'outline', size: 'sm', class: 'shrink-0' }, () => original.classLabel)
+        ? h(
+            UBadge,
+            { color: 'neutral', variant: 'outline', size: 'sm', class: 'shrink-0' },
+            () => original.classLabel,
+          )
         : null,
   ])
 }
@@ -491,9 +495,7 @@ const entityColumns: TableColumn<FundEntitySummary>[] = [
     id: 'patrimonio',
     accessorFn: (row) =>
       finiteOrUndefined(
-        isFundEntitySummary(row)
-          ? row.patrimonio
-          : catalogRowPatrimonioSortValue(row),
+        isFundEntitySummary(row) ? row.patrimonio : catalogRowPatrimonioSortValue(row),
       ),
     header: getSortableHeader('Patrimonio', 'right'),
     cell: ({ row }) => {
@@ -504,11 +506,7 @@ const entityColumns: TableColumn<FundEntitySummary>[] = [
         return h('div', { class: 'text-right text-sm font-medium' }, [
           formatted,
           original.patrimonioEnArs
-            ? h(
-                'span',
-                { class: 'block text-[10px] text-muted font-normal' },
-                'ARS · USD×MEP',
-              )
+            ? h('span', { class: 'block text-[10px] text-muted font-normal' }, 'ARS · USD×MEP')
             : null,
         ])
       }
@@ -636,7 +634,9 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
       if (!formatted) return mutedDash()
       return h(
         'div',
-        { class: `text-right font-semibold text-sm tabular-nums ${metricTone(row.original.tna != null ? row.original.tna * 100 : null)}` },
+        {
+          class: `text-right font-semibold text-sm tabular-nums ${metricTone(row.original.tna != null ? row.original.tna * 100 : null)}`,
+        },
         formatted,
       )
     },

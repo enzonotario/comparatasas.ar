@@ -35,9 +35,7 @@ const STATIC_PRERENDER_ROUTES = [
     .filter((tab) => tab.id !== METODOLOGIA_DEFAULT_CATEGORY)
     .map((tab) => tab.to),
   '/sumarse',
-  ...sumarseNavTabs
-    .filter((tab) => tab.to !== '/sumarse')
-    .map((tab) => tab.to),
+  ...sumarseNavTabs.filter((tab) => tab.to !== '/sumarse').map((tab) => tab.to),
 ] as const
 
 export async function getPrerenderRoutes(): Promise<string[]> {

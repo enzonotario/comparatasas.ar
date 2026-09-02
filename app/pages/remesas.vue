@@ -1215,9 +1215,7 @@ const columns: TableColumn<RemesaRow>[] = [
       </div>
     </template>
 
-    <div
-      class="w-full border border-default rounded-lg p-4 bg-white dark:bg-neutral-900"
-    >
+    <div class="w-full border border-default rounded-lg p-4 bg-white dark:bg-neutral-900">
       <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div class="space-y-1">
           <p class="text-sm font-medium text-neutral-900 dark:text-white">

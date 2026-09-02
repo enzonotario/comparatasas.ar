@@ -205,7 +205,8 @@ export function computeRendimientosFromHistory(input: {
     unMes: thirty?.value ?? (typeof variacionUnMesPct === 'number' ? variacionUnMesPct : null),
     noventaDias: ninety?.value ?? null,
     cientoOchentaDias: oneEighty?.value ?? null,
-    enElAnio: ytd?.value ?? (typeof variacionEnElAnioPct === 'number' ? variacionEnElAnioPct : null),
+    enElAnio:
+      ytd?.value ?? (typeof variacionEnElAnioPct === 'number' ? variacionEnElAnioPct : null),
     doceMeses:
       twelveMonths?.value ??
       (typeof variacionDoceMesesPct === 'number' ? variacionDoceMesesPct : null),

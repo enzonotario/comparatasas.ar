@@ -51,10 +51,7 @@ export function getFundDetailTo(
   const path = options?.tab === 'historico' ? `${base}/historico` : base
   const query: Record<string, string> = {}
 
-  if (
-    isFundHistoryPeriod(options?.periodo) &&
-    options.periodo !== DEFAULT_FUND_HISTORY_PERIOD
-  ) {
+  if (isFundHistoryPeriod(options?.periodo) && options.periodo !== DEFAULT_FUND_HISTORY_PERIOD) {
     query.periodo = options.periodo
   }
 
@@ -76,10 +73,14 @@ export function getFundDetailToOptionsFromRoute(route: {
 }
 
 /** Lee tab/periodo actuales de la query para armar links entre clases. */
-export function getFundDetailToOptionsFromQuery(query: Record<string, unknown> | {
-  tab?: unknown
-  periodo?: unknown
-}): FundDetailToOptions {
+export function getFundDetailToOptionsFromQuery(
+  query:
+    | Record<string, unknown>
+    | {
+        tab?: unknown
+        periodo?: unknown
+      },
+): FundDetailToOptions {
   return {
     tab: typeof query.tab === 'string' ? query.tab : undefined,
     periodo: typeof query.periodo === 'string' ? query.periodo : undefined,

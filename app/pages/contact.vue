@@ -68,8 +68,8 @@ useHead({
         target="_blank"
         rel="noopener noreferrer"
       >
-        @comparatasas
-      </a>.
+        @comparatasas </a
+      >.
     </p>
 
     <h2>Qué no cubrimos por este canal</h2>

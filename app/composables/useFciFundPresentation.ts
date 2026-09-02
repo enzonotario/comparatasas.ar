@@ -120,8 +120,7 @@ export function useFciFundPresentation(
     const ninetyValue = sanitizePeriodReturnPercent(fallback?.noventaDias)
     const oneEightyValue = sanitizePeriodReturnPercent(fallback?.cientoOchentaDias)
     const ytdValue =
-      sanitizePeriodReturnPercent(fallback?.enElAnio) ??
-      sanitizePeriodReturnPercent(api?.enElAnio)
+      sanitizePeriodReturnPercent(fallback?.enElAnio) ?? sanitizePeriodReturnPercent(api?.enElAnio)
     const yearValue =
       sanitizePeriodReturnPercent(fallback?.doceMeses) ??
       sanitizePeriodReturnPercent(api?.doceMeses)

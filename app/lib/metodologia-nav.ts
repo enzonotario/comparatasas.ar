@@ -17,8 +17,7 @@ const categoriesWithSections = methodologyCategories
 
 export const metodologiaNavTabs: MetodologiaNavTab[] = categoriesWithSections.map((group) => ({
   id: group.id,
-  to:
-    group.id === METODOLOGIA_DEFAULT_CATEGORY ? '/metodologia' : `/metodologia/${group.id}`,
+  to: group.id === METODOLOGIA_DEFAULT_CATEGORY ? '/metodologia' : `/metodologia/${group.id}`,
   label: group.label,
 }))
 

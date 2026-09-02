@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
-import {
-  DEFAULT_DOLAR_CASA,
-  isDolarCasa,
-  type DolarCasa,
-} from '~/composables/useDolarHistorico'
+import { DEFAULT_DOLAR_CASA, isDolarCasa, type DolarCasa } from '~/composables/useDolarHistorico'
 
 definePageMeta({
   pageTitle: 'UVA vs dólar — Créditos Hipotecarios UVA',

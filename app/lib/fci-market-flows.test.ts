@@ -10,15 +10,14 @@ describe('estimateFundFlow', () => {
   it('isola el flujo del cambio de AUM por rendimiento', () => {
     // AUM 1000 → 1100 con VCP +5% ⇒ el extra 50 es flujo.
     expect(
-      estimateFundFlow(
-        { patrimonio: 1100, vcp: 105 },
-        { patrimonio: 1000, vcp: 100 },
-      ),
+      estimateFundFlow({ patrimonio: 1100, vcp: 105 }, { patrimonio: 1000, vcp: 100 }),
     ).toBeCloseTo(50)
   })
 
   it('devuelve null si falta VCP o patrimonio', () => {
-    expect(estimateFundFlow({ patrimonio: 1100, vcp: null }, { patrimonio: 1000, vcp: 100 })).toBeNull()
+    expect(
+      estimateFundFlow({ patrimonio: 1100, vcp: null }, { patrimonio: 1000, vcp: 100 }),
+    ).toBeNull()
   })
 })
 

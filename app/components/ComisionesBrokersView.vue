@@ -554,9 +554,7 @@ const hasActiveFilters = computed(
             </div>
 
             <div v-if="showOperacionFilter" class="space-y-2">
-              <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
-                Operación
-              </p>
+              <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Operación</p>
               <div class="flex flex-wrap gap-2">
                 <UButton
                   v-for="option in [{ value: 'all', label: 'Todas' }, ...operacionOptions]"
@@ -697,11 +695,11 @@ const hasActiveFilters = computed(
           </p>
           <p>
             Los valores provienen de tarifarios retail publicados vía
-            <strong>ArgentinaDatos</strong>. Algunos brokers publican varios planes: mostramos
-            todas las filas. Si el broker cobra membresía de plan (comisión baja o 0% con abono
-            mensual condicional), la mostramos en cada fila junto a la comisión por operación. El
-            IVA, los mínimos y el derecho de mercado pueden modificar el costo final; verificá
-            siempre el tarifario oficial antes de operar.
+            <strong>ArgentinaDatos</strong>. Algunos brokers publican varios planes: mostramos todas
+            las filas. Si el broker cobra membresía de plan (comisión baja o 0% con abono mensual
+            condicional), la mostramos en cada fila junto a la comisión por operación. El IVA, los
+            mínimos y el derecho de mercado pueden modificar el costo final; verificá siempre el
+            tarifario oficial antes de operar.
           </p>
         </div>
       </div>

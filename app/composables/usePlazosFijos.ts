@@ -45,7 +45,10 @@ function mapEntityToTableRow(plazoFijo: PlazoFijo): PlazoFijoTableRow | null {
     rowKey: plazoFijo.entidad,
     institution,
     logo: getPlazoFijoLogo(plazoFijo.entidad) || plazoFijo.logo || '',
-    url: withOutboundUtm(plazoFijo.enlace || getPlazoFijoUrl(plazoFijo.entidad) || '#', 'plazos-fijos'),
+    url: withOutboundUtm(
+      plazoFijo.enlace || getPlazoFijoUrl(plazoFijo.entidad) || '#',
+      'plazos-fijos',
+    ),
     fecha: plazoFijo.fecha,
     fechaAnterior: plazoFijo.fechaAnterior,
     condicionesCorto:

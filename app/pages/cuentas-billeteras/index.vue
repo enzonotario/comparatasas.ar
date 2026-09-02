@@ -226,12 +226,7 @@ const fundsByRiskWithSimulation = computed(() => {
             </p>
           </div>
 
-          <UAlert
-            v-if="error"
-            color="red"
-            variant="soft"
-            title="Error cargando fondos"
-          />
+          <UAlert v-if="error" color="red" variant="soft" title="Error cargando fondos" />
 
           <div class="space-y-6">
             <div v-for="(funds, riskKey) in fundsByRiskWithSimulation" :key="riskKey">

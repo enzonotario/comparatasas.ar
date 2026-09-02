@@ -153,17 +153,13 @@ export function findSiblingFundClasses(
     : []
 
   const byFondoId =
-    fondoId != null
-      ? allFunds.filter((row) => row.fondoId != null && row.fondoId === fondoId)
-      : []
+    fondoId != null ? allFunds.filter((row) => row.fondoId != null && row.fondoId === fondoId) : []
 
   const seen = new Set<string>()
   const matched: FundCatalogRow[] = []
   for (const row of [...byGroupKey, ...byFondoId]) {
     const key =
-      row.fondoId != null && row.claseId != null
-        ? `${row.fondoId}:${row.claseId}`
-        : row.fondo
+      row.fondoId != null && row.claseId != null ? `${row.fondoId}:${row.claseId}` : row.fondo
     if (seen.has(key)) continue
     seen.add(key)
     matched.push(row)

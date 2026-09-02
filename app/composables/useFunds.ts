@@ -216,7 +216,9 @@ function categorizeFunds(funds: ProcessedFund[]) {
 async function getComparatasasFundsData() {
   try {
     const [response, staticTna] = await Promise.all([
-      $fetch<FciComparatasasResponse>('https://api.argentinadatos.com/v1/finanzas/fci/comparatasas'),
+      $fetch<FciComparatasasResponse>(
+        'https://api.argentinadatos.com/v1/finanzas/fci/comparatasas',
+      ),
       $fetch<StaticNominalTnaFile>('/api/fci/nominal-tna.json').catch(() => null),
     ])
 

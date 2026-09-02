@@ -15,10 +15,10 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="min-h-[60vh] flex flex-col items-center justify-center px-4 py-16 text-center space-y-6">
-    <p class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-      HTTP {{ statusCode }}
-    </p>
+  <div
+    class="min-h-[60vh] flex flex-col items-center justify-center px-4 py-16 text-center space-y-6"
+  >
+    <p class="text-sm font-medium text-neutral-500 dark:text-neutral-400">HTTP {{ statusCode }}</p>
     <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white">
       {{ isNotFound ? 'Página no encontrada' : 'Algo salió mal' }}
     </h1>
@@ -37,9 +37,7 @@ useSeoMeta({
       <li>
         <NuxtLink class="underline" to="/">Inicio (cuentas remuneradas)</NuxtLink>
       </li>
-      <li>
-        <a class="underline" href="/llms.txt">llms.txt</a> — índice para agentes
-      </li>
+      <li><a class="underline" href="/llms.txt">llms.txt</a> — índice para agentes</li>
       <li>
         <a class="underline" href="/sitemap.xml">sitemap.xml</a>
       </li>
@@ -55,8 +53,6 @@ useSeoMeta({
       </li>
     </ul>
 
-    <UButton to="/" color="primary" variant="solid">
-      Volver al inicio
-    </UButton>
+    <UButton to="/" color="primary" variant="solid"> Volver al inicio </UButton>
   </div>
 </template>

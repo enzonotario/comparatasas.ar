@@ -77,14 +77,15 @@ await fetch()
 /** Las tasas de mercado informadas son solo colocadora. */
 const OPERACION_CAUCION = 'colocadora' as const
 
-const {
-  comisiones: comisionesBrokers,
-  fetch: fetchComisionesBrokers,
-} = useComisionesCaucionesBrokers()
+const { comisiones: comisionesBrokers, fetch: fetchComisionesBrokers } =
+  useComisionesCaucionesBrokers()
 await fetchComisionesBrokers().catch(() => undefined)
 
-const { brokerOptions, selectedEntidad, selectedComision } =
-  useCaucionesBrokerSelection(moneda, OPERACION_CAUCION, comisionesBrokers)
+const { brokerOptions, selectedEntidad, selectedComision } = useCaucionesBrokerSelection(
+  moneda,
+  OPERACION_CAUCION,
+  comisionesBrokers,
+)
 
 interface CaucionRowConNeta extends CaucionRow {
   tasaNeta: number | null
@@ -445,16 +446,15 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
             En esta página se muestran <strong>plazo</strong>, <strong>tasa actual</strong>,
             <strong>tasa mínima y máxima del día</strong>, <strong>monto contado</strong>,
             <strong>fecha de operación</strong> y <strong>vencimiento</strong> de cauciones en
-            <strong>{{ currencyCode }}</strong>, según datos agregados por ArgentinaDatos. Podés
-            cambiar entre ARS y USD con el selector de moneda. Filtramos filas cuyo plazo no es
-            coherente con la fecha de vencimiento. Son valores
-            <strong>orientativos</strong> de mercado; no constituyen asesoramiento financiero.
+            <strong>{{ currencyCode }}</strong
+            >, según datos agregados por ArgentinaDatos. Podés cambiar entre ARS y USD con el
+            selector de moneda. Filtramos filas cuyo plazo no es coherente con la fecha de
+            vencimiento. Son valores <strong>orientativos</strong> de mercado; no constituyen
+            asesoramiento financiero.
           </p>
         </div>
         <div class="space-y-4">
-          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">
-            Comisiones de brokers
-          </h3>
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">Comisiones de brokers</h3>
           <p>
             Además de la tasa de mercado, cada ALyC cobra una comisión por operar cauciones. En la
             tabla comparamos aranceles retail (canal web/app) según ArgentinaDatos. Mostramos la
@@ -473,9 +473,9 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
           <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">Tasas del día</h3>
           <p>
             La <strong>tasa actual</strong> es la tasa informada para ese plazo. La
-            <strong>tasa min. día</strong> y la <strong>tasa max. día</strong> corresponden al
-            rango observado en la rueda de la fecha de operación. En la curva, el tamaño de cada
-            punto refleja el monto contado relativo de ese plazo.
+            <strong>tasa min. día</strong> y la <strong>tasa max. día</strong> corresponden al rango
+            observado en la rueda de la fecha de operación. En la curva, el tamaño de cada punto
+            refleja el monto contado relativo de ese plazo.
           </p>
         </div>
       </div>

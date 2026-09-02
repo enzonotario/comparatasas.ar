@@ -35,7 +35,10 @@ function siblingCurrencyCode(row?: FundCatalogGroupRow | null) {
   return normalizeCurrencyCode(siblingCurrency(row))
 }
 
-function formatSiblingPatrimonio(value: number | null | undefined, row?: FundCatalogGroupRow | null) {
+function formatSiblingPatrimonio(
+  value: number | null | undefined,
+  row?: FundCatalogGroupRow | null,
+) {
   const currency = siblingCurrency(row)
   const primary = formatCompactPatrimonio(value, currency)
   const hint = formatArsEquivalentHint(value, currency, usdArsRate.value)
@@ -193,9 +196,14 @@ const sortedSiblings = computed(() => {
           {{ formatSiblingPatrimonio(patrimonioTotal, siblings[0]) }}
         </p>
         <p v-if="classShare != null" class="text-xs text-muted">
-          Esta clase: {{ formatSiblingPatrimonio(currentPatrimonio, siblings.find((s) => s.fondo === currentFondo)) }} ({{
-            classShare.toFixed(1).replace('.', ',')
-          }}%)
+          Esta clase:
+          {{
+            formatSiblingPatrimonio(
+              currentPatrimonio,
+              siblings.find((s) => s.fondo === currentFondo),
+            )
+          }}
+          ({{ classShare.toFixed(1).replace('.', ',') }}%)
         </p>
       </div>
     </div>

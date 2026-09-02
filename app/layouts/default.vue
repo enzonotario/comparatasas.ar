@@ -85,8 +85,7 @@ const showProductScenariosRail = computed(() => {
     return false
   }
 
-  return productScenarioRailPaths.has(route.path) ||
-    route.path.startsWith('/comisiones-brokers/')
+  return productScenarioRailPaths.has(route.path) || route.path.startsWith('/comisiones-brokers/')
 })
 </script>
 

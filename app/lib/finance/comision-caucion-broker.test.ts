@@ -118,9 +118,7 @@ describe('matchesOperacionFilter', () => {
 
 describe('pickBestComisionPorEntidad', () => {
   it('deja una fila por entidad ordenada por tasa anual', () => {
-    const rows = pickBestComisionPorEntidad(
-      sample.filter((row) => row.producto === 'cauciones'),
-    )
+    const rows = pickBestComisionPorEntidad(sample.filter((row) => row.producto === 'cauciones'))
     expect(rows.map((row) => row.entidad)).toEqual(['balanz', 'iol'])
     expect(rows.find((row) => row.entidad === 'iol')?.plan).toBe('gold')
   })

@@ -99,13 +99,10 @@ const filteredChronological = computed(() => {
 
 const filteredRows = computed(() => [...filteredChronological.value].reverse())
 
-const filteredOldest = computed(
-  () => filteredChronological.value[0] ?? props.oldestHistoryPoint,
-)
+const filteredOldest = computed(() => filteredChronological.value[0] ?? props.oldestHistoryPoint)
 const filteredLatest = computed(
   () =>
-    filteredChronological.value[filteredChronological.value.length - 1] ??
-    props.latestHistoryPoint,
+    filteredChronological.value[filteredChronological.value.length - 1] ?? props.latestHistoryPoint,
 )
 
 const periodLabel = computed(() => {

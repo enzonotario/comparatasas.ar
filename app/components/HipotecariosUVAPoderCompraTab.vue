@@ -6,11 +6,7 @@ import {
   buildUvaDolarPoderCompraSeries,
   formatUvaDolarRatio,
 } from '~/lib/finance/uva-dolar-poder-compra'
-import {
-  DOLAR_CASAS,
-  getDolarCasaLabel,
-  type DolarCasa,
-} from '~/composables/useDolarHistorico'
+import { DOLAR_CASAS, getDolarCasaLabel, type DolarCasa } from '~/composables/useDolarHistorico'
 
 const dolarCasa = defineModel<DolarCasa>('dolarCasa', { required: true })
 

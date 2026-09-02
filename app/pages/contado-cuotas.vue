@@ -1159,7 +1159,9 @@ const carrySectionLoading = computed(() => {
                         </div>
 
                         <UButton
-                          :to="withOutboundUtm(selectedProductScenario.affiliateUrl, 'contado-cuotas')"
+                          :to="
+                            withOutboundUtm(selectedProductScenario.affiliateUrl, 'contado-cuotas')
+                          "
                           external
                           target="_blank"
                           rel="noopener noreferrer"

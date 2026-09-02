@@ -120,7 +120,9 @@ export function getComparatasasTnaAndTea(returnPercent: number, _tipoRenta?: str
   }
 }
 
-export function hasComparatasasRendimientos(rendimientos: FciComparatasasRendimientos | null | undefined) {
+export function hasComparatasasRendimientos(
+  rendimientos: FciComparatasasRendimientos | null | undefined,
+) {
   if (!rendimientos) return false
 
   return (

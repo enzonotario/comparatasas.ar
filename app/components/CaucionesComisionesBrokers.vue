@@ -73,9 +73,7 @@ const rows = computed<ComisionRow[]>(() => {
       item.nombreComercial ||
       item.entidad
     const logo =
-      getInstitutionLogo(item.entidad) ||
-      getInstitutionLogo(item.nombreComercial) ||
-      undefined
+      getInstitutionLogo(item.entidad) || getInstitutionLogo(item.nombreComercial) || undefined
     const providerUrl = withOutboundUtm(
       getInstitutionUrl(item.entidad, 'cauciones') ||
         getInstitutionUrl(item.nombreComercial, 'cauciones') ||
@@ -225,11 +223,7 @@ const columns: TableColumn<ComisionRow>[] = [
     cell: ({ row }) => {
       const value = row.original.derechoMercado
       if (value == null) return h('span', { class: 'text-muted' }, '—')
-      return h(
-        'p',
-        { class: 'tabular-nums text-sm' },
-        formatPercentAuto(value * 100),
-      )
+      return h('p', { class: 'tabular-nums text-sm' }, formatPercentAuto(value * 100))
     },
   },
 ]
@@ -246,7 +240,9 @@ function formatBrokerUpdatedAt(value: string | null): string {
 </script>
 
 <template>
-  <section class="border border-default rounded-lg p-4 sm:p-6 bg-white dark:bg-neutral-900 space-y-4">
+  <section
+    class="border border-default rounded-lg p-4 sm:p-6 bg-white dark:bg-neutral-900 space-y-4"
+  >
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="min-w-0 space-y-1">
         <h3 class="text-sm font-medium text-neutral-700 dark:text-neutral-300">
@@ -254,8 +250,8 @@ function formatBrokerUpdatedAt(value: string | null): string {
         </h3>
         <p class="text-xs text-muted max-w-2xl">
           Aranceles retail (canal web/app) publicados por cada ALyC para caución
-          <strong>colocadora</strong>. Ordenamos por tasa anual equivalente: a menor comisión,
-          mejor para quien coloca. Una fila por broker (mejor tarifa disponible).
+          <strong>colocadora</strong>. Ordenamos por tasa anual equivalente: a menor comisión, mejor
+          para quien coloca. Una fila por broker (mejor tarifa disponible).
         </p>
         <p v-if="fechaActualizacion" class="text-xs text-muted">
           Tarifarios actualizados al {{ formatBrokerUpdatedAt(fechaActualizacion) }} ·
@@ -270,11 +266,7 @@ function formatBrokerUpdatedAt(value: string | null): string {
         </p>
       </div>
       <UButton
-        :to="
-          currencyCode === 'USD'
-            ? '/comisiones-brokers?moneda=USD'
-            : '/comisiones-brokers'
-        "
+        :to="currencyCode === 'USD' ? '/comisiones-brokers?moneda=USD' : '/comisiones-brokers'"
         color="neutral"
         variant="outline"
         size="sm"
@@ -330,7 +322,8 @@ function formatBrokerUpdatedAt(value: string | null): string {
                 {{ row.displayName }}
               </p>
               <p class="text-xs text-muted">
-                {{ row.operacionLabel }}<template v-if="row.planLabel"> · {{ row.planLabel }}</template>
+                {{ row.operacionLabel
+                }}<template v-if="row.planLabel"> · {{ row.planLabel }}</template>
               </p>
             </div>
           </div>
@@ -342,7 +335,10 @@ function formatBrokerUpdatedAt(value: string | null): string {
                 Membresía {{ row.membresiaLabel }} (si operás)
               </p>
             </div>
-            <div v-if="row.derechoMercado != null" class="text-right text-xs text-muted tabular-nums">
+            <div
+              v-if="row.derechoMercado != null"
+              class="text-right text-xs text-muted tabular-nums"
+            >
               BYMA {{ formatPercentAuto(row.derechoMercado * 100) }}
             </div>
           </div>

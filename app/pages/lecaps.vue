@@ -82,9 +82,7 @@ const lecapsWithSimulation = computed(() => {
     const rate = item.tir || 0
     const simulationResult = calculateCompoundInterest(amount.value, rate, effectiveDays)
     const tnaNeta =
-      item.days > 0
-        ? calcularTasaNetaLecap(item.tna, item.days, selectedComision.value)
-        : null
+      item.days > 0 ? calcularTasaNetaLecap(item.tna, item.days, selectedComision.value) : null
 
     return {
       ...item,
@@ -245,7 +243,9 @@ const baseColumns: TableColumn<any>[] = [
       }
       return h(
         'div',
-        { class: `${getRowToneClass(row.original)} font-bold tabular-nums text-primary-800 dark:text-primary-200` },
+        {
+          class: `${getRowToneClass(row.original)} font-bold tabular-nums text-primary-800 dark:text-primary-200`,
+        },
         formatPercent(neta),
       )
     },

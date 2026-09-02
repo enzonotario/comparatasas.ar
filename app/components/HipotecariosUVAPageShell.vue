@@ -11,10 +11,7 @@ withDefaults(
 
 <template>
   <div class="space-y-6">
-    <div
-      class="w-full mx-auto"
-      :class="wide ? 'max-w-none' : 'max-w-3xl'"
-    >
+    <div class="w-full mx-auto" :class="wide ? 'max-w-none' : 'max-w-3xl'">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
         <div class="flex flex-col">
           <h2 class="text-xl font-bold">Créditos Hipotecarios UVA</h2>

@@ -39,7 +39,8 @@ const mappedFundUrl = computed(() => {
   const institution = mappedFundInstitution.value
   if (!institution) return null
 
-  const url = institution.fundUrl || institution.url || getInstitutionUrl(institution.institution, 'fondos')
+  const url =
+    institution.fundUrl || institution.url || getInstitutionUrl(institution.institution, 'fondos')
   return url ? withOutboundUtm(url, 'fondos') : null
 })
 
@@ -321,10 +322,7 @@ useSeoMeta({
       </UDashboardNavbar>
 
       <!-- Desktop: quick class switcher in toolbar -->
-      <UDashboardToolbar
-        v-if="fundDetail && siblingInfo.siblings.length > 1"
-        class="max-md:hidden"
-      >
+      <UDashboardToolbar v-if="fundDetail && siblingInfo.siblings.length > 1" class="max-md:hidden">
         <template #left>
           <div class="flex flex-wrap items-center gap-1.5 -ms-1">
             <span class="text-xs text-muted mr-1">Clases</span>

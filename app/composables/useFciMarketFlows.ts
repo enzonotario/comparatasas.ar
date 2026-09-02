@@ -24,8 +24,7 @@ async function fetchSerieItems(key: FciSerieKey, which: 'ultimo' | 'penultimo') 
     return (Array.isArray(raw) ? raw : [])
       .map((item) => parseFciSerieItem(item))
       .filter((item): item is NonNullable<typeof item> => item != null)
-  }
-  catch {
+  } catch {
     return []
   }
 }
@@ -33,8 +32,7 @@ async function fetchSerieItems(key: FciSerieKey, which: 'ultimo' | 'penultimo') 
 async function fetchMarketHistory() {
   try {
     return await $fetch<MarketHistorySnapshot>(`${SERIES_BASE}/mercado/historico`)
-  }
-  catch {
+  } catch {
     return null
   }
 }
@@ -63,7 +61,9 @@ export function useFciMarketFlows() {
 
     return {
       flows,
-      history: puntos.length ? { fechaActualizacion: history?.fechaActualizacion ?? null, puntos } : null,
+      history: puntos.length
+        ? { fechaActualizacion: history?.fechaActualizacion ?? null, puntos }
+        : null,
     }
   })
 

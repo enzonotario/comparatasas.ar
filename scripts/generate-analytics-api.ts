@@ -68,7 +68,8 @@ const EXTRA_URL_TO_PROVIDER: Record<string, string> = {
     'comparapix.ar',
   'https://www.comparatiendas.com.ar/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
     'comparatiendas.com.ar',
-  'https://icons.com.ar/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas': 'icons.com.ar',
+  'https://icons.com.ar/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
+    'icons.com.ar',
   'https://enqueinvierto.ar/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas':
     'enqueinvierto.ar',
   'https://betece.app/?utm_source=comparatasas&utm_medium=friendly&ref=comparatasas': 'betece.app',

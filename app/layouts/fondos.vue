@@ -102,10 +102,7 @@ const isDetailPage = computed(
         }"
       >
         <template #default>
-          <FondosDashboardSidebar
-            :all-funds="allFunds ?? []"
-            @select="open = false"
-          />
+          <FondosDashboardSidebar :all-funds="allFunds ?? []" @select="open = false" />
         </template>
 
         <template #footer>

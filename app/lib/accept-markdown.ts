@@ -8,7 +8,10 @@ export function parseAccept(header: string): AcceptEntry[] {
   return header
     .split(',')
     .map((raw) => {
-      const parts = raw.trim().split(';').map((s) => s.trim())
+      const parts = raw
+        .trim()
+        .split(';')
+        .map((s) => s.trim())
       const type = (parts[0] ?? '').toLowerCase()
       if (!type) return null
       let q = 1
@@ -31,7 +34,10 @@ function matches(entry: AcceptEntry, candidate: string): boolean {
   return entry.type === candidate
 }
 
-export function preferredType(header: string | null | undefined, produces: string[]): string | null {
+export function preferredType(
+  header: string | null | undefined,
+  produces: string[],
+): string | null {
   if (!header) return produces[0] ?? null
   const entries = parseAccept(header)
   if (entries.length === 0) return produces[0] ?? null
@@ -47,9 +53,9 @@ export function preferredType(header: string | null | undefined, produces: strin
       const e = entries[i]!
       if (!matches(e, candidate)) continue
       if (
-        matched === null
-        || e.specificity > matched.specificity
-        || (e.specificity === matched.specificity && i < matchedPos)
+        matched === null ||
+        e.specificity > matched.specificity ||
+        (e.specificity === matched.specificity && i < matchedPos)
       ) {
         matched = e
         matchedPos = i

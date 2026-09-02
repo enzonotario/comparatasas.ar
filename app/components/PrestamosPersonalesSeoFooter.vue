@@ -8,9 +8,9 @@
           ¿Qué mirar en un préstamo personal?
         </h3>
         <p>
-          La <strong>TNA</strong> es la tasa nominal de interés. La <strong>TEA</strong> anualiza
-          el interés efectivo. El <strong>CFT TEA</strong> (o CFTEA) incluye intereses, IVA y
-          cargos asociados: es la mejor métrica para comparar el costo real entre bancos.
+          La <strong>TNA</strong> es la tasa nominal de interés. La <strong>TEA</strong> anualiza el
+          interés efectivo. El <strong>CFT TEA</strong> (o CFTEA) incluye intereses, IVA y cargos
+          asociados: es la mejor métrica para comparar el costo real entre bancos.
         </p>
         <p>
           El simulador estima la cuota con sistema francés sobre la TNA y una referencia con CFT
@@ -20,8 +20,8 @@
           están sujetas a aprobación crediticia.
         </p>
         <p>
-          Los <strong>techos BCRA</strong> son máximos regulatorios por producto/entidad: sirven
-          de referencia de tope, no para rankear contra las tasas de landings.
+          Los <strong>techos BCRA</strong> son máximos regulatorios por producto/entidad: sirven de
+          referencia de tope, no para rankear contra las tasas de landings.
         </p>
       </div>
     </div>

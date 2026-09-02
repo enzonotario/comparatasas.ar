@@ -6,7 +6,12 @@ import type { FciFundDetail } from '~/composables/useFciFundDetails'
 import type { ReturnRow } from '~/composables/useFciFundPresentation'
 import { CHART_COLORS, useChartTheme } from '~/composables/useChartConfig'
 import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
-import { formatCurrency, formatDate, formatPercentAuto, metricTone } from '~/lib/fci-fund-formatters'
+import {
+  formatCurrency,
+  formatDate,
+  formatPercentAuto,
+  metricTone,
+} from '~/lib/fci-fund-formatters'
 import type { NominalTnaEstimate } from '~/lib/finance/fci-comparatasas-returns'
 
 const props = defineProps<{
@@ -161,7 +166,9 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
           <div class="flex items-end justify-between gap-3">
             <div class="min-w-0">
               <p class="text-xs uppercase tracking-wide text-muted">TNA estimada</p>
-              <p class="mt-0.5 font-mono text-xs text-muted">{{ props.nominalTnaEstimate.formula }}</p>
+              <p class="mt-0.5 font-mono text-xs text-muted">
+                {{ props.nominalTnaEstimate.formula }}
+              </p>
             </div>
             <p
               class="shrink-0 text-xl font-semibold tabular-nums"

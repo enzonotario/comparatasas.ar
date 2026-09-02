@@ -304,67 +304,67 @@ function handleProviderClick(row: PlazoFijoTableRow) {
   <div>
     <div v-if="isDesktop" class="border border-default rounded-lg overflow-hidden">
       <div class="overflow-x-auto">
-      <UTable
-        v-model:sorting="sorting"
-        :data="rowsWithSimulation"
-        :columns="tableColumns"
-        :get-row-id="(row) => row.rowKey"
-      >
-        <template #institution-cell="{ row }">
-          <NuxtLink
-            v-if="row.original.url && row.original.url !== '#'"
-            :to="row.original.url"
-            external
-            target="_blank"
-            class="flex items-center gap-3 min-w-[12rem] hover:underline text-neutral-900 dark:text-white"
-            :class="row.original.simulationDisabled ? 'opacity-50' : ''"
-            @click="handleProviderClick(row.original)"
-          >
-            <UAvatar
-              v-if="row.original.logo"
-              :src="row.original.logo"
-              :alt="row.original.institution"
-              referrerpolicy="no-referrer"
-              :ui="{ image: 'object-contain' }"
-            />
-            <div class="min-w-0">
-              <div class="font-medium">
-                {{ row.original.institution }}
+        <UTable
+          v-model:sorting="sorting"
+          :data="rowsWithSimulation"
+          :columns="tableColumns"
+          :get-row-id="(row) => row.rowKey"
+        >
+          <template #institution-cell="{ row }">
+            <NuxtLink
+              v-if="row.original.url && row.original.url !== '#'"
+              :to="row.original.url"
+              external
+              target="_blank"
+              class="flex items-center gap-3 min-w-[12rem] hover:underline text-neutral-900 dark:text-white"
+              :class="row.original.simulationDisabled ? 'opacity-50' : ''"
+              @click="handleProviderClick(row.original)"
+            >
+              <UAvatar
+                v-if="row.original.logo"
+                :src="row.original.logo"
+                :alt="row.original.institution"
+                referrerpolicy="no-referrer"
+                :ui="{ image: 'object-contain' }"
+              />
+              <div class="min-w-0">
+                <div class="font-medium">
+                  {{ row.original.institution }}
+                </div>
+                <p
+                  v-if="row.original.condicionesCorto"
+                  class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 line-clamp-2 no-underline"
+                >
+                  {{ row.original.condicionesCorto }}
+                </p>
               </div>
-              <p
-                v-if="row.original.condicionesCorto"
-                class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 line-clamp-2 no-underline"
-              >
-                {{ row.original.condicionesCorto }}
-              </p>
-            </div>
-          </NuxtLink>
-          <div
-            v-else
-            class="flex items-center gap-3 min-w-[12rem]"
-            :class="row.original.simulationDisabled ? 'opacity-50' : ''"
-          >
-            <UAvatar
-              v-if="row.original.logo"
-              :src="row.original.logo"
-              :alt="row.original.institution"
-              referrerpolicy="no-referrer"
-              :ui="{ image: 'object-contain' }"
-            />
-            <div class="min-w-0">
-              <div class="font-medium text-neutral-900 dark:text-white">
-                {{ row.original.institution }}
+            </NuxtLink>
+            <div
+              v-else
+              class="flex items-center gap-3 min-w-[12rem]"
+              :class="row.original.simulationDisabled ? 'opacity-50' : ''"
+            >
+              <UAvatar
+                v-if="row.original.logo"
+                :src="row.original.logo"
+                :alt="row.original.institution"
+                referrerpolicy="no-referrer"
+                :ui="{ image: 'object-contain' }"
+              />
+              <div class="min-w-0">
+                <div class="font-medium text-neutral-900 dark:text-white">
+                  {{ row.original.institution }}
+                </div>
+                <p
+                  v-if="row.original.condicionesCorto"
+                  class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 line-clamp-2"
+                >
+                  {{ row.original.condicionesCorto }}
+                </p>
               </div>
-              <p
-                v-if="row.original.condicionesCorto"
-                class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 line-clamp-2"
-              >
-                {{ row.original.condicionesCorto }}
-              </p>
             </div>
-          </div>
-        </template>
-      </UTable>
+          </template>
+        </UTable>
       </div>
     </div>
 
