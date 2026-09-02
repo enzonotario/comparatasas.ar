@@ -1,24 +1,45 @@
 [
   {
+    "date": "20260902",
+    "categories": {
+      "Otro": 65,
+      "Página Amiga": 9,
+      "Money Market": 19,
+      "Cuenta Remunerada": 39,
+      "Billetera": 24,
+      "Plazo Fijo": 39,
+      "ARGt": 1,
+      "Billetera USD": 15,
+      "Frascos": 7,
+      "PF UVA pago periódico": 4,
+      "PF UVA precancelable": 4,
+      "General": 14,
+      "Criptomonedas": 13,
+      "plazo fijo tradicional": 35,
+      "wARS": 3
+    },
+    "total": 291
+  },
+  {
     "date": "20260901",
     "categories": {
-      "Página Amiga": 9,
-      "Money Market": 12,
-      "Plazo Fijo": 23,
-      "Cuenta Remunerada": 47,
-      "Otro": 43,
-      "Billetera": 26,
-      "Billetera USD": 17,
+      "Página Amiga": 24,
+      "Money Market": 28,
+      "Plazo Fijo": 68,
+      "Cuenta Remunerada": 111,
+      "Otro": 115,
+      "Billetera": 63,
+      "Billetera USD": 26,
       "Cuenta Remunerada USD": 1,
-      "Frascos": 6,
-      "PF UVA pago periódico": 1,
+      "Frascos": 14,
+      "PF UVA pago periódico": 2,
       "PF UVA precancelable": 1,
-      "General": 7,
-      "Criptomonedas": 9,
-      "plazo fijo tradicional": 23,
-      "wARS": 4
+      "General": 12,
+      "Criptomonedas": 11,
+      "plazo fijo tradicional": 38,
+      "wARS": 7
     },
-    "total": 229
+    "total": 521
   },
   {
     "date": "20260831",
@@ -61,35 +82,12 @@
   {
     "date": "20260829",
     "categories": {
-      "Billetera": 31,
+      "Billetera": 30,
       "Plazo Fijo": 22,
       "Cuenta Remunerada": 54,
-      "Otro": 56,
-      "Página Amiga": 6,
-      "Billetera USD": 9,
-      "Frascos": 6,
-      "PF UVA pago periódico": 1,
-      "General": 10,
-      "Criptomonedas": 9,
-      "plazo fijo tradicional": 17,
-      "wARS": 6
+      "Otro": 51,
+      "Página Amiga": 6
     },
-    "total": 227
-  },
-  {
-    "date": "20260828",
-    "categories": {
-      "Página Amiga": 57,
-      "Billetera": 43,
-      "Plazo Fijo": 66,
-      "Cuenta Remunerada": 66,
-      "Otro": 83,
-      "Money Market": 4,
-      "ARGt": 1,
-      "Billetera USD": 9,
-      "Cuenta Remunerada USD": 1,
-      "Frascos": 11
-    },
-    "total": 341
+    "total": 163
   }
 ]
