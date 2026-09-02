@@ -96,9 +96,11 @@ const option = computed<ChartOption>(() => {
 
 <template>
   <ClientOnly>
-    <VChart :option="option" :class="heightClass ?? 'h-80 w-full'" autoresize />
+    <div :class="heightClass ?? 'h-80 w-full'">
+      <VChart :option="option" class="h-full w-full" autoresize />
+    </div>
     <template #fallback>
-      <div :class="heightClass ?? 'h-80'" class="w-full rounded-lg bg-elevated/40" />
+      <div :class="heightClass ?? 'h-80 w-full'" class="rounded-lg bg-elevated/40" />
     </template>
   </ClientOnly>
 </template>

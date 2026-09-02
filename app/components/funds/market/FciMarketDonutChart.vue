@@ -58,11 +58,11 @@ const option = computed<PieOption>(() => ({
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative" :class="heightClass ?? 'h-72 w-full'">
     <ClientOnly>
-      <VChart :option="option" :class="heightClass ?? 'h-72 w-full'" autoresize />
+      <VChart :option="option" class="h-full w-full" autoresize />
       <template #fallback>
-        <div :class="heightClass ?? 'h-72'" class="w-full rounded-lg bg-elevated/40" />
+        <div class="h-full w-full rounded-lg bg-elevated/40" />
       </template>
     </ClientOnly>
     <div
