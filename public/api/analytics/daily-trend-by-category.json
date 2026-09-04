@@ -1,24 +1,44 @@
 [
   {
-    "date": "20260903",
+    "date": "20260904",
     "categories": {
-      "Otro": 37,
-      "Página Amiga": 11,
+      "Página Amiga": 26,
       "Billetera": 18,
-      "Money Market": 11,
-      "Plazo Fijo": 18,
-      "Cuenta Remunerada": 33,
-      "Criptomonedas": 9,
-      "Billetera USD": 14,
-      "Cuenta Remunerada USD": 2,
-      "Frascos": 19,
+      "Money Market": 9,
+      "Plazo Fijo": 28,
+      "Cuenta Remunerada": 27,
+      "Otro": 33,
+      "Billetera USD": 10,
+      "Frascos": 6,
       "PF UVA pago periódico": 2,
       "PF UVA precancelable": 1,
-      "General": 5,
-      "plazo fijo tradicional": 20,
-      "wARS": 7
+      "General": 9,
+      "Criptomonedas": 10,
+      "plazo fijo tradicional": 24,
+      "wARS": 9
     },
-    "total": 207
+    "total": 212
+  },
+  {
+    "date": "20260903",
+    "categories": {
+      "Otro": 114,
+      "Página Amiga": 29,
+      "Billetera": 45,
+      "Money Market": 34,
+      "Plazo Fijo": 46,
+      "Cuenta Remunerada": 92,
+      "Criptomonedas": 12,
+      "Billetera USD": 22,
+      "Cuenta Remunerada USD": 3,
+      "Frascos": 26,
+      "PF UVA pago periódico": 3,
+      "PF UVA precancelable": 2,
+      "General": 12,
+      "plazo fijo tradicional": 31,
+      "wARS": 14
+    },
+    "total": 485
   },
   {
     "date": "20260902",
@@ -51,34 +71,8 @@
       "Otro": 115,
       "Billetera": 63,
       "Billetera USD": 26,
-      "Cuenta Remunerada USD": 1,
-      "Frascos": 14,
-      "PF UVA pago periódico": 2,
-      "PF UVA precancelable": 1,
-      "General": 12,
-      "Criptomonedas": 11,
-      "plazo fijo tradicional": 38,
-      "wARS": 7
+      "Cuenta Remunerada USD": 1
     },
-    "total": 521
-  },
-  {
-    "date": "20260831",
-    "categories": {
-      "Página Amiga": 28,
-      "Money Market": 41,
-      "Plazo Fijo": 51,
-      "Cuenta Remunerada": 80,
-      "Otro": 90,
-      "Billetera": 38,
-      "ARGt": 1,
-      "Billetera USD": 7,
-      "Frascos": 6,
-      "PF UVA pago periódico": 5,
-      "General": 13,
-      "Criptomonedas": 6,
-      "plazo fijo tradicional": 21
-    },
-    "total": 387
+    "total": 436
   }
 ]

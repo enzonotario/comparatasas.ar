@@ -3,31 +3,31 @@
     {
       "event_name": "click",
       "has_category": "sin_categoria",
-      "total_clicks": 80544,
-      "unique_providers": 441,
-      "days_tracked": 218
+      "total_clicks": 80906,
+      "unique_providers": 446,
+      "days_tracked": 219
     }
   ],
   "new_events": [
     {
       "event_name": "provider_click",
       "has_category": "con_categoria",
-      "total_clicks": 38066,
-      "unique_providers": 207,
-      "days_tracked": 218
+      "total_clicks": 38184,
+      "unique_providers": 208,
+      "days_tracked": 219
     },
     {
       "event_name": "sponsor_click",
       "has_category": "sin_categoria",
-      "total_clicks": 3096,
+      "total_clicks": 3108,
       "unique_providers": 4,
-      "days_tracked": 218
+      "days_tracked": 219
     }
   ],
   "summary": {
-    "total_legacy": 80544,
-    "total_new": 41162,
-    "with_category": 38066,
-    "without_category": 83640
+    "total_legacy": 80906,
+    "total_new": 41292,
+    "with_category": 38184,
+    "without_category": 84014
   }
 }
