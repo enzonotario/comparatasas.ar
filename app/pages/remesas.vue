@@ -513,11 +513,11 @@ const rows = computed<RemesaRow[]>(() => {
 })
 
 const searchQuery = useRouteQuery('q', '')
-const monedaFilter = useRouteQuery('moneda', 'all')
-const cuentaPropiaFilter = useRouteQuery('propia', 'all')
-const inversionesFilter = useRouteQuery('inv', 'all')
-const tarjetaFilter = useRouteQuery('tarjeta', 'all')
-const sortQuery = useRouteQuery('sort', '[{"id":"retiroArsSort","desc":false}]')
+const monedaFilter = useRouteQuery<string>('moneda', 'all')
+const cuentaPropiaFilter = useRouteQuery<string>('propia', 'all')
+const inversionesFilter = useRouteQuery<string>('inv', 'all')
+const tarjetaFilter = useRouteQuery<string>('tarjeta', 'all')
+const sortQuery = useRouteQuery<string>('sort', '[{"id":"retiroArsSort","desc":false}]')
 
 type SortingState = Array<{ id: string; desc: boolean }>
 
