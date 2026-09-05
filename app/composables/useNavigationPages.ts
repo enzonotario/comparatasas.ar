@@ -3,6 +3,14 @@ export interface NavigationPage {
   label: string
   icon: string
   image: string
+  /** Agrupa opciones en el panel de subnavegación (desktop/mobile). */
+  group?: string
+}
+
+export interface NavigationPageGroup {
+  id: string
+  label: string
+  pages: NavigationPage[]
 }
 
 export interface NavigationCategory {
@@ -11,6 +19,33 @@ export interface NavigationCategory {
   ariaLabel: string
   icon: string | 'flag-ars' | 'flag-usd' | 'bitcoin'
   pages: NavigationPage[]
+}
+
+function slugifyGroupLabel(label: string): string {
+  return label
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+export function groupNavigationPages(pages: NavigationPage[]): NavigationPageGroup[] {
+  const groups: NavigationPageGroup[] = []
+  const byLabel = new Map<string, NavigationPageGroup>()
+
+  for (const page of pages) {
+    const label = page.group?.trim() || 'Otros'
+    let group = byLabel.get(label)
+    if (!group) {
+      group = { id: slugifyGroupLabel(label), label, pages: [] }
+      byLabel.set(label, group)
+      groups.push(group)
+    }
+    group.pages.push(page)
+  }
+
+  return groups
 }
 
 function getPagePath(to: string): string {
@@ -69,66 +104,77 @@ export const useNavigationPages = () => {
           label: 'Cuentas y Billeteras',
           icon: 'i-lucide-wallet',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
+          group: 'Inversión',
         },
         {
           to: '/plazos-fijos',
           label: 'Plazos Fijos',
           icon: 'i-lucide-clock',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
+          group: 'Inversión',
         },
         {
           to: '/criptopesos',
           label: 'Criptopesos',
           icon: 'i-lucide-coins',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/criptopesos.png',
+          group: 'Inversión',
         },
         {
           to: '/cauciones',
           label: 'Cauciones',
           icon: 'i-lucide-handshake',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/cauciones.png',
-        },
-        {
-          to: '/creditos-hipotecarios-uva',
-          label: 'Créditos Hipotecarios UVA',
-          icon: 'i-lucide-home',
-          image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-hipotecario.png',
-        },
-        {
-          to: '/prestamos-personales',
-          label: 'Préstamos Personales',
-          icon: 'i-lucide-banknote',
-          image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-personal.png',
-        },
-        {
-          to: '/comisiones-cobro',
-          label: 'Comisiones de cobro',
-          icon: 'i-lucide-receipt',
-          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cobros.png',
-        },
-        {
-          to: '/comisiones-brokers',
-          label: 'Comisiones de brokers',
-          icon: 'i-lucide-briefcase-business',
-          image: 'https://api.argentinadatos.com/static/comparatasas/icons/brokers.png',
-        },
-        {
-          to: '/contado-cuotas',
-          label: 'Contado vs Cuotas',
-          icon: 'i-lucide-credit-card',
-          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cuotas.png',
+          group: 'Mercado',
         },
         {
           to: '/lecaps',
           label: 'LECAPs',
           icon: 'i-lucide-banknote',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/letras.png',
+          group: 'Mercado',
         },
         {
           to: '/bonos-cer',
           label: 'Bonos CER',
           icon: 'i-lucide-trending-up',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
+          group: 'Mercado',
+        },
+        {
+          to: '/creditos-hipotecarios-uva',
+          label: 'Créditos Hipotecarios UVA',
+          icon: 'i-lucide-home',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-hipotecario.png',
+          group: 'Crédito',
+        },
+        {
+          to: '/prestamos-personales',
+          label: 'Préstamos Personales',
+          icon: 'i-lucide-banknote',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-personal.png',
+          group: 'Crédito',
+        },
+        {
+          to: '/comisiones-cobro',
+          label: 'Comisiones de cobro',
+          icon: 'i-lucide-receipt',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cobros.png',
+          group: 'Costos y herramientas',
+        },
+        {
+          to: '/comisiones-brokers',
+          label: 'Comisiones de brokers',
+          icon: 'i-lucide-briefcase-business',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/brokers.png',
+          group: 'Costos y herramientas',
+        },
+        {
+          to: '/contado-cuotas',
+          label: 'Contado vs Cuotas',
+          icon: 'i-lucide-credit-card',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cuotas.png',
+          group: 'Costos y herramientas',
         },
       ],
     },
@@ -143,18 +189,21 @@ export const useNavigationPages = () => {
           label: 'Inversiones en USD',
           icon: 'i-lucide-dollar-sign',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
+          group: 'USD',
         },
         {
           to: '/cauciones?moneda=usd',
           label: 'Cauciones',
           icon: 'i-lucide-handshake',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
+          group: 'USD',
         },
         {
           to: '/remesas',
           label: 'Remesas',
           icon: 'i-lucide-send',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
+          group: 'USD',
         },
       ],
     },
