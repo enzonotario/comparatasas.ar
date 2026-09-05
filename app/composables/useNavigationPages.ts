@@ -64,6 +64,7 @@ function normalizeNavigationAlias(path: string): string {
   if (trimmed.startsWith('/creditos-hipotecarios-uva/')) return '/creditos-hipotecarios-uva'
   if (trimmed.startsWith('/prestamos-personales/')) return '/prestamos-personales'
   if (trimmed.startsWith('/comisiones-brokers/')) return '/comisiones-brokers'
+  if (trimmed === '/fondos' || trimmed.startsWith('/fondos/')) return '/fondos'
   return trimmed
 }
 
@@ -96,7 +97,7 @@ export const useNavigationPages = () => {
       id: 'ars',
       label: 'ARS',
       ariaLabel:
-        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, contado vs cuotas, LECAPs, cauciones, bonos CER, créditos hipotecarios UVA, préstamos personales y comisiones',
+        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, FCI, contado vs cuotas, LECAPs, cauciones, bonos CER, créditos hipotecarios UVA, préstamos personales y comisiones',
       icon: 'flag-ars',
       pages: [
         {
@@ -118,6 +119,13 @@ export const useNavigationPages = () => {
           label: 'Criptopesos',
           icon: 'i-lucide-coins',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/criptopesos.png',
+          group: 'Inversión',
+        },
+        {
+          to: '/fondos',
+          label: 'Fondos (FCI)',
+          icon: 'i-lucide-chart-pie',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
           group: 'Inversión',
         },
         {
