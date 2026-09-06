@@ -358,8 +358,8 @@ const sortedSiblings = computed(() => {
           <tr
             v-for="row in sortedSiblings"
             :key="`row-${row.fondo}`"
-            class="border-b border-default last:border-0"
-            :class="row.fondo === currentFondo ? 'bg-neutral-500/5' : ''"
+            class="border-b border-default last:border-0 hover:bg-elevated transition-colors"
+            :class="row.fondo === currentFondo ? 'bg-elevated/60' : ''"
           >
             <td class="py-2.5 px-1">
               <div class="flex items-center gap-2 min-w-0">

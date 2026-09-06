@@ -502,7 +502,7 @@ const flowKpis = computed(() => {
                 <tr
                   v-for="row in universe.returnsByType"
                   :key="row.key"
-                  class="border-b border-default last:border-0"
+                  class="border-b border-default last:border-0 hover:bg-elevated transition-colors"
                 >
                   <td class="py-2.5 px-1 font-medium">{{ row.label }}</td>
                   <td class="py-2.5 px-1 text-right tabular-nums">

@@ -393,11 +393,6 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
           :data="rows"
           :columns="columns"
           :get-row-id="(row) => row.symbol"
-          :ui="{
-            th: 'px-2 py-2 text-sm whitespace-nowrap',
-            td: 'px-2 py-1.5 text-sm whitespace-nowrap',
-            tr: 'hover:bg-elevated transition-colors',
-          }"
           class="w-full"
         >
           <template #empty>

@@ -1672,7 +1672,7 @@ const carrySectionLoading = computed(() => {
                   <tr
                     v-for="row in recargoHeatmap"
                     :key="`recargo-${row.label}`"
-                    class="border-b border-neutral-100 dark:border-neutral-900"
+                    class="border-b border-neutral-100 dark:border-neutral-900 hover:bg-elevated transition-colors"
                   >
                     <th class="px-3 py-2 text-left font-medium">
                       {{ decimalFormatter.format(row.label) }}%
@@ -1755,7 +1755,7 @@ const carrySectionLoading = computed(() => {
                   <tr
                     v-for="row in discountHeatmap"
                     :key="`discount-${row.label}`"
-                    class="border-b border-neutral-100 dark:border-neutral-900"
+                    class="border-b border-neutral-100 dark:border-neutral-900 hover:bg-elevated transition-colors"
                   >
                     <th class="px-3 py-2 text-left font-medium">
                       {{ decimalFormatter.format(row.label) }}%

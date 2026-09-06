@@ -679,20 +679,20 @@ onMounted(() => {
             Relación cuota / ingreso
           </p>
           <div class="overflow-x-auto rounded-xl border border-neutral-200 dark:border-neutral-800">
-            <table class="w-full text-left text-xs">
+            <table class="w-full text-left text-sm">
               <thead class="bg-neutral-50 dark:bg-neutral-900/60 text-neutral-500">
                 <tr>
-                  <th class="px-2 py-2 font-medium">Año</th>
-                  <th class="px-2 py-2 font-medium">Ingreso</th>
-                  <th class="px-2 py-2 font-medium">Cuota</th>
-                  <th class="px-2 py-2 font-medium">Relación</th>
+                  <th class="px-2 py-2 font-semibold">Año</th>
+                  <th class="px-2 py-2 font-semibold">Ingreso</th>
+                  <th class="px-2 py-2 font-semibold">Cuota</th>
+                  <th class="px-2 py-2 font-semibold">Relación</th>
                 </tr>
               </thead>
               <tbody>
                 <tr
                   v-for="row in projectionRows"
                   :key="row.yearIndex"
-                  class="border-t border-neutral-200 dark:border-neutral-800"
+                  class="border-t border-neutral-200 dark:border-neutral-800 hover:bg-elevated transition-colors"
                 >
                   <td class="px-2 py-2 whitespace-nowrap">{{ row.label }}</td>
                   <td class="px-2 py-2 tabular-nums whitespace-nowrap">

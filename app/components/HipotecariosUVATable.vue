@@ -507,25 +507,27 @@ td.sticky {
 }
 
 /* Hover de fila - incluye las celdas sticky */
+.row-hover:hover > td,
 .row-hover:hover .row-hover-cell {
-  background-color: rgb(249 250 251 / 1) !important;
-  background: rgb(249 250 251 / 1) !important;
+  background-color: var(--ui-bg-elevated) !important;
+  background: var(--ui-bg-elevated) !important;
 }
 
+.dark .row-hover:hover > td,
 .dark .row-hover:hover .row-hover-cell {
-  background-color: rgb(31 41 55 / 1) !important;
-  background: rgb(31 41 55 / 1) !important;
+  background-color: var(--ui-bg-elevated) !important;
+  background: var(--ui-bg-elevated) !important;
 }
 
 /* Hover de fila en celdas sticky */
 .row-hover:hover td.sticky.row-hover-cell {
-  background-color: rgb(249 250 251 / 1) !important;
-  background: rgb(249 250 251 / 1) !important;
+  background-color: var(--ui-bg-elevated) !important;
+  background: var(--ui-bg-elevated) !important;
 }
 
 .dark .row-hover:hover td.sticky.row-hover-cell {
-  background-color: rgb(31 41 55 / 1) !important;
-  background: rgb(31 41 55 / 1) !important;
+  background-color: var(--ui-bg-elevated) !important;
+  background: var(--ui-bg-elevated) !important;
 }
 
 /* Hover de columna completa - para celdas normales */

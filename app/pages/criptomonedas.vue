@@ -147,11 +147,11 @@ useHead({
             <table class="w-full">
               <thead>
                 <tr class="border-b border-gray-200 dark:border-gray-700">
-                  <th class="text-left p-4 font-medium">Criptomoneda</th>
+                  <th class="text-left px-2 py-2 text-sm font-semibold">Criptomoneda</th>
                   <th
                     v-for="entity in orderedCryptoYields"
                     :key="entity.entidad"
-                    class="text-center p-4 font-medium"
+                    class="text-center px-2 py-2 text-sm font-semibold"
                   >
                     <div class="flex flex-col items-center gap-2">
                       <UAvatar
@@ -168,9 +168,9 @@ useHead({
                 <tr
                   v-for="{ crypto, maxYield } in cryptosByMaxYield"
                   :key="crypto"
-                  class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900"
+                  class="border-b border-gray-100 dark:border-gray-800 hover:bg-elevated transition-colors"
                 >
-                  <td class="p-2">
+                  <td class="px-2 py-1.5">
                     <div class="flex items-center gap-3">
                       <UAvatar :src="getCryptoLogo(crypto)" :alt="crypto" size="xs" />
                       <span class="font-medium">{{ getCryptoName(crypto) }}</span>
@@ -179,7 +179,7 @@ useHead({
                   <td
                     v-for="entity in orderedCryptoYields"
                     :key="entity.entidad"
-                    class="p-4 text-center"
+                    class="px-2 py-1.5 text-center"
                   >
                     <template v-if="entity.rendimientos.find((r) => r.moneda === crypto)">
                       <UButton
