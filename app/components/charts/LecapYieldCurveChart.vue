@@ -6,7 +6,7 @@ export type LecapYieldMode = 'tir' | 'tem'
 
 interface Props {
   lecaps: Lecap[]
-  /** TIR anual (default) o TEM mensual implícita. */
+  /** TEA anual (default, clave `tir`) o TEM mensual. */
   mode?: LecapYieldMode
 }
 
@@ -19,7 +19,7 @@ const { textColor, gridLineColor } = useChartTheme()
 
 const tooltipBackground = computed(() => (colorMode.value === 'dark' ? '#171717' : '#ffffff'))
 
-const yieldLabel = computed(() => (props.mode === 'tem' ? 'TEM' : 'TIR'))
+const yieldLabel = computed(() => (props.mode === 'tem' ? 'TEM' : 'TEA'))
 
 function yieldPercent(item: Lecap): number {
   const rate = props.mode === 'tem' ? item.tem : item.tir

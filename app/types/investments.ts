@@ -124,16 +124,19 @@ export interface PlazoFijoPrecancelable {
 export interface Lecap {
   symbol: string
   price: number
-  bid: number
-  ask: number
+  bid?: number
+  ask?: number
   type: 'LECAP' | 'BONCAP'
-  finalPayment?: number
   maturity?: string
   days?: number
+  /** TNA en decimal (0,25 = 25%). */
   tna?: number
+  /** TEA / TIR anual efectiva en decimal (0,25 = 25%). */
   tir?: number
-  /** Tasa efectiva mensual implícita: (pago final ÷ precio)^(30 ÷ días) − 1 */
+  /** TEM en decimal (0,02 = 2%). */
   tem?: number
+  paridadPorcentaje?: number
+  volumen?: number
 }
 
 export interface UsdAccount {

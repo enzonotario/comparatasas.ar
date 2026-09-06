@@ -5,6 +5,7 @@ import LecapYieldCurveChart, {
   type LecapYieldMode,
 } from '~/components/charts/LecapYieldCurveChart.vue'
 import { useCaucionesBrokerSelection } from '~/composables/useCaucionesBrokerSelection'
+import { type LetrasPayload } from '~/composables/useLecaps'
 import { calcularTasaNetaLecap } from '~/lib/finance/comision-caucion-broker'
 import { getComisionesBrokersProductoPath } from '~/lib/comisiones-brokers-nav'
 import { ogUpdatedAtDate } from '~/utils/og-data'
@@ -13,16 +14,16 @@ import { useRouteQuery } from '@vueuse/router'
 
 definePageMeta({
   pageTitle: 'LECAPs y BONCAPs',
-  pageDescription: 'Precios en vivo de Letras y Bonos de Capitalización en Argentina.',
+  pageDescription: 'Cotización y tasas de Letras y Bonos de Capitalización en Argentina.',
 })
 
 useSeoMeta({
   title: 'LECAPs y BONCAPs',
   description:
-    'Consultá los precios actualizados de las LECAPs y BONCAPs en el mercado secundario argentino.',
-  ogTitle: 'LECAPs y BONCAPs - Precios en Vivo',
+    'Compará precio, TNA, TEA y TEM de LECAPs y BONCAPs soberanos a tasa fija en Argentina.',
+  ogTitle: 'LECAPs y BONCAPs — tasa fija',
   ogDescription:
-    'Consultá los precios actualizados de las LECAPs y BONCAPs en el mercado secundario argentino.',
+    'Cotización y tasas (TNA, TEA, TEM) de LECAPs y BONCAPs soberanos a tasa fija.',
 })
 
 useHead({
@@ -33,8 +34,18 @@ useHead({
   ],
 })
 
-const { lecapsItems, loading, error, fetch } = useLecaps()
-await fetch()
+function textoActualizacionOg(iso?: string) {
+  if (!iso) return ogUpdatedAtDate()
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ogUpdatedAtDate()
+  return `${d.toLocaleString('es-AR', { timeZone: 'UTC', dateStyle: 'long', timeStyle: 'short' })} UTC`
+}
+
+const { data: ogLetras } = await useAsyncData('og-lecaps', () =>
+  $fetch<LetrasPayload>('https://api.argentinadatos.com/v1/finanzas/letras'),
+)
+
+const { lecapsItems, loading, error, data } = useLecaps()
 
 const OPERACION_LECAP = 'compra' as const
 const { comisiones: comisionesBrokers, fetch: fetchComisionesBrokers } =
@@ -62,10 +73,26 @@ const curvaMode = computed<LecapYieldMode>({
   },
 })
 
+const ogLecapsItems = computed(() =>
+  (ogLetras.value?.letras ?? []).map((letra) => {
+    const type = letra.ticker.startsWith('T') ? ('BONCAP' as const) : ('LECAP' as const)
+    return {
+      symbol: letra.ticker,
+      price: letra.precioArs,
+      type,
+      days: letra.diasAlVencimiento,
+      maturity: letra.fechaVencimiento,
+      tna: letra.tnaPorcentaje / 100,
+      tir: letra.teaPorcentaje / 100,
+      tem: letra.temPorcentaje / 100,
+    }
+  }),
+)
+
 defineOgImage('LecapsCurve.takumi', {
   title: 'LECAPs y BONCAPs',
-  lecaps: lecapsItems.value ?? [],
-  updatedAt: ogUpdatedAtDate(),
+  lecaps: ogLecapsItems.value,
+  updatedAt: textoActualizacionOg(ogLetras.value?.fechaActualizacion),
 })
 
 const sorting = ref([
@@ -104,6 +131,14 @@ const lecapsWithSimulation = computed(() => {
 const lecapsForList = computed(() =>
   [...lecapsWithSimulation.value].sort((a, b) => (a.days ?? 0) - (b.days ?? 0)),
 )
+
+const extraccionError = computed(() => data.value?.errorExtraccion)
+
+const textoActualizacion = computed(() => {
+  const iso = data.value?.fechaActualizacion
+  if (!iso) return null
+  return formatFechaActualizacionUtc(iso)
+})
 
 function getRowToneClass(row: any) {
   const isOutOfHorizon = row?.simulation?.isOutOfHorizon
@@ -199,16 +234,6 @@ const baseColumns: TableColumn<any>[] = [
       ),
   },
   {
-    accessorKey: 'finalPayment',
-    header: createSortableHeader('Pago final', 'finalPayment'),
-    cell: ({ row }) =>
-      h(
-        'div',
-        { class: getRowToneClass(row.original) },
-        formatCurrency(row.getValue('finalPayment') as number),
-      ),
-  },
-  {
     accessorKey: 'days',
     header: createSortableHeader('Días', 'days'),
     cell: ({ row }) => h('div', { class: getRowToneClass(row.original) }, row.getValue('days')),
@@ -252,7 +277,7 @@ const baseColumns: TableColumn<any>[] = [
   },
   {
     accessorKey: 'tir',
-    header: createSortableHeader('TIR', 'tir'),
+    header: createSortableHeader('TEA', 'tir'),
     cell: ({ row }) =>
       h(
         'div',
@@ -306,7 +331,7 @@ const columns = computed(() =>
 )
 
 function formatCurrency(value: number): string {
-  if (!value) return '-'
+  if (value == null || Number.isNaN(value)) return '-'
   return new Intl.NumberFormat('es-AR', {
     style: 'currency',
     currency: 'ARS',
@@ -316,7 +341,7 @@ function formatCurrency(value: number): string {
 }
 
 function formatPercent(value: number): string {
-  if (!value) return '-'
+  if (value == null || Number.isNaN(value)) return '-'
   return new Intl.NumberFormat('es-AR', {
     style: 'percent',
     minimumFractionDigits: 2,
@@ -334,6 +359,13 @@ function formatDate(value: string): string {
     year: '2-digit',
   }).format(date)
 }
+
+function formatFechaActualizacionUtc(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return iso
+  return `${d.toLocaleString('es-AR', { timeZone: 'UTC', dateStyle: 'short', timeStyle: 'medium' })} UTC`
+}
+
 </script>
 
 <template>
@@ -355,39 +387,21 @@ function formatDate(value: string): string {
     />
 
     <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
-      <h2 class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">
-        LECAPs y BONCAPs
-      </h2>
+      <div class="min-w-0 space-y-0.5">
+        <h2 class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">
+          LECAPs y BONCAPs
+        </h2>
+        <p v-if="textoActualizacion" class="text-xs text-muted">Act. {{ textoActualizacion }}</p>
+      </div>
       <div class="text-xs text-muted">
         Fuente:
         <a
-          href="https://data912.apidocs.ar/?utm_source=comparatasas&utm_medium=lecaps&ref=comparatasas"
+          href="https://app.doctacapital.com.ar/?utm_source=comparatasas&utm_medium=lecaps"
           target="_blank"
           rel="noopener noreferrer"
           class="text-primary-800 dark:text-primary-200 font-medium"
         >
-          Data912
-        </a>
-
-        y
-
-        <a
-          href="https://x.com/arielsbdar?utm_source=comparatasas&utm_medium=lecaps&ref=comparatasas"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-primary-800 dark:text-primary-200 font-medium"
-        >
-          @arielsbdar
-        </a>
-
-        vía
-        <a
-          href="https://argentinadatos.com/?utm_source=comparatasas&utm_medium=lecaps&ref=comparatasas"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-primary-800 dark:text-primary-200 font-medium"
-        >
-          ArgentinaDatos
+          Docta Terminal
         </a>
       </div>
     </div>
@@ -399,6 +413,14 @@ function formatDate(value: string): string {
     </p>
 
     <UAlert v-if="error" color="error" variant="soft" title="Error cargando datos de LECAPs" />
+
+    <UAlert
+      v-if="extraccionError && !lecapsItems.length"
+      color="warning"
+      variant="soft"
+      title="Sin datos de LECAPs"
+      :description="extraccionError"
+    />
 
     <FundsLoading v-if="loading && !lecapsItems.length" />
 
@@ -443,8 +465,7 @@ function formatDate(value: string): string {
                 {{ formatDate(item.maturity) }} · {{ item.days }} días
               </p>
               <p class="text-xs text-muted tabular-nums">
-                Precio {{ formatCurrency(item.price) }} · Pago final
-                {{ formatCurrency(item.finalPayment) }}
+                Precio {{ formatCurrency(item.price) }}
               </p>
             </div>
 
@@ -452,7 +473,7 @@ function formatDate(value: string): string {
               <div class="font-bold tabular-nums text-green-600 dark:text-green-400">
                 {{ formatPercent(item.tir) }}
               </div>
-              <div class="text-xs text-muted">TIR</div>
+              <div class="text-xs text-muted">TEA</div>
               <div class="text-xs tabular-nums text-sky-600 dark:text-sky-400">
                 TEM {{ formatPercent(item.tem) }}
               </div>
@@ -533,11 +554,11 @@ function formatDate(value: string): string {
       <div class="border border-default rounded-lg p-4 bg-white dark:bg-neutral-900">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h3 class="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-            Curva de Rendimientos ({{ curvaMode === 'tem' ? 'TEM' : 'TIR' }} vs Días)
+            Curva de Rendimientos ({{ curvaMode === 'tem' ? 'TEM' : 'TEA' }} vs Días)
           </h3>
           <UFieldGroup size="sm" class="shrink-0">
             <UButton
-              label="TIR"
+              label="TEA"
               color="neutral"
               :variant="curvaMode === 'tir' ? 'solid' : 'outline'"
               @click="curvaMode = 'tir'"
@@ -554,12 +575,8 @@ function formatDate(value: string): string {
       </div>
     </div>
 
-    <div v-if="!loading && !lecapsItems.length" class="hidden">
-      <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 text-muted mx-auto mb-4" />
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-        No se encontraron datos
-      </h3>
-      <p class="text-muted">No hay LECAPs o BONCAPs disponibles en este momento.</p>
+    <div v-else-if="!loading" class="text-center py-12 text-muted">
+      No hay LECAPs o BONCAPs disponibles en este momento.
     </div>
 
     <section
@@ -578,6 +595,12 @@ function formatDate(value: string): string {
             Son una alternativa popular al plazo fijo para inversores que buscan liquidez inmediata
             (se pueden vender en el mercado secundario en cualquier momento) y tasas que suelen
             estar alineadas o superar a las de los bancos.
+          </p>
+          <p>
+            En esta página se muestran <strong>precio de cotización</strong>, <strong>TNA</strong>,
+            <strong>TEA</strong> y <strong>TEM</strong> según datos de mercado de Docta Terminal,
+            agregados por ArgentinaDatos. Son valores <strong>orientativos</strong>; no constituyen
+            asesoramiento financiero.
           </p>
           <p>
             En la tabla podés elegir un <strong>broker</strong> y ver la <strong>TNA neta</strong>:

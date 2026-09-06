@@ -208,34 +208,19 @@ export const methodologySections: MethodologySection[] = [
     title: 'LECAPs y BONCAPs',
     category: 'titulos',
     categoryLabel: 'Títulos públicos',
+    source: 'Docta Terminal (vía ArgentinaDatos)',
     blocks: [
       {
         type: 'p',
-        text: 'Usamos precio de mercado, pago final al vencimiento y días hasta el vencimiento (desde la fecha de liquidación operativa) para estimar rentabilidad.',
-      },
-      {
-        type: 'formula',
-        text: 'Factor de ganancia = pago final ÷ precio',
-      },
-      {
-        type: 'formula',
-        text: 'TNA = (factor − 1) × (365 ÷ días)',
-      },
-      {
-        type: 'formula',
-        text: 'TIR = factor^(365 ÷ días) − 1',
-      },
-      {
-        type: 'formula',
-        text: 'TEM = factor^(30 ÷ días) − 1',
+        text: 'Mostramos precio en pesos, fecha de vencimiento, TNA, TEA y TEM tal como publica Docta Terminal para soberanos a tasa fija (LECAP/BONCAP), agregados por ArgentinaDatos.',
       },
       {
         type: 'p',
-        text: 'La TEM es la tasa efectiva mensual implícita en el precio (base 30 días). Equivale a (1+TIR)^(30/365)−1. En la curva podés alternar TIR vs TEM.',
+        text: 'Los días al vencimiento vienen de la fuente cuando están disponibles; si no, se calculan en calendario desde hoy. En la curva podés alternar TEA (anual efectiva) vs TEM.',
       },
       {
         type: 'p',
-        text: 'En el simulador, la ganancia compuesta usa la TIR como tasa anual efectiva y limita los días al mínimo entre tu horizonte y los días al vencimiento del papel.',
+        text: 'En el simulador, la ganancia compuesta usa la TEA como tasa anual efectiva y limita los días al mínimo entre tu horizonte y los días al vencimiento del papel.',
       },
       {
         type: 'p',
@@ -294,11 +279,11 @@ export const methodologySections: MethodologySection[] = [
     title: 'Bonos CER',
     category: 'titulos',
     categoryLabel: 'Títulos públicos',
-    source: 'Mercado de títulos públicos',
+    source: 'Docta Terminal (vía ArgentinaDatos)',
     blocks: [
       {
         type: 'p',
-        text: 'Mostramos precio en pesos, fecha de vencimiento y TIR en porcentaje tal como viene de la fuente de mercado. Los días al vencimiento se calculan en calendario desde hoy para contexto en la UI.',
+        text: 'Mostramos precio en pesos, fecha de vencimiento y TIR en porcentaje tal como publica Docta Terminal para soberanos CER, agregados por ArgentinaDatos. Los días al vencimiento se calculan en calendario desde hoy para contexto en la UI.',
       },
       {
         type: 'formula',
