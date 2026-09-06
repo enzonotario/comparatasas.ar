@@ -217,23 +217,23 @@ function formatFechaActualizacionUtc(iso: string): string {
 
 <template>
   <UContainer class="w-full mx-auto space-y-4 px-0">
-    <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-      <div class="min-w-0 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+      <div class="min-w-0 space-y-0.5">
         <h2 class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">
           LECAPs y BONCAPs
         </h2>
         <p v-if="textoActualizacion" class="text-xs text-muted">Act. {{ textoActualizacion }}</p>
-        <p class="text-xs text-muted">
-          Fuente:
-          <a
-            href="https://app.doctacapital.com.ar/?utm_source=comparatasas&utm_medium=lecaps"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-primary-800 dark:text-primary-200 font-medium"
-          >
-            Docta Terminal
-          </a>
-        </p>
+      </div>
+      <div class="text-xs text-muted">
+        Fuente:
+        <a
+          href="https://app.doctacapital.com.ar/?utm_source=comparatasas&utm_medium=lecaps"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-primary-800 dark:text-primary-200 font-medium"
+        >
+          Docta Terminal
+        </a>
       </div>
     </div>
 

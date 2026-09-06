@@ -68,6 +68,16 @@ function toPageItem(page: NavigationPage): NavigationMenuItem {
     icon: page.icon,
     to: page.to,
     active: isActive(page),
+    ...(page.badge
+      ? {
+          badge: {
+            label: page.badge.label,
+            color: page.badge.color ?? 'primary',
+            variant: 'subtle',
+            size: 'sm',
+          },
+        }
+      : {}),
   }
 }
 
@@ -144,6 +154,22 @@ function pageLinkClass(page: NavigationPage) {
                       aria-hidden="true"
                     />
                     <span class="truncate font-medium">{{ child.label }}</span>
+                    <UBadge
+                      v-if="typeof child.badge === 'object' && child.badge"
+                      :label="child.badge.label"
+                      :color="child.badge.color ?? 'primary'"
+                      size="sm"
+                      variant="subtle"
+                      class="ml-auto shrink-0"
+                    />
+                    <UBadge
+                      v-else-if="child.badge"
+                      :label="String(child.badge)"
+                      color="primary"
+                      size="sm"
+                      variant="subtle"
+                      class="ml-auto shrink-0"
+                    />
                   </NuxtLink>
                 </li>
               </ul>
@@ -166,6 +192,14 @@ function pageLinkClass(page: NavigationPage) {
             <span class="flex min-w-0 items-center gap-2">
               <img :src="currentPage.image" alt="" class="size-6 shrink-0" aria-hidden="true" />
               <span class="truncate font-medium">{{ currentPage.label }}</span>
+              <UBadge
+                v-if="currentPage.badge"
+                :label="currentPage.badge.label"
+                :color="currentPage.badge.color ?? 'primary'"
+                size="sm"
+                variant="subtle"
+                class="shrink-0"
+              />
             </span>
           </UButton>
 
@@ -194,11 +228,20 @@ function pageLinkClass(page: NavigationPage) {
                           aria-hidden="true"
                         />
                         <span class="min-w-0 truncate">{{ page.label }}</span>
-                        <UIcon
-                          v-if="isActive(page)"
-                          name="i-lucide-check"
-                          class="ml-auto size-4 shrink-0 text-primary-600 dark:text-primary-400"
-                        />
+                        <span class="ml-auto flex items-center gap-1.5 shrink-0">
+                          <UBadge
+                            v-if="page.badge"
+                            :label="page.badge.label"
+                            :color="page.badge.color ?? 'primary'"
+                            size="sm"
+                            variant="subtle"
+                          />
+                          <UIcon
+                            v-if="isActive(page)"
+                            name="i-lucide-check"
+                            class="size-4 text-primary-600 dark:text-primary-400"
+                          />
+                        </span>
                       </NuxtLink>
                     </li>
                   </ul>

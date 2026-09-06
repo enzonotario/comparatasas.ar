@@ -5,6 +5,11 @@ export interface NavigationPage {
   image: string
   /** Agrupa opciones en el panel de subnavegación (desktop/mobile). */
   group?: string
+  /** Chip opcional junto al label (p. ej. Nuevo / Mejorado). */
+  badge?: {
+    label: string
+    color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
+  }
 }
 
 export interface NavigationPageGroup {
@@ -134,13 +139,15 @@ export const useNavigationPages = () => {
           icon: 'i-lucide-handshake',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/cauciones.png',
           group: 'Mercado',
+          badge: { label: 'Nuevo', color: 'primary' },
         },
         {
           to: '/lecaps',
-          label: 'LECAPs',
+          label: 'LECAPs y BONCAPs',
           icon: 'i-lucide-banknote',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/letras.png',
           group: 'Mercado',
+          badge: { label: 'Mejorado', color: 'info' },
         },
         {
           to: '/bonos-cer',
@@ -205,6 +212,7 @@ export const useNavigationPages = () => {
           icon: 'i-lucide-handshake',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
           group: 'USD',
+          badge: { label: 'Nuevo', color: 'primary' },
         },
         {
           to: '/remesas',
