@@ -408,3 +408,27 @@ export function calcularTasaNetaLecap(
   if (netaPuntos == null) return null
   return netaPuntos / 100
 }
+
+/**
+ * % de costo sobre el precio de compra de letras (0,15 = 0,15%).
+ * Con `tasaBase` null (caso típico en letras) la tasa publicada es one-shot sobre el nocional;
+ * con base mensual/anual/TNA se prorratea al plazo como en cauciones.
+ */
+export function costoCompraLetrasPct(
+  comision: ComisionBrokerApi | null | undefined,
+  plazoDias: number,
+): number {
+  if (!comision) return 0
+
+  if (comision.tasaBase == null) {
+    if (comision.tasa == null || !Number.isFinite(comision.tasa)) return 0
+    let pct = comision.tasa * 100
+    if (comision.ivaAdicional) pct *= 1 + IVA_COMISION_BROKER
+    if (comision.derechoMercado != null && Number.isFinite(comision.derechoMercado)) {
+      pct += comision.derechoMercado * 100
+    }
+    return pct
+  }
+
+  return comisionCostoPctPlazo(comision, plazoDias) + derechoMercadoPct(comision, plazoDias)
+}

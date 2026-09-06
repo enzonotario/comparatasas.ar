@@ -1,29 +1,32 @@
 <script setup lang="ts">
-import { UBadge, UButton } from '#components'
-import CaucionesBrokerSelect from '~/components/CaucionesBrokerSelect.vue'
 import LecapYieldCurveChart, {
   type LecapYieldMode,
 } from '~/components/charts/LecapYieldCurveChart.vue'
-import { useCaucionesBrokerSelection } from '~/composables/useCaucionesBrokerSelection'
-import { type LetrasPayload } from '~/composables/useLecaps'
-import { calcularTasaNetaLecap } from '~/lib/finance/comision-caucion-broker'
+import LecapsComparadorTabla from '~/components/LecapsComparadorTabla.vue'
+import CaucionesBrokerSelect from '~/components/CaucionesBrokerSelect.vue'
+import {
+  type BrokerOption,
+  useCaucionesBrokerSelection,
+} from '~/composables/useCaucionesBrokerSelection'
+import { resolvePlazoFijoRateAtDays, usePlazosFijos } from '~/composables/usePlazosFijos'
+import type { LetrasPayload } from '~/composables/useLecaps'
 import { getComisionesBrokersProductoPath } from '~/lib/comisiones-brokers-nav'
 import { ogUpdatedAtDate } from '~/utils/og-data'
-import type { TableColumn } from '@nuxt/ui'
 import { useRouteQuery } from '@vueuse/router'
 
 definePageMeta({
   pageTitle: 'LECAPs y BONCAPs',
-  pageDescription: 'Cotización y tasas de Letras y Bonos de Capitalización en Argentina.',
+  pageDescription:
+    'Compará precio, comisión de broker, ganancia al vencimiento y TNA de LECAPs y BONCAPs en Argentina.',
 })
 
 useSeoMeta({
   title: 'LECAPs y BONCAPs',
   description:
-    'Compará precio, TNA, TEA y TEM de LECAPs y BONCAPs soberanos a tasa fija en Argentina.',
-  ogTitle: 'LECAPs y BONCAPs — tasa fija',
+    'Compará precio, ganancia directa, TNA y TEM de LECAPs y BONCAPs soberanos a tasa fija. Incluye comisión de compra de letras por broker y vs plazo fijo.',
+  ogTitle: 'LECAPs y BONCAPs — comparador',
   ogDescription:
-    'Cotización y tasas (TNA, TEA, TEM) de LECAPs y BONCAPs soberanos a tasa fija.',
+    'Cotización, ganancia al vencimiento, TNA/TEM, comisión de letras por broker y comparación vs plazo fijo.',
 })
 
 useHead({
@@ -59,18 +62,120 @@ const { brokerOptions, selectedEntidad, selectedComision } = useCaucionesBrokerS
   'letras',
 )
 
-const { amount, days, calculateCompoundInterest, isSimulating } = useInvestmentSimulator()
+const { plazosFijosTableRows } = usePlazosFijos()
 
-// Por defecto en LECAPs: iniciar el simulador con 1M (y el horizonte por defecto 180d).
-amount.value = 1000000
-days.value = 180
-
+const searchQuery = useRouteQuery('q', '')
+const montoQuery = useRouteQuery('monto', '')
+const pfQuery = useRouteQuery('pf', '')
 const curvaQuery = useRouteQuery<LecapYieldMode>('curva', 'tir')
+
+const DEFAULT_MONTO = 1_000_000
+const montoPresets = [
+  { value: 500_000, label: '$500k' },
+  { value: 1_000_000, label: '$1M' },
+  { value: 10_000_000, label: '$10M' },
+] as const
+
+function parseQueryNumber(raw: unknown, fallback: number): number {
+  const n = parseFloat(String(raw ?? '').replace(',', '.'))
+  return Number.isFinite(n) ? n : fallback
+}
+
+function formatQueryNumber(n: number): string {
+  return String(Math.round(n * 1e6) / 1e6)
+}
+
+const montoInvertir = computed({
+  get: () => {
+    const raw = String(montoQuery.value ?? '').trim()
+    if (!raw) return DEFAULT_MONTO
+    const n = parseQueryNumber(raw, DEFAULT_MONTO)
+    return n > 0 ? n : DEFAULT_MONTO
+  },
+  set: (v: number) => {
+    const n = Number.isFinite(v) && v > 0 ? v : DEFAULT_MONTO
+    montoQuery.value = formatQueryNumber(n)
+  },
+})
+
+function setMontoPreset(value: number) {
+  montoInvertir.value = value
+}
+
+/** Opciones de PF ordenadas como en /plazos-fijos (mejor TNA 30d primero). */
+const plazoFijoOptions = computed<BrokerOption[]>(() => {
+  const amount = montoInvertir.value
+  return plazosFijosTableRows.value
+    .map((row) => {
+      const match = resolvePlazoFijoRateAtDays(row, 30, amount)
+      const tna = match?.tna ?? (row.sortTna30d > 0 ? row.sortTna30d : row.sortTna)
+      if (!(tna > 0)) return null
+      return {
+        value: row.rowKey,
+        label: row.institution,
+        description: `${tna.toFixed(2)}% TNA`,
+      }
+    })
+    .filter((option): option is BrokerOption => option != null)
+})
+
+const selectedPlazoFijo = computed({
+  get: () => {
+    const current = pfQuery.value
+    if (current && plazoFijoOptions.value.some((option) => option.value === current)) {
+      return current
+    }
+    return plazoFijoOptions.value[0]?.value ?? ''
+  },
+  set: (value: string) => {
+    pfQuery.value = value
+  },
+})
+
+const tnaPlazoFijoPorcentaje = computed(() => {
+  const row = plazosFijosTableRows.value.find((r) => r.rowKey === selectedPlazoFijo.value)
+  if (!row) return 0
+  const match = resolvePlazoFijoRateAtDays(row, 30, montoInvertir.value)
+  if (match) return match.tna
+  return row.sortTna30d > 0 ? row.sortTna30d : row.sortTna
+})
+
+function pickBestPlazoFijo() {
+  const best = plazoFijoOptions.value[0]
+  if (best) pfQuery.value = best.value
+}
+
+onMounted(() => {
+  if (!pfQuery.value) pickBestPlazoFijo()
+  if (!String(montoQuery.value ?? '').trim()) {
+    montoQuery.value = formatQueryNumber(DEFAULT_MONTO)
+  }
+})
+
+watch(plazoFijoOptions, (options) => {
+  if (!options.length) {
+    pfQuery.value = ''
+    return
+  }
+  if (!options.some((option) => option.value === pfQuery.value)) {
+    pickBestPlazoFijo()
+  }
+})
+
 const curvaMode = computed<LecapYieldMode>({
   get: () => (curvaQuery.value === 'tem' ? 'tem' : 'tir'),
   set: (value) => {
     curvaQuery.value = value
   },
+})
+
+const filteredItems = computed(() => {
+  const q = String(searchQuery.value || '')
+    .trim()
+    .toUpperCase()
+  const base = [...lecapsItems.value].sort((a, b) => a.days - b.days)
+  if (!q) return base
+  return base.filter((i) => i.symbol.includes(q) || i.type.includes(q) || i.typeLabel.includes(q))
 })
 
 const ogLecapsItems = computed(() =>
@@ -95,43 +200,6 @@ defineOgImage('LecapsCurve.takumi', {
   updatedAt: textoActualizacionOg(ogLetras.value?.fechaActualizacion),
 })
 
-const sorting = ref([
-  {
-    id: 'days',
-    desc: false,
-  },
-])
-
-const lecapsWithSimulation = computed(() => {
-  return lecapsItems.value.map((item) => {
-    const itemDays = item.days || days.value
-    const effectiveDays = Math.max(1, Math.min(days.value, itemDays))
-    const rate = item.tir || 0
-    const simulationResult = calculateCompoundInterest(amount.value, rate, effectiveDays)
-    const tnaNeta =
-      item.days > 0 ? calcularTasaNetaLecap(item.tna, item.days, selectedComision.value) : null
-
-    return {
-      ...item,
-      tnaNeta,
-      simulation: {
-        initialAmount: amount.value,
-        finalAmount: simulationResult.finalAmount,
-        earned: simulationResult.earned,
-        requestedDays: days.value,
-        effectiveDays,
-        itemDays,
-        isOutOfHorizon: itemDays > days.value,
-      },
-    }
-  })
-})
-
-/** Lista mobile: mismo orden por defecto que la tabla (días asc). */
-const lecapsForList = computed(() =>
-  [...lecapsWithSimulation.value].sort((a, b) => (a.days ?? 0) - (b.days ?? 0)),
-)
-
 const extraccionError = computed(() => data.value?.errorExtraccion)
 
 const textoActualizacion = computed(() => {
@@ -140,277 +208,105 @@ const textoActualizacion = computed(() => {
   return formatFechaActualizacionUtc(iso)
 })
 
-function getRowToneClass(row: any) {
-  const isOutOfHorizon = row?.simulation?.isOutOfHorizon
-  return isSimulating.value && isOutOfHorizon ? 'opacity-40 text-muted' : ''
-}
-
-function createSortableHeader(label: string, accessorKey: string) {
-  return ({ column }: { column: any }) => {
-    const isSorted = column.getIsSorted()
-    return h(UButton, {
-      color: 'neutral',
-      variant: 'ghost',
-      label,
-      icon: isSorted
-        ? isSorted === 'asc'
-          ? 'i-lucide-arrow-up-narrow-wide'
-          : 'i-lucide-arrow-down-wide-narrow'
-        : 'i-lucide-arrow-up-down',
-      class: '-mx-2.5 font-bold',
-      onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-    })
-  }
-}
-
-function createTasaNetaHeader() {
-  return ({ column }: { column: any }) => {
-    const isSorted = column.getIsSorted()
-    const sortButton = h(UButton, {
-      color: 'neutral',
-      variant: 'ghost',
-      icon: isSorted
-        ? isSorted === 'asc'
-          ? 'i-lucide-arrow-up-narrow-wide'
-          : 'i-lucide-arrow-down-wide-narrow'
-        : 'i-lucide-arrow-up-down',
-      class: 'shrink-0 -mr-1',
-      onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-    })
-
-    const headerLabel = h('div', { class: 'flex items-center gap-0.5' }, [
-      h('span', { class: 'font-bold whitespace-nowrap' }, 'TNA neta'),
-      sortButton,
-    ])
-
-    if (!brokerOptions.value.length) {
-      return headerLabel
-    }
-
-    return h('div', { class: 'flex flex-col gap-1.5 min-w-[10.5rem] max-w-[13rem]' }, [
-      headerLabel,
-      h(CaucionesBrokerSelect, {
-        modelValue: selectedEntidad.value,
-        'onUpdate:modelValue': (value: string) => {
-          selectedEntidad.value = value
-        },
-        items: brokerOptions.value,
-        size: 'xs',
-        class: 'w-full',
-      }),
-    ])
-  }
-}
-
-const baseColumns: TableColumn<any>[] = [
-  {
-    accessorKey: 'symbol',
-    header: createSortableHeader('Ticker', 'symbol'),
-    cell: ({ row }) =>
-      h('div', { class: `flex items-center gap-2 ${getRowToneClass(row.original)}` }, [
-        h('span', { class: 'font-bold text-neutral-900 dark:text-white' }, row.getValue('symbol')),
-        h(
-          UBadge,
-          {
-            variant: 'soft',
-            size: 'xs',
-            color: (row.original as any).type === 'BONCAP' ? 'primary' : 'success',
-            class: 'font-bold px-1.5 py-0.5',
-          },
-          () => (row.original as any).type,
-        ),
-      ]),
-  },
-  {
-    accessorKey: 'price',
-    header: createSortableHeader('Precio', 'price'),
-    cell: ({ row }) =>
-      h(
-        'div',
-        {
-          class: `${getRowToneClass(row.original)} text-primary-600 dark:text-primary-400 font-bold`,
-        },
-        formatCurrency(row.getValue('price') as number),
-      ),
-  },
-  {
-    accessorKey: 'days',
-    header: createSortableHeader('Días', 'days'),
-    cell: ({ row }) => h('div', { class: getRowToneClass(row.original) }, row.getValue('days')),
-  },
-  {
-    accessorKey: 'maturity',
-    header: createSortableHeader('Vencimiento', 'maturity'),
-    cell: ({ row }) =>
-      h(
-        'div',
-        { class: getRowToneClass(row.original) },
-        formatDate(row.getValue('maturity') as string),
-      ),
-  },
-  {
-    accessorKey: 'tna',
-    header: createSortableHeader('TNA', 'tna'),
-    cell: ({ row }) =>
-      h(
-        'div',
-        { class: `${getRowToneClass(row.original)} font-bold` },
-        formatPercent(row.getValue('tna') as number),
-      ),
-  },
-  {
-    accessorKey: 'tnaNeta',
-    header: createTasaNetaHeader(),
-    cell: ({ row }) => {
-      const neta = (row.original as { tnaNeta?: number | null }).tnaNeta
-      if (neta == null) {
-        return h('span', { class: `${getRowToneClass(row.original)} text-muted` }, '—')
-      }
-      return h(
-        'div',
-        {
-          class: `${getRowToneClass(row.original)} font-bold tabular-nums text-primary-800 dark:text-primary-200`,
-        },
-        formatPercent(neta),
-      )
-    },
-  },
-  {
-    accessorKey: 'tir',
-    header: createSortableHeader('TEA', 'tir'),
-    cell: ({ row }) =>
-      h(
-        'div',
-        { class: `${getRowToneClass(row.original)} font-bold text-green-600 dark:text-green-400` },
-        formatPercent(row.getValue('tir') as number),
-      ),
-  },
-  {
-    accessorKey: 'tem',
-    header: createSortableHeader('TEM', 'tem'),
-    cell: ({ row }) =>
-      h(
-        'div',
-        { class: `${getRowToneClass(row.original)} font-bold text-sky-600 dark:text-sky-400` },
-        formatPercent(row.getValue('tem') as number),
-      ),
-  },
-]
-
-const simulationColumns: TableColumn<any>[] = [
-  {
-    accessorKey: 'simulation.finalAmount',
-    header: createSortableHeader('Monto final', 'simulation.finalAmount'),
-    cell: ({ row }) => {
-      const simulation = (row.original as any).simulation
-      return h(
-        'div',
-        {
-          class: `${getRowToneClass(row.original)} font-bold text-primary-600 dark:text-primary-400`,
-        },
-        formatCurrency(simulation.finalAmount),
-      )
-    },
-  },
-  {
-    accessorKey: 'simulation.earned',
-    header: createSortableHeader('Ganancia', 'simulation.earned'),
-    cell: ({ row }) => {
-      const simulation = (row.original as any).simulation
-      const value = formatCurrency(simulation.earned)
-      const baseClass =
-        'font-bold ' +
-        (simulation.earned >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600')
-      return h('div', { class: `${getRowToneClass(row.original)} ${baseClass}` }, value)
-    },
-  },
-]
-
-const columns = computed(() =>
-  isSimulating.value ? [...baseColumns, ...simulationColumns] : baseColumns,
-)
-
-function formatCurrency(value: number): string {
-  if (value == null || Number.isNaN(value)) return '-'
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value)
-}
-
-function formatPercent(value: number): string {
-  if (value == null || Number.isNaN(value)) return '-'
-  return new Intl.NumberFormat('es-AR', {
-    style: 'percent',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value)
-}
-
-function formatDate(value: string): string {
-  if (!value) return '-'
-  const [year, month, day] = value.split('-').map(Number)
-  const date = new Date(year!, month! - 1, day)
-  return new Intl.DateTimeFormat('es-AR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: '2-digit',
-  }).format(date)
-}
-
 function formatFechaActualizacionUtc(iso: string): string {
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso
   return `${d.toLocaleString('es-AR', { timeZone: 'UTC', dateStyle: 'short', timeStyle: 'medium' })} UTC`
 }
-
 </script>
 
 <template>
-  <UContainer class="w-full mx-auto space-y-6 max-w-6xl px-0">
-    <InvestmentSimulator
-      :default-amount="1000000"
-      :default-days="180"
-      :preset-amounts="[
-        { value: 500000, label: '$500k' },
-        { value: 1000000, label: '$1M' },
-        { value: 10000000, label: '$10M' },
-      ]"
-      :preset-days="[
-        { value: 30, label: '30d' },
-        { value: 60, label: '60d' },
-        { value: 180, label: '180d' },
-        { value: 360, label: '360d' },
-      ]"
-    />
-
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
-      <div class="min-w-0 space-y-0.5">
+  <UContainer class="w-full mx-auto space-y-4 px-0">
+    <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+      <div class="min-w-0 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
         <h2 class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white">
           LECAPs y BONCAPs
         </h2>
         <p v-if="textoActualizacion" class="text-xs text-muted">Act. {{ textoActualizacion }}</p>
-      </div>
-      <div class="text-xs text-muted">
-        Fuente:
-        <a
-          href="https://app.doctacapital.com.ar/?utm_source=comparatasas&utm_medium=lecaps"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-primary-800 dark:text-primary-200 font-medium"
-        >
-          Docta Terminal
-        </a>
+        <p class="text-xs text-muted">
+          Fuente:
+          <a
+            href="https://app.doctacapital.com.ar/?utm_source=comparatasas&utm_medium=lecaps"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary-800 dark:text-primary-200 font-medium"
+          >
+            Docta Terminal
+          </a>
+        </p>
       </div>
     </div>
 
-    <p v-if="brokerOptions.length" class="text-xs text-muted -mt-2">
-      TNA neta: mercado ajustado por comisión de compra de letras (+ IVA si aplica) y derecho de
-      mercado prorrateado a los días al vencimiento. Si el broker cobra membresía de plan (monto
-      fijo mensual), aparece en el selector; no se prorratea en la TNA neta.
+    <p class="text-xs text-muted -mt-1 leading-snug max-w-5xl">
+      Precio c/ comisión según broker de letras (+ IVA si aplica; membresía no incluida). Monto → VN
+      y total a recibir; vs PF usa TNA 30d del banco elegido (mejor de
+      <NuxtLink
+        to="/plazos-fijos"
+        class="text-primary-800 dark:text-primary-200 font-medium underline underline-offset-2"
+      >
+        plazos fijos </NuxtLink
+      >
+      por defecto).
     </p>
+
+    <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 sm:items-start">
+      <UFormField label="Buscar">
+        <UInput
+          v-model="searchQuery"
+          icon="i-lucide-search"
+          placeholder="Buscar por ticker..."
+          size="sm"
+          class="w-full"
+        />
+      </UFormField>
+
+      <UFormField label="Monto a invertir">
+        <div class="space-y-1.5">
+          <UInputNumber
+            v-model="montoInvertir"
+            :min="1"
+            :step="1"
+            size="sm"
+            :format-options="{
+              style: 'currency',
+              currency: 'ARS',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }"
+            class="w-full"
+          />
+          <div class="flex flex-wrap gap-1">
+            <UButton
+              v-for="preset in montoPresets"
+              :key="preset.value"
+              size="xs"
+              color="neutral"
+              :variant="montoInvertir === preset.value ? 'solid' : 'outline'"
+              :label="preset.label"
+              @click="setMontoPreset(preset.value)"
+            />
+          </div>
+        </div>
+      </UFormField>
+
+      <UFormField v-if="brokerOptions.length" label="Comisión broker">
+        <CaucionesBrokerSelect
+          v-model="selectedEntidad"
+          :items="brokerOptions"
+          size="sm"
+          class="w-full"
+        />
+      </UFormField>
+
+      <UFormField v-if="plazoFijoOptions.length" label="Comparar con Plazo fijo">
+        <CaucionesBrokerSelect
+          v-model="selectedPlazoFijo"
+          :items="plazoFijoOptions"
+          size="sm"
+          class="w-full"
+        />
+      </UFormField>
+    </div>
 
     <UAlert v-if="error" color="error" variant="soft" title="Error cargando datos de LECAPs" />
 
@@ -424,121 +320,13 @@ function formatFechaActualizacionUtc(iso: string): string {
 
     <FundsLoading v-if="loading && !lecapsItems.length" />
 
-    <div v-else-if="lecapsItems.length" class="space-y-6">
-      <div
-        v-if="brokerOptions.length"
-        class="sm:hidden flex items-center justify-between gap-3 rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-2"
-      >
-        <span class="text-xs font-medium text-muted shrink-0">TNA neta</span>
-        <CaucionesBrokerSelect
-          v-model="selectedEntidad"
-          :items="brokerOptions"
-          size="sm"
-          class="min-w-40 flex-1 max-w-xs"
-        />
-      </div>
-
-      <!-- Mobile: lista -->
-      <div class="sm:hidden flex flex-col gap-3">
-        <div
-          v-for="item in lecapsForList"
-          :key="item.symbol"
-          class="rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-3"
-          :class="
-            isSimulating && item.simulation.isOutOfHorizon ? 'opacity-40 text-muted' : undefined
-          "
-        >
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0 space-y-1">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-bold text-neutral-900 dark:text-white">{{ item.symbol }}</span>
-                <UBadge
-                  variant="soft"
-                  size="xs"
-                  :color="item.type === 'BONCAP' ? 'primary' : 'success'"
-                  class="font-bold"
-                >
-                  {{ item.type }}
-                </UBadge>
-              </div>
-              <p class="text-xs text-muted">
-                {{ formatDate(item.maturity) }} · {{ item.days }} días
-              </p>
-              <p class="text-xs text-muted tabular-nums">
-                Precio {{ formatCurrency(item.price) }}
-              </p>
-            </div>
-
-            <div class="text-right space-y-0.5 shrink-0">
-              <div class="font-bold tabular-nums text-green-600 dark:text-green-400">
-                {{ formatPercent(item.tir) }}
-              </div>
-              <div class="text-xs text-muted">TEA</div>
-              <div class="text-xs tabular-nums text-sky-600 dark:text-sky-400">
-                TEM {{ formatPercent(item.tem) }}
-              </div>
-              <div class="text-xs text-muted tabular-nums">TNA {{ formatPercent(item.tna) }}</div>
-              <div
-                v-if="item.tnaNeta != null"
-                class="text-xs font-bold tabular-nums text-primary-800 dark:text-primary-200"
-              >
-                Neta {{ formatPercent(item.tnaNeta) }}
-              </div>
-            </div>
-          </div>
-
-          <div
-            v-if="isSimulating"
-            class="mt-3 flex items-baseline justify-between gap-3 border-t border-neutral-200 dark:border-neutral-800 pt-2"
-          >
-            <div class="text-xs text-muted">
-              {{
-                item.simulation.isOutOfHorizon
-                  ? `Fuera de horizonte (${item.simulation.itemDays}d)`
-                  : `A ${item.simulation.effectiveDays}d`
-              }}
-            </div>
-            <div class="text-right">
-              <div class="font-bold tabular-nums text-primary-600 dark:text-primary-400">
-                {{ formatCurrency(item.simulation.finalAmount) }}
-              </div>
-              <div
-                class="text-xs font-semibold tabular-nums"
-                :class="
-                  item.simulation.earned >= 0
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-red-600'
-                "
-              >
-                {{ formatCurrency(item.simulation.earned) }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- sm+: tabla -->
-      <div class="hidden sm:block border border-default rounded-lg overflow-hidden">
-        <UTable
-          v-model:sorting="sorting"
-          :data="lecapsWithSimulation"
-          :columns="columns"
-          :loading="loading"
-        >
-          <template #empty>
-            <div class="py-12 text-center">
-              <UIcon
-                name="i-heroicons-exclamation-triangle"
-                class="w-12 h-12 text-muted mx-auto mb-4"
-              />
-              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                No se encontraron datos
-              </h3>
-              <p class="text-muted">No hay LECAPs o BONCAPs disponibles en este momento.</p>
-            </div>
-          </template>
-        </UTable>
-      </div>
+    <div v-else-if="filteredItems.length" class="space-y-6">
+      <LecapsComparadorTabla
+        :items="filteredItems"
+        :comision="selectedComision"
+        :monto-invertir="montoInvertir"
+        :tna-plazo-fijo-porcentaje="tnaPlazoFijoPorcentaje"
+      />
 
       <div class="flex justify-end">
         <UButton
@@ -571,12 +359,16 @@ function formatFechaActualizacionUtc(iso: string): string {
             />
           </UFieldGroup>
         </div>
-        <LecapYieldCurveChart :lecaps="lecapsItems" :mode="curvaMode" />
+        <LecapYieldCurveChart :lecaps="filteredItems" :mode="curvaMode" />
       </div>
     </div>
 
     <div v-else-if="!loading" class="text-center py-12 text-muted">
-      No hay LECAPs o BONCAPs disponibles en este momento.
+      {{
+        searchQuery
+          ? 'No hay instrumentos que coincidan con la búsqueda.'
+          : 'No hay LECAPs o BONCAPs disponibles en este momento.'
+      }}
     </div>
 
     <section
@@ -587,34 +379,24 @@ function formatFechaActualizacionUtc(iso: string): string {
           <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">¿Qué son las LECAPs?</h3>
           <p>
             Las <strong>LECAPs</strong> (Letras de Capitalización) son instrumentos de deuda a corto
-            plazo emitidos por el Tesoro Nacional de Argentina. A diferencia de otros bonos, las
-            LECAPs capitalizan intereses mensualmente, lo que significa que el interés generado se
-            suma al capital para el cálculo del mes siguiente.
+            plazo emitidos por el Tesoro Nacional de Argentina. Capitalizan intereses periódicamente
+            y se negocian en el mercado secundario.
           </p>
           <p>
-            Son una alternativa popular al plazo fijo para inversores que buscan liquidez inmediata
-            (se pueden vender en el mercado secundario en cualquier momento) y tasas que suelen
-            estar alineadas o superar a las de los bancos.
-          </p>
-          <p>
-            En esta página se muestran <strong>precio de cotización</strong>, <strong>TNA</strong>,
-            <strong>TEA</strong> y <strong>TEM</strong> según datos de mercado de Docta Terminal,
-            agregados por ArgentinaDatos. Son valores <strong>orientativos</strong>; no constituyen
-            asesoramiento financiero.
-          </p>
-          <p>
-            En la tabla podés elegir un <strong>broker</strong> y ver la <strong>TNA neta</strong>:
-            TNA de mercado menos comisión de compra de letras (+ IVA si corresponde) y derecho de
-            mercado, prorrateados a los días al vencimiento. El selector arranca con un broker al
-            azar y queda en la URL (`?broker=`).
+            En esta página se muestran cotización y tasas según
+            <strong>Docta Terminal</strong>. Podés elegir un <strong>broker</strong> para aplicar la
+            comisión de compra de letras (+ IVA si corresponde), ingresar un
+            <strong>monto a invertir</strong> y comparar contra la
+            <strong>TNA de un plazo fijo</strong> (por defecto el mejor a 30 días). El selector de
+            broker queda en `?broker=` y el de plazo fijo en `?pf=`. Son valores
+            <strong>orientativos</strong>; no constituyen asesoramiento financiero.
           </p>
         </div>
         <div class="space-y-4">
           <h3 class="text-2xl font-bold text-neutral-900 dark:text-white">¿Qué son los BONCAPs?</h3>
           <p>
             Los <strong>BONCAPs</strong> son Bonos de Capitalización, similares a las LECAPs pero
-            generalmente con plazos de vencimiento más largos. También capitalizan intereses de
-            forma periódica.
+            generalmente con plazos de vencimiento más largos.
           </p>
         </div>
       </div>

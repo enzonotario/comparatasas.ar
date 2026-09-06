@@ -135,6 +135,7 @@ export interface Lecap {
   tir?: number
   /** TEM en decimal (0,02 = 2%). */
   tem?: number
+  variacionPorcentaje?: number
   paridadPorcentaje?: number
   volumen?: number
 }

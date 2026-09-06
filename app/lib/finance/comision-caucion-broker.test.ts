@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   calcularTasaNetaCaucion,
   calcularTasaNetaLecap,
+  costoCompraLetrasPct,
   filterComisionesBrokers,
   filterComisionesCauciones,
   formatMembresiaMensual,
@@ -239,6 +240,36 @@ describe('calcularTasaNetaLecap', () => {
 
   it('sin comisión devuelve TNA de mercado', () => {
     expect(calcularTasaNetaLecap(0.45, 90, null)).toBe(0.45)
+  })
+})
+
+describe('costoCompraLetrasPct', () => {
+  it('aplica one-shot + IVA cuando tasaBase es null', () => {
+    const iol: ComisionBrokerApi = {
+      entidad: 'iol',
+      nombreComercial: 'InvertirOnline',
+      producto: 'letras',
+      operacion: 'ambas',
+      moneda: 'ARS',
+      canal: 'web',
+      plan: 'platinum',
+      tasa: 0.0015,
+      tasaBase: null,
+      tasaAnualEquivalente: null,
+      tasaEsTope: false,
+      incluyeIva: false,
+      ivaAdicional: true,
+      prorrateoDias: null,
+      comisionMinima: null,
+      derechoMercado: null,
+      enlace: null,
+    }
+    // 0,15% × 1,21 = 0,1815%
+    expect(costoCompraLetrasPct(iol, 30)).toBeCloseTo(0.1815, 4)
+  })
+
+  it('sin comisión es 0', () => {
+    expect(costoCompraLetrasPct(null, 30)).toBe(0)
   })
 })
 

@@ -22,6 +22,7 @@ export interface LetraRow {
   temPorcentaje: number
   fechaVencimiento: string
   diasAlVencimiento?: number
+  variacionPorcentaje?: number
   paridadPorcentaje?: number
   volumen?: number
 }
@@ -33,7 +34,31 @@ export interface LetrasPayload {
   errorExtraccion?: string
 }
 
-function tipoDesdeTicker(ticker: string): 'LECAP' | 'BONCAP' {
+export type LecapTipo = 'LECAP' | 'BONCAP'
+
+export interface LecapItem {
+  institution: string
+  symbol: string
+  /** Precio por 100 VN (fuente). */
+  price: number
+  days: number
+  maturity: string
+  /** TNA mercado decimal. */
+  tna: number
+  /** TEA mercado decimal (alias histórico `tir`). */
+  tir: number
+  tea: number
+  /** TEM mercado decimal. */
+  tem: number
+  type: LecapTipo
+  typeLabel: string
+  variacionPorcentaje?: number
+  paridadPorcentaje?: number
+  volumen?: number
+  url: string
+}
+
+function tipoDesdeTicker(ticker: string): LecapTipo {
   return ticker.startsWith('T') ? 'BONCAP' : 'LECAP'
 }
 
@@ -49,8 +74,7 @@ export function useLecaps() {
 
   const lecaps = computed(() => data.value?.letras ?? [])
 
-  /** Filas listas para tabla/curva: tasas en decimal (0,25 = 25%). */
-  const lecapsItems = computed(() =>
+  const lecapsItems = computed<LecapItem[]>(() =>
     lecaps.value.map((letra) => {
       const days =
         letra.diasAlVencimiento ?? diasAlVencimientoLetra(letra.fechaVencimiento)
@@ -67,10 +91,11 @@ export function useLecaps() {
         maturity: letra.fechaVencimiento,
         tna,
         tir,
-        tem,
         tea: tir,
+        tem,
         type,
-        typeLabel: type === 'LECAP' ? 'LECAP' : 'BONCAP',
+        typeLabel: type,
+        variacionPorcentaje: letra.variacionPorcentaje,
         paridadPorcentaje: letra.paridadPorcentaje,
         volumen: letra.volumen,
         url: `https://www.google.com/search?q=${letra.ticker}+cotizacion+argentina`,

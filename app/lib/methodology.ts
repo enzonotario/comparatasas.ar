@@ -208,23 +208,31 @@ export const methodologySections: MethodologySection[] = [
     title: 'LECAPs y BONCAPs',
     category: 'titulos',
     categoryLabel: 'Títulos públicos',
-    source: 'Docta Terminal (vía ArgentinaDatos)',
+    source: 'Docta Terminal',
     blocks: [
       {
         type: 'p',
-        text: 'Mostramos precio en pesos, fecha de vencimiento, TNA, TEA y TEM tal como publica Docta Terminal para soberanos a tasa fija (LECAP/BONCAP), agregados por ArgentinaDatos.',
+        text: 'Mostramos precio, variación diaria, vencimiento, TNA/TEA/TEM de mercado según Docta Terminal (soberanos a tasa fija), agregados por ArgentinaDatos.',
       },
       {
         type: 'p',
-        text: 'Los días al vencimiento vienen de la fuente cuando están disponibles; si no, se calculan en calendario desde hoy. En la curva podés alternar TEA (anual efectiva) vs TEM.',
+        text: 'El precio se muestra por 1 VN (cotización ÷ 100). El residual «a recibir al vto.» se deriva como precio × (1 + TNA mercado × días / 365). Con la comisión de compra de letras del broker elegido (+ IVA si aplica) calculamos precio con comisión, ganancia directa, TNA y TEM al vencimiento. El selector de broker arranca al azar y queda en `?broker=`.',
+      },
+      {
+        type: 'formula',
+        text: 'Ganancia directa = (a recibir − precio con comisión) / precio con comisión',
+      },
+      {
+        type: 'formula',
+        text: 'TNA = ganancia directa × (365 ÷ días)',
+      },
+      {
+        type: 'formula',
+        text: 'TEM = (1 + ganancia directa)^(30 ÷ días) − 1',
       },
       {
         type: 'p',
-        text: 'En el simulador, la ganancia compuesta usa la TEA como tasa anual efectiva y limita los días al mínimo entre tu horizonte y los días al vencimiento del papel.',
-      },
-      {
-        type: 'p',
-        text: 'En la tabla, la columna «TNA neta» resta comisión + IVA y derecho de mercado al TNA de mercado, prorrateados a los días al vencimiento (compra de letras). Podés elegir broker en el selector (uno aleatorio por defecto; persiste en ?broker=). La membresía de plan no se prorratea en la TNA neta.',
+        text: 'Si la tarifa de letras es one-shot (sin tasaBase) se aplica sobre el precio; si es mensual/anual/TNA se prorratea a los días al vencimiento. La membresía de plan no se incluye. Con un monto a invertir global estimamos cantidad de VN y total a recibir. El diferencial vs plazo fijo usa la TNA a 30 días del banco elegido en el selector (por defecto el mejor publicado en plazos fijos tradicionales).',
       },
     ],
   },
@@ -279,7 +287,7 @@ export const methodologySections: MethodologySection[] = [
     title: 'Bonos CER',
     category: 'titulos',
     categoryLabel: 'Títulos públicos',
-    source: 'Docta Terminal (vía ArgentinaDatos)',
+    source: 'Docta Terminal',
     blocks: [
       {
         type: 'p',
