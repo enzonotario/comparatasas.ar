@@ -847,6 +847,15 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
 
           <template #right>
             <UButton
+              to="/fondos/comparar"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              icon="i-lucide-columns-2"
+              label="Comparar"
+              class="max-md:hidden"
+            />
+            <UButton
               to="/fondos/mercado"
               color="neutral"
               variant="ghost"

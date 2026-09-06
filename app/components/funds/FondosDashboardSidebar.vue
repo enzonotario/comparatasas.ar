@@ -22,6 +22,7 @@ const isDetailPage = computed(
   () => route.name === 'fondos-nombre' || route.name === 'fondos-nombre-historico',
 )
 const isMarketPage = computed(() => route.path === '/fondos/mercado')
+const isComparePage = computed(() => route.path === '/fondos/comparar')
 const detailSlug = computed(() => String(route.params.nombre || ''))
 const detailToOptions = computed(() => getFundDetailToOptionsFromRoute(route))
 
@@ -184,6 +185,13 @@ const mainLinks = computed<NavigationMenuItem[]>(() => {
       icon: 'i-lucide-chart-pie',
       to: '/fondos/mercado',
       active: isMarketPage.value,
+      onSelect: closeSidebar,
+    },
+    {
+      label: 'Comparar',
+      icon: 'i-lucide-columns-2',
+      to: '/fondos/comparar',
+      active: isComparePage.value,
       onSelect: closeSidebar,
     },
     {

@@ -7,6 +7,8 @@ import { recomputeHistoryReturns } from '~/lib/finance/fci-history-returns'
 import { formatCompactNumber, formatDate, formatDecimal } from '~/lib/fci-fund-formatters'
 import {
   DEFAULT_FUND_HISTORY_PERIOD,
+  filterFundHistoryByPeriod,
+  fundHistoryPeriodLabel,
   isFundHistoryPeriod,
   type FundHistoryPeriod,
 } from '~/lib/funds-detail'
@@ -44,54 +46,11 @@ const periodItems: TabsItem[] = [
 
 const isHistoryLoading = computed(() => props.historyStatus === 'pending' && !props.fundHistory)
 
-function parseLocalDate(fecha: string) {
-  return new Date(`${fecha}T00:00:00`)
-}
-
-function getPeriodCutoff(latest: Date, period: FundHistoryPeriod): Date | null {
-  if (period === 'all') return null
-
-  if (period === 'ytd') {
-    return new Date(latest.getFullYear(), 0, 1)
-  }
-
-  const cutoff = new Date(latest)
-
-  switch (period) {
-    case '1m':
-      cutoff.setMonth(cutoff.getMonth() - 1)
-      break
-    case '3m':
-      cutoff.setMonth(cutoff.getMonth() - 3)
-      break
-    case '6m':
-      cutoff.setMonth(cutoff.getMonth() - 6)
-      break
-    case '1y':
-      cutoff.setFullYear(cutoff.getFullYear() - 1)
-      break
-  }
-
-  return cutoff
-}
-
 const filteredChronological = computed(() => {
   const points = props.historyChronological
   if (!points.length) return []
 
-  const latestFecha = points[points.length - 1]?.fecha
-  if (!latestFecha) return []
-
-  const latest = parseLocalDate(latestFecha)
-  if (Number.isNaN(latest.getTime())) return points
-
-  const cutoff = getPeriodCutoff(latest, selectedPeriod.value)
-  const windowPoints = !cutoff
-    ? points
-    : points.filter((point) => {
-        const date = parseLocalDate(point.fecha)
-        return !Number.isNaN(date.getTime()) && date >= cutoff
-      })
+  const windowPoints = filterFundHistoryByPeriod(points, selectedPeriod.value)
 
   // Recalcular acumulado dentro de la ventana seleccionada.
   return recomputeHistoryReturns(windowPoints)
@@ -105,22 +64,7 @@ const filteredLatest = computed(
     filteredChronological.value[filteredChronological.value.length - 1] ?? props.latestHistoryPoint,
 )
 
-const periodLabel = computed(() => {
-  switch (selectedPeriod.value) {
-    case '1m':
-      return 'último mes'
-    case '3m':
-      return 'últimos 3 meses'
-    case '6m':
-      return 'últimos 6 meses'
-    case '1y':
-      return 'último año'
-    case 'ytd':
-      return 'año en curso'
-    case 'all':
-      return 'todo el histórico'
-  }
-})
+const periodLabel = computed(() => fundHistoryPeriodLabel(selectedPeriod.value))
 </script>
 
 <template>

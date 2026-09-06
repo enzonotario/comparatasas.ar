@@ -37,6 +37,80 @@ export function isFundHistoryPeriod(value: unknown): value is FundHistoryPeriod 
   )
 }
 
+function parseLocalHistoryDate(fecha: string) {
+  return new Date(`${fecha}T00:00:00`)
+}
+
+/** Fecha de corte inclusiva para filtrar el histórico por período. */
+export function getFundHistoryPeriodCutoff(latest: Date, period: FundHistoryPeriod): Date | null {
+  if (period === 'all') return null
+
+  if (period === 'ytd') {
+    return new Date(latest.getFullYear(), 0, 1)
+  }
+
+  const cutoff = new Date(latest)
+
+  switch (period) {
+    case '1m':
+      cutoff.setMonth(cutoff.getMonth() - 1)
+      break
+    case '3m':
+      cutoff.setMonth(cutoff.getMonth() - 3)
+      break
+    case '6m':
+      cutoff.setMonth(cutoff.getMonth() - 6)
+      break
+    case '1y':
+      cutoff.setFullYear(cutoff.getFullYear() - 1)
+      break
+  }
+
+  return cutoff
+}
+
+/**
+ * Filtra puntos históricos al período pedido (orden cronológico).
+ * Usa la última fecha de la serie como ancla.
+ */
+export function filterFundHistoryByPeriod<T extends { fecha: string }>(
+  points: T[],
+  period: FundHistoryPeriod,
+): T[] {
+  if (!points.length || period === 'all') return points
+
+  const latestFecha = points[points.length - 1]?.fecha
+  if (!latestFecha) return points
+
+  const latest = parseLocalHistoryDate(latestFecha)
+  if (Number.isNaN(latest.getTime())) return points
+
+  const cutoff = getFundHistoryPeriodCutoff(latest, period)
+  if (!cutoff) return points
+
+  return points.filter((point) => {
+    const date = parseLocalHistoryDate(point.fecha)
+    return !Number.isNaN(date.getTime()) && date >= cutoff
+  })
+}
+
+export function fundHistoryPeriodLabel(period: FundHistoryPeriod) {
+  switch (period) {
+    case '1m':
+      return 'último mes'
+    case '3m':
+      return 'últimos 3 meses'
+    case '6m':
+      return 'últimos 6 meses'
+    case '1y':
+      return 'último año'
+    case 'ytd':
+      return 'año en curso'
+    case 'all':
+      return 'todo el histórico'
+  }
+}
+
 export type FundDetailToOptions = {
   tab?: string | null
   periodo?: string | null

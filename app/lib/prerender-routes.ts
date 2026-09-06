@@ -14,6 +14,7 @@ const STATIC_PRERENDER_ROUTES = [
   '/plazos-fijos/uva-precancelable',
   '/fondos',
   '/fondos/mercado',
+  '/fondos/comparar',
   '/usd',
   '/criptomonedas',
   '/criptopesos',
