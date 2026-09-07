@@ -25,6 +25,10 @@ const {
   data: cryptoData,
 } = cryptoStore
 const PRIORITY_PROVIDER = 'Lune.fi'
+const { toggle: toggleComparableRow, rowClass: comparableRowClass, isSelected, setSelected, areAllSelected, areSomeSelected, toggleAll } =
+  useComparableHtmlRows()
+
+const cryptoRowIds = computed(() => cryptosByMaxYield.value.map(({ crypto }) => crypto))
 
 const maxYieldByCrypto = computed(
   () => new Map(cryptosByMaxYield.value.map(({ crypto, maxYield }) => [crypto, maxYield])),
@@ -147,6 +151,17 @@ useHead({
             <table class="w-full">
               <thead>
                 <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <th class="w-9 px-1.5 py-2 text-center">
+                    <UCheckbox
+                      :model-value="
+                        areSomeSelected(cryptoRowIds)
+                          ? 'indeterminate'
+                          : areAllSelected(cryptoRowIds)
+                      "
+                      aria-label="Seleccionar todas"
+                      @update:model-value="toggleAll(cryptoRowIds)"
+                    />
+                  </th>
                   <th class="text-left px-2 py-2 text-sm font-semibold">Criptomoneda</th>
                   <th
                     v-for="entity in orderedCryptoYields"
@@ -168,8 +183,16 @@ useHead({
                 <tr
                   v-for="{ crypto, maxYield } in cryptosByMaxYield"
                   :key="crypto"
-                  class="border-b border-gray-100 dark:border-gray-800 hover:bg-elevated transition-colors"
+                  :class="comparableRowClass(crypto, 'border-b border-gray-100 dark:border-gray-800')"
+                  @click="toggleComparableRow(crypto)"
                 >
+                  <td class="w-9 px-1.5 py-1.5 text-center" @click.stop>
+                    <UCheckbox
+                      :model-value="isSelected(crypto)"
+                      aria-label="Seleccionar fila"
+                      @update:model-value="(v) => setSelected(crypto, !!v)"
+                    />
+                  </td>
                   <td class="px-2 py-1.5">
                     <div class="flex items-center gap-3">
                       <UAvatar :src="getCryptoLogo(crypto)" :alt="crypto" size="xs" />
@@ -198,7 +221,7 @@ useHead({
                         :href="getInstitutionUrl(entity.entidad, 'criptomonedas')"
                         target="_blank"
                         rel="noopener noreferrer"
-                        @click="handleExchangeClick(entity.entidad, crypto)"
+                        @click.stop="handleExchangeClick(entity.entidad, crypto)"
                       >
                         {{ entity.rendimientos.find((r) => r.moneda === crypto)?.apy.toFixed(2) }}%
                       </UButton>

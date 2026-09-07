@@ -156,6 +156,19 @@ const projectionRows = computed(() => {
     remInflacionAnualPercent: props.remInflacionAnualPercent,
   })
 })
+const {
+  toggle: toggleComparableRow,
+  rowClass: comparableRowClass,
+  isSelected,
+  setSelected,
+  areAllSelected,
+  areSomeSelected,
+  toggleAll,
+} = useComparableHtmlRows()
+
+const projectionRowIds = computed(() =>
+  projectionRows.value.map((row) => String(row.yearIndex)),
+)
 
 const ofertaLabel = computed(() => {
   if (!props.ofertaSeleccionada) return null
@@ -682,6 +695,17 @@ onMounted(() => {
             <table class="w-full text-left text-sm">
               <thead class="bg-neutral-50 dark:bg-neutral-900/60 text-neutral-500">
                 <tr>
+                  <th class="w-9 px-2 py-2 text-center">
+                    <UCheckbox
+                      :model-value="
+                        areSomeSelected(projectionRowIds)
+                          ? 'indeterminate'
+                          : areAllSelected(projectionRowIds)
+                      "
+                      aria-label="Seleccionar todas"
+                      @update:model-value="toggleAll(projectionRowIds)"
+                    />
+                  </th>
                   <th class="px-2 py-2 font-semibold">Año</th>
                   <th class="px-2 py-2 font-semibold">Ingreso</th>
                   <th class="px-2 py-2 font-semibold">Cuota</th>
@@ -692,8 +716,21 @@ onMounted(() => {
                 <tr
                   v-for="row in projectionRows"
                   :key="row.yearIndex"
-                  class="border-t border-neutral-200 dark:border-neutral-800 hover:bg-elevated transition-colors"
+                  :class="
+                    comparableRowClass(
+                      String(row.yearIndex),
+                      'border-t border-neutral-200 dark:border-neutral-800',
+                    )
+                  "
+                  @click="toggleComparableRow(String(row.yearIndex))"
                 >
+                  <td class="w-9 px-2 py-2 text-center" @click.stop>
+                    <UCheckbox
+                      :model-value="isSelected(String(row.yearIndex))"
+                      aria-label="Seleccionar fila"
+                      @update:model-value="(v) => setSelected(String(row.yearIndex), !!v)"
+                    />
+                  </td>
                   <td class="px-2 py-2 whitespace-nowrap">{{ row.label }}</td>
                   <td class="px-2 py-2 tabular-nums whitespace-nowrap">
                     {{ formatCurrency(row.ingresoMensual) }}

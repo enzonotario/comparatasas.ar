@@ -26,6 +26,15 @@ const route = useRoute()
 const { usdArsRate } = useDolarBolsa()
 const sortKey = ref<SortKey>('clase')
 const sortDir = ref<SortDir>('asc')
+const {
+  toggle: toggleComparableRow,
+  rowClass: comparableRowClass,
+  isSelected,
+  setSelected,
+  areAllSelected,
+  areSomeSelected,
+  toggleAll,
+} = useComparableHtmlRows()
 
 function siblingCurrency(row?: FundCatalogGroupRow | null) {
   return row?.monedaInversion || row?.moneda || null
@@ -161,6 +170,8 @@ const sortedSiblings = computed(() => {
 
   return rows
 })
+
+const siblingIds = computed(() => sortedSiblings.value.map((row) => row.fondo))
 </script>
 
 <template>
@@ -293,6 +304,15 @@ const sortedSiblings = computed(() => {
       <table class="w-full text-sm min-w-[520px]">
         <thead>
           <tr class="text-left text-muted border-b border-default">
+            <th class="w-9 py-1 px-1 text-center">
+              <UCheckbox
+                :model-value="
+                  areSomeSelected(siblingIds) ? 'indeterminate' : areAllSelected(siblingIds)
+                "
+                aria-label="Seleccionar todas"
+                @update:model-value="toggleAll(siblingIds)"
+              />
+            </th>
             <th class="py-1 px-1 font-medium">
               <UButton
                 color="neutral"
@@ -358,15 +378,28 @@ const sortedSiblings = computed(() => {
           <tr
             v-for="row in sortedSiblings"
             :key="`row-${row.fondo}`"
-            class="border-b border-default last:border-0 hover:bg-elevated transition-colors"
-            :class="row.fondo === currentFondo ? 'bg-elevated/60' : ''"
+            :class="
+              comparableRowClass(row.fondo, [
+                'border-b border-default last:border-0',
+                row.fondo === currentFondo ? 'bg-elevated/60' : '',
+              ])
+            "
+            @click="toggleComparableRow(row.fondo)"
           >
+            <td class="w-9 py-2.5 px-1 text-center" @click.stop>
+              <UCheckbox
+                :model-value="isSelected(row.fondo)"
+                aria-label="Seleccionar fila"
+                @update:model-value="(v) => setSelected(row.fondo, !!v)"
+              />
+            </td>
             <td class="py-2.5 px-1">
               <div class="flex items-center gap-2 min-w-0">
                 <NuxtLink
                   v-if="row.fondo !== currentFondo"
                   :to="siblingDetailTo(row.fondo)"
                   class="font-medium text-neutral truncate hover:underline"
+                  @click.stop
                 >
                   {{ row.classLabel || row.fondo }}
                 </NuxtLink>

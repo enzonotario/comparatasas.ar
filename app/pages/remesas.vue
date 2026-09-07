@@ -531,6 +531,7 @@ function parseSorting(value: string): SortingState {
 }
 
 const sorting = ref<SortingState>(parseSorting(sortQuery.value))
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 
 watch(sortQuery, (value) => {
   const next = parseSorting(value)
@@ -972,7 +973,14 @@ const columns: TableColumn<RemesaRow>[] = [
         />
 
         <div class="hidden lg:block border border-default rounded-lg overflow-x-auto">
-          <UTable v-model:sorting="sorting" :data="filteredRows" :columns="columns">
+          <UTable
+            v-model:sorting="sorting"
+            v-model:row-selection="rowSelection"
+            :data="filteredRows"
+            :columns="withSelection(columns)"
+            :get-row-id="(row) => row.compania"
+            :on-select="onSelect"
+          >
             <template #empty>
               <div class="py-10 text-center text-sm text-neutral-500">
                 No hay plataformas que coincidan con los filtros actuales.

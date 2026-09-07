@@ -66,6 +66,7 @@ const rows = computed<LecapComparadorRow[]>(() =>
 )
 
 const sorting = ref([{ id: 'days', desc: false }])
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 
 function formatPrecio1Vn(value: number): string {
   return new Intl.NumberFormat('es-AR', {
@@ -390,9 +391,11 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
       <div class="overflow-x-auto">
         <UTable
           v-model:sorting="sorting"
+          v-model:row-selection="rowSelection"
           :data="rows"
-          :columns="columns"
+          :columns="withSelection(columns)"
           :get-row-id="(row) => row.symbol"
+          :on-select="onSelect"
           class="w-full"
         >
           <template #empty>

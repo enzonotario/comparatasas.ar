@@ -146,6 +146,7 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
     },
   },
 }))
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 </script>
 
 <template>
@@ -160,7 +161,13 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
           <h2 class="text-lg font-semibold">Rendimientos Históricos</h2>
         </template>
 
-        <UTable :data="props.returnsRows" :columns="props.returnsColumns" />
+        <UTable
+          v-model:row-selection="rowSelection"
+          :data="props.returnsRows"
+          :columns="withSelection(props.returnsColumns)"
+          :get-row-id="(row) => row.period"
+          :on-select="onSelect"
+        />
 
         <template v-if="props.nominalTnaEstimate" #footer>
           <div class="flex items-end justify-between gap-3">

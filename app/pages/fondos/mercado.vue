@@ -31,6 +31,18 @@ useHead({
   link: [{ rel: 'canonical', href: 'https://comparatasas.ar/fondos/mercado' }],
 })
 
+const {
+  toggle: toggleComparableRow,
+  rowClass: comparableRowClass,
+  isSelected,
+  setSelected,
+  areAllSelected,
+  areSomeSelected,
+  toggleAll,
+} = useComparableHtmlRows()
+
+const returnsByTypeIds = computed(() => (universe.value?.returnsByType ?? []).map((row) => row.key))
+
 const TYPE_COLORS: Record<string, string> = {
   mercadoDinero: '#14b8a6',
   rentaFija: '#737373',
@@ -499,6 +511,17 @@ const flowKpis = computed(() => {
             <table class="w-full text-sm min-w-[520px]">
               <thead>
                 <tr class="text-left text-muted border-b border-default">
+                  <th class="w-9 py-2 px-1 text-center">
+                    <UCheckbox
+                      :model-value="
+                        areSomeSelected(returnsByTypeIds)
+                          ? 'indeterminate'
+                          : areAllSelected(returnsByTypeIds)
+                      "
+                      aria-label="Seleccionar todas"
+                      @update:model-value="toggleAll(returnsByTypeIds)"
+                    />
+                  </th>
                   <th class="py-2 px-1 font-medium">Tipo</th>
                   <th class="py-2 px-1 font-medium text-right">AUM</th>
                   <th class="py-2 px-1 font-medium text-right">1D</th>
@@ -511,8 +534,16 @@ const flowKpis = computed(() => {
                 <tr
                   v-for="row in universe.returnsByType"
                   :key="row.key"
-                  class="border-b border-default last:border-0 hover:bg-elevated transition-colors"
+                  :class="comparableRowClass(row.key, 'border-b border-default last:border-0')"
+                  @click="toggleComparableRow(row.key)"
                 >
+                  <td class="w-9 py-2.5 px-1 text-center" @click.stop>
+                    <UCheckbox
+                      :model-value="isSelected(row.key)"
+                      aria-label="Seleccionar fila"
+                      @update:model-value="(v) => setSelected(row.key, !!v)"
+                    />
+                  </td>
                   <td class="py-2.5 px-1 font-medium">{{ row.label }}</td>
                   <td class="py-2.5 px-1 text-right tabular-nums">
                     {{ formatCompactNumber(row.patrimonio) }}

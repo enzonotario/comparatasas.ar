@@ -41,6 +41,8 @@ const rows = computed(() => {
   })
 })
 
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
+
 const columns: TableColumn<(typeof rows.value)[number]>[] = [
   { accessorKey: 'institution', header: 'Entidad' },
   { accessorKey: 'producto', header: 'Producto' },
@@ -53,7 +55,14 @@ const columns: TableColumn<(typeof rows.value)[number]>[] = [
 </script>
 
 <template>
-  <UTable :data="rows" :columns="columns" class="w-full">
+  <UTable
+    v-model:row-selection="rowSelection"
+    :data="rows"
+    :columns="withSelection(columns)"
+    :get-row-id="(row) => row.id"
+    :on-select="onSelect"
+    class="w-full"
+  >
     <template #institution-cell="{ row }">
       <div class="flex items-center gap-2 min-w-0">
         <img

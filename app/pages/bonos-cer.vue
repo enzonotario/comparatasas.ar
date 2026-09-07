@@ -65,6 +65,7 @@ const sorting = ref([
     desc: false,
   },
 ])
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 
 /** Lista mobile: orden por días al vencimiento (asc). */
 const bondsForList = computed(() =>
@@ -261,7 +262,15 @@ const textoActualizacion = computed(() => {
 
       <!-- sm+: tabla -->
       <div class="hidden sm:block border border-default rounded-lg overflow-hidden">
-        <UTable v-model:sorting="sorting" :data="bonds" :columns="columns" :loading="loading">
+        <UTable
+          v-model:sorting="sorting"
+          v-model:row-selection="rowSelection"
+          :data="bonds"
+          :columns="withSelection(columns)"
+          :loading="loading"
+          :get-row-id="(row) => row.ticker"
+          :on-select="onSelect"
+        >
           <template #empty>
             <div class="py-12 text-center text-muted">No hay bonos CER disponibles.</div>
           </template>

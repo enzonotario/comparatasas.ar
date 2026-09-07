@@ -42,6 +42,9 @@ const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 const NuxtLink = resolveComponent('NuxtLink')
 const table = useTemplateRef<{ tableApi?: any }>('table')
+const { rowSelection, onSelect: toggleCompareSelection, withSelection } = useComparableTableRows({
+  modifierOnly: true,
+})
 
 const groupByClassQuery = useRouteQuery<'1' | '0'>('agrupar', '1')
 const groupByClass = computed({
@@ -382,14 +385,16 @@ function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = '
   }
 }
 
-function handleFundRowSelect(row: any) {
+function handleFundRowSelect(row: any, e?: Event) {
+  if (toggleCompareSelection(row, e)) return
   const original = row?.original as FundCatalogGroupRow | undefined
   const fundName = original?.primaryFondo || original?.fondo
   if (!fundName) return
   navigateTo(getFundDetailPath(fundName))
 }
 
-function handleEntityRowSelect(row: any) {
+function handleEntityRowSelect(row: any, e?: Event) {
+  if (toggleCompareSelection(row, e)) return
   const original = row?.original
   if (!original) return
 
@@ -398,7 +403,7 @@ function handleEntityRowSelect(row: any) {
     return
   }
 
-  handleFundRowSelect(row)
+  handleFundRowSelect(row, e)
 }
 
 function entityDepthClass(depth: number) {
@@ -1173,9 +1178,10 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
         v-model:pagination="pagination"
         v-model:column-visibility="columnVisibility"
         v-model:expanded="expanded"
+        v-model:row-selection="rowSelection"
         :sticky="isDesktopLayout ? 'header' : false"
         :data="activeTableData"
-        :columns="isFondosVista ? columns : entityColumns"
+        :columns="withSelection(isFondosVista ? columns : entityColumns)"
         :loading="loading"
         :get-sub-rows="
           isFondosVista
@@ -1195,7 +1201,7 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
           th: 'py-1.5 px-3 bg-default/95 backdrop-blur-md border-0 text-muted font-medium',
           td: 'py-2.5 border-b border-default',
           separator: 'h-0',
-          tr: 'cursor-pointer',
+          tr: 'cursor-pointer data-[selected=true]:bg-primary-100 dark:data-[selected=true]:bg-primary-900/55 data-[selected=true]:ring-1 data-[selected=true]:ring-inset data-[selected=true]:ring-primary/45',
         }"
       >
         <template #expanded />

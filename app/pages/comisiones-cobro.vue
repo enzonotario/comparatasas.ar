@@ -97,6 +97,7 @@ const sorting = computed({
     sortQuery.value = JSON.stringify(value)
   },
 })
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 
 function getInitials(name: string): string {
   const words = name.split(/\s+/).filter(Boolean)
@@ -744,11 +745,16 @@ const hasActiveFilters = computed(
         <div v-if="isDesktop" class="border border-default rounded-lg overflow-x-auto">
           <UTable
             v-model:sorting="sorting"
+            v-model:row-selection="rowSelection"
             :data="filteredRows"
-            :columns="columns"
+            :columns="withSelection(columns)"
+            :get-row-id="
+              (row) =>
+                `${row.entidad}-${row.producto}-${row.canal}-${row.medioPago}-${row.acreditacionTipo}-${row.arancelLabel}`
+            "
+            :on-select="onSelect"
             class="min-w-full"
-          />
-        </div>
+          />        </div>
 
         <div v-else class="flex flex-col gap-3">
           <div

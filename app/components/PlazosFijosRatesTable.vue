@@ -35,6 +35,7 @@ const sorting = ref([
     desc: true,
   },
 ])
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 
 function formatTna(value: number): string {
   return `${value.toFixed(2)}%`
@@ -306,9 +307,11 @@ function handleProviderClick(row: PlazoFijoTableRow) {
       <div class="overflow-x-auto">
         <UTable
           v-model:sorting="sorting"
+          v-model:row-selection="rowSelection"
           :data="rowsWithSimulation"
-          :columns="tableColumns"
+          :columns="withSelection(tableColumns)"
           :get-row-id="(row) => row.rowKey"
+          :on-select="onSelect"
         >
           <template #institution-cell="{ row }">
             <NuxtLink

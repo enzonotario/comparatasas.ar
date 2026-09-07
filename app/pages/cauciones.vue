@@ -137,6 +137,7 @@ const sorting = ref([
     desc: false,
   },
 ])
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 
 function formatMonto(value: number): string {
   return formatCurrency(value, currencyCode.value)
@@ -407,7 +408,15 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
 
       <!-- sm+: tabla -->
       <div class="hidden sm:block border border-default rounded-lg overflow-hidden">
-        <UTable v-model:sorting="sorting" :data="tableRows" :columns="columns" :loading="loading">
+        <UTable
+          v-model:sorting="sorting"
+          v-model:row-selection="rowSelection"
+          :data="tableRows"
+          :columns="withSelection(columns)"
+          :loading="loading"
+          :get-row-id="(row) => `${row.moneda}-${row.plazo}-${row.fechaVencimiento}`"
+          :on-select="onSelect"
+        >
           <template #empty>
             <div class="py-12 text-center text-muted">No hay cauciones disponibles.</div>
           </template>

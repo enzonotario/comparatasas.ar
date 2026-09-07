@@ -65,6 +65,7 @@ const filteredLatest = computed(
 )
 
 const periodLabel = computed(() => fundHistoryPeriodLabel(selectedPeriod.value))
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 </script>
 
 <template>
@@ -142,16 +143,18 @@ const periodLabel = computed(() => fundHistoryPeriodLabel(selectedPeriod.value))
           </div>
         </template>
         <UTable
+          v-model:row-selection="rowSelection"
           :data="filteredRows"
-          :columns="props.historyColumns"
+          :columns="withSelection(props.historyColumns)"
           sticky="header"
+          :get-row-id="(row) => row.fecha"
+          :on-select="onSelect"
           :ui="{
             base: 'table-fixed',
             th: 'px-3 py-2.5 text-xs',
             td: 'px-3 py-2 text-sm',
           }"
-        />
-      </UCard>
+        />      </UCard>
     </template>
 
     <p v-else class="text-sm text-neutral-500">No hay histórico disponible para este fondo.</p>

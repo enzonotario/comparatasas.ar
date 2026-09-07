@@ -100,6 +100,7 @@ const rows = computed<ComisionRow[]>(() => {
 })
 
 const sorting = ref([{ id: 'tasaAnualSort', desc: false }])
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 
 function createSortableHeader(label: string) {
   return ({ column }: { column: any }) => {
@@ -346,7 +347,18 @@ function formatBrokerUpdatedAt(value: string | null): string {
       </div>
 
       <div class="hidden sm:block border border-default rounded-lg overflow-hidden">
-        <UTable v-model:sorting="sorting" :data="rows" :columns="columns" :loading="loading">
+        <UTable
+          v-model:sorting="sorting"
+          v-model:row-selection="rowSelection"
+          :data="rows"
+          :columns="withSelection(columns)"
+          :loading="loading"
+          :get-row-id="
+            (row) =>
+              `${row.entidad}-${row.producto}-${row.operacion}-${row.plan}-${row.moneda}-${row.tasaPublicada}`
+          "
+          :on-select="onSelect"
+        >
           <template #empty>
             <div class="py-8 text-center text-muted">Sin comisiones para este filtro.</div>
           </template>

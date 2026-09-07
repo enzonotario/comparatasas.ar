@@ -522,6 +522,20 @@ function buildHeatmapRows(
 
 const recargoHeatmap = computed(() => buildHeatmapRows(recargoRows, recargoCounts, 'recargo'))
 const discountHeatmap = computed(() => buildHeatmapRows(discountRows, discountCounts, 'discount'))
+const {
+  toggle: toggleComparableRow,
+  rowClass: comparableRowClass,
+  isSelected,
+  setSelected,
+  areAllSelected,
+  areSomeSelected,
+  toggleAll,
+} = useComparableHtmlRows()
+
+const recargoRowIds = computed(() => recargoHeatmap.value.map((row) => `recargo-${row.label}`))
+const discountRowIds = computed(() =>
+  discountHeatmap.value.map((row) => `discount-${row.label}`),
+)
 
 function getHeatmapToneClass(tea: number): string {
   if (!Number.isFinite(tea)) {
@@ -1658,6 +1672,17 @@ const carrySectionLoading = computed(() => {
               <table class="w-full min-w-[640px] border-collapse text-sm">
                 <thead>
                   <tr class="border-b border-neutral-200 dark:border-neutral-800">
+                    <th class="w-9 px-2 py-2 text-center">
+                      <UCheckbox
+                        :model-value="
+                          areSomeSelected(recargoRowIds)
+                            ? 'indeterminate'
+                            : areAllSelected(recargoRowIds)
+                        "
+                        aria-label="Seleccionar todas"
+                        @update:model-value="toggleAll(recargoRowIds)"
+                      />
+                    </th>
                     <th class="px-3 py-2 text-left font-semibold">Recargo</th>
                     <th
                       v-for="count in recargoCounts"
@@ -1672,8 +1697,21 @@ const carrySectionLoading = computed(() => {
                   <tr
                     v-for="row in recargoHeatmap"
                     :key="`recargo-${row.label}`"
-                    class="border-b border-neutral-100 dark:border-neutral-900 hover:bg-elevated transition-colors"
+                    :class="
+                      comparableRowClass(
+                        `recargo-${row.label}`,
+                        'border-b border-neutral-100 dark:border-neutral-900',
+                      )
+                    "
+                    @click="toggleComparableRow(`recargo-${row.label}`)"
                   >
+                    <td class="w-9 px-2 py-2 text-center" @click.stop>
+                      <UCheckbox
+                        :model-value="isSelected(`recargo-${row.label}`)"
+                        aria-label="Seleccionar fila"
+                        @update:model-value="(v) => setSelected(`recargo-${row.label}`, !!v)"
+                      />
+                    </td>
                     <th class="px-3 py-2 text-left font-medium">
                       {{ decimalFormatter.format(row.label) }}%
                     </th>
@@ -1741,6 +1779,17 @@ const carrySectionLoading = computed(() => {
               <table class="w-full min-w-[640px] border-collapse text-sm">
                 <thead>
                   <tr class="border-b border-neutral-200 dark:border-neutral-800">
+                    <th class="w-9 px-2 py-2 text-center">
+                      <UCheckbox
+                        :model-value="
+                          areSomeSelected(discountRowIds)
+                            ? 'indeterminate'
+                            : areAllSelected(discountRowIds)
+                        "
+                        aria-label="Seleccionar todas"
+                        @update:model-value="toggleAll(discountRowIds)"
+                      />
+                    </th>
                     <th class="px-3 py-2 text-left font-semibold">Descuento</th>
                     <th
                       v-for="count in discountCounts"
@@ -1755,8 +1804,21 @@ const carrySectionLoading = computed(() => {
                   <tr
                     v-for="row in discountHeatmap"
                     :key="`discount-${row.label}`"
-                    class="border-b border-neutral-100 dark:border-neutral-900 hover:bg-elevated transition-colors"
+                    :class="
+                      comparableRowClass(
+                        `discount-${row.label}`,
+                        'border-b border-neutral-100 dark:border-neutral-900',
+                      )
+                    "
+                    @click="toggleComparableRow(`discount-${row.label}`)"
                   >
+                    <td class="w-9 px-2 py-2 text-center" @click.stop>
+                      <UCheckbox
+                        :model-value="isSelected(`discount-${row.label}`)"
+                        aria-label="Seleccionar fila"
+                        @update:model-value="(v) => setSelected(`discount-${row.label}`, !!v)"
+                      />
+                    </td>
                     <th class="px-3 py-2 text-left font-medium">
                       {{ decimalFormatter.format(row.label) }}%
                     </th>

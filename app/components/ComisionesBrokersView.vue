@@ -82,6 +82,7 @@ const sorting = computed({
     sortQuery.value = JSON.stringify(value)
   },
 })
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 
 function productNavigationQuery(): Record<string, string> {
   const query: Record<string, string> = {}
@@ -582,8 +583,18 @@ const hasActiveFilters = computed(
         />
 
         <div v-if="isDesktop" class="border border-default rounded-lg overflow-x-auto">
-          <UTable v-model:sorting="sorting" :data="rows" :columns="columns" class="min-w-full" />
-        </div>
+          <UTable
+            v-model:sorting="sorting"
+            v-model:row-selection="rowSelection"
+            :data="rows"
+            :columns="withSelection(columns)"
+            :get-row-id="
+              (row) =>
+                `${row.entidad}-${row.producto}-${row.operacion}-${row.plan}-${row.moneda}-${row.tasaPublicada}`
+            "
+            :on-select="onSelect"
+            class="min-w-full"
+          />        </div>
 
         <div v-else class="flex flex-col gap-3">
           <div
