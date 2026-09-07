@@ -30,6 +30,7 @@ import {
   type CatalogVista,
   type FundEntitySummary,
 } from '~/lib/fci-fund-entity-views'
+import { FCI_COMPARE_MAX_COUNT, getFundsCompareTo } from '~/lib/fci-fund-compare'
 
 definePageMeta({
   layout: 'fondos',
@@ -42,9 +43,10 @@ const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 const NuxtLink = resolveComponent('NuxtLink')
 const table = useTemplateRef<{ tableApi?: any }>('table')
-const { rowSelection, onSelect: toggleCompareSelection, withSelection } = useComparableTableRows({
-  modifierOnly: true,
-})
+const { rowSelection, onSelect: toggleCompareSelection, withSelection, clearSelection } =
+  useComparableTableRows({
+    modifierOnly: true,
+  })
 
 const groupByClassQuery = useRouteQuery<'1' | '0'>('agrupar', '1')
 const groupByClass = computed({
@@ -268,15 +270,17 @@ const tablePageRange = computed(() => {
   return { from, to }
 })
 
-watch(groupByClass, () => {
-  expanded.value = {}
-  currentPage.value = 1
-})
-
 watch(catalogVista, () => {
   expanded.value = {}
   currentPage.value = 1
   sorting.value = [{ id: 'patrimonio', desc: true }]
+  clearSelection()
+})
+
+watch(groupByClass, () => {
+  expanded.value = {}
+  currentPage.value = 1
+  clearSelection()
 })
 
 watch(tableTotalPages, (value) => {
@@ -821,6 +825,46 @@ const displayMenuItems = computed(() => {
 
 const avgTnaLabel = computed(() => formatRatePercent(stats.value.avgTna) ?? '—')
 const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
+
+const selectedCatalogRows = computed((): FundCatalogGroupRow[] => {
+  // Depend on rowSelection so the bar updates when checkboxes change.
+  void rowSelection.value
+
+  const selected = table.value?.tableApi?.getSelectedRowModel()?.rows ?? []
+  const rows: FundCatalogGroupRow[] = []
+
+  for (const row of selected) {
+    const original = row.original as FundEntitySummary | FundCatalogGroupRow | undefined
+    if (!original || isFundEntitySummary(original)) continue
+    rows.push(original)
+  }
+
+  return rows
+})
+
+const selectionCompare = computed(() => getFundsCompareTo(selectedCatalogRows.value))
+
+const selectionCompareTo = computed(() => ({
+  path: selectionCompare.value.path,
+  query: selectionCompare.value.query,
+}))
+
+const selectionCompareCount = computed(() => selectionCompare.value.uniqueCount)
+
+const selectionCompareHint = computed(() => {
+  const { omittedForCurrency, truncated, currency, keys } = selectionCompare.value
+  const parts: string[] = []
+
+  if (!keys.length) return 'Seleccioná fondos comparables'
+  if (omittedForCurrency > 0) {
+    parts.push(`solo ${currency} (${omittedForCurrency} en otra moneda)`)
+  }
+  if (truncated) {
+    parts.push(`máx. ${FCI_COMPARE_MAX_COUNT}`)
+  }
+
+  return parts.length ? parts.join(' · ') : null
+})
 </script>
 
 <template>
@@ -1255,4 +1299,12 @@ const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
       </div>
     </template>
   </UDashboardPanel>
+
+  <FundsCompareSelectionBar
+    :count="selectionCompareCount"
+    :to="selectionCompareTo"
+    :disabled="!selectionCompare.keys.length"
+    :hint="selectionCompareHint"
+    @clear="clearSelection"
+  />
 </template>

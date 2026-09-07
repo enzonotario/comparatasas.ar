@@ -328,3 +328,69 @@ export function getFundCompareTo(
 
   return { path: '/fondos/comparar', query }
 }
+
+export type FundsCompareSelectionInput = Pick<
+  FundCatalogGroupRow,
+  'baseName' | 'groupKey' | 'fondo' | 'monedaInversion' | 'moneda'
+>
+
+/**
+ * Arma la ruta al comparador desde filas seleccionadas del catálogo.
+ * Deduplica por compareKey, elige moneda mayoritaria (empate → ARS) y respeta el máximo.
+ */
+export function getFundsCompareTo(
+  rows: FundsCompareSelectionInput[],
+  { maxCount = FCI_COMPARE_MAX_COUNT }: { maxCount?: number } = {},
+): {
+  path: '/fondos/comparar'
+  query: Record<string, string>
+  keys: string[]
+  currency: FciCompareCurrency
+  uniqueCount: number
+  omittedForCurrency: number
+  truncated: boolean
+} {
+  const unique = new Map<string, FciCompareCurrency>()
+
+  for (const row of rows) {
+    const key = getFundCompareKey(row)
+    if (!key || unique.has(key)) continue
+
+    const code = normalizeCurrencyCode(catalogRowCurrency(row))
+    if (!isFciCompareCurrency(code)) continue
+    unique.set(key, code)
+  }
+
+  let ars = 0
+  let usd = 0
+  for (const currency of unique.values()) {
+    if (currency === 'USD') usd += 1
+    else ars += 1
+  }
+
+  const currency: FciCompareCurrency =
+    usd > ars ? 'USD' : FCI_COMPARE_DEFAULT_CURRENCY
+
+  const matching = [...unique.entries()]
+    .filter(([, rowCurrency]) => rowCurrency === currency)
+    .map(([key]) => key)
+
+  const keys = matching.slice(0, Math.max(0, maxCount))
+  const query: Record<string, string> = {
+    fondos: serializeFondosQuery(keys),
+  }
+
+  if (currency !== FCI_COMPARE_DEFAULT_CURRENCY) {
+    query.moneda = currency
+  }
+
+  return {
+    path: '/fondos/comparar',
+    query,
+    keys,
+    currency,
+    uniqueCount: unique.size,
+    omittedForCurrency: unique.size - matching.length,
+    truncated: matching.length > keys.length,
+  }
+}

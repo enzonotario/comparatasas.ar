@@ -4,6 +4,7 @@ import {
   buildCompareFundOptions,
   getFundCompareKey,
   getFundCompareTo,
+  getFundsCompareTo,
   parseFondosQuery,
   parseFondosQueryParam,
   pickTopFundsByPatrimonio,
@@ -224,6 +225,42 @@ describe('fondos query helpers', () => {
     expect(getFundCompareTo('Balanz Dolares - Clase A', 'USD')).toEqual({
       path: '/fondos/comparar',
       query: { fondos: 'balanz-dolares', moneda: 'USD' },
+    })
+  })
+
+  it('builds compare route from multiple selected catalog rows', () => {
+    const result = getFundsCompareTo([
+      {
+        fondo: 'Balanz Money Market - Clase A',
+        baseName: 'Balanz Money Market',
+        groupKey: 'balanz-money-market',
+        moneda: 'ARS',
+        monedaInversion: 'ARS',
+      },
+      {
+        fondo: 'Fima Premium - Clase A',
+        baseName: 'Fima Premium',
+        groupKey: 'fima-premium',
+        moneda: 'ARS',
+        monedaInversion: 'ARS',
+      },
+      {
+        fondo: 'Balanz Dolares - Clase A',
+        baseName: 'Balanz Dolares',
+        groupKey: 'balanz-dolares',
+        moneda: 'USD',
+        monedaInversion: 'USD',
+      },
+    ])
+
+    expect(result).toMatchObject({
+      path: '/fondos/comparar',
+      query: { fondos: 'balanz-money-market,fima-premium' },
+      currency: 'ARS',
+      keys: ['balanz-money-market', 'fima-premium'],
+      uniqueCount: 3,
+      omittedForCurrency: 1,
+      truncated: false,
     })
   })
 })
