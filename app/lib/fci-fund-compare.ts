@@ -7,6 +7,7 @@ import {
   toArsPatrimonio,
 } from './fci-fund-formatters'
 import { groupFundCatalogRows, type FundCatalogGroupRow } from './fci-fund-groups'
+import { parseFundClassName } from './fci-fund-class'
 import { normalizeFundSlug } from './funds-detail'
 
 export const FCI_COMPARE_DEFAULT_COUNT = 3
@@ -299,4 +300,31 @@ export function serializeFondosQueryParam(keys: string[], isDefault: boolean): s
   if (isDefault) return undefined
   if (!keys.length) return FCI_COMPARE_EMPTY_QUERY
   return serializeFondosQuery(keys)
+}
+
+/**
+ * Ruta al comparador con un fondo ya seleccionado (para partir desde el detalle).
+ * Usa la clave de grupo (nombre base) y la moneda del fondo.
+ */
+export function getFundCompareTo(
+  fundName: string,
+  currency?: string | null,
+): { path: '/fondos/comparar'; query: Record<string, string> } {
+  const parsed = parseFundClassName(fundName)
+  const compareKey = getFundCompareKey({
+    baseName: parsed.baseName,
+    groupKey: parsed.groupKey,
+    fondo: fundName,
+  })
+
+  const query: Record<string, string> = {
+    fondos: compareKey || normalizeFundSlug(fundName),
+  }
+
+  const code = normalizeCurrencyCode(currency)
+  if (isFciCompareCurrency(code) && code !== FCI_COMPARE_DEFAULT_CURRENCY) {
+    query.moneda = code
+  }
+
+  return { path: '/fondos/comparar', query }
 }

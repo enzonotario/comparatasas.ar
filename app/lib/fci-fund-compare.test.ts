@@ -3,6 +3,7 @@ import type { FundCatalogRow } from '../composables/useFondosCatalog'
 import {
   buildCompareFundOptions,
   getFundCompareKey,
+  getFundCompareTo,
   parseFondosQuery,
   parseFondosQueryParam,
   pickTopFundsByPatrimonio,
@@ -212,6 +213,17 @@ describe('fondos query helpers', () => {
       value: getFundCompareKey(funds[0]!),
       label: 'Fima Premium',
       typeLabel: 'Money Market',
+    })
+  })
+
+  it('builds compare route with fund preselected and currency', () => {
+    expect(getFundCompareTo('Delta Pesos - Clase X', 'ARS')).toEqual({
+      path: '/fondos/comparar',
+      query: { fondos: 'delta-pesos' },
+    })
+    expect(getFundCompareTo('Balanz Dolares - Clase A', 'USD')).toEqual({
+      path: '/fondos/comparar',
+      query: { fondos: 'balanz-dolares', moneda: 'USD' },
     })
   })
 })

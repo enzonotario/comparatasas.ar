@@ -4,6 +4,7 @@ import FciFundHistoryTab from '~/components/funds/detail/FciFundHistoryTab.vue'
 import FciFundSummaryTab from '~/components/funds/detail/FciFundSummaryTab.vue'
 import FciFundSiblingClasses from '~/components/funds/detail/FciFundSiblingClasses.vue'
 import FciFundDetailNavTabs from '~/components/funds/detail/FciFundDetailNavTabs.vue'
+import { getFundCompareTo } from '~/lib/fci-fund-compare'
 import {
   formatArsEquivalentHint,
   formatCompactPatrimonio,
@@ -51,6 +52,12 @@ const cafciUrl = computed(() => {
     `https://estadisticas.cafci.org.ar/fondos/${fundDetail.value.fondoId}?clase=${fundDetail.value.claseId}`,
     'fondos',
   )
+})
+
+const compareTo = computed(() => {
+  const name = fundDetail.value?.nombre
+  if (!name) return null
+  return getFundCompareTo(name, fundDetail.value?.monedaInversion || fundDetail.value?.moneda)
 })
 
 function goBack() {
@@ -279,6 +286,26 @@ useSeoMeta({
             label="Volver"
             class="max-sm:hidden"
             @click="goBack"
+          />
+
+          <UButton
+            v-if="compareTo"
+            :to="compareTo"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-columns-2"
+            square
+            aria-label="Comparar"
+            class="sm:hidden"
+          />
+          <UButton
+            v-if="compareTo"
+            :to="compareTo"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-columns-2"
+            label="Comparar"
+            class="max-sm:hidden"
           />
 
           <UButton
