@@ -336,7 +336,7 @@ export type FundsCompareSelectionInput = Pick<
 
 /**
  * Arma la ruta al comparador desde filas seleccionadas del catálogo.
- * Deduplica por compareKey, elige moneda mayoritaria (empate → ARS) y respeta el máximo.
+ * Deduplica por compareKey. Si hay más de una moneda, no arma comparación.
  */
 export function getFundsCompareTo(
   rows: FundsCompareSelectionInput[],
@@ -347,7 +347,7 @@ export function getFundsCompareTo(
   keys: string[]
   currency: FciCompareCurrency
   uniqueCount: number
-  omittedForCurrency: number
+  mixedCurrency: boolean
   truncated: boolean
 } {
   const unique = new Map<string, FciCompareCurrency>()
@@ -361,21 +361,22 @@ export function getFundsCompareTo(
     unique.set(key, code)
   }
 
-  let ars = 0
-  let usd = 0
-  for (const currency of unique.values()) {
-    if (currency === 'USD') usd += 1
-    else ars += 1
+  const currencies = [...new Set(unique.values())]
+  const currency: FciCompareCurrency = currencies[0] ?? FCI_COMPARE_DEFAULT_CURRENCY
+
+  if (currencies.length > 1) {
+    return {
+      path: '/fondos/comparar',
+      query: {},
+      keys: [],
+      currency,
+      uniqueCount: unique.size,
+      mixedCurrency: true,
+      truncated: false,
+    }
   }
 
-  const currency: FciCompareCurrency =
-    usd > ars ? 'USD' : FCI_COMPARE_DEFAULT_CURRENCY
-
-  const matching = [...unique.entries()]
-    .filter(([, rowCurrency]) => rowCurrency === currency)
-    .map(([key]) => key)
-
-  const keys = matching.slice(0, Math.max(0, maxCount))
+  const keys = [...unique.keys()].slice(0, Math.max(0, maxCount))
   const query: Record<string, string> = {
     fondos: serializeFondosQuery(keys),
   }
@@ -390,7 +391,7 @@ export function getFundsCompareTo(
     keys,
     currency,
     uniqueCount: unique.size,
-    omittedForCurrency: unique.size - matching.length,
-    truncated: matching.length > keys.length,
+    mixedCurrency: false,
+    truncated: unique.size > keys.length,
   }
 }

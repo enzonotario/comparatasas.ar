@@ -2,19 +2,47 @@ import { h } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import UCheckbox from '@nuxt/ui/components/Checkbox.vue'
 
+type ComparableTableRow = {
+  original: unknown
+  getIsSelected: () => boolean
+  toggleSelected: (value?: boolean) => void
+  getCanSelect?: () => boolean
+}
+
 type ComparableSelectOptions = {
   /** If true, only toggle selection when meta/ctrl is held (click otherwise left to consumer). */
   modifierOnly?: boolean
+  /** Return false to block selecting a row (already-selected rows can still be deselected). */
+  canSelectRow?: (row: ComparableTableRow) => boolean
+}
+
+function rowCanBeSelected(
+  row: ComparableTableRow,
+  canSelectRow?: (row: ComparableTableRow) => boolean,
+) {
+  if (row.getIsSelected()) return true
+  if (!canSelectRow) return true
+  return canSelectRow(row)
 }
 
 /**
  * Columna de checkbox para selección multi-fila en UTable.
  */
-export function createComparableSelectColumn<T>(): TableColumn<T> {
+export function createComparableSelectColumn<T>(
+  options?: Pick<ComparableSelectOptions, 'canSelectRow'>,
+): TableColumn<T> {
   return {
     id: 'select',
-    header: ({ table }) =>
-      h(
+    header: ({ table }) => {
+      const pageRows = table.getRowModel().rows as ComparableTableRow[]
+      const selectableRows = pageRows.filter((row) =>
+        rowCanBeSelected(row, options?.canSelectRow),
+      )
+      const allSelectableSelected =
+        selectableRows.length > 0 && selectableRows.every((row) => row.getIsSelected())
+      const someSelectableSelected = selectableRows.some((row) => row.getIsSelected())
+
+      return h(
         'div',
         {
           class: 'flex items-center justify-center',
@@ -22,18 +50,35 @@ export function createComparableSelectColumn<T>(): TableColumn<T> {
         },
         [
           h(UCheckbox, {
-            modelValue: table.getIsSomePageRowsSelected()
-              ? 'indeterminate'
-              : table.getIsAllPageRowsSelected(),
-            'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-              table.toggleAllPageRowsSelected(!!value),
+            modelValue: someSelectableSelected
+              ? allSelectableSelected
+                ? true
+                : 'indeterminate'
+              : false,
+            'onUpdate:modelValue': (value: boolean | 'indeterminate') => {
+              const wantSelected = !!value
+              for (const row of pageRows) {
+                if (wantSelected) {
+                  if (!row.getIsSelected() && rowCanBeSelected(row, options?.canSelectRow)) {
+                    row.toggleSelected(true)
+                  }
+                } else if (row.getIsSelected()) {
+                  row.toggleSelected(false)
+                }
+              }
+            },
             'aria-label': 'Seleccionar todas',
             size: 'sm',
+            disabled: selectableRows.length === 0,
           }),
         ],
-      ),
-    cell: ({ row }) =>
-      h(
+      )
+    },
+    cell: ({ row }) => {
+      const tableRow = row as unknown as ComparableTableRow
+      const canSelect = rowCanBeSelected(tableRow, options?.canSelectRow)
+
+      return h(
         'div',
         {
           class: 'flex items-center justify-center',
@@ -41,14 +86,18 @@ export function createComparableSelectColumn<T>(): TableColumn<T> {
         },
         [
           h(UCheckbox, {
-            modelValue: row.getIsSelected(),
-            'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-              row.toggleSelected(!!value),
+            modelValue: tableRow.getIsSelected(),
+            'onUpdate:modelValue': (value: boolean | 'indeterminate') => {
+              if (value && !canSelect) return
+              tableRow.toggleSelected(!!value)
+            },
             'aria-label': 'Seleccionar fila',
             size: 'sm',
+            disabled: !canSelect,
           }),
         ],
-      ),
+      )
+    },
     enableSorting: false,
     enableHiding: false,
     meta: {
@@ -67,18 +116,25 @@ export function createComparableSelectColumn<T>(): TableColumn<T> {
  */
 export function useComparableTableRows(options?: ComparableSelectOptions) {
   const rowSelection = ref<Record<string, boolean>>({})
-  const selectColumn = createComparableSelectColumn()
+  const selectColumn = createComparableSelectColumn({
+    canSelectRow: options?.canSelectRow,
+  })
 
-  function onSelect(
-    row: { toggleSelected: (value?: boolean) => void; getIsSelected: () => boolean },
-    e?: Event,
-  ): boolean {
+  function onSelect(row: ComparableTableRow, e?: Event): boolean {
     const mouse = e instanceof MouseEvent ? e : undefined
     if (options?.modifierOnly) {
       if (!(mouse?.metaKey || mouse?.ctrlKey)) return false
       mouse.preventDefault()
     }
-    row.toggleSelected(!row.getIsSelected())
+
+    if (row.getIsSelected()) {
+      row.toggleSelected(false)
+      return true
+    }
+
+    if (!rowCanBeSelected(row, options?.canSelectRow)) return true
+
+    row.toggleSelected(true)
     return true
   }
 

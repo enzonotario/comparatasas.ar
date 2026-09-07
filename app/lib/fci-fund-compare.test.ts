@@ -228,7 +228,7 @@ describe('fondos query helpers', () => {
     })
   })
 
-  it('builds compare route from multiple selected catalog rows', () => {
+  it('rejects compare route when selected funds mix currencies', () => {
     const result = getFundsCompareTo([
       {
         fondo: 'Balanz Money Market - Clase A',
@@ -255,11 +255,39 @@ describe('fondos query helpers', () => {
 
     expect(result).toMatchObject({
       path: '/fondos/comparar',
+      query: {},
+      keys: [],
+      uniqueCount: 3,
+      mixedCurrency: true,
+      truncated: false,
+    })
+  })
+
+  it('builds compare route from same-currency selected catalog rows', () => {
+    const result = getFundsCompareTo([
+      {
+        fondo: 'Balanz Money Market - Clase A',
+        baseName: 'Balanz Money Market',
+        groupKey: 'balanz-money-market',
+        moneda: 'ARS',
+        monedaInversion: 'ARS',
+      },
+      {
+        fondo: 'Fima Premium - Clase A',
+        baseName: 'Fima Premium',
+        groupKey: 'fima-premium',
+        moneda: 'ARS',
+        monedaInversion: 'ARS',
+      },
+    ])
+
+    expect(result).toMatchObject({
+      path: '/fondos/comparar',
       query: { fondos: 'balanz-money-market,fima-premium' },
       currency: 'ARS',
       keys: ['balanz-money-market', 'fima-premium'],
-      uniqueCount: 3,
-      omittedForCurrency: 1,
+      uniqueCount: 2,
+      mixedCurrency: false,
       truncated: false,
     })
   })

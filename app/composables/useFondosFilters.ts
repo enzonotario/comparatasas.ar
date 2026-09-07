@@ -1,6 +1,7 @@
 import type { FundCatalogRow } from '~/composables/useFondosCatalog'
 import { isFundReportActive } from '~/lib/fci-fund-active'
 import { parseFundClassName } from '~/lib/fci-fund-class'
+import { normalizeCurrencyCode } from '~/lib/fci-fund-formatters'
 
 export type PlazoFilter = '0' | '1' | '2+'
 
@@ -187,7 +188,14 @@ export function useFondosFilters(allFunds: Ref<FundCatalogRow[]>) {
     }
 
     if (isActiveFilter(selectedMoneda.value)) {
-      funds = funds.filter((fund) => fund.monedaInversion === selectedMoneda.value)
+      const selected = selectedMoneda.value
+      funds = funds.filter((fund) => {
+        const fundCurrency = fund.monedaInversion || fund.moneda
+        if (selected === 'ARS' || selected === 'USD') {
+          return normalizeCurrencyCode(fundCurrency) === selected
+        }
+        return fund.monedaInversion === selected
+      })
     }
 
     if (isActiveFilter(selectedRegion.value)) {

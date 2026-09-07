@@ -30,7 +30,12 @@ import {
   type CatalogVista,
   type FundEntitySummary,
 } from '~/lib/fci-fund-entity-views'
-import { FCI_COMPARE_MAX_COUNT, getFundsCompareTo } from '~/lib/fci-fund-compare'
+import {
+  FCI_COMPARE_MAX_COUNT,
+  getFundsCompareTo,
+  isFciCompareCurrency,
+  type FciCompareCurrency,
+} from '~/lib/fci-fund-compare'
 
 definePageMeta({
   layout: 'fondos',
@@ -43,10 +48,26 @@ const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 const NuxtLink = resolveComponent('NuxtLink')
 const table = useTemplateRef<{ tableApi?: any }>('table')
+const compareSelectionCurrency = ref<FciCompareCurrency | null>(null)
+
 const { rowSelection, onSelect: toggleCompareSelection, withSelection, clearSelection } =
   useComparableTableRows({
     modifierOnly: true,
+    canSelectRow: (row) => {
+      const currency = getSelectableFundCurrency(row.original)
+      if (!currency) return true
+      const locked = compareSelectionCurrency.value
+      if (!locked) return true
+      return currency === locked
+    },
   })
+
+function getSelectableFundCurrency(original: unknown): FciCompareCurrency | null {
+  if (!original || isFundEntitySummary(original as FundEntitySummary)) return null
+  const fund = original as FundCatalogGroupRow
+  const code = normalizeCurrencyCode(fund.monedaInversion || fund.moneda)
+  return isFciCompareCurrency(code) ? code : null
+}
 
 const groupByClassQuery = useRouteQuery<'1' | '0'>('agrupar', '1')
 const groupByClass = computed({
@@ -72,6 +93,12 @@ const vistaTabs = computed<TabsItem[]>(() => [
   { label: 'Fondos', value: 'fondos', icon: 'i-lucide-layout-list' },
   { label: 'Administradoras', value: 'administradoras', icon: 'i-lucide-briefcase' },
   { label: 'Depositarias', value: 'depositarias', icon: 'i-lucide-landmark' },
+])
+
+const currencyTabs = computed<TabsItem[]>(() => [
+  { label: 'Todos', value: 'all' },
+  { label: 'ARS', value: 'ARS' },
+  { label: 'USD', value: 'USD' },
 ])
 
 const isFondosVista = computed(() => catalogVista.value === 'fondos')
@@ -282,6 +309,33 @@ watch(groupByClass, () => {
   currentPage.value = 1
   clearSelection()
 })
+
+watch(selectedMoneda, () => {
+  currentPage.value = 1
+  clearSelection()
+})
+
+watch(
+  [rowSelection, selectedMoneda],
+  () => {
+    const selected = table.value?.tableApi?.getSelectedRowModel()?.rows ?? []
+    for (const row of selected) {
+      const currency = getSelectableFundCurrency(row.original)
+      if (currency) {
+        compareSelectionCurrency.value = currency
+        return
+      }
+    }
+
+    if (selectedMoneda.value === 'ARS' || selectedMoneda.value === 'USD') {
+      compareSelectionCurrency.value = selectedMoneda.value
+      return
+    }
+
+    compareSelectionCurrency.value = null
+  },
+  { deep: true, immediate: true },
+)
 
 watch(tableTotalPages, (value) => {
   if (currentPage.value > value) {
@@ -852,15 +906,19 @@ const selectionCompareTo = computed(() => ({
 const selectionCompareCount = computed(() => selectionCompare.value.uniqueCount)
 
 const selectionCompareHint = computed(() => {
-  const { omittedForCurrency, truncated, currency, keys } = selectionCompare.value
+  const { mixedCurrency, truncated, currency } = selectionCompare.value
   const parts: string[] = []
 
-  if (!keys.length) return 'Seleccioná fondos comparables'
-  if (omittedForCurrency > 0) {
-    parts.push(`solo ${currency} (${omittedForCurrency} en otra moneda)`)
+  if (mixedCurrency) return 'No se pueden mezclar monedas'
+  if (!selectionCompare.value.keys.length) {
+    return compareSelectionCurrency.value
+      ? `Solo fondos en ${compareSelectionCurrency.value}`
+      : 'Seleccioná fondos comparables'
   }
   if (truncated) {
     parts.push(`máx. ${FCI_COMPARE_MAX_COUNT}`)
+  } else if (compareSelectionCurrency.value) {
+    parts.push(currency)
   }
 
   return parts.length ? parts.join(' · ') : null
@@ -912,6 +970,14 @@ const selectionCompareHint = computed(() => {
               icon="i-lucide-chart-pie"
               label="Mercado"
               class="max-md:hidden"
+            />
+            <UTabs
+              v-model="selectedMoneda"
+              :items="currencyTabs"
+              :content="false"
+              color="neutral"
+              size="xs"
+              class="w-auto"
             />
             <UTabs
               v-model="catalogVista"
