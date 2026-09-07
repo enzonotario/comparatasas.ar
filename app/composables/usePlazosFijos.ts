@@ -1,10 +1,11 @@
 import {
-  findMatchingTasa,
-  getDisplayPlazoKey,
   getMaxTnaForPlazoKey,
   getRootTnaDecimal,
   groupRatesByPlazoKey,
   mergeRootTnaFor30d,
+  resolvePlazoFijoRateAtDays,
+  resolvePlazoFijoRateForHorizon,
+  resolvePlazoFijoRatesByStandardPlazo,
   STANDARD_PLAZO_COLUMNS,
 } from '../lib/plazo-fijo-rates'
 import {
@@ -14,6 +15,12 @@ import {
 } from '../lib/mappings/plazo-fijo'
 import type { PlazoFijo, PlazoFijoTableRow } from '../types/investments'
 import { withOutboundUtm } from '~/lib/outbound-url'
+
+export {
+  resolvePlazoFijoRateAtDays,
+  resolvePlazoFijoRateForHorizon,
+  resolvePlazoFijoRatesByStandardPlazo,
+}
 
 function mapEntityToTableRow(plazoFijo: PlazoFijo): PlazoFijoTableRow | null {
   const institution = getPlazoFijoShortName(plazoFijo.entidad)
@@ -62,36 +69,6 @@ function mapEntityToTableRow(plazoFijo: PlazoFijo): PlazoFijoTableRow | null {
     sortTnaByPlazo,
     sortTna30d: sortTnaByPlazo['30'] ?? 0,
   }
-}
-
-export function resolvePlazoFijoRateAtDays(
-  row: PlazoFijoTableRow,
-  days: number,
-  amount?: number,
-): { tna: number; plazoKey?: string } | null {
-  if (amount != null) {
-    const matchingTasa = findMatchingTasa(row.tasas, days, amount)
-    if (matchingTasa) {
-      return {
-        tna: matchingTasa.tna * 100,
-        plazoKey: getDisplayPlazoKey(matchingTasa) ?? undefined,
-      }
-    }
-  }
-
-  if (row.rootTna && row.rootTna > 0 && days >= 30 && days <= 44) {
-    return { tna: row.rootTna, plazoKey: '30' }
-  }
-
-  const matchingTasa = findMatchingTasa(row.tasas, days, amount)
-  if (matchingTasa) {
-    return {
-      tna: matchingTasa.tna * 100,
-      plazoKey: getDisplayPlazoKey(matchingTasa) ?? undefined,
-    }
-  }
-
-  return null
 }
 
 export function usePlazosFijos() {

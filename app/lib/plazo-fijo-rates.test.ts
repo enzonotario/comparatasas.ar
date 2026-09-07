@@ -10,6 +10,9 @@ import {
   groupRatesByPlazoKey,
   isExcludedPlazoTasa,
   mergeRootTnaFor30d,
+  resolvePlazoFijoRateAtDays,
+  resolvePlazoFijoRateForHorizon,
+  resolvePlazoFijoRatesByStandardPlazo,
   tasaMatchesDays,
 } from './plazo-fijo-rates'
 
@@ -275,5 +278,145 @@ describe('groupRatesByPlazoKey', () => {
     expect(grouped['45-59']).toBeUndefined()
     expect(grouped['60']).toHaveLength(1)
     expect(grouped['60']![0]!.tna).toBe(21.5)
+  })
+})
+
+describe('resolvePlazoFijoRateForHorizon', () => {
+  const row = {
+    rootTna: 24,
+    tasas: [
+      {
+        montoMinimo: null,
+        montoMaximo: null,
+        plazoMinDias: 30,
+        plazoMaxDias: 44,
+        tna: 0.24,
+      },
+      {
+        montoMinimo: null,
+        montoMaximo: null,
+        plazoMinDias: 60,
+        plazoMaxDias: 89,
+        tna: 0.26,
+      },
+      {
+        montoMinimo: null,
+        montoMaximo: null,
+        plazoMinDias: 90,
+        plazoMaxDias: 119,
+        tna: 0.28,
+      },
+      {
+        montoMinimo: null,
+        montoMaximo: null,
+        plazoMinDias: 365,
+        plazoMaxDias: 365,
+        tna: 0.3,
+      },
+    ],
+  }
+
+  it('no compara bajo 30 días', () => {
+    expect(resolvePlazoFijoRateForHorizon(row, 1)).toBeNull()
+    expect(resolvePlazoFijoRateForHorizon(row, 8)).toBeNull()
+    expect(resolvePlazoFijoRateForHorizon(row, 29)).toBeNull()
+  })
+
+  it('usa 30d entre 30 y 59 días', () => {
+    expect(resolvePlazoFijoRateForHorizon(row, 30)).toEqual({ tna: 24, plazoKey: '30' })
+    expect(resolvePlazoFijoRateForHorizon(row, 45)).toEqual({ tna: 24, plazoKey: '30' })
+    expect(resolvePlazoFijoRateForHorizon(row, 59)).toEqual({ tna: 24, plazoKey: '30' })
+  })
+
+  it('usa 60d entre 60 y 89 días', () => {
+    expect(resolvePlazoFijoRateForHorizon(row, 60)).toEqual({ tna: 26, plazoKey: '60' })
+    expect(resolvePlazoFijoRateForHorizon(row, 75)).toEqual({ tna: 26, plazoKey: '60' })
+  })
+
+  it('usa 90d entre 90 y 364 días', () => {
+    const at90 = resolvePlazoFijoRateForHorizon(row, 90)
+    expect(at90?.plazoKey).toBe('90')
+    expect(at90?.tna).toBeCloseTo(28, 10)
+    const at200 = resolvePlazoFijoRateForHorizon(row, 200)
+    expect(at200?.plazoKey).toBe('90')
+    expect(at200?.tna).toBeCloseTo(28, 10)
+  })
+
+  it('usa 365d desde 365 días', () => {
+    expect(resolvePlazoFijoRateForHorizon(row, 365)).toEqual({ tna: 30, plazoKey: '365' })
+    expect(resolvePlazoFijoRateForHorizon(row, 1361)).toEqual({ tna: 30, plazoKey: '365' })
+  })
+
+  it('cae al tramo más corto disponible si falta el largo', () => {
+    const only30 = {
+      rootTna: 22,
+      tasas: [
+        {
+          montoMinimo: null,
+          montoMaximo: null,
+          plazoMinDias: 30,
+          plazoMaxDias: 30,
+          tna: 0.22,
+        },
+      ],
+    }
+    expect(resolvePlazoFijoRateForHorizon(only30, 100)).toEqual({ tna: 22, plazoKey: '30' })
+  })
+})
+
+describe('resolvePlazoFijoRatesByStandardPlazo', () => {
+  it('arma TNA por columna estándar', () => {
+    const row = {
+      rootTna: 24,
+      tasas: [
+        {
+          montoMinimo: null,
+          montoMaximo: null,
+          plazoMinDias: 30,
+          plazoMaxDias: 44,
+          tna: 0.24,
+        },
+        {
+          montoMinimo: null,
+          montoMaximo: null,
+          plazoMinDias: 60,
+          plazoMaxDias: 89,
+          tna: 0.26,
+        },
+      ],
+    }
+
+    expect(resolvePlazoFijoRatesByStandardPlazo(row)).toEqual({
+      '30': 24,
+      '60': 26,
+      '90': null,
+      '365': null,
+    })
+  })
+})
+
+describe('resolvePlazoFijoRateAtDays', () => {
+  it('respeta tramos por monto', () => {
+    const row = {
+      tasas: [
+        {
+          montoMinimo: null,
+          montoMaximo: 999_999,
+          plazoMinDias: 30,
+          plazoMaxDias: 44,
+          tna: 0.22,
+        },
+        {
+          montoMinimo: 1_000_000,
+          montoMaximo: null,
+          plazoMinDias: 30,
+          plazoMaxDias: 44,
+          tna: 0.25,
+        },
+      ],
+    }
+
+    expect(resolvePlazoFijoRateAtDays(row, 30, 500_000)?.tna).toBe(22)
+    expect(resolvePlazoFijoRateAtDays(row, 30, 1_000_000)?.tna).toBe(25)
   })
 })

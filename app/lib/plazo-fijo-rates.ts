@@ -241,3 +241,79 @@ export function groupRatesByPlazoKey(tasas: TasaPlazoFijo[]): Record<string, Pla
 
   return grouped
 }
+
+/** Fila mínima para resolver TNA de PF por días / horizonte. */
+export type PlazoFijoRateSource = {
+  tasas?: TasaPlazoFijo[]
+  rootTna?: number
+}
+
+export function resolvePlazoFijoRateAtDays(
+  row: PlazoFijoRateSource,
+  days: number,
+  amount?: number,
+): { tna: number; plazoKey?: string } | null {
+  if (amount != null) {
+    const matchingTasa = findMatchingTasa(row.tasas, days, amount)
+    if (matchingTasa) {
+      return {
+        tna: matchingTasa.tna * 100,
+        plazoKey: getDisplayPlazoKey(matchingTasa) ?? undefined,
+      }
+    }
+  }
+
+  if (row.rootTna && row.rootTna > 0 && days >= 30 && days <= 44) {
+    return { tna: row.rootTna, plazoKey: '30' }
+  }
+
+  const matchingTasa = findMatchingTasa(row.tasas, days, amount)
+  if (matchingTasa) {
+    return {
+      tna: matchingTasa.tna * 100,
+      plazoKey: getDisplayPlazoKey(matchingTasa) ?? undefined,
+    }
+  }
+
+  return null
+}
+
+/**
+ * TNA de PF para comparar un instrumento con `horizonDays` al vencimiento.
+ * - Menos de 30 días: sin comparación (el PF mínimo típico es 30d).
+ * - 30 o más: usa el tramo estándar más largo ≤ horizonte que publique el proveedor
+ *   (30 → 60 → 90 → 365), respetando tramos por monto.
+ */
+export function resolvePlazoFijoRateForHorizon(
+  row: PlazoFijoRateSource,
+  horizonDays: number,
+  amount?: number,
+): { tna: number; plazoKey: string } | null {
+  if (!(horizonDays >= 30)) return null
+
+  const columns = [...STANDARD_PLAZO_COLUMNS]
+    .filter((column) => column.plazoMinDias <= horizonDays)
+    .sort((a, b) => b.plazoMinDias - a.plazoMinDias)
+
+  for (const column of columns) {
+    const match = resolvePlazoFijoRateAtDays(row, column.plazoMinDias, amount)
+    if (match && match.tna > 0) {
+      return { tna: match.tna, plazoKey: match.plazoKey ?? column.key }
+    }
+  }
+
+  return null
+}
+
+/** TNA por columna estándar (30/60/90/365) para el monto dado; null si no aplica. */
+export function resolvePlazoFijoRatesByStandardPlazo(
+  row: PlazoFijoRateSource,
+  amount?: number,
+): Record<string, number | null> {
+  return Object.fromEntries(
+    STANDARD_PLAZO_COLUMNS.map((column) => {
+      const match = resolvePlazoFijoRateAtDays(row, column.plazoMinDias, amount)
+      return [column.key, match && match.tna > 0 ? match.tna : null]
+    }),
+  )
+}

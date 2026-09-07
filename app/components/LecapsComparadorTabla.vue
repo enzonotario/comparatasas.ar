@@ -10,6 +10,9 @@ import {
   calcularFilaLecap,
   type LecapCalculoResultado,
 } from '~/lib/finance/lecap-calculos'
+import { resolvePlazoFijoRateForHorizon } from '~/composables/usePlazosFijos'
+import { STANDARD_PLAZO_COLUMNS } from '~/lib/plazo-fijo-rates'
+import type { PlazoFijoTableRow } from '~/types/investments'
 
 export type LecapComparadorRow = {
   item: LecapItem
@@ -22,6 +25,8 @@ export type LecapComparadorRow = {
   tna: number
   tem: number
   comisionPorcentaje: number
+  /** Tramo de PF usado en vs PF (p. ej. "30", "60"); null si no aplica. */
+  plazoFijoPlazoKey: string | null
 }
 
 const props = defineProps<{
@@ -29,12 +34,16 @@ const props = defineProps<{
   comision: ComisionBrokerApi | null
   /** Monto global a invertir. */
   montoInvertir: number
-  tnaPlazoFijoPorcentaje: number
+  /** Banco de PF seleccionado; la TNA se resuelve por días al vto. de cada fila. */
+  plazoFijoRow: PlazoFijoTableRow | null
 }>()
 
 const rows = computed<LecapComparadorRow[]>(() =>
   props.items.map((item) => {
     const comisionPorcentaje = costoCompraLetrasPct(props.comision, item.days)
+    const pfMatch = props.plazoFijoRow
+      ? resolvePlazoFijoRateForHorizon(props.plazoFijoRow, item.days, props.montoInvertir)
+      : null
     const calc = calcularFilaLecap(
       {
         precioArs: item.price,
@@ -44,7 +53,7 @@ const rows = computed<LecapComparadorRow[]>(() =>
       },
       {
         comisionPorcentaje,
-        tnaPlazoFijoPorcentaje: props.tnaPlazoFijoPorcentaje,
+        tnaPlazoFijoPorcentaje: pfMatch?.tna ?? 0,
         montoInvertir: props.montoInvertir,
         cantidadVn: null,
       },
@@ -61,6 +70,7 @@ const rows = computed<LecapComparadorRow[]>(() =>
       tna: calc.tna,
       tem: calc.tem,
       comisionPorcentaje,
+      plazoFijoPlazoKey: pfMatch?.plazoKey ?? null,
     }
   }),
 )
@@ -122,6 +132,12 @@ function formatDate(value: string): string {
     month: '2-digit',
     year: '2-digit',
   }).format(date)
+}
+
+function formatPfPlazoHint(plazoKey: string | null): string | null {
+  if (!plazoKey) return null
+  const column = STANDARD_PLAZO_COLUMNS.find((c) => c.key === plazoKey)
+  return column ? `PF ${column.label}` : `PF ${plazoKey}d`
 }
 
 function createSortableHeader(label: string) {
@@ -276,14 +292,15 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
     accessorFn: (row) => row.calc.plazoFijoMonto ?? Number.NEGATIVE_INFINITY,
     header: createSortableHeader('PF'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
-    cell: ({ row }) =>
-      h(
-        'div',
-        { class: 'tabular-nums' },
-        row.original.calc.plazoFijoMonto != null
-          ? formatMoney(row.original.calc.plazoFijoMonto)
-          : '—',
-      ),
+    cell: ({ row }) => {
+      const monto = row.original.calc.plazoFijoMonto
+      const hint = formatPfPlazoHint(row.original.plazoFijoPlazoKey)
+      if (monto == null) return h('div', { class: 'text-muted' }, '—')
+      return h('div', { class: 'tabular-nums leading-tight' }, [
+        h('div', formatMoney(monto)),
+        hint ? h('div', { class: 'text-[0.65rem] text-muted' }, hint) : null,
+      ])
+    },
   },
   {
     id: 'vsPlazoFijo',

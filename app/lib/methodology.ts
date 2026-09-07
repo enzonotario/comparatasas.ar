@@ -232,7 +232,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'Si la tarifa de letras es one-shot (sin tasaBase) se aplica sobre el precio; si es mensual/anual/TNA se prorratea a los días al vencimiento. La membresía de plan no se incluye. Con un monto a invertir global estimamos cantidad de VN y total a recibir. El diferencial vs plazo fijo usa la TNA a 30 días del banco elegido en el selector (por defecto el mejor publicado en plazos fijos tradicionales).',
+        text: 'Si la tarifa de letras es one-shot (sin tasaBase) se aplica sobre el precio; si es mensual/anual/TNA se prorratea a los días al vencimiento. La membresía de plan no se incluye. Con un monto a invertir global estimamos cantidad de VN y total a recibir. El diferencial vs plazo fijo usa la TNA del banco elegido según el plazo del instrumento: sin comparación bajo 30 días; con 30/60/90/365 días se toma el tramo estándar más largo ≤ horizonte que publique el proveedor (por defecto el mejor a 30 días en plazos fijos tradicionales).',
       },
     ],
   },

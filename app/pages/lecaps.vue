@@ -4,11 +4,15 @@ import LecapYieldCurveChart, {
 } from '~/components/charts/LecapYieldCurveChart.vue'
 import LecapsComparadorTabla from '~/components/LecapsComparadorTabla.vue'
 import CaucionesBrokerSelect from '~/components/CaucionesBrokerSelect.vue'
+import PlazoFijoCompararSelect, {
+  type PlazoFijoCompararOption,
+} from '~/components/PlazoFijoCompararSelect.vue'
+import { useCaucionesBrokerSelection } from '~/composables/useCaucionesBrokerSelection'
 import {
-  type BrokerOption,
-  useCaucionesBrokerSelection,
-} from '~/composables/useCaucionesBrokerSelection'
-import { resolvePlazoFijoRateAtDays, usePlazosFijos } from '~/composables/usePlazosFijos'
+  resolvePlazoFijoRatesByStandardPlazo,
+  usePlazosFijos,
+} from '~/composables/usePlazosFijos'
+import { STANDARD_PLAZO_COLUMNS } from '~/lib/plazo-fijo-rates'
 import type { LetrasPayload } from '~/composables/useLecaps'
 import { getComisionesBrokersProductoPath } from '~/lib/comisiones-brokers-nav'
 import { ogUpdatedAtDate } from '~/utils/og-data'
@@ -102,21 +106,31 @@ function setMontoPreset(value: number) {
   montoInvertir.value = value
 }
 
+function formatPlazoFijoOptionDescription(ratesByPlazo: Record<string, number | null>): string {
+  const parts = STANDARD_PLAZO_COLUMNS.map((column) => {
+    const tna = ratesByPlazo[column.key]
+    if (tna == null || !(tna > 0)) return null
+    return `${column.label} ${tna.toFixed(2)}%`
+  }).filter((part): part is string => part != null)
+  return parts.length ? parts.join(' · ') : 'Sin tasas'
+}
+
 /** Opciones de PF ordenadas como en /plazos-fijos (mejor TNA 30d primero). */
-const plazoFijoOptions = computed<BrokerOption[]>(() => {
+const plazoFijoOptions = computed<PlazoFijoCompararOption[]>(() => {
   const amount = montoInvertir.value
   return plazosFijosTableRows.value
     .map((row) => {
-      const match = resolvePlazoFijoRateAtDays(row, 30, amount)
-      const tna = match?.tna ?? (row.sortTna30d > 0 ? row.sortTna30d : row.sortTna)
-      if (!(tna > 0)) return null
+      const ratesByPlazo = resolvePlazoFijoRatesByStandardPlazo(row, amount)
+      const hasAnyRate = Object.values(ratesByPlazo).some((tna) => tna != null && tna > 0)
+      if (!hasAnyRate) return null
       return {
         value: row.rowKey,
         label: row.institution,
-        description: `${tna.toFixed(2)}% TNA`,
+        ratesByPlazo,
+        description: formatPlazoFijoOptionDescription(ratesByPlazo),
       }
     })
-    .filter((option): option is BrokerOption => option != null)
+    .filter((option): option is PlazoFijoCompararOption => option != null)
 })
 
 const selectedPlazoFijo = computed({
@@ -132,12 +146,8 @@ const selectedPlazoFijo = computed({
   },
 })
 
-const tnaPlazoFijoPorcentaje = computed(() => {
-  const row = plazosFijosTableRows.value.find((r) => r.rowKey === selectedPlazoFijo.value)
-  if (!row) return 0
-  const match = resolvePlazoFijoRateAtDays(row, 30, montoInvertir.value)
-  if (match) return match.tna
-  return row.sortTna30d > 0 ? row.sortTna30d : row.sortTna
+const selectedPlazoFijoRow = computed(() => {
+  return plazosFijosTableRows.value.find((r) => r.rowKey === selectedPlazoFijo.value) ?? null
 })
 
 function pickBestPlazoFijo() {
@@ -239,7 +249,8 @@ function formatFechaActualizacionUtc(iso: string): string {
 
     <p class="text-xs text-muted -mt-1 leading-snug max-w-5xl">
       Precio c/ comisión según broker de letras (+ IVA si aplica; membresía no incluida). Monto → VN
-      y total a recibir; vs PF usa TNA 30d del banco elegido (mejor de
+      y total a recibir; vs PF usa la TNA del banco elegido según el plazo del instrumento (sin
+      comparación bajo 30d; 30/60/90/365d cuando el proveedor la publica; mejor de
       <NuxtLink
         to="/plazos-fijos"
         class="text-primary-800 dark:text-primary-200 font-medium underline underline-offset-2"
@@ -299,7 +310,7 @@ function formatFechaActualizacionUtc(iso: string): string {
       </UFormField>
 
       <UFormField v-if="plazoFijoOptions.length" label="Comparar con Plazo fijo">
-        <CaucionesBrokerSelect
+        <PlazoFijoCompararSelect
           v-model="selectedPlazoFijo"
           :items="plazoFijoOptions"
           size="sm"
@@ -325,7 +336,7 @@ function formatFechaActualizacionUtc(iso: string): string {
         :items="filteredItems"
         :comision="selectedComision"
         :monto-invertir="montoInvertir"
-        :tna-plazo-fijo-porcentaje="tnaPlazoFijoPorcentaje"
+        :plazo-fijo-row="selectedPlazoFijoRow"
       />
 
       <div class="flex justify-end">
@@ -387,9 +398,10 @@ function formatFechaActualizacionUtc(iso: string): string {
             <strong>Docta Terminal</strong>. Podés elegir un <strong>broker</strong> para aplicar la
             comisión de compra de letras (+ IVA si corresponde), ingresar un
             <strong>monto a invertir</strong> y comparar contra la
-            <strong>TNA de un plazo fijo</strong> (por defecto el mejor a 30 días). El selector de
-            broker queda en `?broker=` y el de plazo fijo en `?pf=`. Son valores
-            <strong>orientativos</strong>; no constituyen asesoramiento financiero.
+            <strong>TNA de un plazo fijo</strong> del banco elegido según los días al vencimiento
+            (sin vs PF bajo 30 días; tramos 30/60/90/365 cuando apliquen). Por defecto, el mejor a
+            30 días. El selector de broker queda en `?broker=` y el de plazo fijo en `?pf=`. Son
+            valores <strong>orientativos</strong>; no constituyen asesoramiento financiero.
           </p>
         </div>
         <div class="space-y-4">
