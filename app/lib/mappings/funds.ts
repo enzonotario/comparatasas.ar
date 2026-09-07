@@ -74,6 +74,31 @@ export function getFundTypeInfo(
     return { type: 'retornoTotal', typeLabel: 'Retorno Total' }
   }
 
+  // Etiquetas CAFCI adicionales: se muestran tal cual (sin bucket de catálogo propio).
+  if (
+    normalized === 'pymes' ||
+    normalized === 'pyme' ||
+    normalized.includes('pyme')
+  ) {
+    return { type: 'rentaFija', typeLabel: 'PyMEs' }
+  }
+
+  if (normalized.includes('infraestructura')) {
+    return { type: 'rentaFija', typeLabel: 'Infraestructura' }
+  }
+
+  if (normalized === 'asg' || normalized.includes('asg')) {
+    return { type: 'rentaMixta', typeLabel: 'ASG' }
+  }
+
+  if (normalized.includes('cerrado')) {
+    return { type: 'rentaFija', typeLabel: 'Fondos Cerrados' }
+  }
+
+  if (normalized === 'rg900' || normalized.includes('rg 900') || normalized.includes('rg900')) {
+    return { type: 'rentaFija', typeLabel: 'RG900' }
+  }
+
   if (!fallback) return undefined
 
   const fallbackLabels: Record<FundType, string> = {
