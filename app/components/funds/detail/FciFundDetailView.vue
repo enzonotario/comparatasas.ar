@@ -240,7 +240,7 @@ useSeoMeta({
     class="max-lg:h-auto max-lg:min-h-0 lg:h-full lg:min-h-0"
     :ui="{
       root: 'max-lg:!min-h-0 max-lg:h-auto lg:h-full lg:min-h-0 lg:!min-h-0',
-      body: 'max-lg:!overflow-visible max-lg:!flex-none space-y-4 p-3! sm:p-4! gap-0!',
+      body: 'max-lg:!overflow-visible max-lg:!flex-none lg:overflow-y-auto space-y-4 p-3! sm:p-4! gap-0!',
     }"
   >
     <template #header>
@@ -421,6 +421,8 @@ useSeoMeta({
     </template>
 
     <template #body>
+      <FundsPageBanner />
+
       <FundsLoading v-if="status === 'pending' && !fundDetail" />
 
       <UAlert

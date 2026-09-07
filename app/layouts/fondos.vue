@@ -3,7 +3,6 @@ import FondosDashboardSidebar from '~/components/funds/FondosDashboardSidebar.vu
 import { withOutboundUtm } from '~/lib/outbound-url'
 
 const nuxtApp = useNuxtApp()
-const route = useRoute()
 const { initialize } = useHotjar()
 
 useFunds()
@@ -16,10 +15,6 @@ const { allFunds } = useFondosCatalog()
 onMounted(() => {
   initialize()
 })
-
-const isDetailPage = computed(
-  () => route.name === 'fondos-nombre' || route.name === 'fondos-nombre-historico',
-)
 </script>
 
 <template>
@@ -124,7 +119,9 @@ const isDetailPage = computed(
         </template>
       </UDashboardSidebar>
 
-      <slot />
+      <div class="flex min-h-0 min-w-0 flex-1 flex-col max-lg:overflow-visible lg:overflow-hidden">
+        <slot />
+      </div>
     </UDashboardGroup>
   </UApp>
 </template>

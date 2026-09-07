@@ -470,6 +470,8 @@ function patrimonioLabel(fund: FciCompareFund) {
     <div
       class="flex min-h-0 flex-1 flex-col gap-4 p-3 sm:p-4 max-lg:flex-none max-lg:overflow-visible lg:overflow-y-auto"
     >
+      <FundsPageBanner />
+
       <FundsLoading v-if="loading && !(allFunds ?? []).length" />
 
       <UAlert
