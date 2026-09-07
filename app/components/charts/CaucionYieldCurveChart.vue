@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CaucionRow } from '~/composables/useCauciones'
 import { useChartTheme } from '~/composables/useChartConfig'
+import { isPositiveYieldRate } from '~/lib/finance/yield-curve'
 
 interface Props {
   items: CaucionRow[]
@@ -71,11 +72,12 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
 }
 
 const chartOptions = computed(() => {
-  if (!props.items.length) return null
+  const curveItems = props.items.filter((item) => isPositiveYieldRate(item.tasaActual))
+  if (!curveItems.length) return null
 
-  const maxMonto = Math.max(...props.items.map((item) => item.montoContado), 1)
+  const maxMonto = Math.max(...curveItems.map((item) => item.montoContado), 1)
 
-  const scatterData = props.items.map((item) => {
+  const scatterData = curveItems.map((item) => {
     const ratio = Math.sqrt(item.montoContado / maxMonto)
     return {
       x: item.plazo,
@@ -92,7 +94,7 @@ const chartOptions = computed(() => {
     }
   })
 
-  const allPoints: [number, number][] = props.items
+  const allPoints: [number, number][] = curveItems
     .map((item) => [item.plazo, item.tasaActual] as [number, number])
     .sort((a, b) => a[0] - b[0])
 

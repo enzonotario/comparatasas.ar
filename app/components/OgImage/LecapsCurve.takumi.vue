@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Lecap } from '~/types/investments'
+import { isPositiveYieldRate } from '~/lib/finance/yield-curve'
 
 const props = defineProps<{
   title: string
@@ -63,7 +64,12 @@ const chartConfig = computed(() => {
   if (!props.lecaps?.length) return null
 
   const valid = props.lecaps
-    .filter((l) => l.days !== undefined && l.tir !== undefined && l.tir > 0)
+    .filter((l) => {
+      if (l.days === undefined) return false
+      // TNA negativa fuera de la curva; si no hay TNA, exige TEA > 0.
+      if (l.tna != null) return isPositiveYieldRate(l.tna)
+      return isPositiveYieldRate(l.tir)
+    })
     .sort((a, b) => (a.days || 0) - (b.days || 0))
 
   if (valid.length === 0) return null

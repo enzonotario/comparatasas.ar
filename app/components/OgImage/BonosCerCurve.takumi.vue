@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CerBondRow } from '~/composables/useBonosCer'
 import { diasAlVencimientoCer } from '~/composables/useBonosCer'
+import { isPositiveYieldRate } from '~/lib/finance/yield-curve'
 
 const props = defineProps<{
   title: string
@@ -68,7 +69,7 @@ const chartConfig = computed(() => {
       ...b,
       days: diasAlVencimientoCer(b.fechaVencimiento),
     }))
-    .filter((b) => b.days >= 0 && Number.isFinite(b.tirPorcentaje))
+    .filter((b) => b.days >= 0 && isPositiveYieldRate(b.tirPorcentaje))
     .sort((a, b) => a.days - b.days)
 
   if (withDays.length === 0) return null

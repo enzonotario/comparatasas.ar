@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Lecap } from '~/types/investments'
 import { useChartTheme } from '~/composables/useChartConfig'
+import { isPositiveYieldRate } from '~/lib/finance/yield-curve'
 
 export type LecapYieldMode = 'tir' | 'tem'
 
@@ -24,6 +25,12 @@ const yieldLabel = computed(() => (props.mode === 'tem' ? 'TEM' : 'TEA'))
 function yieldPercent(item: Lecap): number {
   const rate = props.mode === 'tem' ? item.tem : item.tir
   return (rate || 0) * 100
+}
+
+/** Curva: solo instrumentos con TNA positiva (fallback TEA si no hay TNA). */
+function isEligibleForCurve(item: Lecap): boolean {
+  if (item.tna != null) return isPositiveYieldRate(item.tna)
+  return isPositiveYieldRate(item.tir)
 }
 
 // Polynomial regression (degree 2)
@@ -78,19 +85,20 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
 }
 
 const chartOptions = computed(() => {
-  if (!props.lecaps.length) return null
+  const curveItems = props.lecaps.filter(isEligibleForCurve)
+  if (!curveItems.length) return null
 
   const label = yieldLabel.value
 
-  const lecapsData = props.lecaps
+  const lecapsData = curveItems
     .filter((l) => l.type === 'LECAP')
     .map((l) => ({ x: l.days, y: yieldPercent(l), name: l.symbol }))
 
-  const boncapsData = props.lecaps
+  const boncapsData = curveItems
     .filter((l) => l.type === 'BONCAP')
     .map((l) => ({ x: l.days, y: yieldPercent(l), name: l.symbol }))
 
-  const allPoints: [number, number][] = props.lecaps
+  const allPoints: [number, number][] = curveItems
     .map((l) => [l.days || 0, yieldPercent(l)] as [number, number])
     .sort((a, b) => a[0] - b[0])
 

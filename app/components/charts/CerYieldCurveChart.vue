@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type CerBondRow, diasAlVencimientoCer } from '~/composables/useBonosCer'
 import { useChartTheme } from '~/composables/useChartConfig'
+import { isPositiveYieldRate } from '~/lib/finance/yield-curve'
 
 export type CerYieldMode = 'tir' | 'tem'
 
@@ -74,17 +75,18 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
 }
 
 const chartOptions = computed(() => {
-  if (!props.bonds.length) return null
+  const curveBonds = props.bonds.filter((b) => isPositiveYieldRate(b.tirPorcentaje))
+  if (!curveBonds.length) return null
 
   const label = yieldLabel.value
 
-  const scatterData = props.bonds.map((b) => ({
+  const scatterData = curveBonds.map((b) => ({
     x: diasAlVencimientoCer(b.fechaVencimiento),
     y: yieldPercent(b),
     name: b.ticker,
   }))
 
-  const allPoints: [number, number][] = props.bonds
+  const allPoints: [number, number][] = curveBonds
     .map((b) => [diasAlVencimientoCer(b.fechaVencimiento), yieldPercent(b)] as [number, number])
     .sort((a, b) => a[0] - b[0])
 
