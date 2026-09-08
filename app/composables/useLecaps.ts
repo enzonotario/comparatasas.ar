@@ -17,6 +17,7 @@ export function diasAlVencimientoLetra(fechaVencimiento: string): number {
 export interface LetraRow {
   ticker: string
   precioArs: number
+  cierreArs?: number
   tnaPorcentaje: number
   teaPorcentaje: number
   temPorcentaje: number
@@ -25,6 +26,9 @@ export interface LetraRow {
   variacionPorcentaje?: number
   paridadPorcentaje?: number
   volumen?: number
+  volumenEfectivoArs?: number
+  monedaCupon?: string
+  isin?: string
 }
 
 export interface LetrasPayload {
