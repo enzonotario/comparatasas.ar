@@ -98,6 +98,11 @@ export const cryptoLogoMappings: CryptoLogoMapping[] = [
     logo: 'https://api.argentinadatos.com/static/logos/crypto/wbrl.png',
     name: 'Wrapped BRL',
   },
+  {
+    symbols: ['ARGt', 'ARGT'],
+    logo: 'https://api.argentinadatos.com/static/logos/ar.svg',
+    name: 'ARGt',
+  },
 ]
 
 export function getCryptoLogo(symbol: string): string {
