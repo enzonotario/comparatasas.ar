@@ -43,7 +43,7 @@ export const methodologySections: MethodologySection[] = [
         type: 'ul',
         items: [
           'Productos con plazo fijo dentro de la billetera (ej. Frascos de Naranja X) pueden tener varias TNAs según los días que elijas; mostramos cada tramo con su rango de plazo.',
-          'En el simulador, si el producto tiene tope, solo se remuneran los primeros pesos hasta ese límite (salvo casos especiales documentados, como Fiwind).',
+          'En el simulador, si el producto tiene tope (> 0), solo se remuneran los primeros pesos hasta ese límite (salvo casos especiales documentados, como Fiwind). Si la fuente no declara tope o manda 0, se simula sobre el monto completo.',
         ],
       },
     ],

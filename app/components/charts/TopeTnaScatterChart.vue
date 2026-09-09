@@ -12,8 +12,8 @@ const { textColor, gridLineColor } = useChartTheme()
 
 const chartOptions = computed(() => {
   // Separar cuentas con tope y sin límite
-  const accountsWithTope = props.accounts.filter((a) => a.tope !== null && a.tope !== undefined)
-  const accountsWithoutLimit = props.accounts.filter((a) => a.tope === null || a.tope === undefined)
+  const accountsWithTope = props.accounts.filter((a) => a.tope != null && a.tope > 0)
+  const accountsWithoutLimit = props.accounts.filter((a) => a.tope == null || a.tope <= 0)
 
   // Calcular el máximo tope para posicionar las cuentas sin límite
   const maxTope =

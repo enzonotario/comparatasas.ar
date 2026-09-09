@@ -10,6 +10,7 @@ import {
   isFrascosFondo,
   type AccountPlazoTier,
 } from '~/lib/account-plazo-tiers'
+import { normalizeTope } from '~/lib/finance/tope'
 
 export type { AccountPlazoTier }
 
@@ -55,7 +56,7 @@ function buildFrascosAccountItem(frascosRaw: ApiAccount[]): AccountItem | null {
     fondo: 'Frascos Naranja X',
     tna: maxTna,
     tea: bestTier.tea,
-    tope: first.tope,
+    tope: normalizeTope(first.tope),
     fecha: first.fecha,
     logo: getLogoForEntity('NARANJA X') || getInstitutionLogo('NARANJA X'),
     type: 'cuentaRemunerada',
@@ -82,7 +83,7 @@ export function useAccounts() {
       fondo: getInstitutionShortName(a.fondo) || a.fondo,
       tna: a.tna,
       tea: a.tea ?? 0,
-      tope: a.tope,
+      tope: normalizeTope(a.tope),
       fecha: a.fecha,
       logo: getLogoForEntity(a.fondo) || getInstitutionLogo(a.fondo),
       type: ['FIWIND', 'BELO'].includes(a.fondo.toUpperCase()) ? 'billetera' : 'cuentaRemunerada',

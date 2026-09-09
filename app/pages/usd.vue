@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { isCrypto } from '~/lib/crypto-utils'
+import { normalizeTope } from '~/lib/finance/tope'
 import {
   getInstitutionLogo,
   getInstitutionShortName,
@@ -152,7 +153,7 @@ const usdAccountsForFundsList = computed(() => {
         logo: logo || 'https://api.argentinadatos.com/static/logos/default.png',
         url: url || '#',
         tna: account.tasa, // Ya viene en decimal
-        tope: account.tope,
+        tope: normalizeTope(account.tope),
         typeLabel: 'Cuenta Remunerada USD',
         type: 'cuentaRemuneradaUsd',
       }
