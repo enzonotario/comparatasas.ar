@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import {
+  groupFundsByVariableRisk,
+  VARIABLE_FUND_RISK_LABELS,
+  VARIABLE_FUND_RISK_ORDER,
+} from '~/lib/variable-fund-risk'
 import { ogUpdatedAtDate, top3Accounts } from '~/utils/og-data'
 
 definePageMeta({
@@ -80,33 +85,15 @@ const accountsWithSimulation = calculateResults(accounts, allFundsCache)
 const specialAccountsWithSimulation = calculateResults(specialAccounts, allFundsCache)
 
 const fundsByRisk = computed(() => {
-  const grouped: Record<string, typeof resolvedFundsAccounts.value> = {
-    'Riesgo muy bajo': [],
-    'Riesgo bajo': [],
-    'Riesgo moderado': [],
-  }
+  const byLevel = groupFundsByVariableRisk(resolvedFundsAccounts.value)
+  const grouped: Record<string, typeof resolvedFundsAccounts.value> = {}
 
-  resolvedFundsAccounts.value.forEach((fund) => {
-    const t = fund.type || ''
-    if (
-      fund.fondo === 'Cocos Rendimiento - Clase A' ||
-      fund.fondo === 'Cocos Pesos Plus - Clase A'
-    ) {
-      grouped['Riesgo bajo'].push(fund)
-    } else if (t === 'mercadoDinero') {
-      grouped['Riesgo muy bajo'].push(fund)
-    } else if (t === 'rentaFija') {
-      grouped['Riesgo bajo'].push(fund)
-    } else if (['rentaMixta', 'retornoTotal'].includes(t)) {
-      grouped['Riesgo moderado'].push(fund)
-    } else {
-      grouped['Riesgo muy bajo'].push(fund)
+  for (const level of VARIABLE_FUND_RISK_ORDER) {
+    const funds = [...byLevel[level]].sort((a, b) => b.tna - a.tna)
+    if (funds.length > 0) {
+      grouped[VARIABLE_FUND_RISK_LABELS[level]] = funds
     }
-  })
-
-  Object.keys(grouped).forEach((key) => {
-    grouped[key].sort((a, b) => b.tna - a.tna)
-  })
+  }
 
   return grouped
 })

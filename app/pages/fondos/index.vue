@@ -5,6 +5,7 @@ import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn, TabsItem } from '@nuxt/ui'
 import { ogUpdatedAtDate, top3Funds } from '~/utils/og-data'
 import { getFundDetailPath } from '~/lib/funds-detail'
+import { getVariableFundRiskLevel } from '~/lib/variable-fund-risk'
 import { FUND_ACTIVE_REPORT_MAX_AGE_DAYS } from '~/lib/fci-fund-active'
 import {
   formatArsEquivalentHint,
@@ -357,11 +358,7 @@ const { data: ogItems } = await useAsyncData('og-fondos', async () => {
     seen.add(key)
     return true
   })
-  const riesgoMuyBajo = resolved.filter(
-    (f) =>
-      (f.type ?? '') === 'mercadoDinero' ||
-      !['rentaFija', 'rentaMixta', 'retornoTotal'].includes(f.type ?? ''),
-  )
+  const riesgoMuyBajo = resolved.filter((f) => getVariableFundRiskLevel(f) === 'muyBajo')
   return top3Funds(
     riesgoMuyBajo.map((f) => ({
       fondo: f.fondo,

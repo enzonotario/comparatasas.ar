@@ -17,6 +17,13 @@ import {
   simulateInvestmentCarry,
   type InvestmentCarryOption,
 } from '~/lib/finance/contado-cuotas-carry'
+import {
+  groupFundsByVariableRisk,
+  VARIABLE_FUND_RISK_CATEGORY_KEYS,
+  VARIABLE_FUND_RISK_LABELS,
+  VARIABLE_FUND_RISK_ORDER,
+  type VariableFundRiskLevel,
+} from '~/lib/variable-fund-risk'
 
 definePageMeta({
   pageTitle: 'Contado vs Cuotas',
@@ -67,7 +74,10 @@ interface HeatmapRow {
 }
 
 interface CarrySelectableOption extends InvestmentCarryOption {
-  category: 'garantizado' | 'especial' | 'variable-muy-bajo' | 'variable-moderado'
+  category:
+    | 'garantizado'
+    | 'especial'
+    | (typeof VARIABLE_FUND_RISK_CATEGORY_KEYS)[VariableFundRiskLevel]
 }
 
 interface CarryOptionGroup {
@@ -619,16 +629,23 @@ const carryOptionGroups = computed<CarryOptionGroup[]>(() => {
   const guaranteed = accounts.value.map((item) => mapAccountCarryOption(item, 'garantizado'))
   const special = specialAccounts.value.map((item) => mapAccountCarryOption(item, 'especial'))
 
-  const veryLowRisk = resolvedFundsAccounts.value
-    .filter((fund) => {
-      const type = fund.type || ''
-      return type === 'mercadoDinero' || type === ''
-    })
-    .map((fund) => mapFundCarryOption(fund, 'variable-muy-bajo'))
+  const fundsByRisk = groupFundsByVariableRisk(resolvedFundsAccounts.value)
 
-  const moderateRisk = resolvedFundsAccounts.value
-    .filter((fund) => ['rentaFija', 'rentaMixta', 'retornoTotal'].includes(fund.type || ''))
-    .map((fund) => mapFundCarryOption(fund, 'variable-moderado'))
+  const VARIABLE_CARRY_DESCRIPTIONS: Record<VariableFundRiskLevel, string> = {
+    muyBajo: 'Money market, billeteras y fondos de liquidez inmediata.',
+    bajo: 'Fondos de renta fija y alternativas conservadoras de retorno variable.',
+    moderado: 'Fondos de renta mixta o retorno total, con mayor sensibilidad de mercado.',
+  }
+
+  const variableGroups = VARIABLE_FUND_RISK_ORDER.map((level) => {
+    const key = VARIABLE_FUND_RISK_CATEGORY_KEYS[level]
+    return {
+      key,
+      title: `Rendimiento variable · ${VARIABLE_FUND_RISK_LABELS[level]}`,
+      description: VARIABLE_CARRY_DESCRIPTIONS[level],
+      options: fundsByRisk[level].map((fund) => mapFundCarryOption(fund, key)),
+    }
+  })
 
   return [
     {
@@ -643,18 +660,7 @@ const carryOptionGroups = computed<CarryOptionGroup[]>(() => {
       description: 'Productos con requisitos o condiciones particulares para acceder.',
       options: special,
     },
-    {
-      key: 'variable-muy-bajo',
-      title: 'Rendimiento variable · Riesgo muy bajo',
-      description: 'Money market, billeteras y fondos de liquidez inmediata.',
-      options: veryLowRisk,
-    },
-    {
-      key: 'variable-moderado',
-      title: 'Rendimiento variable · Riesgo moderado',
-      description: 'Fondos conservadores con retorno variable según mercado.',
-      options: moderateRisk,
-    },
+    ...variableGroups,
   ].filter((group) => group.options.length > 0)
 })
 
@@ -666,8 +672,10 @@ function getCarryCategoryPriority(category: CarrySelectableOption['category']): 
       return 1
     case 'variable-muy-bajo':
       return 2
-    case 'variable-moderado':
+    case 'variable-bajo':
       return 3
+    case 'variable-moderado':
+      return 4
     default:
       return 99
   }
