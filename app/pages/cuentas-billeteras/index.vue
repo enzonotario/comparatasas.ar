@@ -59,7 +59,7 @@ useHead({
 })
 
 const { allFundsCache, data, loading, error } = useFunds()
-const { accounts, loading: loadingAccounts, specialAccounts } = useAccounts()
+const { allAccounts, loading: loadingAccounts } = useAccounts()
 
 const { calculateResults, isSimulating, days } = useInvestmentSimulator()
 
@@ -81,8 +81,7 @@ const resolvedFundsAccounts = computed(() => {
   return unique.sort((a, b) => b.tna - a.tna)
 })
 
-const accountsWithSimulation = calculateResults(accounts, allFundsCache)
-const specialAccountsWithSimulation = calculateResults(specialAccounts, allFundsCache)
+const accountsWithSimulation = calculateResults(allAccounts, allFundsCache)
 
 const fundsByRisk = computed(() => {
   const byLevel = groupFundsByVariableRisk(resolvedFundsAccounts.value)
@@ -135,54 +134,18 @@ const fundsByRiskWithSimulation = computed(() => {
               </NuxtLink>
             </div>
             <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-              Cuentas remuneradas y billeteras con tasa fija garantizada
+              Cuentas remuneradas y billeteras con tasa fija; las que requieren requisitos llevan el
+              indicador de condiciones especiales
             </p>
           </div>
 
           <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
 
-          <FundsLoading v-if="loadingAccounts && !accounts.length" />
+          <FundsLoading v-if="loadingAccounts && !allAccounts.length" />
 
           <FundsList
             v-else
             :items="accountsWithSimulation"
-            key-prop="fondo"
-            mode="detailed"
-            :show-simulation="isSimulating"
-            :simulator-days="days"
-            :show-history-link="true"
-          />
-        </div>
-
-        <div>
-          <div class="mb-2">
-            <div class="group relative">
-              <NuxtLink
-                to="#condiciones-especiales"
-                class="-ml-4.5 flex items-center gap-2 no-underline"
-              >
-                <span
-                  class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
-                >
-                  #
-                </span>
-                <h2 id="condiciones-especiales" class="text-lg font-medium scroll-mt-22">
-                  Con condiciones especiales
-                </h2>
-              </NuxtLink>
-            </div>
-            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-              Productos con requisitos o condiciones particulares para acceder
-            </p>
-          </div>
-
-          <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
-
-          <FundsLoading v-if="loadingAccounts && !accounts.length" />
-
-          <FundsList
-            v-else
-            :items="specialAccountsWithSimulation"
             key-prop="fondo"
             mode="detailed"
             :show-simulation="isSimulating"

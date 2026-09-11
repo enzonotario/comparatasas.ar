@@ -136,7 +136,19 @@ function handleProviderClick(item: any) {
       <NuxtLink
         v-if="getFundDetailUrl(item) || getHistoryUrl(item)"
         :to="getFundDetailUrl(item) || getHistoryUrl(item)!"
+        class="relative block"
+        :class="item.condicionesEspeciales ? 'mt-2' : undefined"
       >
+        <UBadge
+          v-if="item.condicionesEspeciales"
+          color="warning"
+          variant="outline"
+          size="sm"
+          icon="i-lucide-badge-info"
+          class="absolute -top-2.5 left-3 z-10 pointer-events-none !bg-white dark:!bg-black !text-neutral-900 dark:!text-white !ring-warning"
+        >
+          Condiciones especiales
+        </UBadge>
         <UCard
           :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }"
           :class="isUvaSimulationOutOfRange(item) ? 'opacity-50 saturate-50' : ''"
@@ -314,8 +326,20 @@ function handleProviderClick(item: any) {
         :href="item.url ? item.url : undefined"
         :target="item.url ? '_blank' : undefined"
         :rel="item.url ? 'noopener noreferrer' : undefined"
+        class="relative block"
+        :class="item.condicionesEspeciales ? 'mt-2' : undefined"
         @click="handleProviderClick(item)"
       >
+        <UBadge
+          v-if="item.condicionesEspeciales"
+          color="warning"
+          variant="outline"
+          size="sm"
+          icon="i-lucide-badge-info"
+          class="absolute -top-2.5 left-3 z-10 shadow-sm pointer-events-none !bg-white dark:!bg-black !text-neutral-900 dark:!text-white !ring-warning"
+        >
+          Condiciones especiales
+        </UBadge>
         <UCard
           :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }"
           :class="isUvaSimulationOutOfRange(item) ? 'opacity-50 saturate-50' : ''"
