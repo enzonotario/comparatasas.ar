@@ -60,6 +60,7 @@ useHead({
 
 const { allFundsCache, data, loading, error } = useFunds()
 const { allAccounts, loading: loadingAccounts } = useAccounts()
+const { criptopesos, loading: loadingCriptopesos, error: errorCriptopesos } = useCriptopesos()
 
 const { calculateResults, isSimulating, days } = useInvestmentSimulator()
 
@@ -82,6 +83,7 @@ const resolvedFundsAccounts = computed(() => {
 })
 
 const accountsWithSimulation = calculateResults(allAccounts, allFundsCache)
+const criptopesosWithSimulation = calculateResults(criptopesos)
 
 const fundsByRisk = computed(() => {
   const byLevel = groupFundsByVariableRisk(resolvedFundsAccounts.value)
@@ -152,6 +154,50 @@ const fundsByRiskWithSimulation = computed(() => {
             :simulator-days="days"
             :show-history-link="true"
           />
+        </div>
+
+        <div>
+          <div class="mb-2">
+            <div class="group relative">
+              <NuxtLink to="#criptopesos" class="-ml-4.5 flex items-center gap-2 no-underline">
+                <span
+                  class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
+                >
+                  #
+                </span>
+                <h2 id="criptopesos" class="text-lg font-medium scroll-mt-22">Criptopesos</h2>
+              </NuxtLink>
+            </div>
+            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+              Stablecoins con paridad 1:1 con el peso argentino
+            </p>
+          </div>
+
+          <UAlert
+            v-if="errorCriptopesos"
+            color="red"
+            variant="soft"
+            title="Error cargando criptopesos"
+          />
+
+          <FundsLoading v-if="loadingCriptopesos && !criptopesos.length" />
+
+          <div v-else class="space-y-3">
+            <FundsList
+              :items="criptopesosWithSimulation"
+              key-prop="fondo"
+              mode="detailed"
+              :show-simulation="isSimulating"
+            />
+
+            <LinkCard
+              title="Ver todas las tasas de criptopesos"
+              description="Compará rendimientos de stablecoins 1:1 con el peso argentino (ARGt, wARS y más)"
+              to="/criptopesos"
+              icon="i-lucide-coins"
+              link-text="Ir a Criptopesos"
+            />
+          </div>
         </div>
 
         <div>

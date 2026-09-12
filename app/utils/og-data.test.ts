@@ -71,7 +71,7 @@ describe('top3Accounts', () => {
     expect(result[2]!.name).toBe('UALA')
   })
 
-  it('excludes blacklisted accounts (BELO)', () => {
+  it('excludes accounts not treated as guaranteed (BELO → criptopesos)', () => {
     const result = top3Accounts(data)
     expect(result.map((r) => r.name)).not.toContain('BELO')
   })

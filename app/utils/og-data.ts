@@ -5,8 +5,8 @@ export interface OgTopItem {
   rate: string
 }
 
-const ACCOUNT_NAMES = ['CARREFOUR BANCO', 'FIWIND', 'NARANJA X', 'UALA', 'BELO']
-const ACCOUNT_BLACKLIST = ['belo']
+const ACCOUNT_NAMES = ['CARREFOUR BANCO', 'FIWIND', 'NARANJA X', 'UALA']
+const ACCOUNT_BLACKLIST: string[] = []
 
 function isBlacklisted(name: string): boolean {
   return ACCOUNT_BLACKLIST.some((b) => b.toLowerCase() === name.toLowerCase())

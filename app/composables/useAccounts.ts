@@ -50,7 +50,6 @@ const GUARANTEED_FUNDS = [
   'CARREFOUR BANCO',
   'NARANJA X',
   'UALA',
-  'BELO',
   'FIWIND',
   'BICA CUENTA POSITIVA 1',
   'BICA CUENTA POSITIVA 2',
@@ -111,10 +110,8 @@ export function useAccounts() {
       tope: normalizeTope(a.tope),
       fecha: a.fecha,
       logo: getLogoForEntity(a.fondo) || getInstitutionLogo(a.fondo),
-      type: ['FIWIND', 'BELO'].includes(a.fondo.toUpperCase()) ? 'billetera' : 'cuentaRemunerada',
-      typeLabel: ['FIWIND', 'BELO'].includes(a.fondo.toUpperCase())
-        ? 'Billetera'
-        : 'Cuenta Remunerada',
+      type: a.fondo.toUpperCase() === 'FIWIND' ? 'billetera' : 'cuentaRemunerada',
+      typeLabel: a.fondo.toUpperCase() === 'FIWIND' ? 'Billetera' : 'Cuenta Remunerada',
       condiciones: a.condiciones,
       condicionesCorto: a.condicionesCorto,
       url: getInstitutionUrl(a.fondo, 'cuentas-billeteras'),
