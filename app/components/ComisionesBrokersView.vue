@@ -86,7 +86,7 @@ const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 
 function productNavigationQuery(): Record<string, string> {
   const query: Record<string, string> = {}
-  if (monedaFilter.value !== 'ARS') query.moneda = monedaFilter.value
+  if (showMonedaFilter.value && monedaFilter.value !== 'ARS') query.moneda = monedaFilter.value
   if (sortQuery.value && sortQuery.value !== DEFAULT_SORT) query.sort = sortQuery.value
   return query
 }
@@ -120,6 +120,18 @@ const monedaOptions = [
   { value: 'USD', label: 'USD' },
 ] as const
 
+const monedasDisponibles = computed(() => {
+  const present = new Set(
+    comisiones.value
+      .filter((row) => row.producto === props.producto)
+      .map((row) => row.moneda)
+      .filter(Boolean),
+  )
+  return monedaOptions.filter((option) => option.value === 'all' || present.has(option.value))
+})
+
+const showMonedaFilter = computed(() => monedasDisponibles.value.length > 2)
+
 const operacionOptions = computed(() => {
   const present = new Set(
     comisiones.value
@@ -137,12 +149,34 @@ const operacionOptions = computed(() => {
 
 const showOperacionFilter = computed(() => operacionOptions.value.length > 1)
 
+const effectiveMonedaFilter = computed(() => {
+  if (!showMonedaFilter.value) return 'all'
+  const moneda = monedaFilter.value || 'ARS'
+  if (moneda === 'all') return 'all'
+  if (monedasDisponibles.value.some((option) => option.value === moneda)) return moneda
+  return 'ARS'
+})
+
 const effectiveOperacionFilter = computed(() => {
   const operacion = operacionFilter.value || 'all'
   if (operacion === 'all') return 'all'
   if (operacionOptions.value.some((option) => option.value === operacion)) return operacion
   return 'all'
 })
+
+watch(
+  [() => props.producto, monedasDisponibles, monedaFilter, showMonedaFilter],
+  () => {
+    if (!showMonedaFilter.value) {
+      if (monedaFilter.value !== 'ARS') monedaFilter.value = 'ARS'
+      return
+    }
+    if (effectiveMonedaFilter.value !== monedaFilter.value) {
+      monedaFilter.value = 'ARS'
+    }
+  },
+  { flush: 'post', immediate: true },
+)
 
 watch(
   [() => props.producto, operacionOptions, operacionFilter],
@@ -157,7 +191,7 @@ watch(
 const rows = computed<ComisionRow[]>(() => {
   const filtered = filterComisionesBrokers(comisiones.value, {
     producto: props.producto,
-    moneda: (monedaFilter.value as 'all' | 'ARS' | 'USD') || 'ARS',
+    moneda: effectiveMonedaFilter.value as 'all' | 'ARS' | 'USD',
     operacion: effectiveOperacionFilter.value,
   })
 
@@ -464,7 +498,8 @@ function clearFilters() {
 }
 
 const hasActiveFilters = computed(
-  () => monedaFilter.value !== 'ARS' || operacionFilter.value !== 'all',
+  () =>
+    (showMonedaFilter.value && monedaFilter.value !== 'ARS') || operacionFilter.value !== 'all',
 )
 </script>
 
@@ -537,16 +572,20 @@ const hasActiveFilters = computed(
             </div>
           </div>
 
-          <div class="grid gap-3 md:grid-cols-2">
-            <div class="space-y-2">
+          <div
+            v-if="showMonedaFilter || showOperacionFilter"
+            class="grid gap-3"
+            :class="showMonedaFilter && showOperacionFilter ? 'md:grid-cols-2' : undefined"
+          >
+            <div v-if="showMonedaFilter" class="space-y-2">
               <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">Moneda</p>
               <div class="flex flex-wrap gap-2">
                 <UButton
-                  v-for="option in monedaOptions"
+                  v-for="option in monedasDisponibles"
                   :key="`moneda-${option.value}`"
                   size="sm"
-                  :color="monedaFilter === option.value ? 'primary' : 'neutral'"
-                  :variant="monedaFilter === option.value ? 'soft' : 'outline'"
+                  :color="effectiveMonedaFilter === option.value ? 'primary' : 'neutral'"
+                  :variant="effectiveMonedaFilter === option.value ? 'soft' : 'outline'"
                   @click="monedaFilter = option.value"
                 >
                   {{ option.label }}
@@ -579,7 +618,11 @@ const hasActiveFilters = computed(
           color="warning"
           variant="soft"
           title="Sin resultados"
-          description="Probá otro producto, moneda u operación."
+          :description="
+            showMonedaFilter || showOperacionFilter
+              ? 'Probá otro producto, moneda u operación.'
+              : 'Probá otro producto.'
+          "
         />
 
         <div v-if="isDesktop" class="border border-default rounded-lg overflow-x-auto">
@@ -640,7 +683,7 @@ const hasActiveFilters = computed(
                   <p class="text-sm text-neutral-500">
                     {{ row.operacionLabel }}
                     <template v-if="row.planLabel"> · {{ row.planLabel }}</template>
-                    · {{ row.moneda }}
+                    <template v-if="showMonedaFilter"> · {{ row.moneda }}</template>
                   </p>
                 </div>
               </div>
