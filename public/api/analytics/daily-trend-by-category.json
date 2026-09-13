@@ -1,23 +1,42 @@
 [
   {
+    "date": "20260913",
+    "categories": {
+      "Otro": 23,
+      "Money Market": 7,
+      "Plazo Fijo": 12,
+      "Página Amiga": 3,
+      "Cuenta Remunerada": 18,
+      "Billetera": 8,
+      "Billetera USD": 8,
+      "Frascos": 3,
+      "PF UVA pago periódico": 2,
+      "General": 5,
+      "Criptomonedas": 4,
+      "plazo fijo tradicional": 7,
+      "wARS": 15
+    },
+    "total": 115
+  },
+  {
     "date": "20260912",
     "categories": {
-      "Página Amiga": 3,
-      "Billetera": 15,
-      "Money Market": 39,
-      "Cuenta Remunerada": 13,
-      "Otro": 53,
-      "Plazo Fijo": 11,
+      "Página Amiga": 6,
+      "Billetera": 42,
+      "Money Market": 89,
+      "Cuenta Remunerada": 32,
+      "Otro": 122,
+      "Plazo Fijo": 32,
       "ARGt": 1,
-      "Billetera USD": 10,
-      "Frascos": 4,
-      "PF UVA pago periódico": 1,
-      "General": 5,
-      "Criptomonedas": 5,
-      "plazo fijo tradicional": 5,
-      "wARS": 21
+      "Billetera USD": 14,
+      "Frascos": 5,
+      "PF UVA pago periódico": 2,
+      "General": 10,
+      "Criptomonedas": 13,
+      "plazo fijo tradicional": 9,
+      "wARS": 27
     },
-    "total": 186
+    "total": 404
   },
   {
     "date": "20260911",
@@ -60,34 +79,13 @@
   {
     "date": "20260909",
     "categories": {
-      "Billetera": 41,
-      "Money Market": 8,
-      "Cuenta Remunerada": 43,
-      "Otro": 102,
-      "Página Amiga": 16,
-      "Plazo Fijo": 44,
-      "ARGt": 1,
-      "Billetera USD": 17,
-      "Frascos": 7,
-      "PF UVA pago periódico": 3,
-      "General": 11,
-      "Criptomonedas": 17,
-      "plazo fijo tradicional": 23,
-      "wARS": 8
+      "Billetera": 38,
+      "Money Market": 5,
+      "Cuenta Remunerada": 28,
+      "Otro": 81,
+      "Página Amiga": 11,
+      "Plazo Fijo": 26
     },
-    "total": 341
-  },
-  {
-    "date": "20260908",
-    "categories": {
-      "Página Amiga": 10,
-      "Money Market": 3,
-      "Plazo Fijo": 21,
-      "Cuenta Remunerada": 30,
-      "Otro": 31,
-      "Billetera": 17,
-      "Criptomonedas": 1
-    },
-    "total": 113
+    "total": 189
   }
 ]
