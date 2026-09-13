@@ -180,6 +180,14 @@ export default defineNuxtConfig({
     scriptVersion: 6,
   },
 
+  // Dentro de node_modules/.cache/nuxt (allow-list de Cloudflare Pages build cache).
+  // El default (nuxt-seo/og-image) no se restaura entre deploys.
+  ogImage: {
+    buildCache: {
+      base: 'node_modules/.cache/nuxt/og-image',
+    },
+  },
+
   pwa: {
     selfDestroying: true,
   },
