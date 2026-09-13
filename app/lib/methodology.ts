@@ -314,7 +314,7 @@ export const methodologySections: MethodologySection[] = [
         items: [
           'Cuentas remuneradas en USD: TNA publicada por la plataforma.',
           'Billeteras en USD: APY informado por cada entidad para depósitos en dólares.',
-          'FCI en USD: rendimiento del último mes de CAFCI o series de VCP, según el tipo de fondo.',
+          'FCI en USD (riesgo bajo / money market, moderado y alto): TNA nominal estimada = retorno ~30D × 365 / días (rolling VCP cuando hay histórico; si no, columna CNV `unMes` con 30 días). Mismo criterio que el resto de FCI del sitio.',
           'Patrimonio FCI en USD: mostramos el monto en dólares y el equivalente en ARS con el dólar bolsa (MEP, venta) de dolarapi.com. En vistas de administradoras/depositarias sumamos todo en ARS para poder comparar gestoras.',
         ],
       },
