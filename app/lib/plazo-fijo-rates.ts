@@ -44,10 +44,22 @@ export function getDisplayPlazoKey(
 
   const { plazoMinDias, plazoMaxDias } = tasa
 
-  if (plazoMinDias === 30 && (plazoMaxDias === 30 || plazoMaxDias === 44)) return '30'
+  // 30d: puntual, Voii 30–44, Macro 30–35
+  if (
+    plazoMinDias === 30 &&
+    (plazoMaxDias === 30 || plazoMaxDias === 35 || plazoMaxDias === 44)
+  ) {
+    return '30'
+  }
   if (plazoMinDias === 60 && (plazoMaxDias === 60 || plazoMaxDias === 89)) return '60'
   if (plazoMinDias === 90 && (plazoMaxDias === 90 || plazoMaxDias === 119)) return '90'
-  if (plazoMinDias === 365 && plazoMaxDias === 365) return '365'
+  // 1 año: puntual 365, o Macro 271–365 (incluye 365 días)
+  if (
+    (plazoMinDias === 365 && plazoMaxDias === 365) ||
+    (plazoMinDias === 271 && plazoMaxDias === 365)
+  ) {
+    return '365'
+  }
 
   return null
 }

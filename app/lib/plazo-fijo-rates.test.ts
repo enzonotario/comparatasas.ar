@@ -35,8 +35,16 @@ describe('getDisplayPlazoKey', () => {
     expect(getDisplayPlazoKey({ plazoMinDias: 30, plazoMaxDias: 44 })).toBe('30')
   })
 
+  it('maps Macro 30–35 días to the 30d column', () => {
+    expect(getDisplayPlazoKey({ plazoMinDias: 30, plazoMaxDias: 35 })).toBe('30')
+  })
+
   it('maps 60–89 días to the 60d column', () => {
     expect(getDisplayPlazoKey({ plazoMinDias: 60, plazoMaxDias: 89 })).toBe('60')
+  })
+
+  it('maps Macro 271–365 días to the 1 año column', () => {
+    expect(getDisplayPlazoKey({ plazoMinDias: 271, plazoMaxDias: 365 })).toBe('365')
   })
 
   it('drops Voii 45–59 días', () => {
@@ -255,6 +263,29 @@ describe('groupRatesByPlazoKey', () => {
     expect(grouped['30']![1]!.tna).toBe(22.5)
     expect(grouped['30']![1]!.label).toMatch(/Hasta.*1.*M/i)
     expect(grouped['30']![0]!.label).toMatch(/Desde.*1.*M/i)
+  })
+
+  it('groups Macro 271–365 under 1 año', () => {
+    const grouped = groupRatesByPlazoKey([
+      {
+        montoMinimo: 1,
+        montoMaximo: 4_999_999.99,
+        plazoMinDias: 271,
+        plazoMaxDias: 365,
+        tna: 0.215,
+      },
+      {
+        montoMinimo: 5_000_000,
+        montoMaximo: null,
+        plazoMinDias: 271,
+        plazoMaxDias: 365,
+        tna: 0.22,
+      },
+    ])
+
+    expect(grouped['365']).toHaveLength(2)
+    expect(grouped['365']![0]!.tna).toBe(22)
+    expect(grouped['365']![1]!.tna).toBe(21.5)
   })
 
   it('ignores the 45–59 tramo', () => {
