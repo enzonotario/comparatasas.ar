@@ -149,13 +149,14 @@ export function mergeRootTnaFor30d(
 }
 
 function compareRateCells(a: PlazoFijoRateCell, b: PlazoFijoRateCell): number {
-  if (b.tna !== a.tna) return b.tna - a.tna
+  // Menor monto primero (p. ej. Macro: Desde $0 arriba, luego Desde $20M)
   const minA = a.montoMinimo ?? 0
   const minB = b.montoMinimo ?? 0
   if (minA !== minB) return minA - minB
   const maxA = a.montoMaximo ?? Number.POSITIVE_INFINITY
   const maxB = b.montoMaximo ?? Number.POSITIVE_INFINITY
-  return maxA - maxB
+  if (maxA !== maxB) return maxA - maxB
+  return b.tna - a.tna
 }
 
 export function getPlazoColumnSortId(plazoKey: string): string {

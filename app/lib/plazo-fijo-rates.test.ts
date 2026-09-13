@@ -140,10 +140,10 @@ describe('mergeRootTnaFor30d', () => {
     )
 
     expect(merged['30']).toHaveLength(2)
-    expect(merged['30']![0]!.tna).toBe(23.5)
-    expect(merged['30']![0]!.label).toMatch(/Desde.*1.*M/i)
-    expect(merged['30']![1]!.tna).toBe(22.5)
-    expect(merged['30']![1]!.label).toMatch(/Hasta.*1.*M/i)
+    expect(merged['30']![0]!.tna).toBe(22.5)
+    expect(merged['30']![0]!.label).toMatch(/Hasta.*1.*M/i)
+    expect(merged['30']![1]!.tna).toBe(23.5)
+    expect(merged['30']![1]!.label).toMatch(/Desde.*1.*M/i)
   })
 })
 
@@ -259,10 +259,10 @@ describe('groupRatesByPlazoKey', () => {
     ])
 
     expect(grouped['30']).toHaveLength(2)
-    expect(grouped['30']![0]!.tna).toBe(23.5)
-    expect(grouped['30']![1]!.tna).toBe(22.5)
-    expect(grouped['30']![1]!.label).toMatch(/Hasta.*1.*M/i)
-    expect(grouped['30']![0]!.label).toMatch(/Desde.*1.*M/i)
+    expect(grouped['30']![0]!.tna).toBe(22.5)
+    expect(grouped['30']![0]!.label).toMatch(/Hasta.*1.*M/i)
+    expect(grouped['30']![1]!.tna).toBe(23.5)
+    expect(grouped['30']![1]!.label).toMatch(/Desde.*1.*M/i)
   })
 
   it('groups Macro 271–365 under 1 año', () => {
@@ -284,8 +284,8 @@ describe('groupRatesByPlazoKey', () => {
     ])
 
     expect(grouped['365']).toHaveLength(2)
-    expect(grouped['365']![0]!.tna).toBe(22)
-    expect(grouped['365']![1]!.tna).toBe(21.5)
+    expect(grouped['365']![0]!.tna).toBe(21.5)
+    expect(grouped['365']![1]!.tna).toBe(22)
   })
 
   it('ignores the 45–59 tramo', () => {
