@@ -248,9 +248,10 @@ function formatFechaActualizacionUtc(iso: string): string {
     </div>
 
     <p class="text-xs text-muted -mt-1 leading-snug max-w-5xl">
-      Precio c/ comisión según broker de letras (+ IVA si aplica; membresía no incluida). Monto → VN
-      y total a recibir; vs PF usa la TNA del banco elegido según el plazo del instrumento (sin
-      comparación bajo 30d; 30/60/90/365d cuando el proveedor la publica; mejor de
+      Precio c/ comisión según broker de letras (+ IVA si aplica; membresía no incluida). TNA de
+      mercado vs TNA Neta (con comisión). Monto → VN y total a recibir; vs PF usa la TNA del banco
+      elegido según el plazo del instrumento (sin comparación bajo 30d; 30/60/90/365d cuando el
+      proveedor la publica; mejor de
       <NuxtLink
         to="/plazos-fijos"
         class="text-primary-800 dark:text-primary-200 font-medium underline underline-offset-2"
@@ -396,8 +397,9 @@ function formatFechaActualizacionUtc(iso: string): string {
           <p>
             En esta página se muestran cotización y tasas según
             <strong>Docta Terminal</strong>. Podés elegir un <strong>broker</strong> para aplicar la
-            comisión de compra de letras (+ IVA si corresponde), ingresar un
-            <strong>monto a invertir</strong> y comparar contra la
+            comisión de compra de letras (+ IVA si corresponde) y ver la
+            <strong>TNA Neta</strong> junto a la TNA de mercado. Ingresá un
+            <strong>monto a invertir</strong> y compará contra la
             <strong>TNA de un plazo fijo</strong> del banco elegido según los días al vencimiento
             (sin vs PF bajo 30 días; tramos 30/60/90/365 cuando apliquen). Por defecto, el mejor a
             30 días. El selector de broker queda en `?broker=` y el de plazo fijo en `?pf=`. Son

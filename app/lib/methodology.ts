@@ -216,7 +216,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'El precio se muestra por 1 VN (cotización ÷ 100). El residual «a recibir al vto.» se deriva como precio × (1 + TNA mercado × días / 365). Con la comisión de compra de letras del broker elegido (+ IVA si aplica) calculamos precio con comisión, ganancia directa, TNA y TEM al vencimiento. El selector de broker arranca al azar y queda en `?broker=`.',
+        text: 'El precio se muestra por 1 VN (cotización ÷ 100). El residual «a recibir al vto.» se deriva como precio × (1 + TNA mercado × días / 365). La columna TNA es la de mercado (Docta). Con la comisión de compra de letras del broker elegido (+ IVA si aplica) calculamos precio con comisión, ganancia directa, TNA Neta y TEM al vencimiento. El selector de broker arranca al azar y queda en `?broker=`.',
       },
       {
         type: 'formula',
@@ -224,7 +224,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'formula',
-        text: 'TNA = ganancia directa × (365 ÷ días)',
+        text: 'TNA Neta = ganancia directa × (365 ÷ días)',
       },
       {
         type: 'formula',

@@ -22,7 +22,10 @@ export type LecapComparadorRow = {
   maturity: string
   precio1Vn: number
   gananciaDirecta: number
+  /** TNA de mercado (Docta), sin comisión. */
   tna: number
+  /** TNA tras comisión de compra de letras (+ IVA si aplica). */
+  tnaNeta: number
   tem: number
   comisionPorcentaje: number
   /** Tramo de PF usado en vs PF (p. ej. "30", "60"); null si no aplica. */
@@ -67,7 +70,8 @@ const rows = computed<LecapComparadorRow[]>(() =>
       maturity: item.maturity,
       precio1Vn: calc.precio1Vn,
       gananciaDirecta: calc.gananciaDirecta,
-      tna: calc.tna,
+      tna: item.tna,
+      tnaNeta: calc.tna,
       tem: calc.tem,
       comisionPorcentaje,
       plazoFijoPlazoKey: pfMatch?.plazoKey ?? null,
@@ -274,7 +278,22 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
     header: createSortableHeader('TNA'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) =>
-      h('div', { class: 'tabular-nums font-semibold' }, formatPercent(row.original.tna)),
+      h(
+        'div',
+        { class: 'tabular-nums font-semibold text-green-800 dark:text-green-200' },
+        formatPercent(row.original.tna),
+      ),
+  },
+  {
+    accessorKey: 'tnaNeta',
+    header: createSortableHeader('TNA Neta'),
+    meta: { class: { th: 'text-right', td: 'text-right' } },
+    cell: ({ row }) =>
+      h(
+        'div',
+        { class: 'tabular-nums font-semibold text-primary-800 dark:text-primary-200' },
+        formatPercent(row.original.tnaNeta),
+      ),
   },
   {
     accessorKey: 'tem',
@@ -372,7 +391,12 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
               {{ formatPercent(calc.gananciaDirecta) }}
             </div>
             <div class="text-xs text-muted">Ganancia</div>
-            <div class="text-xs tabular-nums">TNA {{ formatPercent(calc.tna) }}</div>
+            <div class="text-xs tabular-nums text-green-800 dark:text-green-200">
+              TNA {{ formatPercent(item.tna) }}
+            </div>
+            <div class="text-xs tabular-nums text-primary-800 dark:text-primary-200">
+              TNA Neta {{ formatPercent(calc.tna) }}
+            </div>
             <div class="text-xs tabular-nums text-sky-600 dark:text-sky-400">
               TEM {{ formatPercent(calc.tem) }}
             </div>
@@ -427,8 +451,9 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
     <p class="text-xs text-muted leading-relaxed max-w-4xl">
       Precio por 1 VN (cotización ÷ 100). L = LECAP, B = BONCAP. P. c/com. incluye comisión de letras
       del broker (+ IVA si corresponde). VN = monto ÷ precio con comisión. Total = VN × residual al
-      vencimiento. Gan. = (a recibir − precio c/com.) / precio c/com. PF = monto equivalente a plazo
-      fijo; vs PF = diferencial vs ese monto.
+      vencimiento. Gan. = (a recibir − precio c/com.) / precio c/com. TNA = mercado (Docta). TNA Neta
+      = ganancia anualizada con comisión del broker. PF = monto equivalente a plazo fijo; vs PF =
+      diferencial vs ese monto.
     </p>
   </div>
 </template>
