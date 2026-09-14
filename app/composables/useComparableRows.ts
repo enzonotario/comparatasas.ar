@@ -177,7 +177,7 @@ export function useComparableHtmlRows() {
     return [
       'cursor-pointer transition-colors hover:bg-elevated',
       isSelected(id)
-        ? 'bg-primary-100 dark:bg-primary-900/55 ring-1 ring-inset ring-primary/45'
+        ? 'bg-primary-100 dark:bg-primary-900/55'
         : '',
       extra,
     ]

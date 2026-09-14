@@ -1308,7 +1308,7 @@ const selectionCompareHint = computed(() => {
           th: 'py-1.5 px-3 bg-default/95 backdrop-blur-md border-0 text-muted font-medium',
           td: 'py-2.5 border-b border-default',
           separator: 'h-0',
-          tr: 'cursor-pointer data-[selected=true]:bg-primary-100 dark:data-[selected=true]:bg-primary-900/55 data-[selected=true]:ring-1 data-[selected=true]:ring-inset data-[selected=true]:ring-primary/45',
+          tr: 'cursor-pointer data-[selected=true]:bg-primary-100 dark:data-[selected=true]:bg-primary-900/55',
         }"
       >
         <template #expanded />
