@@ -171,45 +171,6 @@ function createSortableHeader(label: string) {
   }
 }
 
-function createTasaNetaHeader() {
-  return ({ column }: { column: any }) => {
-    const isSorted = column.getIsSorted()
-    const sortButton = h(UButton, {
-      color: 'neutral',
-      variant: 'ghost',
-      icon: isSorted
-        ? isSorted === 'asc'
-          ? 'i-lucide-arrow-up-narrow-wide'
-          : 'i-lucide-arrow-down-wide-narrow'
-        : 'i-lucide-arrow-up-down',
-      class: 'shrink-0 -mr-1',
-      onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-    })
-
-    const headerLabel = h('div', { class: 'flex items-center gap-0.5' }, [
-      h('span', { class: 'font-bold whitespace-nowrap' }, 'Tasa neta'),
-      sortButton,
-    ])
-
-    if (!brokerOptions.value.length) {
-      return headerLabel
-    }
-
-    return h('div', { class: 'flex flex-col gap-1.5 min-w-[10.5rem] max-w-[13rem]' }, [
-      headerLabel,
-      h(CaucionesBrokerSelect, {
-        modelValue: selectedEntidad.value,
-        'onUpdate:modelValue': (value: string) => {
-          selectedEntidad.value = value
-        },
-        items: brokerOptions.value,
-        size: 'xs',
-        class: 'w-full',
-      }),
-    ])
-  }
-}
-
 const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
   return [
     {
@@ -234,7 +195,7 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
     },
     {
       accessorKey: 'tasaNeta',
-      header: createTasaNetaHeader(),
+      header: createSortableHeader('Tasa neta'),
       cell: ({ row }) => {
         const neta = row.original.tasaNeta
         if (neta == null) {
@@ -347,25 +308,22 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
       y en la tabla de comisiones; no se prorratea en la tasa neta.
     </p>
 
+    <div v-if="brokerOptions.length" class="max-w-xs">
+      <UFormField label="Comisión broker">
+        <CaucionesBrokerSelect
+          v-model="selectedEntidad"
+          :items="brokerOptions"
+          size="sm"
+          class="w-full"
+        />
+      </UFormField>
+    </div>
+
     <UAlert v-if="error" color="error" variant="soft" title="Error cargando cauciones" />
 
     <FundsLoading v-if="loading && !items.length" />
 
     <div v-else-if="items.length" class="space-y-6">
-      <!-- Mobile: lista -->
-      <div
-        v-if="brokerOptions.length"
-        class="sm:hidden flex items-center justify-between gap-3 rounded-lg border border-neutral-200 dark:border-neutral-800 px-3 py-2"
-      >
-        <span class="text-xs font-medium text-muted shrink-0">Tasa neta</span>
-        <CaucionesBrokerSelect
-          v-model="selectedEntidad"
-          :items="brokerOptions"
-          size="sm"
-          class="min-w-40 flex-1 max-w-xs"
-        />
-      </div>
-
       <div class="sm:hidden flex flex-col gap-3">
         <div
           v-for="item in tableRows"
@@ -472,7 +430,7 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
             colocadora). Los valores son orientativos y pueden variar por plan, mínimos o IVA.
           </p>
           <p>
-            En la tabla de mercado podés elegir un <strong>broker</strong> y ver la
+            Podés elegir un <strong>broker</strong> arriba de la tabla y ver la
             <strong>tasa neta</strong> por plazo: TNA de mercado menos comisión (+ IVA si
             corresponde) y derecho de mercado. El selector arranca con un broker al azar y queda en
             la URL (`?broker=`).
