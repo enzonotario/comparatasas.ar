@@ -1304,7 +1304,7 @@ const selectionCompareHint = computed(() => {
           thead:
             '!bg-default/95 backdrop-blur-md [&>tr]:bg-transparent [&>tr]:after:content-none shadow-[inset_0_-1px_0_0_var(--ui-border)]',
           tbody:
-            '[&>tr]:last:[&>td]:border-b-0 [&>tr[data-expanded=true]+tr:has(>td[colspan]:only-child)]:hidden',
+            'divide-y divide-default [&>tr]:last:[&>td]:border-b-0 [&>tr[data-expanded=true]+tr:has(>td[colspan]:only-child)]:hidden [&>tr]:data-[selectable=true]:hover:bg-elevated/50 [&>tr]:data-[selectable=true]:data-[selected=true]:hover:bg-primary-200 dark:[&>tr]:data-[selectable=true]:data-[selected=true]:hover:bg-primary-800/70',
           th: 'py-1.5 px-3 bg-default/95 backdrop-blur-md border-0 text-muted font-medium',
           td: 'py-2.5 border-b border-default',
           separator: 'h-0',

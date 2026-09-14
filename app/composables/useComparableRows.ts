@@ -175,10 +175,10 @@ export function useComparableHtmlRows() {
 
   function rowClass(id: string, extra?: string | string[] | Record<string, boolean>) {
     return [
-      'cursor-pointer transition-colors hover:bg-elevated',
+      'cursor-pointer transition-colors',
       isSelected(id)
-        ? 'bg-primary-100 dark:bg-primary-900/55'
-        : '',
+        ? 'bg-primary-100 hover:bg-primary-200 dark:bg-primary-900/55 dark:hover:bg-primary-800/70'
+        : 'hover:bg-elevated',
       extra,
     ]
   }
