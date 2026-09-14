@@ -53,9 +53,28 @@ function getItemTnaHeadline(item: any): string {
   return `${formatTnaValue(item.tna)}%`
 }
 
+/** FCI: TNA anualizada desde ~30D; no es una tasa “vigente desde”. */
+function isFciEstimatedTnaItem(item: any): boolean {
+  if (item?.valorCuotaparte != null) return true
+  const type = item?.type
+  return (
+    type === 'mercadoDinero' ||
+    type === 'rentaFija' ||
+    type === 'rentaMixta' ||
+    type === 'rentaVariable' ||
+    type === 'retornoTotal' ||
+    type === 'mercadoDineroUsd' ||
+    type === 'rentaFijaUsd' ||
+    type === 'rentaFijaUsdHighRisk'
+  )
+}
+
 function getItemTnaSubline(item: any): string | null {
   if (item.plazoTiers?.length && !(props.showSimulation && item.simulation)) {
     return 'TNA según plazo'
+  }
+  if (isFciEstimatedTnaItem(item) && item.fecha) {
+    return `TNA est. 30D · ${formatDate(item.fecha)}`
   }
   return null
 }
