@@ -932,7 +932,7 @@ export const comparatasasFondosArs = [
   'delta-pesos-clase-x',
   'fima-premium-clase-a',
   'vinci-compass-liquidez-clase-e',
-  'vinci-compass-liquidez-clase-f',
+  'vinci-compass-liquidez-clase-d',
   'ciclo-nova-ahorro-clase-a',
   'ciclo-nova-value-clase-a',
   'iol-cash-management-clase-a',
