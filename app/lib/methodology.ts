@@ -61,7 +61,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'formula',
-        text: 'TNA = unMes × 365 / 30 (si falta: ultimos7Dias × 365 / 7; si falta: variacionDiariaPct × 365)',
+        text: 'TNA = unMes × 365 / días (días = diasUnMes de la API o del lookback VCP; si falta: 30). Fallback: ultimos7Dias × 365 / diasUltimos7Dias (o 7); luego variacionDiariaPct × 365',
       },
       {
         type: 'formula',
@@ -86,7 +86,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'formula',
-        text: 'En listados usamos TNA precomputada en build (`public/api/fci/nominal-tna.json`) con días efectivos del lookback VCP para fondos curados y sus clases hermanas. El resto del catálogo cae a unMes × 365 / 30. El detalle recalcula con el histórico del fondo abierto.',
+        text: 'En listados usamos TNA precomputada en build (`public/api/fci/nominal-tna.json`) con días efectivos del lookback VCP para fondos curados y sus clases hermanas. El resto del catálogo usa `diasUnMes`/`diasUltimos7Dias` de ArgentinaDatos cuando vienen; si no, cae a 30/7/1. El detalle recalcula con el histórico del fondo abierto.',
       },
       {
         type: 'formula',

@@ -3,6 +3,9 @@ export interface FciComparatasasRendimientos {
   unMes: number | null
   /** Variación diaria CNV en %; fallback de TNA si no hay 30D/7D. */
   variacionDiariaPct?: number | null
+  /** Días reales del lookback API (ArgentinaDatos); si faltan se usan 30/7/1. */
+  diasUltimos7Dias?: number | null
+  diasUnMes?: number | null
 }
 
 const DAYS_PER_YEAR = 365
@@ -50,6 +53,21 @@ export type NominalTnaEstimate = {
   formula: string
 }
 
+function apiEffectiveDays(
+  rendimientos: FciComparatasasRendimientos,
+  period: NominalTnaPeriod,
+): number | null {
+  if (period === '30D') {
+    return finiteNumber(rendimientos.diasUnMes) ? rendimientos.diasUnMes : null
+  }
+  if (period === '7D') {
+    return finiteNumber(rendimientos.diasUltimos7Dias)
+      ? rendimientos.diasUltimos7Dias
+      : null
+  }
+  return 1
+}
+
 export function getNominalTnaEstimateFromRendimientos(
   rendimientos: FciComparatasasRendimientos,
   effectiveDays?: Partial<Record<NominalTnaPeriod, number | null>>,
@@ -59,7 +77,13 @@ export function getNominalTnaEstimateFromRendimientos(
     if (!finiteNumber(raw)) continue
 
     const override = effectiveDays?.[window.period]
-    const days = override && override > 0 ? override : window.fallbackDays
+    const fromApi = apiEffectiveDays(rendimientos, window.period)
+    const days =
+      override && override > 0
+        ? override
+        : fromApi && fromApi > 0
+          ? fromApi
+          : window.fallbackDays
     const value = annualizePeriodReturn(raw, days)
     if (!Number.isFinite(value)) continue
 

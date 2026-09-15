@@ -65,11 +65,16 @@ interface FciComparatasasResponse {
       valorCuotaparte: number
       variacionDiariaPct?: number | null
       ultimos7Dias: number | null
+      diasUltimos7Dias?: number | null
       unMes: number | null
+      diasUnMes?: number | null
       noventaDias: number | null
       cientoOchentaDias: number | null
       enElAnio: number | null
       doceMeses: number | null
+      tnaEstimada?: number | null
+      tnaEstimadaDias?: number | null
+      tnaEstimadaPeriodo?: string | null
     }
     composicionCartera: Array<{
       nombre: string

@@ -51,4 +51,25 @@ describe('resolveFundNominalTnaEstimate', () => {
     expect(estimate?.days).toBe(30)
     expect(estimate?.value).toBeCloseTo(18.73, 2)
   })
+
+  it('uses diasUnMes from API when there is no local history', () => {
+    const estimate = resolveFundNominalTnaEstimate({
+      fecha: '2026-08-18',
+      rendimientos: {
+        valorCuotaparte: 8427.618,
+        variacionDiariaPct: 0.225,
+        ultimos7Dias: 0.3818,
+        diasUltimos7Dias: 7,
+        unMes: 1.5393,
+        diasUnMes: 28,
+        noventaDias: null,
+        cientoOchentaDias: null,
+        enElAnio: null,
+        doceMeses: null,
+      },
+    })
+
+    expect(estimate?.days).toBe(28)
+    expect(estimate?.value).toBeCloseTo((1.5393 * 365) / 28, 4)
+  })
 })

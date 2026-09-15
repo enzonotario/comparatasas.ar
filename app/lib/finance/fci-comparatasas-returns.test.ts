@@ -48,6 +48,23 @@ describe('getNominalTnaEstimateFromRendimientos', () => {
       formula: 'Nominal 30D: r30D × 365/30',
     })
   })
+
+  it('usa diasUnMes de la API cuando viene informado', () => {
+    expect(
+      getNominalTnaEstimateFromRendimientos({
+        unMes: 1.5872,
+        diasUnMes: 29,
+        ultimos7Dias: 0.3954,
+        diasUltimos7Dias: 7,
+        variacionDiariaPct: 0.23,
+      }),
+    ).toEqual({
+      value: (1.5872 * 365) / 29,
+      period: '30D',
+      days: 29,
+      formula: 'Nominal 30D: r30D × 365/29',
+    })
+  })
 })
 
 describe('getComparatasasReturnPercent', () => {
