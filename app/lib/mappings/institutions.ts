@@ -549,6 +549,12 @@ export const institutions: Array<{
     url: 'https://www.galiciasecurities.com.ar/?ref=comparatasas',
   },
   {
+    names: ['rava', 'Rava', 'Rava Bursátil', 'Rava Bursatil'],
+    logo: 'https://api.argentinadatos.com/static/logos/rava.png',
+    shortName: 'Rava',
+    url: 'https://www.rava.com/?ref=comparatasas',
+  },
+  {
     names: ['Galileo'],
     logo: 'https://api.argentinadatos.com/static/logos/galileo.png',
     shortName: 'Galileo',
