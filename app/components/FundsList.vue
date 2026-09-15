@@ -73,6 +73,9 @@ function getItemTnaSubline(item: any): string | null {
   if (item.plazoTiers?.length && !(props.showSimulation && item.simulation)) {
     return 'TNA según plazo'
   }
+  if (isFciEstimatedTnaItem(item)) {
+    return 'TNA est. 30D'
+  }
   return null
 }
 
