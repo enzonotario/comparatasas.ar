@@ -53,7 +53,7 @@ function getItemTnaHeadline(item: any): string {
   return `${formatTnaValue(item.tna)}%`
 }
 
-/** FCI: TNA anualizada desde ~30D; no es una tasa “vigente desde”. */
+/** FCI: TNA anualizada desde ~30D; la fecha va a nivel lista, no como “vigente desde”. */
 function isFciEstimatedTnaItem(item: any): boolean {
   if (item?.valorCuotaparte != null) return true
   const type = item?.type
@@ -73,11 +73,18 @@ function getItemTnaSubline(item: any): string | null {
   if (item.plazoTiers?.length && !(props.showSimulation && item.simulation)) {
     return 'TNA según plazo'
   }
-  if (isFciEstimatedTnaItem(item) && item.fecha) {
-    return `TNA est. 30D · ${formatDate(item.fecha)}`
-  }
   return null
 }
+
+/** Última fecha CNV/VCP entre ítems FCI de la lista (si hay). */
+const listUpdatedAt = computed(() => {
+  const fechas = props.items
+    .filter((item) => isFciEstimatedTnaItem(item) && typeof item?.fecha === 'string' && item.fecha)
+    .map((item) => item.fecha as string)
+  if (!fechas.length) return null
+  return [...fechas].sort().at(-1) ?? null
+})
+
 
 function getFundDetailUrl(item: any): string | null {
   if (!props.showFundDetailLink) return null
@@ -148,6 +155,9 @@ function handleProviderClick(item: any) {
 
 <template>
   <div class="flex flex-col gap-3">
+    <p v-if="listUpdatedAt" class="text-xs text-muted">
+      Actualizado el {{ formatDate(listUpdatedAt) }}
+    </p>
     <template
       v-for="(item, index) in items"
       :key="keyProp ? `${item[keyProp]}-${index}` : `item-${index}`"
@@ -313,17 +323,20 @@ function handleProviderClick(item: any) {
                     </template>
                     <template v-else>
                       TNA
-                      <div v-if="item.fechaAnterior && item.fecha">
-                        <span>Entre </span>
+                      <template v-if="!isFciEstimatedTnaItem(item)">
+                        <div v-if="item.fechaAnterior && item.fecha">
+                          <span>Entre </span>
 
-                        <span
-                          >{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span
-                        >
-                      </div>
-                      <div v-else-if="item.fecha">
-                        <span>TNA vigente desde el </span>
-                        <span>{{ formatDate(item.fecha) }}</span>
-                      </div>
+                          <span
+                            >{{ formatDate(item.fechaAnterior) }} y
+                            {{ formatDate(item.fecha) }}</span
+                          >
+                        </div>
+                        <div v-else-if="item.fecha">
+                          <span>TNA vigente desde el </span>
+                          <span>{{ formatDate(item.fecha) }}</span>
+                        </div>
+                      </template>
                     </template>
                   </div>
                 </div>
@@ -504,17 +517,20 @@ function handleProviderClick(item: any) {
                     </template>
                     <template v-else>
                       TNA
-                      <div v-if="item.fechaAnterior && item.fecha">
-                        <span>Entre </span>
+                      <template v-if="!isFciEstimatedTnaItem(item)">
+                        <div v-if="item.fechaAnterior && item.fecha">
+                          <span>Entre </span>
 
-                        <span
-                          >{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span
-                        >
-                      </div>
-                      <div v-else-if="item.fecha">
-                        <span>TNA vigente desde el </span>
-                        <span>{{ formatDate(item.fecha) }}</span>
-                      </div>
+                          <span
+                            >{{ formatDate(item.fechaAnterior) }} y
+                            {{ formatDate(item.fecha) }}</span
+                          >
+                        </div>
+                        <div v-else-if="item.fecha">
+                          <span>TNA vigente desde el </span>
+                          <span>{{ formatDate(item.fecha) }}</span>
+                        </div>
+                      </template>
                     </template>
                   </div>
                 </div>
