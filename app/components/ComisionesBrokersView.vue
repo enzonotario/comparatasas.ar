@@ -197,15 +197,15 @@ const rows = computed<ComisionRow[]>(() => {
 
   return filtered.map((item) => {
     const displayName =
-      getInstitutionShortName(item.entidad) ||
       getInstitutionShortName(item.nombreComercial) ||
+      getInstitutionShortName(item.entidad) ||
       item.nombreComercial ||
       item.entidad
     const logo =
-      getInstitutionLogo(item.entidad) || getInstitutionLogo(item.nombreComercial) || undefined
+      getInstitutionLogo(item.nombreComercial) || getInstitutionLogo(item.entidad) || undefined
     const providerUrl = withOutboundUtm(
-      getInstitutionUrl(item.entidad, 'comisiones-brokers') ||
-        getInstitutionUrl(item.nombreComercial, 'comisiones-brokers') ||
+      getInstitutionUrl(item.nombreComercial, 'comisiones-brokers') ||
+        getInstitutionUrl(item.entidad, 'comisiones-brokers') ||
         item.enlace ||
         '#',
       'comisiones-brokers',

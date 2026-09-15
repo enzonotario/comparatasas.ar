@@ -285,10 +285,10 @@ export const institutions: Array<{
     url: 'https://www.iebmas.com.ar/?ref=comparatasas',
   },
   {
-    names: ['macro'],
+    names: ['macro', 'Macro Securities', 'Macro'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-macro-acciones.svg',
-    shortName: 'Macro',
-    url: 'https://www.macro.com.ar/home-page?ref=comparatasas',
+    shortName: 'Macro Securities',
+    url: 'https://www.macro.com.ar/macrosecurities/home?ref=comparatasas',
   },
   {
     names: ['Ripio', 'RIPIO'],
@@ -529,6 +529,24 @@ export const institutions: Array<{
     logo: 'https://api.argentinadatos.com/static/logos/ppi.png',
     shortName: 'PPI',
     url: 'https://www.portfoliopersonal.com/?ref=comparatasas',
+  },
+  {
+    names: ['ecovalores', 'Eco Valores', 'eco valores'],
+    logo: 'https://api.argentinadatos.com/static/logos/ecovalores.svg',
+    shortName: 'Eco Valores',
+    url: 'https://www.ecovalores.com.ar/?ref=comparatasas',
+  },
+  {
+    names: ['puente', 'Puente'],
+    logo: 'https://api.argentinadatos.com/static/logos/puente.svg',
+    shortName: 'Puente',
+    url: 'https://www.puentenet.com/?ref=comparatasas',
+  },
+  {
+    names: ['Galicia Securities', 'galicia securities'],
+    logo: 'https://api.argentinadatos.com/static/logos/galicia.png',
+    shortName: 'Galicia Securities',
+    url: 'https://www.galiciasecurities.com.ar/?ref=comparatasas',
   },
   {
     names: ['Galileo'],

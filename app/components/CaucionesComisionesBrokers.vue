@@ -68,15 +68,15 @@ const rows = computed<ComisionRow[]>(() => {
 
   return filtered.map((item) => {
     const displayName =
-      getInstitutionShortName(item.entidad) ||
       getInstitutionShortName(item.nombreComercial) ||
+      getInstitutionShortName(item.entidad) ||
       item.nombreComercial ||
       item.entidad
     const logo =
-      getInstitutionLogo(item.entidad) || getInstitutionLogo(item.nombreComercial) || undefined
+      getInstitutionLogo(item.nombreComercial) || getInstitutionLogo(item.entidad) || undefined
     const providerUrl = withOutboundUtm(
-      getInstitutionUrl(item.entidad, 'cauciones') ||
-        getInstitutionUrl(item.nombreComercial, 'cauciones') ||
+      getInstitutionUrl(item.nombreComercial, 'cauciones') ||
+        getInstitutionUrl(item.entidad, 'cauciones') ||
         item.enlace ||
         '#',
       'cauciones',
