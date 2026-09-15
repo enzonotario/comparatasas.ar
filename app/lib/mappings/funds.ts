@@ -197,7 +197,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'Vinci Compass Liquidez - Clase E',
+    fundName: 'Vinci Compass Liquidez - Clase D',
     institutions: [
       {
         institution: 'Global66',
