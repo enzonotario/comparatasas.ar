@@ -18,6 +18,7 @@
     "generate-analytics-api": "tsx scripts/generate-analytics-api.ts",
     "preview-og": "tsx scripts/preview-og.ts",
     "import-meli-products": "tsx scripts/import-meli-products.ts --file productos.json",
+    "verify:agent-readiness": "tsx scripts/verify-agent-readiness.ts",
     "test": "vitest run",
     "test:scripts": "vitest run scripts/"
   },

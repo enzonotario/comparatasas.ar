@@ -2,16 +2,9 @@
  * Curated Markdown representations for Accept: text/markdown negotiation.
  * Keep these self-contained so agents can recover without loading the SPA shell.
  */
+import { AGENT_NEGOTIATED_ROUTES } from './agent-routes'
 
-export const AGENT_MARKDOWN_PATHS = [
-  '/',
-  '/about',
-  '/contact',
-  '/privacy',
-  '/metodologia',
-  '/sumarse',
-  '/llms.txt',
-] as const
+export const AGENT_MARKDOWN_PATHS = [...AGENT_NEGOTIATED_ROUTES, '/llms.txt'] as const
 
 export type AgentMarkdownPath = (typeof AGENT_MARKDOWN_PATHS)[number]
 
@@ -104,10 +97,19 @@ const METODOLOGIA_MARKDOWN = `# Metodología — Compara Tasas
 
 Cómo comparatasas.ar obtiene y presenta tasas y rendimientos.
 
-- Preferimos fuentes públicas y endpoints documentados (incluye Argentina Datos y feeds de entidades).
-- Cuando una entidad publica TNA/TEA, la mostramos junto con topes, condiciones y fecha de vigencia si están disponibles.
-- Para FCI, los rendimientos recientes y estimaciones de TNA siguen reglas descriptas en la página HTML de metodología; no inventamos series faltantes.
-- Simulaciones (por ejemplo contado vs cuotas) son herramientas informativas, no una oferta vinculante.
+## Fuentes y actualización
+
+- Preferimos fuentes públicas y endpoints documentados, incluidos Argentina Datos, CNV y feeds publicados por las entidades.
+- Mostramos fecha de vigencia o actualización cuando la fuente la informa.
+- No completamos tasas o series faltantes con estimaciones inventadas.
+
+## Comparabilidad
+
+- TNA, TEA, APY, topes y condiciones no son intercambiables: cada tabla conserva la unidad y los límites relevantes.
+- Para FCI, los rendimientos recientes y la TNA estimada dependen de la variación de cuotaparte y del período disponible.
+- Las simulaciones usan los supuestos visibles en cada herramienta y son informativas; no constituyen una oferta ni asesoramiento personalizado.
+
+Antes de contratar, verificá tasa, vigencia, impuestos y requisitos en el sitio oficial de la entidad.
 
 Página completa: https://comparatasas.ar/metodologia
 `
@@ -116,8 +118,23 @@ const SUMARSE_MARKDOWN = `# Sumarse — Integrar tu servicio en Compara Tasas
 
 El listado en ComparaTasas.ar es gratuito. Los proveedores pueden publicar un endpoint JSON con sus tasas para aparecer en la sección correspondiente (plazos fijos, FCI, cuentas, crypto, etc.).
 
-- Guía: https://comparatasas.ar/sumarse
-- Email: hi@enzonotario.me
+## Qué enviar
+
+- Una URL pública y estable que responda JSON sin autenticación interactiva.
+- Tasas en la unidad indicada por la guía de cada producto.
+- Nombre de la entidad, enlace oficial, condiciones, topes y fecha de vigencia cuando correspondan.
+- Un contacto técnico para avisar cambios incompatibles o problemas de actualización.
+
+La integración no garantiza una posición en el ranking: el orden depende de los valores y filtros comparables. Compara Tasas puede omitir datos vencidos, ambiguos o que no puedan verificarse. No hace falta pagar para ser incluido.
+
+## Próximos pasos
+
+1. Elegí el tipo de producto en la guía.
+2. Validá el ejemplo y publicá el endpoint.
+3. Enviá la URL y el contexto a hi@enzonotario.me.
+
+- Guía completa: https://comparatasas.ar/sumarse
+- Metodología: https://comparatasas.ar/metodologia
 `
 
 export const NOT_FOUND_MARKDOWN = `# 404 — Page not found

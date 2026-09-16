@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { AGENT_NEGOTIATED_ROUTES, getPublicRoutes } from './app/lib/agent-routes'
 import { getPrerenderRoutes } from './app/lib/prerender-routes'
 import { jsonLdScript, siteOrganization } from './app/lib/json-ld'
 
@@ -103,45 +104,21 @@ export default defineNuxtConfig({
       showProductScenarios: false,
     },
   },
+  routeRules: Object.fromEntries(
+    AGENT_NEGOTIATED_ROUTES.map((route) => [route, { prerender: false }]),
+  ),
 
   compatibilityDate: '2025-07-15',
 
   nitro: {
     preset: 'cloudflare_pages',
     prerender: {
-      // Solo rutas explícitas (fondos curados + páginas estáticas). crawlLinks
-      // expandía hermanos del catálogo a ~700+ /fondos/* y ~9 min de generate.
-      // `/` se sirve por el Worker (SSR) para poder negociar Accept: text/markdown.
+      // Las rutas negociadas quedan fuera y llegan al Worker. crawlLinks expandía
+      // hermanos del catálogo a ~700+ /fondos/* y ~9 min de generate.
       crawlLinks: false,
       concurrency: 16,
       failOnError: false,
-      routes: [
-        // Trust + home stay on the Worker so Accept: text/markdown can negotiate.
-        '/metodologia',
-        '/cuentas-billeteras',
-        '/cuentas-billeteras/graficos',
-        '/plazos-fijos',
-        '/plazos-fijos/uva-pago-periodico',
-        '/plazos-fijos/uva-precancelable',
-        '/fondos',
-        '/fondos/mercado',
-        '/usd',
-        '/criptomonedas',
-        '/criptopesos',
-        '/creditos-hipotecarios-uva',
-        '/creditos-hipotecarios-uva/uva-dolar',
-        '/creditos-hipotecarios-uva/simulador',
-        '/prestamos-personales',
-        '/prestamos-personales/bcra',
-        '/comisiones-cobro',
-        '/comisiones-brokers',
-        '/contado-cuotas',
-        '/remesas',
-        '/lecaps',
-        '/cauciones',
-        '/bonos-cer',
-        '/sumarse',
-      ],
+      routes: [],
     },
     minify: true,
   },
@@ -193,12 +170,10 @@ export default defineNuxtConfig({
   },
 
   sitemap: {
-    urls: async () => {
+    urls: () => {
       const base = 'https://comparatasas.ar'
-      // Solo rutas que realmente prerenderizamos (crawlLinks off).
-      // Listar los ~4700 FCI del catálogo generaba URLs sin HTML estático.
-      const { getPrerenderRoutes } = await import('./app/lib/prerender-routes')
-      const routes = await getPrerenderRoutes()
+      // Unión de páginas SSR negociadas y catálogo prerenderizado.
+      const routes = getPublicRoutes()
       return routes.map((path) => `${base}${path === '/' ? '/' : path}`)
     },
   },

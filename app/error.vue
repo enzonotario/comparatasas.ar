@@ -11,6 +11,7 @@ useSeoMeta({
   description: isNotFound.value
     ? 'La ruta no existe en comparatasas.ar. Probá el inicio, llms.txt o el sitemap.'
     : 'Ocurrió un error al cargar esta página.',
+  robots: () => (isNotFound.value ? 'noindex, nofollow' : 'noindex'),
 })
 </script>
 
