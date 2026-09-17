@@ -2,14 +2,8 @@
 import { UBadge, UButton } from '#components'
 import type { TableColumn } from '@nuxt/ui'
 import type { LecapItem } from '~/composables/useLecaps'
-import {
-  costoCompraLetrasPct,
-  type ComisionBrokerApi,
-} from '~/lib/finance/comision-caucion-broker'
-import {
-  calcularFilaLecap,
-  type LecapCalculoResultado,
-} from '~/lib/finance/lecap-calculos'
+import { costoCompraLetrasPct, type ComisionBrokerApi } from '~/lib/finance/comision-caucion-broker'
+import { calcularFilaLecap, type LecapCalculoResultado } from '~/lib/finance/lecap-calculos'
 import { resolvePlazoFijoRateForHorizon } from '~/composables/usePlazosFijos'
 import { STANDARD_PLAZO_COLUMNS } from '~/lib/plazo-fijo-rates'
 import type { PlazoFijoTableRow } from '~/types/investments'
@@ -171,11 +165,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
     header: createSortableHeader('Ticker'),
     cell: ({ row }) =>
       h('div', { class: 'flex items-center gap-1' }, [
-        h(
-          'span',
-          { class: 'font-semibold text-neutral-900 dark:text-white' },
-          row.original.symbol,
-        ),
+        h('span', { class: 'font-semibold text-neutral-900 dark:text-white' }, row.original.symbol),
         h(
           UBadge,
           {
@@ -221,8 +211,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
     cell: ({ row }) => {
       const v = row.original.item.variacionPorcentaje
       if (v == null) return h('div', { class: 'text-muted' }, '—')
-      const cls =
-        v >= 0 ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
+      const cls = v >= 0 ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
       return h('div', { class: `tabular-nums ${cls}` }, formatPercentPts(v))
     },
   },
@@ -268,8 +257,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) => {
       const v = row.original.gananciaDirecta
-      const cls =
-        v >= 0 ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
+      const cls = v >= 0 ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
       return h('div', { class: `tabular-nums font-semibold ${cls}` }, formatPercent(v))
     },
   },
@@ -330,8 +318,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
       const v = row.original.calc.vsPlazoFijo
       const pct = row.original.calc.vsPlazoFijoPorcentaje
       if (v == null) return h('div', { class: 'text-muted' }, '—')
-      const cls =
-        v >= 0 ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
+      const cls = v >= 0 ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
       const label =
         pct != null ? `${formatMoneyDiff(v)} (${formatPercent(pct)})` : formatMoneyDiff(v)
       return h('div', { class: `tabular-nums font-medium whitespace-nowrap ${cls}` }, label)
@@ -362,9 +349,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
                 {{ item.type === 'BONCAP' ? 'B' : 'L' }}
               </UBadge>
             </div>
-            <p class="text-xs text-muted">
-              {{ formatDate(item.maturity) }} · {{ item.days }} días
-            </p>
+            <p class="text-xs text-muted">{{ formatDate(item.maturity) }} · {{ item.days }} días</p>
             <p class="text-xs text-muted tabular-nums">
               Precio {{ formatPrecio1Vn(calc.precio1Vn) }}
               <span
@@ -440,20 +425,18 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
           class="w-full"
         >
           <template #empty>
-            <div class="py-12 text-center text-muted">
-              No hay LECAPs o BONCAPs disponibles.
-            </div>
+            <div class="py-12 text-center text-muted">No hay LECAPs o BONCAPs disponibles.</div>
           </template>
         </UTable>
       </div>
     </div>
 
     <p class="text-xs text-muted leading-relaxed max-w-4xl">
-      Precio por 1 VN (cotización ÷ 100). L = LECAP, B = BONCAP. P. c/com. incluye comisión de letras
-      del broker (+ IVA si corresponde). VN = monto ÷ precio con comisión. Total = VN × residual al
-      vencimiento. Gan. = (a recibir − precio c/com.) / precio c/com. TNA = mercado (Docta). TNA Neta
-      = ganancia anualizada con comisión del broker. PF = monto equivalente a plazo fijo; vs PF =
-      diferencial vs ese monto.
+      Precio por 1 VN (cotización ÷ 100). L = LECAP, B = BONCAP. P. c/com. incluye comisión de
+      letras del broker (+ IVA si corresponde). VN = monto ÷ precio con comisión. Total = VN ×
+      residual al vencimiento. Gan. = (a recibir − precio c/com.) / precio c/com. TNA = mercado
+      (Docta). TNA Neta = ganancia anualizada con comisión del broker. PF = monto equivalente a
+      plazo fijo; vs PF = diferencial vs ese monto.
     </p>
   </div>
 </template>

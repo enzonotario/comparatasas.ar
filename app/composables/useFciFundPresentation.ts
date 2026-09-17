@@ -134,23 +134,18 @@ export function useFciFundPresentation(
       {
         period: '7D',
         effectiveDays:
-          fallback?.sevenDays ??
-          api?.diasUltimos7Dias ??
-          (sevenValue == null ? null : 7),
+          fallback?.sevenDays ?? api?.diasUltimos7Dias ?? (sevenValue == null ? null : 7),
         value: sevenValue,
       },
       {
         period: '30D',
-        effectiveDays:
-          fallback?.thirtyDays ?? api?.diasUnMes ?? (monthValue == null ? null : 30),
+        effectiveDays: fallback?.thirtyDays ?? api?.diasUnMes ?? (monthValue == null ? null : 30),
         value: monthValue,
       },
       {
         period: '90D',
         effectiveDays:
-          fallback?.ninetyDays ??
-          api?.diasNoventaDias ??
-          (ninetyValue == null ? null : 90),
+          fallback?.ninetyDays ?? api?.diasNoventaDias ?? (ninetyValue == null ? null : 90),
         value: ninetyValue,
       },
       {
@@ -163,16 +158,13 @@ export function useFciFundPresentation(
       },
       {
         period: 'YTD',
-        effectiveDays:
-          fallback?.ytdDays ?? api?.diasEnElAnio ?? effectiveDaysInYear.value,
+        effectiveDays: fallback?.ytdDays ?? api?.diasEnElAnio ?? effectiveDaysInYear.value,
         value: ytdValue,
       },
       {
         period: '1Y',
         effectiveDays:
-          fallback?.twelveMonthDays ??
-          api?.diasDoceMeses ??
-          (yearValue == null ? null : 365),
+          fallback?.twelveMonthDays ?? api?.diasDoceMeses ?? (yearValue == null ? null : 365),
         value: yearValue,
       },
     ]

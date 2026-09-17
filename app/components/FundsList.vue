@@ -88,7 +88,6 @@ const listUpdatedAt = computed(() => {
   return [...fechas].sort().at(-1) ?? null
 })
 
-
 function getFundDetailUrl(item: any): string | null {
   if (!props.showFundDetailLink) return null
   if (!item?.fondo || typeof item.fondo !== 'string') return null

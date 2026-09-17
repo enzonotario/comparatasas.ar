@@ -35,9 +35,7 @@ export function createComparableSelectColumn<T>(
     id: 'select',
     header: ({ table }) => {
       const pageRows = table.getRowModel().rows as ComparableTableRow[]
-      const selectableRows = pageRows.filter((row) =>
-        rowCanBeSelected(row, options?.canSelectRow),
-      )
+      const selectableRows = pageRows.filter((row) => rowCanBeSelected(row, options?.canSelectRow))
       const allSelectableSelected =
         selectableRows.length > 0 && selectableRows.every((row) => row.getIsSelected())
       const someSelectableSelected = selectableRows.some((row) => row.getIsSelected())

@@ -754,7 +754,8 @@ const hasActiveFilters = computed(
             "
             :on-select="onSelect"
             class="min-w-full"
-          />        </div>
+          />
+        </div>
 
         <div v-else class="flex flex-col gap-3">
           <div

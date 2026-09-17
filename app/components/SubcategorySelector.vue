@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
-import {
-  groupNavigationPages,
-  type NavigationPage,
-} from '~/composables/useNavigationPages'
+import { groupNavigationPages, type NavigationPage } from '~/composables/useNavigationPages'
 
 const GROUP_ICONS: Record<string, string> = {
   inversion: 'i-lucide-wallet',
@@ -221,12 +218,7 @@ function pageLinkClass(page: NavigationPage) {
                         class="px-3 py-2.5"
                         @click="openMobile = false"
                       >
-                        <img
-                          :src="page.image"
-                          alt=""
-                          class="size-8 shrink-0"
-                          aria-hidden="true"
-                        />
+                        <img :src="page.image" alt="" class="size-8 shrink-0" aria-hidden="true" />
                         <span class="min-w-0 truncate">{{ page.label }}</span>
                         <span class="ml-auto flex items-center gap-1.5 shrink-0">
                           <UBadge

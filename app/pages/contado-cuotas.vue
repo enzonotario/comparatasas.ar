@@ -543,9 +543,7 @@ const {
 } = useComparableHtmlRows()
 
 const recargoRowIds = computed(() => recargoHeatmap.value.map((row) => `recargo-${row.label}`))
-const discountRowIds = computed(() =>
-  discountHeatmap.value.map((row) => `discount-${row.label}`),
-)
+const discountRowIds = computed(() => discountHeatmap.value.map((row) => `discount-${row.label}`))
 
 function getHeatmapToneClass(tea: number): string {
   if (!Number.isFinite(tea)) {

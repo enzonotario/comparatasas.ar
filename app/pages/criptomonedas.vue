@@ -25,8 +25,15 @@ const {
   data: cryptoData,
 } = cryptoStore
 const PRIORITY_PROVIDER = 'Lune.fi'
-const { toggle: toggleComparableRow, rowClass: comparableRowClass, isSelected, setSelected, areAllSelected, areSomeSelected, toggleAll } =
-  useComparableHtmlRows()
+const {
+  toggle: toggleComparableRow,
+  rowClass: comparableRowClass,
+  isSelected,
+  setSelected,
+  areAllSelected,
+  areSomeSelected,
+  toggleAll,
+} = useComparableHtmlRows()
 
 const cryptoRowIds = computed(() => cryptosByMaxYield.value.map(({ crypto }) => crypto))
 
@@ -183,7 +190,9 @@ useHead({
                 <tr
                   v-for="{ crypto, maxYield } in cryptosByMaxYield"
                   :key="crypto"
-                  :class="comparableRowClass(crypto, 'border-b border-gray-100 dark:border-gray-800')"
+                  :class="
+                    comparableRowClass(crypto, 'border-b border-gray-100 dark:border-gray-800')
+                  "
                   @click="toggleComparableRow(crypto)"
                 >
                   <td class="w-9 px-1.5 py-1.5 text-center" @click.stop>

@@ -51,17 +51,21 @@ const NuxtLink = resolveComponent('NuxtLink')
 const table = useTemplateRef<{ tableApi?: any }>('table')
 const compareSelectionCurrency = ref<FciCompareCurrency | null>(null)
 
-const { rowSelection, onSelect: toggleCompareSelection, withSelection, clearSelection } =
-  useComparableTableRows({
-    modifierOnly: true,
-    canSelectRow: (row) => {
-      const currency = getSelectableFundCurrency(row.original)
-      if (!currency) return true
-      const locked = compareSelectionCurrency.value
-      if (!locked) return true
-      return currency === locked
-    },
-  })
+const {
+  rowSelection,
+  onSelect: toggleCompareSelection,
+  withSelection,
+  clearSelection,
+} = useComparableTableRows({
+  modifierOnly: true,
+  canSelectRow: (row) => {
+    const currency = getSelectableFundCurrency(row.original)
+    if (!currency) return true
+    const locked = compareSelectionCurrency.value
+    if (!locked) return true
+    return currency === locked
+  },
+})
 
 function getSelectableFundCurrency(original: unknown): FciCompareCurrency | null {
   if (!original || isFundEntitySummary(original as FundEntitySummary)) return null
