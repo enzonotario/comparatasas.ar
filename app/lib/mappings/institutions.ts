@@ -495,10 +495,10 @@ export const institutions: Array<{
     url: 'https://asset.ad-cap.com.ar/?ref=comparatasas',
   },
   {
-    names: ['Allaria'],
-    logo: 'https://api.argentinadatos.com/static/logos/allaria.jpg',
+    names: ['Allaria', 'allaria', 'Allaria Inversiones'],
+    logo: 'https://api.argentinadatos.com/static/logos/allaria.png',
     shortName: 'Allaria',
-    url: 'https://allaria.com.ar/?ref=comparatasas',
+    url: 'https://allariainversiones.com.ar/?ref=comparatasas',
   },
   {
     names: ['Brubank', 'BRUBANK'],
