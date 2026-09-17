@@ -75,11 +75,7 @@ export function getFundTypeInfo(
   }
 
   // Etiquetas CAFCI adicionales: se muestran tal cual (sin bucket de catálogo propio).
-  if (
-    normalized === 'pymes' ||
-    normalized === 'pyme' ||
-    normalized.includes('pyme')
-  ) {
+  if (normalized === 'pymes' || normalized === 'pyme' || normalized.includes('pyme')) {
     return { type: 'rentaFija', typeLabel: 'PyMEs' }
   }
 

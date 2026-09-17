@@ -498,8 +498,7 @@ function clearFilters() {
 }
 
 const hasActiveFilters = computed(
-  () =>
-    (showMonedaFilter.value && monedaFilter.value !== 'ARS') || operacionFilter.value !== 'all',
+  () => (showMonedaFilter.value && monedaFilter.value !== 'ARS') || operacionFilter.value !== 'all',
 )
 </script>
 
@@ -637,7 +636,8 @@ const hasActiveFilters = computed(
             "
             :on-select="onSelect"
             class="min-w-full"
-          />        </div>
+          />
+        </div>
 
         <div v-else class="flex flex-col gap-3">
           <div

@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import {
-  groupNavigationPages,
-  type NavigationCategory,
-} from '~/composables/useNavigationPages'
+import { groupNavigationPages, type NavigationCategory } from '~/composables/useNavigationPages'
 import FlagARS from '~/components/icons/FlagARS.vue'
 import FlagUSD from '~/components/icons/FlagUSD.vue'
 import BitcoinIcon from '~/components/icons/BitcoinIcon.vue'

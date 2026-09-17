@@ -166,9 +166,7 @@ const {
   toggleAll,
 } = useComparableHtmlRows()
 
-const projectionRowIds = computed(() =>
-  projectionRows.value.map((row) => String(row.yearIndex)),
-)
+const projectionRowIds = computed(() => projectionRows.value.map((row) => String(row.yearIndex)))
 
 const ofertaLabel = computed(() => {
   if (!props.ofertaSeleccionada) return null

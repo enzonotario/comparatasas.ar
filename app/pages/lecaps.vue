@@ -8,10 +8,7 @@ import PlazoFijoCompararSelect, {
   type PlazoFijoCompararOption,
 } from '~/components/PlazoFijoCompararSelect.vue'
 import { useCaucionesBrokerSelection } from '~/composables/useCaucionesBrokerSelection'
-import {
-  resolvePlazoFijoRatesByStandardPlazo,
-  usePlazosFijos,
-} from '~/composables/usePlazosFijos'
+import { resolvePlazoFijoRatesByStandardPlazo, usePlazosFijos } from '~/composables/usePlazosFijos'
 import { STANDARD_PLAZO_COLUMNS } from '~/lib/plazo-fijo-rates'
 import type { LetrasPayload } from '~/composables/useLecaps'
 import { getComisionesBrokersProductoPath } from '~/lib/comisiones-brokers-nav'
@@ -256,8 +253,8 @@ function formatFechaActualizacionUtc(iso: string): string {
         to="/plazos-fijos"
         class="text-primary-800 dark:text-primary-200 font-medium underline underline-offset-2"
       >
-        plazos fijos </NuxtLink
-      >
+        plazos fijos
+      </NuxtLink>
       por defecto).
     </p>
 

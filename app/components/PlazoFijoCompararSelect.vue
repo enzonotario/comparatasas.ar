@@ -91,9 +91,7 @@ function formatTna(tna: number | null | undefined): string {
             v-for="column in plazoColumns"
             :key="column.key"
             :class="
-              (item.ratesByPlazo?.[column.key] ?? 0) > 0
-                ? 'font-medium text-default'
-                : 'text-muted'
+              (item.ratesByPlazo?.[column.key] ?? 0) > 0 ? 'font-medium text-default' : 'text-muted'
             "
           >
             {{ formatTna(item.ratesByPlazo?.[column.key]) }}

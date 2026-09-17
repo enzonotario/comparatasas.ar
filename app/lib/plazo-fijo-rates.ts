@@ -45,10 +45,7 @@ export function getDisplayPlazoKey(
   const { plazoMinDias, plazoMaxDias } = tasa
 
   // 30d: puntual, Voii 30–44, Macro 30–35
-  if (
-    plazoMinDias === 30 &&
-    (plazoMaxDias === 30 || plazoMaxDias === 35 || plazoMaxDias === 44)
-  ) {
+  if (plazoMinDias === 30 && (plazoMaxDias === 30 || plazoMaxDias === 35 || plazoMaxDias === 44)) {
     return '30'
   }
   if (plazoMinDias === 60 && (plazoMaxDias === 60 || plazoMaxDias === 89)) return '60'

@@ -80,8 +80,7 @@ export function useLecaps() {
 
   const lecapsItems = computed<LecapItem[]>(() =>
     lecaps.value.map((letra) => {
-      const days =
-        letra.diasAlVencimiento ?? diasAlVencimientoLetra(letra.fechaVencimiento)
+      const days = letra.diasAlVencimiento ?? diasAlVencimientoLetra(letra.fechaVencimiento)
       const type = tipoDesdeTicker(letra.ticker)
       const tna = letra.tnaPorcentaje / 100
       const tir = letra.teaPorcentaje / 100

@@ -61,9 +61,7 @@ function apiEffectiveDays(
     return finiteNumber(rendimientos.diasUnMes) ? rendimientos.diasUnMes : null
   }
   if (period === '7D') {
-    return finiteNumber(rendimientos.diasUltimos7Dias)
-      ? rendimientos.diasUltimos7Dias
-      : null
+    return finiteNumber(rendimientos.diasUltimos7Dias) ? rendimientos.diasUltimos7Dias : null
   }
   return 1
 }
@@ -79,11 +77,7 @@ export function getNominalTnaEstimateFromRendimientos(
     const override = effectiveDays?.[window.period]
     const fromApi = apiEffectiveDays(rendimientos, window.period)
     const days =
-      override && override > 0
-        ? override
-        : fromApi && fromApi > 0
-          ? fromApi
-          : window.fallbackDays
+      override && override > 0 ? override : fromApi && fromApi > 0 ? fromApi : window.fallbackDays
     const value = annualizePeriodReturn(raw, days)
     if (!Number.isFinite(value)) continue
 

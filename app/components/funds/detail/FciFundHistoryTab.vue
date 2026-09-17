@@ -154,7 +154,8 @@ const { rowSelection, onSelect, withSelection } = useComparableTableRows()
             th: 'px-3 py-2.5 text-xs',
             td: 'px-3 py-2 text-sm',
           }"
-        />      </UCard>
+        />
+      </UCard>
     </template>
 
     <p v-else class="text-sm text-neutral-500">No hay histórico disponible para este fondo.</p>
