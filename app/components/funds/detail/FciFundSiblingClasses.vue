@@ -1,0 +1,453 @@
+<script setup lang="ts">
+import { getFundDetailTo, getFundDetailToOptionsFromRoute } from '~/lib/funds-detail'
+import {
+  formatArsEquivalentHint,
+  formatCompactPatrimonio,
+  formatCurrency,
+  isUsdCurrency,
+  metricTone,
+  normalizeCurrencyCode,
+} from '~/lib/fci-fund-formatters'
+import { compareClassLabels } from '~/lib/fci-fund-class'
+import type { FundCatalogGroupRow } from '~/lib/fci-fund-groups'
+
+type SortKey = 'clase' | 'tna' | 'patrimonio' | 'share' | 'inversionMinima'
+type SortDir = 'asc' | 'desc'
+
+const props = defineProps<{
+  baseName: string
+  currentFondo: string
+  currentPatrimonio?: number | null
+  siblings: FundCatalogGroupRow[]
+  patrimonioTotal: number | null
+}>()
+
+const route = useRoute()
+const { usdArsRate } = useDolarBolsa()
+const sortKey = ref<SortKey>('clase')
+const sortDir = ref<SortDir>('asc')
+const {
+  toggle: toggleComparableRow,
+  rowClass: comparableRowClass,
+  isSelected,
+  setSelected,
+  areAllSelected,
+  areSomeSelected,
+  toggleAll,
+} = useComparableHtmlRows()
+
+function siblingCurrency(row?: FundCatalogGroupRow | null) {
+  return row?.monedaInversion || row?.moneda || null
+}
+
+function siblingCurrencyCode(row?: FundCatalogGroupRow | null) {
+  return normalizeCurrencyCode(siblingCurrency(row))
+}
+
+function formatSiblingPatrimonio(
+  value: number | null | undefined,
+  row?: FundCatalogGroupRow | null,
+) {
+  const currency = siblingCurrency(row)
+  const primary = formatCompactPatrimonio(value, currency)
+  const hint = formatArsEquivalentHint(value, currency, usdArsRate.value)
+  return hint ? `${primary} · ${hint}` : primary
+}
+
+function siblingPatrimonioParts(row: FundCatalogGroupRow) {
+  const currency = siblingCurrency(row)
+  return {
+    primary: formatCompactPatrimonio(row.patrimonio, currency),
+    hint: formatArsEquivalentHint(row.patrimonio, currency, usdArsRate.value),
+  }
+}
+
+function siblingDetailTo(fondo: string) {
+  return getFundDetailTo(fondo, getFundDetailToOptionsFromRoute(route))
+}
+
+function formatRate(value: number | null | undefined) {
+  if (value == null || !Number.isFinite(value)) return null
+  return new Intl.NumberFormat('es-AR', {
+    style: 'percent',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
+function shareOfFund(row: FundCatalogGroupRow) {
+  if (row.patrimonio == null || props.patrimonioTotal == null || props.patrimonioTotal <= 0) {
+    return null
+  }
+  return (row.patrimonio / props.patrimonioTotal) * 100
+}
+
+function formatShare(row: FundCatalogGroupRow) {
+  const share = shareOfFund(row)
+  return share != null ? `${share.toFixed(1).replace('.', ',')}%` : '—'
+}
+
+function sortNullableNumber(a: number | null | undefined, b: number | null | undefined) {
+  if (a == null || !Number.isFinite(a)) return 1
+  if (b == null || !Number.isFinite(b)) return -1
+  return a - b
+}
+
+function toggleSort(key: SortKey) {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+    return
+  }
+  sortKey.value = key
+  sortDir.value = key === 'clase' ? 'asc' : 'desc'
+}
+
+function sortIcon(key: SortKey) {
+  if (sortKey.value !== key) return 'i-lucide-arrow-up-down'
+  return sortDir.value === 'asc'
+    ? 'i-lucide-arrow-up-narrow-wide'
+    : 'i-lucide-arrow-down-wide-narrow'
+}
+
+const hasMultipleClasses = computed(() => props.siblings.length > 1)
+
+const classShare = computed(() => {
+  if (
+    props.currentPatrimonio == null ||
+    props.patrimonioTotal == null ||
+    props.patrimonioTotal <= 0
+  ) {
+    return null
+  }
+  return (props.currentPatrimonio / props.patrimonioTotal) * 100
+})
+
+const sortedSiblings = computed(() => {
+  const rows = [...props.siblings]
+
+  rows.sort((a, b) => {
+    const direction = sortDir.value === 'asc' ? 1 : -1
+    let cmp = 0
+    let aNull = false
+    let bNull = false
+
+    switch (sortKey.value) {
+      case 'clase':
+        cmp = compareClassLabels(a.classLabel || a.fondo, b.classLabel || b.fondo)
+        break
+      case 'tna':
+        aNull = a.tna == null || !Number.isFinite(a.tna)
+        bNull = b.tna == null || !Number.isFinite(b.tna)
+        if (!aNull && !bNull) cmp = sortNullableNumber(a.tna, b.tna)
+        break
+      case 'patrimonio':
+        aNull = a.patrimonio == null || !Number.isFinite(a.patrimonio)
+        bNull = b.patrimonio == null || !Number.isFinite(b.patrimonio)
+        if (!aNull && !bNull) cmp = sortNullableNumber(a.patrimonio, b.patrimonio)
+        break
+      case 'share': {
+        const shareA = shareOfFund(a)
+        const shareB = shareOfFund(b)
+        aNull = shareA == null || !Number.isFinite(shareA)
+        bNull = shareB == null || !Number.isFinite(shareB)
+        if (!aNull && !bNull) cmp = sortNullableNumber(shareA, shareB)
+        break
+      }
+      case 'inversionMinima':
+        aNull = a.inversionMinima == null || !Number.isFinite(a.inversionMinima)
+        bNull = b.inversionMinima == null || !Number.isFinite(b.inversionMinima)
+        if (!aNull && !bNull) cmp = sortNullableNumber(a.inversionMinima, b.inversionMinima)
+        break
+    }
+
+    if (aNull || bNull) {
+      if (aNull && bNull) return 0
+      return aNull ? 1 : -1
+    }
+
+    return cmp * direction
+  })
+
+  return rows
+})
+
+const siblingIds = computed(() => sortedSiblings.value.map((row) => row.fondo))
+</script>
+
+<template>
+  <div
+    v-if="siblings.length"
+    class="rounded-xl border border-default bg-elevated/40 p-3 sm:p-4 space-y-3"
+  >
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-center gap-2">
+          <h2 class="text-base font-semibold text-highlighted">Clases del fondo</h2>
+          <UBadge color="neutral" variant="subtle" size="sm">
+            {{ siblings.length }} {{ siblings.length === 1 ? 'clase' : 'clases' }}
+          </UBadge>
+          <UBadge
+            :color="isUsdCurrency(siblingCurrencyCode(siblings[0])) ? 'primary' : 'neutral'"
+            variant="subtle"
+            size="sm"
+            class="tabular-nums"
+          >
+            {{ siblingCurrencyCode(siblings[0]) }}
+          </UBadge>
+        </div>
+        <p class="text-sm text-muted truncate">{{ baseName }}</p>
+      </div>
+
+      <div
+        v-if="hasMultipleClasses"
+        class="max-sm:hidden shrink-0 rounded-lg border border-default bg-default px-3 py-2 text-sm"
+      >
+        <p class="text-[10px] uppercase tracking-wide text-muted">Patrimonio total</p>
+        <p class="text-lg font-semibold text-highlighted leading-tight">
+          {{ formatSiblingPatrimonio(patrimonioTotal, siblings[0]) }}
+        </p>
+        <p v-if="classShare != null" class="text-xs text-muted">
+          Esta clase:
+          {{
+            formatSiblingPatrimonio(
+              currentPatrimonio,
+              siblings.find((s) => s.fondo === currentFondo),
+            )
+          }}
+          ({{ classShare.toFixed(1).replace('.', ',') }}%)
+        </p>
+      </div>
+    </div>
+
+    <!-- Desktop: pills. Prefer max-md:hidden over hidden md:flex (CSS order bug). -->
+    <div class="flex max-md:hidden flex-wrap gap-1.5">
+      <UButton
+        v-for="row in siblings"
+        :key="row.fondo"
+        size="sm"
+        color="neutral"
+        :variant="row.fondo === currentFondo ? 'solid' : 'outline'"
+        :to="row.fondo === currentFondo ? undefined : siblingDetailTo(row.fondo)"
+        :label="row.classLabel || row.fondo"
+      />
+    </div>
+
+    <!-- Mobile: compact class cards -->
+    <div v-if="hasMultipleClasses" class="space-y-2 md:hidden">
+      <template v-for="row in sortedSiblings" :key="`mobile-${row.fondo}`">
+        <NuxtLink
+          v-if="row.fondo !== currentFondo"
+          :to="siblingDetailTo(row.fondo)"
+          class="flex items-center justify-between gap-3 rounded-lg border border-default bg-default px-3 py-2.5 active:bg-elevated/60"
+        >
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <p class="font-medium text-highlighted truncate">
+                {{ row.classLabel || row.fondo }}
+              </p>
+              <UBadge
+                :color="isUsdCurrency(siblingCurrencyCode(row)) ? 'primary' : 'neutral'"
+                variant="subtle"
+                size="sm"
+                class="shrink-0 tabular-nums"
+                :label="siblingCurrencyCode(row)"
+              />
+            </div>
+            <p class="text-xs text-muted mt-0.5">
+              {{ formatSiblingPatrimonio(row.patrimonio, row) }}
+              <span v-if="shareOfFund(row) != null"> · {{ formatShare(row) }} del fondo</span>
+            </p>
+          </div>
+          <div class="shrink-0 text-right">
+            <p class="text-sm font-semibold tabular-nums" :class="metricTone(row.tna)">
+              {{ formatRate(row.tna) ?? '—' }}
+            </p>
+            <p class="text-[10px] uppercase tracking-wide text-muted">TNA est.</p>
+          </div>
+        </NuxtLink>
+
+        <div
+          v-else
+          class="flex items-center justify-between gap-3 rounded-lg border border-default bg-default px-3 py-2.5 ring-1 ring-default"
+        >
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <p class="font-medium text-highlighted truncate">
+                {{ row.classLabel || row.fondo }}
+              </p>
+              <UBadge
+                :color="isUsdCurrency(siblingCurrencyCode(row)) ? 'primary' : 'neutral'"
+                variant="subtle"
+                size="sm"
+                class="shrink-0 tabular-nums"
+                :label="siblingCurrencyCode(row)"
+              />
+              <UBadge color="neutral" variant="subtle" size="sm" label="Actual" />
+            </div>
+            <p class="text-xs text-muted mt-0.5">
+              {{ formatSiblingPatrimonio(row.patrimonio, row) }}
+              <span v-if="shareOfFund(row) != null"> · {{ formatShare(row) }} del fondo</span>
+            </p>
+          </div>
+          <div class="shrink-0 text-right">
+            <p class="text-sm font-semibold tabular-nums" :class="metricTone(row.tna)">
+              {{ formatRate(row.tna) ?? '—' }}
+            </p>
+            <p class="text-[10px] uppercase tracking-wide text-muted">TNA est.</p>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Desktop: sortable table -->
+    <div v-if="hasMultipleClasses" class="overflow-x-auto -mx-1 max-md:hidden">
+      <table class="w-full text-sm min-w-[520px]">
+        <thead>
+          <tr class="text-left text-muted border-b border-default">
+            <th class="w-9 py-1 px-1 text-center">
+              <UCheckbox
+                :model-value="
+                  areSomeSelected(siblingIds) ? 'indeterminate' : areAllSelected(siblingIds)
+                "
+                aria-label="Seleccionar todas"
+                @update:model-value="toggleAll(siblingIds)"
+              />
+            </th>
+            <th class="py-1 px-1 font-medium">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                class="-mx-1"
+                :icon="sortIcon('clase')"
+                label="Clase"
+                @click="toggleSort('clase')"
+              />
+            </th>
+            <th class="py-1 px-1 font-medium text-right">
+              <div class="flex justify-end">
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  :icon="sortIcon('tna')"
+                  label="TNA est."
+                  @click="toggleSort('tna')"
+                />
+              </div>
+            </th>
+            <th class="py-1 px-1 font-medium text-right">
+              <div class="flex justify-end">
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  :icon="sortIcon('patrimonio')"
+                  label="Patrimonio"
+                  @click="toggleSort('patrimonio')"
+                />
+              </div>
+            </th>
+            <th class="py-1 px-1 font-medium text-right">
+              <div class="flex justify-end">
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  :icon="sortIcon('share')"
+                  label="% del fondo"
+                  @click="toggleSort('share')"
+                />
+              </div>
+            </th>
+            <th class="py-1 px-1 font-medium text-right">
+              <div class="flex justify-end">
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  :icon="sortIcon('inversionMinima')"
+                  label="Inversión mín."
+                  @click="toggleSort('inversionMinima')"
+                />
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="row in sortedSiblings"
+            :key="`row-${row.fondo}`"
+            :class="
+              comparableRowClass(row.fondo, [
+                'border-b border-default last:border-0',
+                row.fondo === currentFondo ? 'bg-elevated/60' : '',
+              ])
+            "
+            @click="toggleComparableRow(row.fondo)"
+          >
+            <td class="w-9 py-2.5 px-1 text-center" @click.stop>
+              <UCheckbox
+                :model-value="isSelected(row.fondo)"
+                aria-label="Seleccionar fila"
+                @update:model-value="(v) => setSelected(row.fondo, !!v)"
+              />
+            </td>
+            <td class="py-2.5 px-1">
+              <div class="flex items-center gap-2 min-w-0">
+                <NuxtLink
+                  v-if="row.fondo !== currentFondo"
+                  :to="siblingDetailTo(row.fondo)"
+                  class="font-medium text-neutral truncate hover:underline"
+                  @click.stop
+                >
+                  {{ row.classLabel || row.fondo }}
+                </NuxtLink>
+                <span v-else class="font-medium text-highlighted truncate">
+                  {{ row.classLabel || row.fondo }}
+                </span>
+                <UBadge
+                  :color="isUsdCurrency(siblingCurrencyCode(row)) ? 'primary' : 'neutral'"
+                  variant="subtle"
+                  size="sm"
+                  class="shrink-0 tabular-nums"
+                  :label="siblingCurrencyCode(row)"
+                />
+                <UBadge
+                  v-if="row.fondo === currentFondo"
+                  color="neutral"
+                  variant="subtle"
+                  size="sm"
+                  label="Actual"
+                />
+              </div>
+            </td>
+            <td class="py-2.5 px-1 text-right">
+              <span :class="metricTone(row.tna)">{{ formatRate(row.tna) ?? '—' }}</span>
+            </td>
+            <td class="py-2.5 px-1 text-right font-medium">
+              <div>{{ siblingPatrimonioParts(row).primary }}</div>
+              <div
+                v-if="siblingPatrimonioParts(row).hint"
+                class="text-[10px] text-muted font-normal"
+              >
+                {{ siblingPatrimonioParts(row).hint }}
+              </div>
+            </td>
+            <td class="py-2.5 px-1 text-right text-muted">
+              {{ formatShare(row) }}
+            </td>
+            <td class="py-2.5 px-1 text-right text-muted">
+              {{ formatCurrency(row.inversionMinima, row.monedaInversion || 'ARS') }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p v-if="hasMultipleClasses" class="text-xs text-muted max-md:hidden">
+      El patrimonio total suma todas las clases del mismo fondo. En fondos USD también mostramos el
+      equivalente en ARS con dólar bolsa (MEP). La TNA est. es propia de cada clase.
+    </p>
+  </div>
+</template>

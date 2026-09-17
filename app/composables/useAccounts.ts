@@ -10,6 +10,7 @@ import {
   isFrascosFondo,
   type AccountPlazoTier,
 } from '~/lib/account-plazo-tiers'
+import { normalizeTope } from '~/lib/finance/tope'
 
 export type { AccountPlazoTier }
 
@@ -35,6 +36,8 @@ export interface AccountItem {
   logo?: string
   condiciones?: string
   condicionesCorto?: string
+  /** Productos con requisitos particulares para acceder a la tasa. */
+  condicionesEspeciales?: boolean
   type?: string
   typeLabel?: string
   url?: string
@@ -42,6 +45,28 @@ export interface AccountItem {
   plazoMaxDias?: number | null
   plazoTiers?: AccountPlazoTier[]
 }
+
+const GUARANTEED_FUNDS = [
+  'CARREFOUR BANCO',
+  'NARANJA X',
+  'UALA',
+  'FIWIND',
+  'BICA CUENTA POSITIVA 1',
+  'BICA CUENTA POSITIVA 2',
+  'BICA CUENTA POSITIVA 3',
+  'BICA CUENTA POSITIVA 4',
+  'VOII',
+] as const
+
+const SPECIAL_FUNDS = [
+  'CRESIUM',
+  'SUPERVIELLE',
+  'UALA PLUS',
+  'UALA PLUS 1',
+  'UALA PLUS 2',
+  'BNA',
+  'SUPERVIELLE HIT IOL',
+] as const
 
 function buildFrascosAccountItem(frascosRaw: ApiAccount[]): AccountItem | null {
   const tiers = extractFrascosTiers(frascosRaw)
@@ -55,14 +80,14 @@ function buildFrascosAccountItem(frascosRaw: ApiAccount[]): AccountItem | null {
     fondo: 'Frascos Naranja X',
     tna: maxTna,
     tea: bestTier.tea,
-    tope: first.tope,
+    tope: normalizeTope(first.tope),
     fecha: first.fecha,
     logo: getLogoForEntity('NARANJA X') || getInstitutionLogo('NARANJA X'),
     type: 'cuentaRemunerada',
     typeLabel: 'Frascos',
     condiciones: first.condiciones,
     condicionesCorto: 'Rendimiento según plazo elegido (7, 14 o 28 días)',
-    url: getInstitutionUrl('NARANJA X'),
+    url: getInstitutionUrl('NARANJA X', 'cuentas-billeteras'),
     plazoTiers: tiers,
   }
 }
@@ -82,63 +107,55 @@ export function useAccounts() {
       fondo: getInstitutionShortName(a.fondo) || a.fondo,
       tna: a.tna,
       tea: a.tea ?? 0,
-      tope: a.tope,
+      tope: normalizeTope(a.tope),
       fecha: a.fecha,
       logo: getLogoForEntity(a.fondo) || getInstitutionLogo(a.fondo),
-      type: ['FIWIND', 'BELO'].includes(a.fondo.toUpperCase()) ? 'billetera' : 'cuentaRemunerada',
-      typeLabel: ['FIWIND', 'BELO'].includes(a.fondo.toUpperCase())
-        ? 'Billetera'
-        : 'Cuenta Remunerada',
+      type: a.fondo.toUpperCase() === 'FIWIND' ? 'billetera' : 'cuentaRemunerada',
+      typeLabel: a.fondo.toUpperCase() === 'FIWIND' ? 'Billetera' : 'Cuenta Remunerada',
       condiciones: a.condiciones,
       condicionesCorto: a.condicionesCorto,
-      url: getInstitutionUrl(a.fondo),
+      url: getInstitutionUrl(a.fondo, 'cuentas-billeteras'),
       plazoMinDias: a.plazoMinDias ?? undefined,
       plazoMaxDias: a.plazoMaxDias ?? undefined,
     }
   }
 
-  function filterAndMapAccounts(fundNames: string[]): AccountItem[] {
+  function filterAndMapAccounts(
+    fundNames: readonly string[],
+    opciones: { condicionesEspeciales?: boolean } = {},
+  ): AccountItem[] {
     return (data.value ?? [])
       .filter((a) => fundNames.includes(a.fondo) && !isBlacklisted(a.fondo) && a.tna > 0)
-      .map((a) => mapApiAccountToAccountItem(a))
+      .map((a) => ({
+        ...mapApiAccountToAccountItem(a),
+        ...(opciones.condicionesEspeciales ? { condicionesEspeciales: true } : {}),
+      }))
       .sort((a, b) => b.tna - a.tna)
   }
 
-  const accounts = computed<AccountItem[]>((): AccountItem[] => {
+  const allAccounts = computed<AccountItem[]>((): AccountItem[] => {
     const apiData = data.value ?? []
     const frascosRaw = apiData.filter(
       (a) => isFrascosFondo(a.fondo) && !isBlacklisted(a.fondo) && a.tna > 0,
     )
     const frascosItem = buildFrascosAccountItem(frascosRaw)
 
-    const base = filterAndMapAccounts([
-      'CARREFOUR BANCO',
-      'NARANJA X',
-      'UALA',
-      'BELO',
-      'FIWIND',
-      'BICA CUENTA POSITIVA 1',
-      'BICA CUENTA POSITIVA 2',
-      'BICA CUENTA POSITIVA 3',
-      'BICA CUENTA POSITIVA 4',
-      'VOII',
-    ])
+    const guaranteed = filterAndMapAccounts(GUARANTEED_FUNDS)
+    const special = filterAndMapAccounts(SPECIAL_FUNDS, { condicionesEspeciales: true })
+    const result = frascosItem
+      ? [...guaranteed, frascosItem, ...special]
+      : [...guaranteed, ...special]
 
-    const result = frascosItem ? [...base, frascosItem] : base
     return result.sort((a, b) => b.tna - a.tna)
   })
 
-  const specialAccounts = computed<AccountItem[]>((): AccountItem[] => {
-    return filterAndMapAccounts([
-      'CRESIUM',
-      'SUPERVIELLE',
-      'UALA PLUS',
-      'UALA PLUS 1',
-      'UALA PLUS 2',
-      'BNA',
-      'SUPERVIELLE HIT IOL',
-    ])
-  })
+  const accounts = computed<AccountItem[]>(() =>
+    allAccounts.value.filter((a) => !a.condicionesEspeciales),
+  )
 
-  return { accounts, specialAccounts, loading, error, fetch }
+  const specialAccounts = computed<AccountItem[]>(() =>
+    allAccounts.value.filter((a) => a.condicionesEspeciales),
+  )
+
+  return { accounts, specialAccounts, allAccounts, loading, error, fetch }
 }

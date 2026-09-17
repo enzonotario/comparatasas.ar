@@ -1,11 +1,25 @@
 export interface FciFundReturns {
   valorCuotaparte: number | null
+  /** Variación diaria CNV en % (columna Variac. %). */
+  variacionDiariaPct?: number | null
   ultimos7Dias: number | null
+  /** Días reales del lookback ~7D (API ArgentinaDatos). */
+  diasUltimos7Dias?: number | null
   unMes: number | null
+  /** Días reales del lookback ~30D; si unMes viene solo de CNV, la API asume 30. */
+  diasUnMes?: number | null
   noventaDias: number | null
+  diasNoventaDias?: number | null
   cientoOchentaDias: number | null
+  diasCientoOchentaDias?: number | null
   enElAnio: number | null
+  diasEnElAnio?: number | null
   doceMeses: number | null
+  diasDoceMeses?: number | null
+  /** TNA simple estimada por la API: (retorno/días)×365. */
+  tnaEstimada?: number | null
+  tnaEstimadaDias?: number | null
+  tnaEstimadaPeriodo?: 'unMes' | 'ultimos7Dias' | 'variacionDiariaPct' | null
 }
 
 export interface FciFundCompositionItem {

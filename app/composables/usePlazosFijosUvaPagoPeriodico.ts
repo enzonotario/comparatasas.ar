@@ -41,7 +41,7 @@ export function usePlazosFijosUvaPagoPeriodico() {
           logo: getPlazoFijoLogo(prov.entidad) || prov.logo,
           displayName: `Plazo mínimo: ${t.plazoMinDias} días · Plazo máximo: ${t.plazoMaxDias} días`,
           tna: t.tna * 100,
-          url: getPlazoFijoUrl(prov.entidad) || '#',
+          url: getPlazoFijoUrl(prov.entidad, 'plazos-fijos-uva-pago-periodico') || '#',
           type: 'plazoFijoUvaPagoPeriodico',
           typeLabel: 'PF UVA pago periódico',
           plazoMinDias: t.plazoMinDias,

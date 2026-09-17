@@ -21,3 +21,9 @@ jobs:
 
       - name: Run ESLint
         run: pnpm run lint
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Build Cloudflare artifact
+        run: pnpm build

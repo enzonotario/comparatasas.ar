@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { AGENT_NEGOTIATED_ROUTES, getPublicRoutes } from './app/lib/agent-routes'
 import { getPrerenderRoutes } from './app/lib/prerender-routes'
+import { jsonLdScript, siteOrganization } from './app/lib/json-ld'
 
 export default defineNuxtConfig({
   modules: [
@@ -11,6 +13,7 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     'nuxt-module-hotjar',
     'nuxt-highcharts',
+    'nuxt-echarts',
     'nuxt-og-image',
   ],
   ssr: true,
@@ -69,6 +72,7 @@ export default defineNuxtConfig({
         { rel: 'icon', href: '/favicon.ico' },
         { rel: 'apple-touch-icon', href: '/icons/icon-192x192.png' },
         { rel: 'manifest', href: '/manifest.json' },
+        { rel: 'llms', href: '/llms.txt' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://api.argentinadatos.com' },
         { rel: 'preconnect', href: 'https://api.iconify.design' },
@@ -78,19 +82,7 @@ export default defineNuxtConfig({
           href: 'https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap',
         },
       ],
-      script: [
-        {
-          type: 'application/ld+json',
-          children: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            name: 'Compara Tasas',
-            url: 'https://comparatasas.ar',
-            logo: 'https://comparatasas.ar/icons/icon-512x512.png',
-            sameAs: ['https://x.com/comparatasas'],
-          }),
-        },
-      ],
+      script: [jsonLdScript(siteOrganization)],
     },
   },
 
@@ -112,32 +104,21 @@ export default defineNuxtConfig({
       showProductScenarios: false,
     },
   },
+  routeRules: Object.fromEntries(
+    AGENT_NEGOTIATED_ROUTES.map((route) => [route, { prerender: false }]),
+  ),
 
   compatibilityDate: '2025-07-15',
 
   nitro: {
     preset: 'cloudflare_pages',
     prerender: {
-      crawlLinks: true,
+      // Las rutas negociadas quedan fuera y llegan al Worker. crawlLinks expandía
+      // hermanos del catálogo a ~700+ /fondos/* y ~9 min de generate.
+      crawlLinks: false,
+      concurrency: 16,
       failOnError: false,
-      routes: [
-        '/',
-        '/cuentas-billeteras',
-        '/cuentas-billeteras/graficos',
-        '/plazos-fijos',
-        '/plazos-fijos/uva-pago-periodico',
-        '/plazos-fijos/uva-precancelable',
-        '/fondos',
-        '/usd',
-        '/criptomonedas',
-        '/criptopesos',
-        '/creditos-hipotecarios-uva',
-        '/contado-cuotas',
-        '/remesas',
-        '/lecaps',
-        '/bonos-cer',
-        '/sumarse',
-      ],
+      routes: [],
     },
     minify: true,
   },
@@ -150,6 +131,11 @@ export default defineNuxtConfig({
         : []
       nitroConfig.prerender.routes = [...new Set([...existing, ...(await getPrerenderRoutes())])]
     },
+  },
+
+  echarts: {
+    charts: ['LineChart', 'BarChart', 'PieChart'],
+    components: ['GridComponent', 'TooltipComponent', 'LegendComponent', 'DataZoomComponent'],
   },
 
   eslint: {
@@ -171,32 +157,24 @@ export default defineNuxtConfig({
     scriptVersion: 6,
   },
 
+  // Dentro de node_modules/.cache/nuxt (allow-list de Cloudflare Pages build cache).
+  // El default (nuxt-seo/og-image) no se restaura entre deploys.
+  ogImage: {
+    buildCache: {
+      base: 'node_modules/.cache/nuxt/og-image',
+    },
+  },
+
   pwa: {
     selfDestroying: true,
   },
 
   sitemap: {
-    urls: async () => {
+    urls: () => {
       const base = 'https://comparatasas.ar'
-      const urls: string[] = [base + '/']
-
-      const slugify = (name: string): string =>
-        name
-          .normalize('NFD')
-          .replace(/\p{Diacritic}/gu, '')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '')
-
-      try {
-        const res = await fetch('https://api.argentinadatos.com/v1/finanzas/fci/fondos')
-        const data = (await res.json()) as { fondos: Array<{ nombre: string }> }
-        for (const fondo of data.fondos) {
-          urls.push(`${base}/fondos/${slugify(fondo.nombre)}`)
-        }
-      } catch {}
-
-      return urls
+      // Unión de páginas SSR negociadas y catálogo prerenderizado.
+      const routes = getPublicRoutes()
+      return routes.map((path) => `${base}${path === '/' ? '/' : path}`)
     },
   },
 })

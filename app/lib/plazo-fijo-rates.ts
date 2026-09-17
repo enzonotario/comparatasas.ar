@@ -44,10 +44,22 @@ export function getDisplayPlazoKey(
 
   const { plazoMinDias, plazoMaxDias } = tasa
 
-  if (plazoMinDias === 30 && (plazoMaxDias === 30 || plazoMaxDias === 44)) return '30'
+  // 30d: puntual, Voii 30–44, Macro 30–35
+  if (
+    plazoMinDias === 30 &&
+    (plazoMaxDias === 30 || plazoMaxDias === 35 || plazoMaxDias === 44)
+  ) {
+    return '30'
+  }
   if (plazoMinDias === 60 && (plazoMaxDias === 60 || plazoMaxDias === 89)) return '60'
   if (plazoMinDias === 90 && (plazoMaxDias === 90 || plazoMaxDias === 119)) return '90'
-  if (plazoMinDias === 365 && plazoMaxDias === 365) return '365'
+  // 1 año: puntual 365, o Macro 271–365 (incluye 365 días)
+  if (
+    (plazoMinDias === 365 && plazoMaxDias === 365) ||
+    (plazoMinDias === 271 && plazoMaxDias === 365)
+  ) {
+    return '365'
+  }
 
   return null
 }
@@ -137,13 +149,14 @@ export function mergeRootTnaFor30d(
 }
 
 function compareRateCells(a: PlazoFijoRateCell, b: PlazoFijoRateCell): number {
-  if (b.tna !== a.tna) return b.tna - a.tna
+  // Menor monto primero (p. ej. Macro: Desde $0 arriba, luego Desde $20M)
   const minA = a.montoMinimo ?? 0
   const minB = b.montoMinimo ?? 0
   if (minA !== minB) return minA - minB
   const maxA = a.montoMaximo ?? Number.POSITIVE_INFINITY
   const maxB = b.montoMaximo ?? Number.POSITIVE_INFINITY
-  return maxA - maxB
+  if (maxA !== maxB) return maxA - maxB
+  return b.tna - a.tna
 }
 
 export function getPlazoColumnSortId(plazoKey: string): string {
@@ -240,4 +253,80 @@ export function groupRatesByPlazoKey(tasas: TasaPlazoFijo[]): Record<string, Pla
   }
 
   return grouped
+}
+
+/** Fila mínima para resolver TNA de PF por días / horizonte. */
+export type PlazoFijoRateSource = {
+  tasas?: TasaPlazoFijo[]
+  rootTna?: number
+}
+
+export function resolvePlazoFijoRateAtDays(
+  row: PlazoFijoRateSource,
+  days: number,
+  amount?: number,
+): { tna: number; plazoKey?: string } | null {
+  if (amount != null) {
+    const matchingTasa = findMatchingTasa(row.tasas, days, amount)
+    if (matchingTasa) {
+      return {
+        tna: matchingTasa.tna * 100,
+        plazoKey: getDisplayPlazoKey(matchingTasa) ?? undefined,
+      }
+    }
+  }
+
+  if (row.rootTna && row.rootTna > 0 && days >= 30 && days <= 44) {
+    return { tna: row.rootTna, plazoKey: '30' }
+  }
+
+  const matchingTasa = findMatchingTasa(row.tasas, days, amount)
+  if (matchingTasa) {
+    return {
+      tna: matchingTasa.tna * 100,
+      plazoKey: getDisplayPlazoKey(matchingTasa) ?? undefined,
+    }
+  }
+
+  return null
+}
+
+/**
+ * TNA de PF para comparar un instrumento con `horizonDays` al vencimiento.
+ * - Menos de 30 días: sin comparación (el PF mínimo típico es 30d).
+ * - 30 o más: usa el tramo estándar más largo ≤ horizonte que publique el proveedor
+ *   (30 → 60 → 90 → 365), respetando tramos por monto.
+ */
+export function resolvePlazoFijoRateForHorizon(
+  row: PlazoFijoRateSource,
+  horizonDays: number,
+  amount?: number,
+): { tna: number; plazoKey: string } | null {
+  if (!(horizonDays >= 30)) return null
+
+  const columns = [...STANDARD_PLAZO_COLUMNS]
+    .filter((column) => column.plazoMinDias <= horizonDays)
+    .sort((a, b) => b.plazoMinDias - a.plazoMinDias)
+
+  for (const column of columns) {
+    const match = resolvePlazoFijoRateAtDays(row, column.plazoMinDias, amount)
+    if (match && match.tna > 0) {
+      return { tna: match.tna, plazoKey: match.plazoKey ?? column.key }
+    }
+  }
+
+  return null
+}
+
+/** TNA por columna estándar (30/60/90/365) para el monto dado; null si no aplica. */
+export function resolvePlazoFijoRatesByStandardPlazo(
+  row: PlazoFijoRateSource,
+  amount?: number,
+): Record<string, number | null> {
+  return Object.fromEntries(
+    STANDARD_PLAZO_COLUMNS.map((column) => {
+      const match = resolvePlazoFijoRateAtDays(row, column.plazoMinDias, amount)
+      return [column.key, match && match.tna > 0 ? match.tna : null]
+    }),
+  )
 }

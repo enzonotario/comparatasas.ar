@@ -1,4 +1,5 @@
 import { findAccountPlazoTier, type AccountPlazoTier } from '~/lib/account-plazo-tiers'
+import { hasDeclaredTope } from '~/lib/finance/tope'
 
 export function useInvestmentSimulator() {
   const amount = useState('simulator-amount', () => 100000)
@@ -59,8 +60,9 @@ export function useInvestmentSimulator() {
       )
 
       return unref(itemsRef).map((item) => {
-        const hasLimit = item.tope !== null && item.tope !== undefined
-        const exceedsLimit = hasLimit && amount.value > item.tope!
+        // tope 0 / null = sin límite (API a menudo manda 0 cuando no declara tope)
+        const hasLimit = hasDeclaredTope(item.tope)
+        const exceedsLimit = hasLimit && amount.value > item.tope
         const isFiwind = item.fondo === 'Fiwind' && hasLimit && exceedsLimit && deltaPesosFund
 
         const isPlazoFijo = item.type === 'plazoFijo30d'
@@ -93,7 +95,7 @@ export function useInvestmentSimulator() {
         }
 
         if (isFiwind) {
-          const topeAmount = item.tope!
+          const topeAmount = item.tope
           const excedenteAmount = amount.value - topeAmount
           const tnaValue = item.tna
 
@@ -109,7 +111,7 @@ export function useInvestmentSimulator() {
             earned: topeResult.earned + excedenteResult.earned,
           }
         } else {
-          effectiveAmount = exceedsLimit ? item.tope! : amount.value
+          effectiveAmount = exceedsLimit ? item.tope : amount.value
           const itemTna = plazoTier?.tna ?? item.tna
           const tnaValue =
             isPlazoFijo || isUvaPagoPeriodico || isUvaPrecancelable ? itemTna / 100 : itemTna
@@ -135,7 +137,7 @@ export function useInvestmentSimulator() {
             earned: result.earned,
             days: effectiveDays,
             exceedsLimit: isFiwind ? false : exceedsLimit,
-            limit: item.tope,
+            limit: hasLimit ? item.tope : null,
             isPlazoFijo,
             isFiwind,
             deltaPesosTna: isFiwind ? deltaPesosFund.tna : undefined,

@@ -10,13 +10,20 @@ import {
 import ContadoCuotasCarryAllocationChart from '~/components/charts/ContadoCuotasCarryAllocationChart.vue'
 import ContadoCuotasCarryBalanceChart from '~/components/charts/ContadoCuotasCarryBalanceChart.vue'
 import type { AccountItem } from '~/composables/useAccounts'
-import type { FciVariableUltimoFund } from '~/composables/useFciVariablesUltimo'
 import type { ProcessedFund } from '~/types/investments'
 import { ogUpdatedAtDate } from '~/utils/og-data'
+import { withOutboundUtm } from '~/lib/outbound-url'
 import {
   simulateInvestmentCarry,
   type InvestmentCarryOption,
 } from '~/lib/finance/contado-cuotas-carry'
+import {
+  groupFundsByVariableRisk,
+  VARIABLE_FUND_RISK_CATEGORY_KEYS,
+  VARIABLE_FUND_RISK_LABELS,
+  VARIABLE_FUND_RISK_ORDER,
+  type VariableFundRiskLevel,
+} from '~/lib/variable-fund-risk'
 
 definePageMeta({
   pageTitle: 'Contado vs Cuotas',
@@ -42,7 +49,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify({
+      innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebPage',
         name: 'Contado vs Cuotas - Compara Tasas',
@@ -67,7 +74,10 @@ interface HeatmapRow {
 }
 
 interface CarrySelectableOption extends InvestmentCarryOption {
-  category: 'garantizado' | 'especial' | 'variable-muy-bajo' | 'variable-moderado'
+  category:
+    | 'garantizado'
+    | 'especial'
+    | (typeof VARIABLE_FUND_RISK_CATEGORY_KEYS)[VariableFundRiskLevel]
 }
 
 interface CarryOptionGroup {
@@ -97,15 +107,9 @@ const {
   error: errorAccounts,
   fetch: fetchAccounts,
 } = useAccounts()
-const {
-  funds: fciVariablesFunds,
-  loading: loadingFciVariables,
-  error: errorFciVariables,
-  fetch: fetchFciVariablesUltimo,
-} = useFciVariablesUltimo()
 const { allFundsCache, data: fundsData, loading: loadingFunds, error: errorFunds } = useFunds()
 
-await Promise.all([fetchInflacionRem(), fetchAccounts(), fetchFciVariablesUltimo()])
+await Promise.all([fetchInflacionRem(), fetchAccounts()])
 
 const carrySelectionInitialized = ref(false)
 
@@ -528,6 +532,20 @@ function buildHeatmapRows(
 
 const recargoHeatmap = computed(() => buildHeatmapRows(recargoRows, recargoCounts, 'recargo'))
 const discountHeatmap = computed(() => buildHeatmapRows(discountRows, discountCounts, 'discount'))
+const {
+  toggle: toggleComparableRow,
+  rowClass: comparableRowClass,
+  isSelected,
+  setSelected,
+  areAllSelected,
+  areSomeSelected,
+  toggleAll,
+} = useComparableHtmlRows()
+
+const recargoRowIds = computed(() => recargoHeatmap.value.map((row) => `recargo-${row.label}`))
+const discountRowIds = computed(() =>
+  discountHeatmap.value.map((row) => `discount-${row.label}`),
+)
 
 function getHeatmapToneClass(tea: number): string {
   if (!Number.isFinite(tea)) {
@@ -576,7 +594,7 @@ function mapAccountCarryOption(
 }
 
 function mapFundCarryOption(
-  item: ProcessedFund | FciVariableUltimoFund,
+  item: ProcessedFund,
   category: CarrySelectableOption['category'],
 ): CarrySelectableOption {
   const label = item.displayName || item.fondo
@@ -594,7 +612,7 @@ function mapFundCarryOption(
 const resolvedFundsAccounts = computed<ProcessedFund[]>(() => {
   const accountsFunds = allFundsCache.value.filter((item) => item?.meta?.showInAccounts)
   const mercadoDineroFunds = fundsData.value.mercadoDinero.filter((item) => item?.meta?.showInFunds)
-  const combined = [...accountsFunds, ...mercadoDineroFunds, ...fciVariablesFunds.value]
+  const combined = [...accountsFunds, ...mercadoDineroFunds]
 
   const seen = new Set<string>()
   return combined
@@ -611,16 +629,23 @@ const carryOptionGroups = computed<CarryOptionGroup[]>(() => {
   const guaranteed = accounts.value.map((item) => mapAccountCarryOption(item, 'garantizado'))
   const special = specialAccounts.value.map((item) => mapAccountCarryOption(item, 'especial'))
 
-  const veryLowRisk = resolvedFundsAccounts.value
-    .filter((fund) => {
-      const type = fund.type || ''
-      return type === 'mercadoDinero' || type === 'fciVariablesUltimo' || type === ''
-    })
-    .map((fund) => mapFundCarryOption(fund, 'variable-muy-bajo'))
+  const fundsByRisk = groupFundsByVariableRisk(resolvedFundsAccounts.value)
 
-  const moderateRisk = resolvedFundsAccounts.value
-    .filter((fund) => ['rentaFija', 'rentaMixta', 'retornoTotal'].includes(fund.type || ''))
-    .map((fund) => mapFundCarryOption(fund, 'variable-moderado'))
+  const VARIABLE_CARRY_DESCRIPTIONS: Record<VariableFundRiskLevel, string> = {
+    muyBajo: 'Money market, billeteras y fondos de liquidez inmediata.',
+    bajo: 'Fondos de renta fija y alternativas conservadoras de retorno variable.',
+    moderado: 'Fondos de renta mixta o retorno total, con mayor sensibilidad de mercado.',
+  }
+
+  const variableGroups = VARIABLE_FUND_RISK_ORDER.map((level) => {
+    const key = VARIABLE_FUND_RISK_CATEGORY_KEYS[level]
+    return {
+      key,
+      title: `Rendimiento variable · ${VARIABLE_FUND_RISK_LABELS[level]}`,
+      description: VARIABLE_CARRY_DESCRIPTIONS[level],
+      options: fundsByRisk[level].map((fund) => mapFundCarryOption(fund, key)),
+    }
+  })
 
   return [
     {
@@ -635,18 +660,7 @@ const carryOptionGroups = computed<CarryOptionGroup[]>(() => {
       description: 'Productos con requisitos o condiciones particulares para acceder.',
       options: special,
     },
-    {
-      key: 'variable-muy-bajo',
-      title: 'Rendimiento variable · Riesgo muy bajo',
-      description: 'Money market, billeteras y fondos de liquidez inmediata.',
-      options: veryLowRisk,
-    },
-    {
-      key: 'variable-moderado',
-      title: 'Rendimiento variable · Riesgo moderado',
-      description: 'Fondos conservadores con retorno variable según mercado.',
-      options: moderateRisk,
-    },
+    ...variableGroups,
   ].filter((group) => group.options.length > 0)
 })
 
@@ -658,8 +672,10 @@ function getCarryCategoryPriority(category: CarrySelectableOption['category']): 
       return 1
     case 'variable-muy-bajo':
       return 2
-    case 'variable-moderado':
+    case 'variable-bajo':
       return 3
+    case 'variable-moderado':
+      return 4
     default:
       return 99
   }
@@ -835,7 +851,7 @@ const carryExplanationText = computed(() => {
 })
 
 const carrySectionLoading = computed(() => {
-  return loadingAccounts.value || loadingFciVariables.value || loadingFunds.value
+  return loadingAccounts.value || loadingFunds.value
 })
 </script>
 
@@ -853,7 +869,7 @@ const carrySectionLoading = computed(() => {
     />
 
     <UAlert
-      v-if="errorAccounts || errorFciVariables || errorFunds"
+      v-if="errorAccounts || errorFunds"
       color="warning"
       variant="soft"
       title="Algunas opciones de inversión no pudieron cargarse"
@@ -1165,7 +1181,9 @@ const carrySectionLoading = computed(() => {
                         </div>
 
                         <UButton
-                          :to="selectedProductScenario.affiliateUrl"
+                          :to="
+                            withOutboundUtm(selectedProductScenario.affiliateUrl, 'contado-cuotas')
+                          "
                           external
                           target="_blank"
                           rel="noopener noreferrer"
@@ -1662,6 +1680,17 @@ const carrySectionLoading = computed(() => {
               <table class="w-full min-w-[640px] border-collapse text-sm">
                 <thead>
                   <tr class="border-b border-neutral-200 dark:border-neutral-800">
+                    <th class="w-9 px-2 py-2 text-center">
+                      <UCheckbox
+                        :model-value="
+                          areSomeSelected(recargoRowIds)
+                            ? 'indeterminate'
+                            : areAllSelected(recargoRowIds)
+                        "
+                        aria-label="Seleccionar todas"
+                        @update:model-value="toggleAll(recargoRowIds)"
+                      />
+                    </th>
                     <th class="px-3 py-2 text-left font-semibold">Recargo</th>
                     <th
                       v-for="count in recargoCounts"
@@ -1676,8 +1705,21 @@ const carrySectionLoading = computed(() => {
                   <tr
                     v-for="row in recargoHeatmap"
                     :key="`recargo-${row.label}`"
-                    class="border-b border-neutral-100 dark:border-neutral-900"
+                    :class="
+                      comparableRowClass(
+                        `recargo-${row.label}`,
+                        'border-b border-neutral-100 dark:border-neutral-900',
+                      )
+                    "
+                    @click="toggleComparableRow(`recargo-${row.label}`)"
                   >
+                    <td class="w-9 px-2 py-2 text-center" @click.stop>
+                      <UCheckbox
+                        :model-value="isSelected(`recargo-${row.label}`)"
+                        aria-label="Seleccionar fila"
+                        @update:model-value="(v) => setSelected(`recargo-${row.label}`, !!v)"
+                      />
+                    </td>
                     <th class="px-3 py-2 text-left font-medium">
                       {{ decimalFormatter.format(row.label) }}%
                     </th>
@@ -1745,6 +1787,17 @@ const carrySectionLoading = computed(() => {
               <table class="w-full min-w-[640px] border-collapse text-sm">
                 <thead>
                   <tr class="border-b border-neutral-200 dark:border-neutral-800">
+                    <th class="w-9 px-2 py-2 text-center">
+                      <UCheckbox
+                        :model-value="
+                          areSomeSelected(discountRowIds)
+                            ? 'indeterminate'
+                            : areAllSelected(discountRowIds)
+                        "
+                        aria-label="Seleccionar todas"
+                        @update:model-value="toggleAll(discountRowIds)"
+                      />
+                    </th>
                     <th class="px-3 py-2 text-left font-semibold">Descuento</th>
                     <th
                       v-for="count in discountCounts"
@@ -1759,8 +1812,21 @@ const carrySectionLoading = computed(() => {
                   <tr
                     v-for="row in discountHeatmap"
                     :key="`discount-${row.label}`"
-                    class="border-b border-neutral-100 dark:border-neutral-900"
+                    :class="
+                      comparableRowClass(
+                        `discount-${row.label}`,
+                        'border-b border-neutral-100 dark:border-neutral-900',
+                      )
+                    "
+                    @click="toggleComparableRow(`discount-${row.label}`)"
                   >
+                    <td class="w-9 px-2 py-2 text-center" @click.stop>
+                      <UCheckbox
+                        :model-value="isSelected(`discount-${row.label}`)"
+                        aria-label="Seleccionar fila"
+                        @update:model-value="(v) => setSelected(`discount-${row.label}`, !!v)"
+                      />
+                    </td>
                     <th class="px-3 py-2 text-left font-medium">
                       {{ decimalFormatter.format(row.label) }}%
                     </th>

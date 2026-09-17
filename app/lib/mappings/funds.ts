@@ -1,3 +1,5 @@
+import { normalizeFundSlug } from '../funds-detail'
+
 export interface FundInstitution {
   institution: string
   displayName: string
@@ -30,12 +32,7 @@ export interface FundTypeInfo {
 }
 
 function slugifyFundName(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  return normalizeFundSlug(name)
 }
 
 function normalizeFundType(value: string) {
@@ -75,6 +72,31 @@ export function getFundTypeInfo(
 
   if (normalized === 'retorno total' || normalized === 'retornototal') {
     return { type: 'retornoTotal', typeLabel: 'Retorno Total' }
+  }
+
+  // Etiquetas CAFCI adicionales: se muestran tal cual (sin bucket de catálogo propio).
+  if (
+    normalized === 'pymes' ||
+    normalized === 'pyme' ||
+    normalized.includes('pyme')
+  ) {
+    return { type: 'rentaFija', typeLabel: 'PyMEs' }
+  }
+
+  if (normalized.includes('infraestructura')) {
+    return { type: 'rentaFija', typeLabel: 'Infraestructura' }
+  }
+
+  if (normalized === 'asg' || normalized.includes('asg')) {
+    return { type: 'rentaMixta', typeLabel: 'ASG' }
+  }
+
+  if (normalized.includes('cerrado')) {
+    return { type: 'rentaFija', typeLabel: 'Fondos Cerrados' }
+  }
+
+  if (normalized === 'rg900' || normalized.includes('rg 900') || normalized.includes('rg900')) {
+    return { type: 'rentaFija', typeLabel: 'RG900' }
   }
 
   if (!fallback) return undefined
@@ -157,6 +179,30 @@ const fundMappings: FundMapping[] = [
         institution: 'Banco Santander',
         displayName: 'Santander',
         showInAccounts: false,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+      },
+      {
+        institution: 'YPF',
+        displayName: 'YPF',
+        showInAccounts: true,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+        fundUrl: 'https://app.ypf.com/?ref=comparatasas',
+      },
+    ],
+  },
+  {
+    fundName: 'Vinci Compass Liquidez - Clase D',
+    institutions: [
+      {
+        institution: 'Global66',
+        displayName: 'Global66',
+        showInAccounts: true,
         showInFunds: true,
         showInUsdFunds: false,
         showInStockFunds: false,
@@ -648,7 +694,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'Pionero Acciones',
+    fundName: 'Pionero Acciones - Clase A',
     institutions: [
       {
         institution: 'macro',
@@ -746,7 +792,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'Crecer Renta Dólar - Clase A',
+    fundName: 'Crecer Renta Dólares - Clase A',
     institutions: [
       {
         institution: 'banco ciudad',
@@ -885,18 +931,20 @@ export const comparatasasFondosArs = [
   'delta-pesos-clase-a',
   'delta-pesos-clase-x',
   'fima-premium-clase-a',
+  'vinci-compass-liquidez-clase-d',
   'vinci-compass-liquidez-clase-f',
   'ciclo-nova-ahorro-clase-a',
   'ciclo-nova-value-clase-a',
   'iol-cash-management-clase-a',
   'mercado-fondo-clase-a',
   'mp-ahorro-clase-a',
-  'pionero-acciones',
+  'pionero-acciones-clase-a',
   'pionero-pesos-clase-a',
   'premier-renta-cp-en-pesos-clase-a',
   'sbs-acciones-argentina-clase-a',
   'sbs-ahorro-pesos-clase-a',
   'st-zero-clase-d',
+  'super-ahorro-clase-a',
   'toronto-trust-ahorro-clase-a',
   'toronto-trust-multimercado-clase-a',
   'ualintec-ahorro-pesos-clase-a',
@@ -911,7 +959,7 @@ export const comparatasasFondosUsd = [
   'balanz-money-market-usd-clase-a',
   'cocos-ahorro-dolares-clase-a',
   'cocos-dolares-plus-clase-a',
-  'crecer-renta-dolar-clase-a',
+  'crecer-renta-dolares-clase-a',
   'fima-premium-dolares-clase-a',
   'fima-renta-fija-dolares-clase-a',
   'gainvest-renta-fija-dolares-clase-a',

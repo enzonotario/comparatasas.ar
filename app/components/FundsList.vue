@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { getProviderSlug, getProviderApiName, hasHistory } from '~/composables/useAccountHistory'
 import { useAnalytics } from '~/composables/useAnalytics'
-import { getFundDetailPath } from '~/lib/funds-detail'
-import { fetchFciFundsCatalog } from '~/composables/useFciFundDetails'
+import { getFundDetailPath, normalizeFundSlug } from '~/lib/funds-detail'
+import { comparatasasFondos } from '~/lib/mappings/funds'
 import { formatPlazoTierTnaRange } from '~/lib/account-plazo-tiers'
 
 const { trackProviderClick } = useAnalytics()
@@ -22,18 +22,11 @@ const { days: simulatorDaysState } = useInvestmentSimulator()
 
 const resolvedSimulatorDays = computed(() => props.simulatorDays ?? simulatorDaysState.value)
 
-const { data: availableFundDetailSlugs } = await useAsyncData(
-  'fci-fund-detail-slugs',
-  async () => {
-    const response = await fetchFciFundsCatalog()
-    return (response.fondos ?? []).map((fund) => getFundDetailPath(fund.nombre))
-  },
-  {
-    default: () => [],
-  },
-)
-
-const availableFundDetailPathSet = computed(() => new Set(availableFundDetailSlugs.value ?? []))
+/** Solo fondos curados tienen detalle prerenderizado; evita fetch del catálogo completo en generate. */
+const availableFundDetailPathSet = computed(() => {
+  if (!props.showFundDetailLink) return new Set<string>()
+  return new Set(comparatasasFondos.map((slug) => `/fondos/${slug}`))
+})
 
 function isUvaSimulationOutOfRange(item: any): boolean {
   return !!(props.showSimulation && item.simulationDisabled)
@@ -60,19 +53,52 @@ function getItemTnaHeadline(item: any): string {
   return `${formatTnaValue(item.tna)}%`
 }
 
+/** FCI: TNA anualizada desde ~30D; la fecha va a nivel lista, no como “vigente desde”. */
+function isFciEstimatedTnaItem(item: any): boolean {
+  if (item?.valorCuotaparte != null) return true
+  const type = item?.type
+  return (
+    type === 'mercadoDinero' ||
+    type === 'rentaFija' ||
+    type === 'rentaMixta' ||
+    type === 'rentaVariable' ||
+    type === 'retornoTotal' ||
+    type === 'mercadoDineroUsd' ||
+    type === 'rentaFijaUsd' ||
+    type === 'rentaFijaUsdHighRisk'
+  )
+}
+
 function getItemTnaSubline(item: any): string | null {
   if (item.plazoTiers?.length && !(props.showSimulation && item.simulation)) {
     return 'TNA según plazo'
   }
+  if (isFciEstimatedTnaItem(item)) {
+    return 'TNA est. 30D'
+  }
   return null
 }
+
+/** Última fecha CNV/VCP entre ítems FCI de la lista (si hay). */
+const listUpdatedAt = computed(() => {
+  const fechas = props.items
+    .filter((item) => isFciEstimatedTnaItem(item) && typeof item?.fecha === 'string' && item.fecha)
+    .map((item) => item.fecha as string)
+  if (!fechas.length) return null
+  return [...fechas].sort().at(-1) ?? null
+})
+
 
 function getFundDetailUrl(item: any): string | null {
   if (!props.showFundDetailLink) return null
   if (!item?.fondo || typeof item.fondo !== 'string') return null
 
   const detailPath = getFundDetailPath(item.fondo)
-  return availableFundDetailPathSet.value.has(detailPath) ? detailPath : null
+  if (availableFundDetailPathSet.value.has(detailPath)) return detailPath
+
+  // Fallback: si el slug del ítem está en el mapping curado
+  const slug = normalizeFundSlug(item.fondo)
+  return comparatasasFondos.includes(slug) ? `/fondos/${slug}` : null
 }
 
 function getHistoryUrl(item: any): string | null {
@@ -132,6 +158,9 @@ function handleProviderClick(item: any) {
 
 <template>
   <div class="flex flex-col gap-3">
+    <p v-if="listUpdatedAt" class="text-xs text-muted">
+      Actualizado el {{ formatDate(listUpdatedAt) }}
+    </p>
     <template
       v-for="(item, index) in items"
       :key="keyProp ? `${item[keyProp]}-${index}` : `item-${index}`"
@@ -139,7 +168,19 @@ function handleProviderClick(item: any) {
       <NuxtLink
         v-if="getFundDetailUrl(item) || getHistoryUrl(item)"
         :to="getFundDetailUrl(item) || getHistoryUrl(item)!"
+        class="relative block"
+        :class="item.condicionesEspeciales ? 'mt-2' : undefined"
       >
+        <UBadge
+          v-if="item.condicionesEspeciales"
+          color="warning"
+          variant="outline"
+          size="sm"
+          icon="i-lucide-badge-info"
+          class="absolute -top-2.5 left-3 z-10 pointer-events-none !bg-white dark:!bg-black !text-neutral-900 dark:!text-white !ring-warning"
+        >
+          Condiciones especiales
+        </UBadge>
         <UCard
           :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }"
           :class="isUvaSimulationOutOfRange(item) ? 'opacity-50 saturate-50' : ''"
@@ -285,17 +326,20 @@ function handleProviderClick(item: any) {
                     </template>
                     <template v-else>
                       TNA
-                      <div v-if="item.fechaAnterior && item.fecha">
-                        <span>Entre </span>
+                      <template v-if="!isFciEstimatedTnaItem(item)">
+                        <div v-if="item.fechaAnterior && item.fecha">
+                          <span>Entre </span>
 
-                        <span
-                          >{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span
-                        >
-                      </div>
-                      <div v-else-if="item.fecha">
-                        <span>TNA vigente desde el </span>
-                        <span>{{ formatDate(item.fecha) }}</span>
-                      </div>
+                          <span
+                            >{{ formatDate(item.fechaAnterior) }} y
+                            {{ formatDate(item.fecha) }}</span
+                          >
+                        </div>
+                        <div v-else-if="item.fecha">
+                          <span>TNA vigente desde el </span>
+                          <span>{{ formatDate(item.fecha) }}</span>
+                        </div>
+                      </template>
                     </template>
                   </div>
                 </div>
@@ -317,8 +361,20 @@ function handleProviderClick(item: any) {
         :href="item.url ? item.url : undefined"
         :target="item.url ? '_blank' : undefined"
         :rel="item.url ? 'noopener noreferrer' : undefined"
+        class="relative block"
+        :class="item.condicionesEspeciales ? 'mt-2' : undefined"
         @click="handleProviderClick(item)"
       >
+        <UBadge
+          v-if="item.condicionesEspeciales"
+          color="warning"
+          variant="outline"
+          size="sm"
+          icon="i-lucide-badge-info"
+          class="absolute -top-2.5 left-3 z-10 shadow-sm pointer-events-none !bg-white dark:!bg-black !text-neutral-900 dark:!text-white !ring-warning"
+        >
+          Condiciones especiales
+        </UBadge>
         <UCard
           :ui="{ body: '!py-3', root: 'hover:ring-indigo-500 dark:hover:ring-indigo-400' }"
           :class="isUvaSimulationOutOfRange(item) ? 'opacity-50 saturate-50' : ''"
@@ -464,17 +520,20 @@ function handleProviderClick(item: any) {
                     </template>
                     <template v-else>
                       TNA
-                      <div v-if="item.fechaAnterior && item.fecha">
-                        <span>Entre </span>
+                      <template v-if="!isFciEstimatedTnaItem(item)">
+                        <div v-if="item.fechaAnterior && item.fecha">
+                          <span>Entre </span>
 
-                        <span
-                          >{{ formatDate(item.fechaAnterior) }} y {{ formatDate(item.fecha) }}</span
-                        >
-                      </div>
-                      <div v-else-if="item.fecha">
-                        <span>TNA vigente desde el </span>
-                        <span>{{ formatDate(item.fecha) }}</span>
-                      </div>
+                          <span
+                            >{{ formatDate(item.fechaAnterior) }} y
+                            {{ formatDate(item.fecha) }}</span
+                          >
+                        </div>
+                        <div v-else-if="item.fecha">
+                          <span>TNA vigente desde el </span>
+                          <span>{{ formatDate(item.fecha) }}</span>
+                        </div>
+                      </template>
                     </template>
                   </div>
                 </div>

@@ -320,18 +320,9 @@ const actualizarInflacion = (index: number, valor: number) => {
     }"
   >
     <template #header>
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="flex flex-col gap-1">
-          <h2 class="text-xl font-bold">Evolución de cuotas hipotecarias UVA</h2>
-          <p class="text-sm text-muted mt-1">Proyección de cuotas a pagar en pesos por mes</p>
-        </div>
-
-        <TwitterAttribution
-          usuario="SalinasAndres"
-          nombre="Andrés Salinas"
-          avatar="https://pbs.twimg.com/profile_images/1802830575759224832/vKHC7OK1_400x400.jpg"
-          url="https://x.com/SalinasAndres"
-        />
+      <div class="flex flex-col gap-1">
+        <h2 class="text-xl font-bold">Evolución de cuotas hipotecarias UVA</h2>
+        <p class="text-sm text-muted mt-1">Proyección de cuotas a pagar en pesos por mes</p>
       </div>
     </template>
 
@@ -516,25 +507,27 @@ td.sticky {
 }
 
 /* Hover de fila - incluye las celdas sticky */
+.row-hover:hover > td,
 .row-hover:hover .row-hover-cell {
-  background-color: rgb(249 250 251 / 1) !important;
-  background: rgb(249 250 251 / 1) !important;
+  background-color: var(--ui-bg-elevated) !important;
+  background: var(--ui-bg-elevated) !important;
 }
 
+.dark .row-hover:hover > td,
 .dark .row-hover:hover .row-hover-cell {
-  background-color: rgb(31 41 55 / 1) !important;
-  background: rgb(31 41 55 / 1) !important;
+  background-color: var(--ui-bg-elevated) !important;
+  background: var(--ui-bg-elevated) !important;
 }
 
 /* Hover de fila en celdas sticky */
 .row-hover:hover td.sticky.row-hover-cell {
-  background-color: rgb(249 250 251 / 1) !important;
-  background: rgb(249 250 251 / 1) !important;
+  background-color: var(--ui-bg-elevated) !important;
+  background: var(--ui-bg-elevated) !important;
 }
 
 .dark .row-hover:hover td.sticky.row-hover-cell {
-  background-color: rgb(31 41 55 / 1) !important;
-  background: rgb(31 41 55 / 1) !important;
+  background-color: var(--ui-bg-elevated) !important;
+  background: var(--ui-bg-elevated) !important;
 }
 
 /* Hover de columna completa - para celdas normales */

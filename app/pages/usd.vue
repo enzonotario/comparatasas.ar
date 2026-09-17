@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { isCrypto } from '~/lib/crypto-utils'
+import { normalizeTope } from '~/lib/finance/tope'
 import {
   getInstitutionLogo,
   getInstitutionShortName,
@@ -71,7 +72,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify({
+      innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebPage',
         name: 'Inversiones en USD - Compara Tasas',
@@ -145,14 +146,14 @@ const usdAccountsForFundsList = computed(() => {
   return (usdAccounts.value ?? [])
     .map((account) => {
       const logo = getInstitutionLogo(account.entidad)
-      const url = getInstitutionUrl(account.entidad)
+      const url = getInstitutionUrl(account.entidad, 'usd')
 
       return {
         institution: getInstitutionShortName(account.entidad),
         logo: logo || 'https://api.argentinadatos.com/static/logos/default.png',
         url: url || '#',
         tna: account.tasa, // Ya viene en decimal
-        tope: account.tope,
+        tope: normalizeTope(account.tope),
         typeLabel: 'Cuenta Remunerada USD',
         type: 'cuentaRemuneradaUsd',
       }
@@ -166,7 +167,7 @@ const usdYieldsForFundsList = computed(() => {
     .flatMap((entity) =>
       entity.rendimientos.map((rendimiento) => {
         const logo = getInstitutionLogo(entity.entidad)
-        const url = getInstitutionUrl(entity.entidad)
+        const url = getInstitutionUrl(entity.entidad, 'usd')
 
         return {
           institution: getInstitutionShortName(entity.entidad),

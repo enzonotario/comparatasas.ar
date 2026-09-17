@@ -1,3 +1,5 @@
+import { withOutboundUtm } from '../outbound-url'
+
 export interface InstitutionInfo {
   logo: string
   url?: string
@@ -12,6 +14,7 @@ export const institutions: Array<{
   {
     names: [
       'bna',
+      'BNA',
       'banco nacion',
       'Banco de la Nación Argentina',
       'banco de la nacion argentina',
@@ -23,19 +26,37 @@ export const institutions: Array<{
     url: 'https://bna.com.ar/Personas?ref=comparatasas',
   },
   {
-    names: ['BANCO SANTANDER ARGENTINA S.A.', 'Banco Santander', 'Santander', 'santander'],
+    names: [
+      'BANCO SANTANDER ARGENTINA S.A.',
+      'Banco Santander',
+      'Santander',
+      'santander',
+      'SANTANDER',
+    ],
     logo: 'https://api.argentinadatos.com/static/logos/banco-santander.png',
     shortName: 'Banco Santander',
     url: 'https://www.santander.com.ar/personas?ref=comparatasas',
   },
   {
-    names: ['BANCO DE GALICIA Y BUENOS AIRES S.A.U.', 'Banco Galicia', 'Galicia', 'galicia'],
+    names: [
+      'BANCO DE GALICIA Y BUENOS AIRES S.A.U.',
+      'Banco Galicia',
+      'Galicia',
+      'galicia',
+      'GALICIA',
+    ],
     logo: 'https://api.argentinadatos.com/static/logos/banco-galicia.png',
     shortName: 'Banco Galicia',
     url: 'https://www.galicia.ar/personas?ref=comparatasas',
   },
   {
-    names: ['BANCO DE LA PROVINCIA DE BUENOS AIRES', 'Banco Provincia'],
+    names: [
+      'BANCO DE LA PROVINCIA DE BUENOS AIRES',
+      'Banco Provincia',
+      'provincia',
+      'banco-provincia',
+      'Cuenta DNI',
+    ],
     logo: 'https://api.argentinadatos.com/static/logos/banco-provincia.png',
     shortName: 'Banco Provincia',
     url: 'https://www.bancoprovincia.com.ar/home/?ref=comparatasas',
@@ -47,7 +68,7 @@ export const institutions: Array<{
     url: 'https://www.bbva.com.ar/?ref=comparatasas',
   },
   {
-    names: ['BANCO MACRO S.A.', 'Banco Macro'],
+    names: ['BANCO MACRO S.A.', 'Banco Macro', 'Macro', 'MACRO'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-macro.png',
     shortName: 'Banco Macro',
     url: 'https://www.macro.com.ar/home-page?ref=comparatasas',
@@ -71,7 +92,7 @@ export const institutions: Array<{
     url: 'https://www.icbc.com.ar/personas?ref=comparatasas',
   },
   {
-    names: ['BANCO DE LA CIUDAD DE BUENOS AIRES', 'Banco Ciudad'],
+    names: ['BANCO DE LA CIUDAD DE BUENOS AIRES', 'Banco Ciudad', 'CIUDAD'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-ciudad.png',
     shortName: 'Banco Ciudad',
     url: 'https://bancociudad.com.ar/institucional/?ref=comparatasas',
@@ -101,16 +122,83 @@ export const institutions: Array<{
     url: 'https://www.uala.com.ar/?ref=comparatasas',
   },
   {
-    names: ['Naranja X', 'NARANJA X'],
+    names: ['Naranja X', 'NARANJA X', 'naranjax', 'Naranjax'],
     logo: 'https://api.argentinadatos.com/static/logos/naranja.png',
     shortName: 'Naranja X',
-    url: 'https://www.naranjax.com/?ref=comparatasas',
+    url: 'https://www.naranjax.com/soluciones-de-cobro?ref=comparatasas',
   },
   {
-    names: ['Mercado Fondo', 'Mercado Pago', 'MERCADO PAGO'],
+    names: ['Mercado Fondo', 'Mercado Pago', 'MERCADO PAGO', 'MERCADOPAGO', 'mercadopago'],
     logo: 'https://api.argentinadatos.com/static/logos/mercado-pago.png',
     shortName: 'Mercado Pago',
     url: 'https://mercadopago.com.ar/?ref=comparatasas',
+  },
+  {
+    names: ['Getnet', 'GETNET', 'getnet'],
+    logo: 'https://api.argentinadatos.com/static/logos/getnet.png',
+    shortName: 'Getnet',
+    url: 'https://www.getnet.net/ar/?ref=comparatasas',
+  },
+  {
+    names: ['Ualá Bis', 'UALA BIS', 'uala bis', 'ualabis'],
+    logo: 'https://api.argentinadatos.com/static/logos/uala.png',
+    shortName: 'Ualá Bis',
+    url: 'https://www.ualabis.com.ar/?ref=comparatasas',
+  },
+  {
+    names: ['Payway', 'PAYWAY', 'payway'],
+    logo: 'https://api.argentinadatos.com/static/logos/payway.png',
+    shortName: 'Payway',
+    url: 'https://www.payway.com.ar/?ref=comparatasas',
+  },
+  {
+    names: ['Fiserv', 'FISERV', 'fiserv', 'First Data', 'Posnet', 'POSNET'],
+    logo: 'https://api.argentinadatos.com/static/logos/fiserv.svg',
+    shortName: 'Fiserv',
+    url: 'https://www.fiserv.com.ar/servicios/pagos-qr/?ref=comparatasas',
+  },
+  {
+    names: ['Nave', 'NAVE', 'nave'],
+    logo: 'https://api.argentinadatos.com/static/logos/nave.jpg',
+    shortName: 'Nave',
+    url: 'https://www.galicia.ar/empresas/tarjetas-y-cuentas/cuenta-comercio/nave?ref=comparatasas',
+  },
+  {
+    names: ['Openpay', 'OPENPAY', 'openpay', 'Openpay by BBVA'],
+    logo: 'https://api.argentinadatos.com/static/logos/openpay.svg',
+    shortName: 'Openpay',
+    url: 'https://www.openpayargentina.com.ar/comisiones?ref=comparatasas',
+  },
+  {
+    names: ['Viumi', 'VIUMI', 'viumi', 'viüMi', 'ViüMi', 'Argenpay'],
+    logo: 'https://api.argentinadatos.com/static/logos/viumi.png',
+    shortName: 'Viumi',
+    url: 'https://viumi.com.ar/?ref=comparatasas',
+  },
+  {
+    names: [
+      'maspagos',
+      '+Pagos Nación',
+      '+PAGOS Nación',
+      '+pagos nación',
+      'Pagos Nación',
+      'Más Pagos Nación',
+    ],
+    logo: 'https://api.argentinadatos.com/static/logos/maspagos.webp',
+    shortName: '+Pagos Nación',
+    url: 'https://maspagos.com.ar/simulador-de-ventas?ref=comparatasas',
+  },
+  {
+    names: ['Bezza Pay', 'Bezza', 'bezzapay', 'BEZZA', 'Taca Taca', 'tacataca'],
+    logo: 'https://api.argentinadatos.com/static/logos/bezzapay.svg',
+    shortName: 'Bezza Pay',
+    url: 'https://www.bezzapay.com.ar/smartpos?ref=comparatasas',
+  },
+  {
+    names: ['Sipago', 'SIPAGO', 'sipago'],
+    logo: 'https://api.argentinadatos.com/static/logos/sipago.svg',
+    shortName: 'Sipago',
+    url: 'https://www.sipago.coop/comisiones?ref=comparatasas',
   },
   {
     names: ['Personal Pay'],
@@ -122,7 +210,7 @@ export const institutions: Array<{
     names: ['GLOBAL66', 'Global66', 'global66'],
     logo: 'https://api.argentinadatos.com/static/logos/global66.svg',
     shortName: 'Global66',
-    url: 'https://share.global66.com/ENZNOT1?ref=comparatasas',
+    url: 'https://share.global66.com/COMPARADOLAR?ref=comparatasas',
   },
   {
     names: ['Lemon', 'lemon', 'lemoncash'],
@@ -143,7 +231,7 @@ export const institutions: Array<{
     url: 'https://nexo.go.link/5luH7',
   },
   {
-    names: ['Fiwind', 'FIWIND'],
+    names: ['Fiwind', 'FIWIND', 'fiwind'],
     logo: 'https://api.argentinadatos.com/static/logos/fiwind.png',
     shortName: 'Fiwind',
     url: 'https://www.fiwind.io/?ref=comparatasas',
@@ -167,7 +255,7 @@ export const institutions: Array<{
     url: 'https://www.prexcard.com.ar/?ref=comparatasas',
   },
   {
-    names: ['Supervielle', 'BANCO SUPERVIELLE', 'supervielle'],
+    names: ['Supervielle', 'BANCO SUPERVIELLE', 'supervielle', 'SUPERVIELLE'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-supervielle.png',
     shortName: 'Supervielle',
     url: 'https://www.supervielle.com.ar/?ref=comparatasas',
@@ -180,27 +268,27 @@ export const institutions: Array<{
   },
   {
     names: ['Banza'],
-    logo: 'https://api.argentinadatos.com/static/logos/banza.svg',
+    logo: 'https://api.argentinadatos.com/static/logos/banza.png',
     shortName: 'Banza',
     url: 'https://www.banza.com.ar/?ref=comparatasas',
   },
   {
-    names: ['Balanz'],
+    names: ['Balanz', 'balanz'],
     logo: 'https://api.argentinadatos.com/static/logos/balanz.svg',
     shortName: 'Balanz',
     url: 'https://balanz.com/?ref=comparatasas',
   },
   {
-    names: ['ieb', 'IEB'],
+    names: ['ieb', 'IEB', 'iebmas', 'IEB+', 'IEB MAS', 'iebmas.com.ar'],
     logo: 'https://api.argentinadatos.com/static/logos/ieb.png',
     shortName: 'IEB+',
     url: 'https://www.iebmas.com.ar/?ref=comparatasas',
   },
   {
-    names: ['macro'],
+    names: ['macro', 'Macro Securities', 'Macro'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-macro-acciones.svg',
-    shortName: 'Macro',
-    url: 'https://www.macro.com.ar/home-page?ref=comparatasas',
+    shortName: 'Macro Securities',
+    url: 'https://www.macro.com.ar/macrosecurities/home?ref=comparatasas',
   },
   {
     names: ['Ripio', 'RIPIO'],
@@ -227,7 +315,7 @@ export const institutions: Array<{
     url: 'https://www.bancor.com.ar/?ref=comparatasas',
   },
   {
-    names: ['BANCO HIPOTECARIO S.A.', 'Banco Hipotecario', 'BHIP'],
+    names: ['BANCO HIPOTECARIO S.A.', 'Banco Hipotecario', 'BHIP', 'HIPOTECARIO'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-hipotecario.svg',
     shortName: 'Banco Hipotecario',
     url: 'https://www.hipotecario.com.ar/?ref=comparatasas',
@@ -305,7 +393,7 @@ export const institutions: Array<{
     url: 'https://mariva.com.ar/?ref=comparatasas',
   },
   {
-    names: ['BANCO DEL CHUBUT S.A.', 'Banco del Chubut', 'BANCO DEL CHUBUT'],
+    names: ['BANCO DEL CHUBUT S.A.', 'Banco del Chubut', 'BANCO DEL CHUBUT', 'CHUBUT'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-chubut.png',
     shortName: 'Banco del Chubut',
     url: 'https://bancochubut.com.ar/?ref=comparatasas',
@@ -335,7 +423,7 @@ export const institutions: Array<{
     url: 'https://masventas.com.ar/?ref=comparatasas',
   },
   {
-    names: ['Iol'],
+    names: ['Iol', 'iol', 'InvertirOnline', 'invertironline'],
     logo: 'https://api.argentinadatos.com/static/logos/iol.jpg',
     shortName: 'IOL',
     url: 'https://www.invertironline.com/?ref=comparatasas',
@@ -395,6 +483,12 @@ export const institutions: Array<{
     url: 'https://sbsfondos.com/?ref=comparatasas',
   },
   {
+    names: ['YPF', 'ypf', 'Ypf'],
+    logo: 'https://api.argentinadatos.com/static/logos/ypf.svg',
+    shortName: 'YPF',
+    url: 'https://app.ypf.com/?ref=comparatasas',
+  },
+  {
     names: ['Adcap', 'adcap', 'ADCAP'],
     logo: 'https://api.argentinadatos.com/static/logos/adcap.webp',
     shortName: 'Adcap',
@@ -425,10 +519,40 @@ export const institutions: Array<{
     url: 'https://www.stonex.com/en/?ref=comparatasas',
   },
   {
-    names: ['Bull Market'],
+    names: ['Bull Market', 'bullmarket', 'Bull Market Brokers'],
     logo: 'https://api.argentinadatos.com/static/logos/bull-market.png',
     shortName: 'Bull Market',
     url: 'https://bullmarketbrokers.com/?ref=comparatasas',
+  },
+  {
+    names: ['PPI', 'ppi', 'Portfolio Personal', 'Portfolio Personal Inversiones'],
+    logo: 'https://api.argentinadatos.com/static/logos/ppi.png',
+    shortName: 'PPI',
+    url: 'https://www.portfoliopersonal.com/?ref=comparatasas',
+  },
+  {
+    names: ['ecovalores', 'Eco Valores', 'eco valores'],
+    logo: 'https://api.argentinadatos.com/static/logos/ecovalores.svg',
+    shortName: 'Eco Valores',
+    url: 'https://www.ecovalores.com.ar/?ref=comparatasas',
+  },
+  {
+    names: ['puente', 'Puente'],
+    logo: 'https://api.argentinadatos.com/static/logos/puente.svg',
+    shortName: 'Puente',
+    url: 'https://www.puentenet.com/?ref=comparatasas',
+  },
+  {
+    names: ['Galicia Securities', 'galicia securities'],
+    logo: 'https://api.argentinadatos.com/static/logos/galicia.png',
+    shortName: 'Galicia Securities',
+    url: 'https://www.galiciasecurities.com.ar/?ref=comparatasas',
+  },
+  {
+    names: ['rava', 'Rava', 'Rava Bursátil', 'Rava Bursatil'],
+    logo: 'https://api.argentinadatos.com/static/logos/rava.png',
+    shortName: 'Rava',
+    url: 'https://www.rava.com/?ref=comparatasas',
   },
   {
     names: ['Galileo'],
@@ -521,7 +645,7 @@ export const institutions: Array<{
     url: 'https://www.lucamoney.com/?ref=comparatasas',
   },
   {
-    names: ['BANCO PATAGONIA S.A.', 'Banco Patagonia', 'Patagonia'],
+    names: ['BANCO PATAGONIA S.A.', 'Banco Patagonia', 'Patagonia', 'PATAGONIA'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-patagonia.svg',
     shortName: 'Banco Patagonia',
     url: 'https://www.bancopatagonia.com.ar/?ref=comparatasas.ar',
@@ -582,12 +706,13 @@ export function getInstitutionShortName(name: string): string {
   return name
 }
 
-export function getInstitutionUrl(name: string): string | undefined {
+export function getInstitutionUrl(name: string, medium = 'referral'): string | undefined {
   const key = name.trim().toLowerCase()
 
   for (const inst of institutions) {
     if (inst.names.map((n) => n.toLowerCase()).includes(key)) {
-      return inst.url
+      if (!inst.url || inst.url === '#') return inst.url
+      return withOutboundUtm(inst.url, medium)
     }
   }
 

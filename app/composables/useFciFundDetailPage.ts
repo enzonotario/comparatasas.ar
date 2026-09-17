@@ -38,11 +38,16 @@ export function useFciFundDetailPage(slugSource: MaybeRefOrGetter<string>) {
   } = useAsyncData(
     () => `fci-fund-history:${slug.value}`,
     async () => {
-      if (!data.value) return null
+      if (!slug.value) return null
+      // El histórico (~0.5–1 MB) no debe bloquear `nuxt generate`.
+      if (import.meta.prerender) return null
       return await fetchFundHistorySafe(slug.value)
     },
     {
       default: () => null,
+      watch: [slug],
+      // En prerender no disparamos el fetch; en client/SSR sí.
+      immediate: !import.meta.prerender,
     },
   )
 

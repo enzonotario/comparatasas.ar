@@ -13,8 +13,13 @@ const routes = [
   { path: '/criptomonedas', name: 'criptomonedas' },
   { path: '/criptopesos', name: 'criptopesos' },
   { path: '/creditos-hipotecarios-uva', name: 'creditos-hipotecarios-uva' },
+  { path: '/prestamos-personales', name: 'prestamos-personales' },
+  { path: '/comisiones-cobro', name: 'comisiones-cobro' },
+  { path: '/comisiones-brokers', name: 'comisiones-brokers' },
+  { path: '/comisiones-brokers/acciones', name: 'comisiones-brokers-acciones' },
   { path: '/contado-cuotas', name: 'contado-cuotas' },
   { path: '/lecaps', name: 'lecaps' },
+  { path: '/cauciones', name: 'cauciones' },
   { path: '/bonos-cer', name: 'bonos-cer' },
 ]
 

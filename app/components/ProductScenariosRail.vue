@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ProductScenario } from '~/types/product-scenarios'
+import { withOutboundUtm } from '~/lib/outbound-url'
 
 const props = withDefaults(
   defineProps<{
@@ -245,7 +246,7 @@ watch(
                 </UButton>
 
                 <UButton
-                  :to="product.affiliateUrl"
+                  :to="withOutboundUtm(product.affiliateUrl, 'contado-cuotas')"
                   external
                   target="_blank"
                   rel="noopener noreferrer"

@@ -1,3 +1,5 @@
+import { withOutboundUtm } from '../outbound-url'
+
 export interface PlazoFijoInfo {
   logo: string
   url?: string
@@ -232,12 +234,13 @@ export function getPlazoFijoShortName(name: string): string {
   return name
 }
 
-export function getPlazoFijoUrl(name: string): string | undefined {
+export function getPlazoFijoUrl(name: string, medium = 'plazos-fijos'): string | undefined {
   const key = name.trim().toLowerCase()
 
   for (const inst of plazoFijoInstitutions) {
     if (inst.names.map((n) => n.toLowerCase()).includes(key)) {
-      return inst.url
+      if (!inst.url || inst.url === '#') return inst.url
+      return withOutboundUtm(inst.url, medium)
     }
   }
 

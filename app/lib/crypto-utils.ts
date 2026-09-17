@@ -94,9 +94,16 @@ export const cryptoLogoMappings: CryptoLogoMapping[] = [
     name: 'Decentralized USD',
   },
   {
+
+
     symbols: ['WBRL'],
     logo: 'https://api.argentinadatos.com/static/logos/crypto/wbrl.png',
     name: 'Wrapped BRL',
+  },
+  {
+    symbols: ['ARGt', 'ARGT'],
+    logo: 'https://api.argentinadatos.com/static/logos/ar.svg',
+    name: 'ARGt',
   },
 ]
 

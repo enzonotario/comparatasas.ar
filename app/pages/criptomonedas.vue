@@ -25,6 +25,10 @@ const {
   data: cryptoData,
 } = cryptoStore
 const PRIORITY_PROVIDER = 'Lune.fi'
+const { toggle: toggleComparableRow, rowClass: comparableRowClass, isSelected, setSelected, areAllSelected, areSomeSelected, toggleAll } =
+  useComparableHtmlRows()
+
+const cryptoRowIds = computed(() => cryptosByMaxYield.value.map(({ crypto }) => crypto))
 
 const maxYieldByCrypto = computed(
   () => new Map(cryptosByMaxYield.value.map(({ crypto, maxYield }) => [crypto, maxYield])),
@@ -68,7 +72,7 @@ const orderedCryptoYields = computed(() => {
 })
 
 function handleExchangeClick(entidad: string, crypto?: string) {
-  const url = getInstitutionUrl(entidad)
+  const url = getInstitutionUrl(entidad, 'criptomonedas')
   if (url) {
     trackProviderClick({
       providerName: getInstitutionShortName(entidad),
@@ -113,7 +117,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify({
+      innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebPage',
         name: 'Rendimientos Criptomonedas - Compara Tasas',
@@ -147,11 +151,22 @@ useHead({
             <table class="w-full">
               <thead>
                 <tr class="border-b border-gray-200 dark:border-gray-700">
-                  <th class="text-left p-4 font-medium">Criptomoneda</th>
+                  <th class="w-9 px-1.5 py-2 text-center">
+                    <UCheckbox
+                      :model-value="
+                        areSomeSelected(cryptoRowIds)
+                          ? 'indeterminate'
+                          : areAllSelected(cryptoRowIds)
+                      "
+                      aria-label="Seleccionar todas"
+                      @update:model-value="toggleAll(cryptoRowIds)"
+                    />
+                  </th>
+                  <th class="text-left px-2 py-2 text-sm font-semibold">Criptomoneda</th>
                   <th
                     v-for="entity in orderedCryptoYields"
                     :key="entity.entidad"
-                    class="text-center p-4 font-medium"
+                    class="text-center px-2 py-2 text-sm font-semibold"
                   >
                     <div class="flex flex-col items-center gap-2">
                       <UAvatar
@@ -168,9 +183,17 @@ useHead({
                 <tr
                   v-for="{ crypto, maxYield } in cryptosByMaxYield"
                   :key="crypto"
-                  class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900"
+                  :class="comparableRowClass(crypto, 'border-b border-gray-100 dark:border-gray-800')"
+                  @click="toggleComparableRow(crypto)"
                 >
-                  <td class="p-2">
+                  <td class="w-9 px-1.5 py-1.5 text-center" @click.stop>
+                    <UCheckbox
+                      :model-value="isSelected(crypto)"
+                      aria-label="Seleccionar fila"
+                      @update:model-value="(v) => setSelected(crypto, !!v)"
+                    />
+                  </td>
+                  <td class="px-2 py-1.5">
                     <div class="flex items-center gap-3">
                       <UAvatar :src="getCryptoLogo(crypto)" :alt="crypto" size="xs" />
                       <span class="font-medium">{{ getCryptoName(crypto) }}</span>
@@ -179,7 +202,7 @@ useHead({
                   <td
                     v-for="entity in orderedCryptoYields"
                     :key="entity.entidad"
-                    class="p-4 text-center"
+                    class="px-2 py-1.5 text-center"
                   >
                     <template v-if="entity.rendimientos.find((r) => r.moneda === crypto)">
                       <UButton
@@ -195,10 +218,10 @@ useHead({
                             ? 'soft'
                             : 'outline'
                         "
-                        :href="getInstitutionUrl(entity.entidad)"
+                        :href="getInstitutionUrl(entity.entidad, 'criptomonedas')"
                         target="_blank"
                         rel="noopener noreferrer"
-                        @click="handleExchangeClick(entity.entidad, crypto)"
+                        @click.stop="handleExchangeClick(entity.entidad, crypto)"
                       >
                         {{ entity.rendimientos.find((r) => r.moneda === crypto)?.apy.toFixed(2) }}%
                       </UButton>
@@ -225,7 +248,7 @@ useHead({
         >
           <template #header>
             <NuxtLink
-              :to="getInstitutionUrl(entity.entidad)"
+              :to="getInstitutionUrl(entity.entidad, 'criptomonedas')"
               target="_blank"
               rel="noopener noreferrer"
               @click="handleExchangeClick(entity.entidad)"
@@ -263,7 +286,7 @@ useHead({
                 <UButton
                   color="primary"
                   variant="soft"
-                  :href="getInstitutionUrl(entity.entidad)"
+                  :href="getInstitutionUrl(entity.entidad, 'criptomonedas')"
                   target="_blank"
                   rel="noopener noreferrer"
                   @click="handleExchangeClick(entity.entidad, cryptoYield.moneda)"

@@ -3,6 +3,19 @@ export interface NavigationPage {
   label: string
   icon: string
   image: string
+  /** Agrupa opciones en el panel de subnavegación (desktop/mobile). */
+  group?: string
+  /** Chip opcional junto al label (p. ej. Nuevo / Mejorado). */
+  badge?: {
+    label: string
+    color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
+  }
+}
+
+export interface NavigationPageGroup {
+  id: string
+  label: string
+  pages: NavigationPage[]
 }
 
 export interface NavigationCategory {
@@ -13,19 +26,50 @@ export interface NavigationCategory {
   pages: NavigationPage[]
 }
 
+function slugifyGroupLabel(label: string): string {
+  return label
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+export function groupNavigationPages(pages: NavigationPage[]): NavigationPageGroup[] {
+  const groups: NavigationPageGroup[] = []
+  const byLabel = new Map<string, NavigationPageGroup>()
+
+  for (const page of pages) {
+    const label = page.group?.trim() || 'Otros'
+    let group = byLabel.get(label)
+    if (!group) {
+      group = { id: slugifyGroupLabel(label), label, pages: [] }
+      byLabel.set(label, group)
+      groups.push(group)
+    }
+    group.pages.push(page)
+  }
+
+  return groups
+}
+
 function getPagePath(to: string): string {
   const i = to.indexOf('?')
   return i === -1 ? to : to.slice(0, i)
 }
 
+function getPageQuery(to: string): URLSearchParams {
+  const i = to.indexOf('?')
+  return new URLSearchParams(i === -1 ? '' : to.slice(i + 1))
+}
+
 function normalizeNavigationAlias(path: string): string {
   const trimmed = path.replace(/\/$/, '') || '/'
-  if (
-    trimmed === '/plazos-fijos/uva-pago-periodico' ||
-    trimmed === '/plazos-fijos/uva-precancelable'
-  ) {
-    return '/plazos-fijos'
-  }
+  if (trimmed.startsWith('/plazos-fijos/')) return '/plazos-fijos'
+  if (trimmed.startsWith('/creditos-hipotecarios-uva/')) return '/creditos-hipotecarios-uva'
+  if (trimmed.startsWith('/prestamos-personales/')) return '/prestamos-personales'
+  if (trimmed.startsWith('/comisiones-brokers/')) return '/comisiones-brokers'
+  if (trimmed === '/fondos' || trimmed.startsWith('/fondos/')) return '/fondos'
   return trimmed
 }
 
@@ -41,7 +85,16 @@ export const useNavigationPages = () => {
   const isPageActive = (page: NavigationPage): boolean => {
     const normalizedPath = normalizeRoute(route.path)
     const pagePath = normalizeRoute(getPagePath(page.to))
-    return pagePath === normalizedPath
+    if (pagePath !== normalizedPath) return false
+
+    // /cauciones vive en ARS y USD: el query `moneda` distingue la entrada activa.
+    if (pagePath === '/cauciones') {
+      const pageMoneda = getPageQuery(page.to).get('moneda') === 'usd' ? 'usd' : 'ars'
+      const routeMoneda = route.query.moneda === 'usd' ? 'usd' : 'ars'
+      return pageMoneda === routeMoneda
+    }
+
+    return true
   }
 
   const categories: NavigationCategory[] = [
@@ -49,7 +102,7 @@ export const useNavigationPages = () => {
       id: 'ars',
       label: 'ARS',
       ariaLabel:
-        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, contado vs cuotas, LECAPs, bonos CER y créditos hipotecarios UVA',
+        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, FCI, contado vs cuotas, LECAPs, cauciones, bonos CER, créditos hipotecarios UVA, préstamos personales y comisiones',
       icon: 'flag-ars',
       pages: [
         {
@@ -57,42 +110,86 @@ export const useNavigationPages = () => {
           label: 'Cuentas y Billeteras',
           icon: 'i-lucide-wallet',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
+          group: 'Inversión',
         },
         {
           to: '/plazos-fijos',
           label: 'Plazos Fijos',
           icon: 'i-lucide-clock',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
+          group: 'Inversión',
         },
         {
           to: '/criptopesos',
           label: 'Criptopesos',
           icon: 'i-lucide-coins',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/criptopesos.png',
+          group: 'Inversión',
         },
         {
-          to: '/creditos-hipotecarios-uva',
-          label: 'Créditos Hipotecarios UVA',
-          icon: 'i-lucide-home',
-          image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-hipotecario.png',
+          to: '/fondos',
+          label: 'Fondos (FCI)',
+          icon: 'i-lucide-chart-pie',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
+          group: 'Inversión',
         },
         {
-          to: '/contado-cuotas',
-          label: 'Contado vs Cuotas',
-          icon: 'i-lucide-credit-card',
-          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cuotas.png',
+          to: '/cauciones',
+          label: 'Cauciones',
+          icon: 'i-lucide-handshake',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cauciones.png',
+          group: 'Mercado',
+          badge: { label: 'Nuevo', color: 'primary' },
         },
         {
           to: '/lecaps',
-          label: 'LECAPs',
+          label: 'LECAPs y BONCAPs',
           icon: 'i-lucide-banknote',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/letras.png',
+          group: 'Mercado',
+          badge: { label: 'Mejorado', color: 'info' },
         },
         {
           to: '/bonos-cer',
           label: 'Bonos CER',
           icon: 'i-lucide-trending-up',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/safe.png',
+          group: 'Mercado',
+        },
+        {
+          to: '/creditos-hipotecarios-uva',
+          label: 'Créditos Hipotecarios UVA',
+          icon: 'i-lucide-home',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-hipotecario.png',
+          group: 'Crédito',
+        },
+        {
+          to: '/prestamos-personales',
+          label: 'Préstamos Personales',
+          icon: 'i-lucide-banknote',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/credito-personal.png',
+          group: 'Crédito',
+        },
+        {
+          to: '/comisiones-cobro',
+          label: 'Comisiones de cobro',
+          icon: 'i-lucide-receipt',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cobros.png',
+          group: 'Costos y herramientas',
+        },
+        {
+          to: '/comisiones-brokers',
+          label: 'Comisiones de brokers',
+          icon: 'i-lucide-briefcase-business',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/brokers.png',
+          group: 'Costos y herramientas',
+        },
+        {
+          to: '/contado-cuotas',
+          label: 'Contado vs Cuotas',
+          icon: 'i-lucide-credit-card',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/cuotas.png',
+          group: 'Costos y herramientas',
         },
       ],
     },
@@ -107,12 +204,22 @@ export const useNavigationPages = () => {
           label: 'Inversiones en USD',
           icon: 'i-lucide-dollar-sign',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
+          group: 'USD',
+        },
+        {
+          to: '/cauciones?moneda=usd',
+          label: 'Cauciones',
+          icon: 'i-lucide-handshake',
+          image: 'https://api.argentinadatos.com/static/comparatasas/icons/us-flag.png',
+          group: 'USD',
+          badge: { label: 'Nuevo', color: 'primary' },
         },
         {
           to: '/remesas',
           label: 'Remesas',
           icon: 'i-lucide-send',
           image: 'https://api.argentinadatos.com/static/comparatasas/icons/wallet.png',
+          group: 'USD',
         },
       ],
     },
@@ -136,12 +243,7 @@ export const useNavigationPages = () => {
   const pages: NavigationPage[] = categories.flatMap((category) => category.pages)
 
   const getCurrentCategory = (): NavigationCategory | null => {
-    const currentPath = normalizeRoute(route.path)
-    return (
-      categories.find((category) =>
-        category.pages.some((page) => normalizeRoute(getPagePath(page.to)) === currentPath),
-      ) ?? null
-    )
+    return categories.find((category) => category.pages.some((page) => isPageActive(page))) ?? null
   }
 
   const getCurrentPage = (): NavigationPage | null => {
@@ -149,6 +251,11 @@ export const useNavigationPages = () => {
   }
 
   const getCategoryByRoute = (routePath: string): NavigationCategory | null => {
+    // Prefer active page (incluye query moneda en /cauciones); fallback por path.
+    const active = getCurrentCategory()
+    if (active && normalizeRoute(route.path) === normalizeRoute(routePath)) {
+      return active
+    }
     const normalizedPath = normalizeRoute(routePath)
     return (
       categories.find((category) =>
@@ -214,6 +321,9 @@ export const useNavigationPages = () => {
   const isActive = (page: NavigationPage): boolean => isPageActive(page)
 
   const isCategoryActive = (category: NavigationCategory, currentRoute: string): boolean => {
+    if (normalizeRoute(currentRoute) === normalizeRoute(route.path)) {
+      return category.pages.some((page) => isPageActive(page))
+    }
     const normalizedRoute = normalizeRoute(currentRoute)
     return category.pages.some((page) => normalizeRoute(getPagePath(page.to)) === normalizedRoute)
   }

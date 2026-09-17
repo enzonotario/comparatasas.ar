@@ -61,6 +61,27 @@ const groups = [
         to: '/creditos-hipotecarios-uva',
       },
       {
+        id: 'prestamos-personales',
+        label: 'Préstamos Personales',
+        suffix: 'Comparador',
+        icon: 'i-lucide-banknote',
+        to: '/prestamos-personales',
+      },
+      {
+        id: 'comisiones-cobro',
+        label: 'Comisiones de cobro',
+        suffix: 'Comparador',
+        icon: 'i-lucide-receipt',
+        to: '/comisiones-cobro',
+      },
+      {
+        id: 'comisiones-brokers',
+        label: 'Comisiones de brokers',
+        suffix: 'Comparador',
+        icon: 'i-lucide-briefcase-business',
+        to: '/comisiones-brokers',
+      },
+      {
         id: 'bonos-cer',
         label: 'Bonos CER',
         suffix: 'Comparador',
@@ -69,10 +90,18 @@ const groups = [
       },
       {
         id: 'lecaps',
-        label: 'Lecaps',
+        label: 'LECAPs y BONCAPs',
         suffix: 'Comparador',
         icon: 'i-lucide-file-chart-column',
         to: '/lecaps',
+        keywords: ['letras', 'letra', 'letras del tesoro', 'boncaps', 'boncap', 'lecap', 'lecaps'],
+      },
+      {
+        id: 'cauciones',
+        label: 'Cauciones',
+        suffix: 'Comparador',
+        icon: 'i-lucide-handshake',
+        to: '/cauciones',
       },
     ],
   },
@@ -105,7 +134,7 @@ const groups = [
         label: 'GitHub',
         suffix: 'Código abierto',
         icon: 'i-lucide-github',
-        href: 'https://github.com/enzonotario/comparatasas.ar',
+        href: 'https://github.com/enzonotario/comparatasas.ar?utm_source=comparatasas&utm_medium=search&ref=comparatasas',
         target: '_blank',
       },
       {
@@ -113,7 +142,7 @@ const groups = [
         label: 'ComparaDolar.ar',
         suffix: 'Sitio amigo',
         icon: 'i-lucide-arrow-up-right',
-        href: 'https://comparadolar.ar',
+        href: 'https://comparadolar.ar/?utm_source=comparatasas&utm_medium=search&ref=comparatasas',
         target: '_blank',
       },
     ],
@@ -154,7 +183,7 @@ function onSelect(val: any) {
         :groups="groups"
         :fuse="{
           fuseOptions: {
-            keys: ['label', 'suffix'],
+            keys: ['label', 'suffix', 'keywords'],
             threshold: 0.3,
             ignoreLocation: true,
           },

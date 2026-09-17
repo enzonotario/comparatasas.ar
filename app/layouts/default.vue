@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { withOutboundUtm } from '~/lib/outbound-url'
+
 const nuxtApp = useNuxtApp()
 
 useFunds()
 useAccounts()
-useFciVariablesUltimo()
 useCrypto()
 usePlazosFijos()
 usePlazosFijosUvaPagoPeriodico()
@@ -14,7 +15,9 @@ const { initialize } = useHotjar()
 const route = useRoute()
 const { showProductScenarios } = useProductScenarios()
 
-const isSumarsePage = computed(() => route.path === '/sumarse')
+const isSumarsePage = computed(
+  () => route.path === '/sumarse' || route.path.startsWith('/sumarse/'),
+)
 
 const useSponsorBanner = computed(() => {
   const cutoffDate = new Date('2026-01-01')
@@ -27,19 +30,27 @@ onMounted(() => {
 })
 
 const isWideLayout = computed(() => {
-  if (route.path === '/plazos-fijos') return true
+  const p = route.path.replace(/\/$/, '') || '/'
+  // Solo el ranking tradicional usa contenedor ancho; UVA pago periódico /
+  // precancelable siguen en max-w-3xl como antes.
+  if (p === '/plazos-fijos') return true
+  if (p === '/creditos-hipotecarios-uva' || p.startsWith('/creditos-hipotecarios-uva/')) return true
+  if (p === '/prestamos-personales' || p.startsWith('/prestamos-personales/')) return true
+  if (p === '/metodologia' || p.startsWith('/metodologia/')) return true
+  if (p === '/comisiones-brokers' || p.startsWith('/comisiones-brokers/')) return true
 
   return [
     'criptomonedas',
-    'creditos-hipotecarios-uva',
+    'comisiones-cobro',
     'contado-cuotas',
     'fondos',
     'fondos-nombre',
+    'fondos-nombre-historico',
     'remesas',
     'cuentas-billeteras-graficos',
     'lecaps',
+    'cauciones',
     'bonos-cer',
-    'metodologia',
   ].includes(route.name as string)
 })
 
@@ -59,7 +70,11 @@ const productScenarioRailPaths = new Set([
   '/criptomonedas',
   '/remesas',
   '/creditos-hipotecarios-uva',
+  '/prestamos-personales',
+  '/comisiones-cobro',
+  '/comisiones-brokers',
   '/lecaps',
+  '/cauciones',
   '/bonos-cer',
 ])
 
@@ -70,7 +85,7 @@ const showProductScenariosRail = computed(() => {
     return false
   }
 
-  return productScenarioRailPaths.has(route.path)
+  return productScenarioRailPaths.has(route.path) || route.path.startsWith('/comisiones-brokers/')
 })
 </script>
 
@@ -201,7 +216,7 @@ const showProductScenariosRail = computed(() => {
                   Ayudame a mantener y mejorar este proyecto con una donación.
                 </p>
                 <UButton
-                  to="https://cafecito.app/enzonotario"
+                  :to="withOutboundUtm('https://cafecito.app/enzonotario', 'footer')"
                   external
                   target="_blank"
                   rel="noopener noreferrer"
@@ -236,11 +251,35 @@ const showProductScenariosRail = computed(() => {
                     Metodología de cálculos
                   </NuxtLink>
                   <NuxtLink
+                    to="/about"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    Acerca de
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/contact"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    Contacto
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/privacy"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    Privacidad
+                  </NuxtLink>
+                  <NuxtLink
                     to="/sumarse"
                     class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
                   >
                     Sumarse
                   </NuxtLink>
+                  <a
+                    href="/llms.txt"
+                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
+                  >
+                    llms.txt
+                  </a>
                 </div>
               </div>
             </div>
@@ -251,7 +290,7 @@ const showProductScenariosRail = computed(() => {
                 Este proyecto es de código abierto. Contribuciones y sugerencias son bienvenidas.
               </p>
               <UButton
-                href="https://github.com/enzonotario/comparatasas.ar"
+                :href="withOutboundUtm('https://github.com/enzonotario/comparatasas.ar', 'footer')"
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="outline"

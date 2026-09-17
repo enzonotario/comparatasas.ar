@@ -4,16 +4,21 @@ import 'vue-data-ui/style.css'
 import type { AccountItem } from '~/composables/useAccounts'
 import { CHART_COLORS, formatCurrency, useChartTheme } from '~/composables/useChartConfig'
 import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
+import {
+  getVariableFundRiskLevel,
+  VARIABLE_FUND_RISK_LABELS,
+  VARIABLE_FUND_RISK_ORDER,
+  type VariableFundRiskLevel,
+} from '~/lib/variable-fund-risk'
 import type { ProcessedFund } from '~/types/investments'
 
 const SECTION_GUARANTEED_NAMES = [
   'Rendimiento garantizado',
   'Rendimiento garantizado / Con condiciones especiales',
 ] as const
-const SECTION_VARIABLE_NAMES = [
-  'Rendimiento Variable / Riesgo muy bajo',
-  'Rendimiento Variable / Riesgo moderado',
-] as const
+const SECTION_VARIABLE_NAMES = VARIABLE_FUND_RISK_ORDER.map(
+  (level) => `Rendimiento Variable / ${VARIABLE_FUND_RISK_LABELS[level]}`,
+)
 
 interface Props {
   guaranteedAccounts: AccountItem[]
@@ -100,11 +105,11 @@ onMounted(async () => {
   horizontalBarComponent.value = VueUiHorizontalBar
 })
 
-/** Dataset completo (cuatro grupos); la prop `section` filtra para layouts en columnas. */
+/** Dataset completo; la prop `section` filtra para layouts en columnas. */
 const fullChartDataset = computed(() => {
   // Con sort "desc" la librería también reordena los PADRES por value → Variable pasa arriba.
   // sort "none" mantiene el orden del dataset: primero Garantizado (tasa fija → condiciones),
-  // luego Variable (riesgo muy bajo → moderado). Los hijos los ordenamos nosotros.
+  // luego Variable (riesgo muy bajo → bajo → moderado). Los hijos los ordenamos nosotros.
   const sortChildrenByTnaDesc = (items: BarChild[]) =>
     [...items].sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, 'es-AR'))
 
@@ -130,44 +135,34 @@ const fullChartDataset = computed(() => {
       condicionesCorto: account.condicionesCorto?.trim(),
     }))
 
-  const riesgoMuyBajo: BarChild[] = [...props.variableFunds]
-    .filter((fund) => !['rentaFija', 'rentaMixta', 'retornoTotal'].includes(fund.type || ''))
-    .sort((a, b) => b.tna - a.tna)
-    .map((fund, index) => ({
-      name: fund.displayName || fund.fondo,
-      value: fund.tna * 100,
-      color:
-        CHART_COLORS[
-          (index + garantizado.length + conCondicionesEspeciales.length) % CHART_COLORS.length
-        ],
-      logo: fund.logo,
-      rightLabel: rightLabelForFund(fund),
-    }))
+  const fundsByRisk = VARIABLE_FUND_RISK_ORDER.reduce(
+    (acc, level) => {
+      acc[level] = []
+      return acc
+    },
+    {} as Record<VariableFundRiskLevel, BarChild[]>,
+  )
 
-  const riesgoModerado: BarChild[] = [...props.variableFunds]
-    .filter((fund) => ['rentaFija', 'rentaMixta', 'retornoTotal'].includes(fund.type || ''))
-    .sort((a, b) => b.tna - a.tna)
-    .map((fund, index) => ({
+  let colorOffset = garantizado.length + conCondicionesEspeciales.length
+  for (const fund of [...props.variableFunds].sort((a, b) => b.tna - a.tna)) {
+    const level = getVariableFundRiskLevel(fund)
+    fundsByRisk[level].push({
       name: fund.displayName || fund.fondo,
       value: fund.tna * 100,
-      color:
-        CHART_COLORS[
-          (index + garantizado.length + conCondicionesEspeciales.length + riesgoMuyBajo.length) %
-            CHART_COLORS.length
-        ],
+      color: CHART_COLORS[colorOffset % CHART_COLORS.length],
       logo: fund.logo,
       rightLabel: rightLabelForFund(fund),
-    }))
+    })
+    colorOffset += 1
+  }
 
   const getGroupValue = (items: Array<{ value: number }>) =>
     items.length > 0 ? Math.max(...items.map((item) => item.value)) : 0
 
   const garantizadoSorted = sortChildrenByTnaDesc(garantizado)
   const conCondicionesEspecialesSorted = sortChildrenByTnaDesc(conCondicionesEspeciales)
-  const riesgoMuyBajoSorted = sortChildrenByTnaDesc(riesgoMuyBajo)
-  const riesgoModeradoSorted = sortChildrenByTnaDesc(riesgoModerado)
 
-  // Orden fijo: 1) Garantizado (tasa fija, condiciones) 2) Variable (muy bajo, moderado)
+  // Orden fijo: 1) Garantizado 2) Variable (muy bajo → bajo → moderado)
   return [
     {
       name: 'Rendimiento garantizado',
@@ -179,16 +174,14 @@ const fullChartDataset = computed(() => {
       value: getGroupValue(conCondicionesEspecialesSorted),
       children: conCondicionesEspecialesSorted,
     },
-    {
-      name: 'Rendimiento Variable / Riesgo muy bajo',
-      value: getGroupValue(riesgoMuyBajoSorted),
-      children: riesgoMuyBajoSorted,
-    },
-    {
-      name: 'Rendimiento Variable / Riesgo moderado',
-      value: getGroupValue(riesgoModeradoSorted),
-      children: riesgoModeradoSorted,
-    },
+    ...VARIABLE_FUND_RISK_ORDER.map((level) => {
+      const children = sortChildrenByTnaDesc(fundsByRisk[level])
+      return {
+        name: `Rendimiento Variable / ${VARIABLE_FUND_RISK_LABELS[level]}`,
+        value: getGroupValue(children),
+        children,
+      }
+    }),
   ].filter((group) => group.children.length > 0)
 })
 

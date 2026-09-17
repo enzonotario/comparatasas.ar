@@ -6,12 +6,19 @@ import type { FciFundDetail } from '~/composables/useFciFundDetails'
 import type { ReturnRow } from '~/composables/useFciFundPresentation'
 import { CHART_COLORS, useChartTheme } from '~/composables/useChartConfig'
 import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
-import { formatCurrency, formatDate, formatPercentAuto } from '~/lib/fci-fund-formatters'
+import {
+  formatCurrency,
+  formatDate,
+  formatPercentAuto,
+  metricTone,
+} from '~/lib/fci-fund-formatters'
+import type { NominalTnaEstimate } from '~/lib/finance/fci-comparatasas-returns'
 
 const props = defineProps<{
   fundDetail: FciFundDetail
   returnsRows: ReturnRow[]
   returnsColumns: TableColumn<ReturnRow>[]
+  nominalTnaEstimate: NominalTnaEstimate | null
   compositionRows: Array<{ nombre: string | null; porcentaje: number | null }>
   maxCompositionPercentage: number
   feeRows: Array<[string, number | null]>
@@ -139,6 +146,7 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
     },
   },
 }))
+const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 </script>
 
 <template>
@@ -150,10 +158,33 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
         }"
       >
         <template #header>
-          <h2 class="text-lg font-semibold">Rendimientos</h2>
+          <h2 class="text-lg font-semibold">Rendimientos Históricos</h2>
         </template>
 
-        <UTable :data="props.returnsRows" :columns="props.returnsColumns" />
+        <UTable
+          v-model:row-selection="rowSelection"
+          :data="props.returnsRows"
+          :columns="withSelection(props.returnsColumns)"
+          :get-row-id="(row) => row.period"
+          :on-select="onSelect"
+        />
+
+        <template v-if="props.nominalTnaEstimate" #footer>
+          <div class="flex items-end justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-xs uppercase tracking-wide text-muted">TNA estimada</p>
+              <p class="mt-0.5 font-mono text-xs text-muted">
+                {{ props.nominalTnaEstimate.formula }}
+              </p>
+            </div>
+            <p
+              class="shrink-0 text-xl font-semibold tabular-nums"
+              :class="metricTone(props.nominalTnaEstimate.value)"
+            >
+              {{ formatPercentAuto(props.nominalTnaEstimate.value) }}
+            </p>
+          </div>
+        </template>
       </UCard>
 
       <div class="grid items-start gap-6 xl:grid-cols-2">
@@ -210,7 +241,7 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
               class="rounded-2xl border border-neutral-200 p-3 dark:border-neutral-800"
             >
               <div class="flex flex-wrap items-center gap-2">
-                <UBadge v-if="rating.calificacion" color="primary" variant="soft">{{
+                <UBadge v-if="rating.calificacion" color="neutral" variant="soft">{{
                   rating.calificacion
                 }}</UBadge>
                 <span class="font-medium text-neutral-900 dark:text-white">{{
@@ -269,7 +300,7 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
         </div>
 
         <div
-          class="min-h-[460px] rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950/60"
+          class="hidden lg:block min-h-[320px] xl:min-h-[460px] rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950/60"
         >
           <ClientOnly>
             <component

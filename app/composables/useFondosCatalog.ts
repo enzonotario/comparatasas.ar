@@ -1,0 +1,135 @@
+import { getFundTypeInfo, type FundType } from '~/lib/mappings/funds'
+import {
+  getComparatasasReturnPercent,
+  getComparatasasTnaAndTea,
+  hasComparatasasRendimientos,
+} from '~/lib/finance/fci-comparatasas-returns'
+import { sanitizeAnnualizedReturnPercent } from '~/lib/finance/fci-history-returns'
+import {
+  fetchFciFundsCatalog,
+  type FciFundDetail,
+  type FciFundsDetailsResponse,
+} from '~/composables/useFciFundDetails'
+import {
+  lookupStaticNominalTna,
+  type StaticNominalTnaFile,
+} from '~/composables/useStaticNominalTna'
+
+export interface FundCatalogRow {
+  fondo: string
+  fondoId: string | null
+  claseId: string | null
+  tipoFondo?: FundType
+  typeLabel: string
+  tipoFilterKey?: string
+  tipoRenta: string | null
+  horizonte: string | null
+  administradora: string | null
+  depositaria: string | null
+  tna: number | null
+  tea: number | null
+  /** Variación diaria CNV (%). */
+  retorno1d: number | null
+  /** Retorno ~30d rolling (%). API `unMes` (CNV mes solo si falta histórico). */
+  retorno30d: number | null
+  /** Retorno en el año / YTD CNV (%). */
+  retornoYtd: number | null
+  vcp: number | null
+  patrimonio: number | null
+  inversionMinima: number | null
+  moneda: string | null
+  monedaInversion: string | null
+  plazoLiquidacionDias: number | null
+  region: string | null
+  fecha: string | null
+}
+
+function hasComparatasasReturn(fund: FciFundDetail) {
+  return hasComparatasasRendimientos(fund.rendimientos)
+}
+
+export function mapCatalogToRows(
+  response: FciFundsDetailsResponse,
+  staticTna?: StaticNominalTnaFile | null,
+): FundCatalogRow[] {
+  return (response.fondos ?? [])
+    .filter((fund) => Boolean(fund.nombre?.trim()))
+    .map((fund) => {
+      const typeInfo = getFundTypeInfo(fund.tipoRenta)
+      const typeLabel = typeInfo?.typeLabel ?? fund.tipoRenta ?? '—'
+      const tipoFilterKey = typeInfo?.type ?? fund.tipoRenta ?? undefined
+
+      let tna: number | null = null
+      let tea: number | null = null
+
+      const staticEntry = lookupStaticNominalTna(staticTna, fund.nombre)
+      if (staticEntry) {
+        tna = staticEntry.tna
+        tea = staticEntry.tea
+      } else if (hasComparatasasReturn(fund) && fund.rendimientos) {
+        const returnPercent = sanitizeAnnualizedReturnPercent(
+          getComparatasasReturnPercent(fund.rendimientos, fund.tipoRenta ?? ''),
+        )
+
+        if (returnPercent != null) {
+          const rates = getComparatasasTnaAndTea(returnPercent, fund.tipoRenta ?? '')
+          tna = rates.tna
+          tea = rates.tea
+        }
+      }
+
+      return {
+        fondo: fund.nombre,
+        fondoId: fund.fondoId ?? null,
+        claseId: fund.claseId ?? null,
+        tipoFondo: typeInfo?.type,
+        typeLabel,
+        tipoFilterKey,
+        tipoRenta: fund.tipoRenta,
+        horizonte: fund.horizonte,
+        administradora: fund.administradora,
+        depositaria: fund.depositaria,
+        tna,
+        tea,
+        retorno1d: fund.rendimientos?.variacionDiariaPct ?? null,
+        retorno30d: fund.rendimientos?.unMes ?? null,
+        retornoYtd: fund.rendimientos?.enElAnio ?? null,
+        vcp: fund.rendimientos?.valorCuotaparte ?? null,
+        patrimonio: fund.patrimonio,
+        inversionMinima: fund.inversionMinima,
+        moneda: fund.moneda,
+        monedaInversion: fund.monedaInversion,
+        plazoLiquidacionDias: fund.plazoLiquidacionDias,
+        region: fund.region,
+        fecha: fund.fecha,
+      }
+    })
+}
+
+export function useFondosCatalog() {
+  const {
+    data: allFunds,
+    pending: loading,
+    error,
+    refresh,
+  } = useAsyncData(
+    'fci-funds-catalog',
+    async () => {
+      const [catalog, staticTna] = await Promise.all([
+        fetchFciFundsCatalog(),
+        $fetch<StaticNominalTnaFile>('/api/fci/nominal-tna.json').catch(() => null),
+      ])
+      return mapCatalogToRows(catalog, staticTna)
+    },
+    {
+      default: () => [] as FundCatalogRow[],
+    },
+  )
+
+  return {
+    allFunds,
+    loading,
+    error,
+    refresh,
+  }
+}

@@ -1,16 +1,31 @@
 <script setup lang="ts">
 import { type CerBondRow, diasAlVencimientoCer } from '~/composables/useBonosCer'
 import { useChartTheme } from '~/composables/useChartConfig'
+import { isPositiveYieldRate } from '~/lib/finance/yield-curve'
+
+export type CerYieldMode = 'tir' | 'tem'
 
 interface Props {
   bonds: CerBondRow[]
+  /** TIR anual (default) o TEM mensual implícita. */
+  mode?: CerYieldMode
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  mode: 'tir',
+})
+
 const colorMode = useColorMode()
 const { textColor, gridLineColor } = useChartTheme()
 
 const tooltipBackground = computed(() => (colorMode.value === 'dark' ? '#171717' : '#ffffff'))
+
+const yieldLabel = computed(() => (props.mode === 'tem' ? 'TEM' : 'TIR'))
+
+function yieldPercent(bond: CerBondRow): number {
+  if (props.mode === 'tem') return bond.temPorcentaje ?? 0
+  return bond.tirPorcentaje
+}
 
 function fitPolyCurve(points: [number, number][], degree: number, n: number) {
   if (points.length < degree + 1) return []
@@ -60,16 +75,19 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
 }
 
 const chartOptions = computed(() => {
-  if (!props.bonds.length) return null
+  const curveBonds = props.bonds.filter((b) => isPositiveYieldRate(b.tirPorcentaje))
+  if (!curveBonds.length) return null
 
-  const scatterData = props.bonds.map((b) => ({
+  const label = yieldLabel.value
+
+  const scatterData = curveBonds.map((b) => ({
     x: diasAlVencimientoCer(b.fechaVencimiento),
-    y: b.tirPorcentaje,
+    y: yieldPercent(b),
     name: b.ticker,
   }))
 
-  const allPoints: [number, number][] = props.bonds
-    .map((b) => [diasAlVencimientoCer(b.fechaVencimiento), b.tirPorcentaje] as [number, number])
+  const allPoints: [number, number][] = curveBonds
+    .map((b) => [diasAlVencimientoCer(b.fechaVencimiento), yieldPercent(b)] as [number, number])
     .sort((a, b) => a[0] - b[0])
 
   const curveData = fitPolyCurve(allPoints, 2, 40)
@@ -84,7 +102,7 @@ const chartOptions = computed(() => {
       gridLineColor: gridLineColor.value,
     },
     yAxis: {
-      title: { text: 'TIR (%)', style: { color: textColor.value } },
+      title: { text: `${label} (%)`, style: { color: textColor.value } },
       labels: {
         formatter(): string {
           return `${(this as any).value.toFixed(1)}%`
@@ -107,7 +125,7 @@ const chartOptions = computed(() => {
       formatter(): string {
         const point = (this as any).point
         if (point.name) {
-          return `<b>${point.name}</b><br/>TIR: ${point.y.toFixed(2)}%<br/>Días: ${point.x}`
+          return `<b>${point.name}</b><br/>${label}: ${point.y.toFixed(2)}%<br/>Días: ${point.x}`
         }
         return `Curva: ${point.y.toFixed(2)}%`
       },
@@ -132,7 +150,7 @@ const chartOptions = computed(() => {
           formatter(): string {
             const point = (this as any).point
             if (!point.name) return `${point.y.toFixed(2)}%`
-            return `<span style="display:block;text-align:center;line-height:1.25"><b>${point.name}</b><br/>${point.y.toFixed(2)}%</span>`
+            return `<span style="display:block;text-align:center;line-height:1.25"><b>${point.name}</b><br/>${label} ${point.y.toFixed(2)}%</span>`
           },
         },
       },

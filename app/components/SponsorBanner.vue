@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAnalytics } from '~/composables/useAnalytics'
+import { withOutboundUtm } from '~/lib/outbound-url'
 
 interface Banner {
   id: number
@@ -25,7 +26,9 @@ const { trackSponsorClick } = useAnalytics()
 
 const BASE_URL = 'https://api.argentinadatos.com/static/assets/arq/'
 
-const LINK_URL = 'https://www.arqfinance.com/?ref=comparatasas.ar'
+const LINK_URL = withOutboundUtm('https://www.arqfinance.com/', 'sponsor', {
+  campaign: 'arq-banner',
+})
 
 const defaultBanners: Banner[] = [
   {

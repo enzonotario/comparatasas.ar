@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import {
+  groupFundsByVariableRisk,
+  VARIABLE_FUND_RISK_LABELS,
+  VARIABLE_FUND_RISK_ORDER,
+} from '~/lib/variable-fund-risk'
 import { ogUpdatedAtDate, top3Accounts } from '~/utils/og-data'
 
 definePageMeta({
@@ -37,7 +42,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify({
+      innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebPage',
         name: 'Cuentas Remuneradas y Billeteras - Compara Tasas',
@@ -54,19 +59,15 @@ useHead({
 })
 
 const { allFundsCache, data, loading, error } = useFunds()
-const { accounts, loading: loadingAccounts, specialAccounts } = useAccounts()
-const {
-  funds: fciVariablesFunds,
-  loading: loadingFciVariables,
-  error: fciVariablesError,
-} = useFciVariablesUltimo()
+const { allAccounts, loading: loadingAccounts } = useAccounts()
+const { criptopesos, loading: loadingCriptopesos, error: errorCriptopesos } = useCriptopesos()
 
 const { calculateResults, isSimulating, days } = useInvestmentSimulator()
 
 const resolvedFundsAccounts = computed(() => {
   const accountsFunds = allFundsCache.value.filter((i) => i?.meta?.showInAccounts)
   const mercadoDineroFunds = data.value.mercadoDinero.filter((i) => i?.meta?.showInFunds)
-  const combined = [...accountsFunds, ...mercadoDineroFunds, ...fciVariablesFunds.value]
+  const combined = [...accountsFunds, ...mercadoDineroFunds]
 
   const seen = new Set<string>()
   const unique = combined.filter((item) => {
@@ -81,37 +82,19 @@ const resolvedFundsAccounts = computed(() => {
   return unique.sort((a, b) => b.tna - a.tna)
 })
 
-const accountsWithSimulation = calculateResults(accounts, allFundsCache)
-const specialAccountsWithSimulation = calculateResults(specialAccounts, allFundsCache)
+const accountsWithSimulation = calculateResults(allAccounts, allFundsCache)
+const criptopesosWithSimulation = calculateResults(criptopesos)
 
 const fundsByRisk = computed(() => {
-  const grouped: Record<string, typeof resolvedFundsAccounts.value> = {
-    'Riesgo muy bajo': [],
-    'Riesgo bajo': [],
-    'Riesgo moderado': [],
-  }
+  const byLevel = groupFundsByVariableRisk(resolvedFundsAccounts.value)
+  const grouped: Record<string, typeof resolvedFundsAccounts.value> = {}
 
-  resolvedFundsAccounts.value.forEach((fund) => {
-    const t = fund.type || ''
-    if (
-      fund.fondo === 'Cocos Rendimiento - Clase A' ||
-      fund.fondo === 'Cocos Pesos Plus - Clase A'
-    ) {
-      grouped['Riesgo bajo'].push(fund)
-    } else if (t === 'mercadoDinero' || t === 'fciVariablesUltimo') {
-      grouped['Riesgo muy bajo'].push(fund)
-    } else if (t === 'rentaFija') {
-      grouped['Riesgo bajo'].push(fund)
-    } else if (['rentaMixta', 'retornoTotal'].includes(t)) {
-      grouped['Riesgo moderado'].push(fund)
-    } else {
-      grouped['Riesgo muy bajo'].push(fund)
+  for (const level of VARIABLE_FUND_RISK_ORDER) {
+    const funds = [...byLevel[level]].sort((a, b) => b.tna - a.tna)
+    if (funds.length > 0) {
+      grouped[VARIABLE_FUND_RISK_LABELS[level]] = funds
     }
-  })
-
-  Object.keys(grouped).forEach((key) => {
-    grouped[key].sort((a, b) => b.tna - a.tna)
-  })
+  }
 
   return grouped
 })
@@ -153,13 +136,14 @@ const fundsByRiskWithSimulation = computed(() => {
               </NuxtLink>
             </div>
             <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-              Cuentas remuneradas y billeteras con tasa fija garantizada
+              Cuentas remuneradas y billeteras con tasa fija; las que requieren requisitos llevan el
+              indicador de condiciones especiales
             </p>
           </div>
 
           <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
 
-          <FundsLoading v-if="loadingAccounts && !accounts.length" />
+          <FundsLoading v-if="loadingAccounts && !allAccounts.length" />
 
           <FundsList
             v-else
@@ -175,38 +159,45 @@ const fundsByRiskWithSimulation = computed(() => {
         <div>
           <div class="mb-2">
             <div class="group relative">
-              <NuxtLink
-                to="#condiciones-especiales"
-                class="-ml-4.5 flex items-center gap-2 no-underline"
-              >
+              <NuxtLink to="#criptopesos" class="-ml-4.5 flex items-center gap-2 no-underline">
                 <span
                   class="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400"
                 >
                   #
                 </span>
-                <h2 id="condiciones-especiales" class="text-lg font-medium scroll-mt-22">
-                  Con condiciones especiales
-                </h2>
+                <h2 id="criptopesos" class="text-lg font-medium scroll-mt-22">Criptopesos</h2>
               </NuxtLink>
             </div>
             <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-              Productos con requisitos o condiciones particulares para acceder
+              Stablecoins con paridad 1:1 con el peso argentino
             </p>
           </div>
 
-          <UAlert v-if="error" color="red" variant="soft" title="Error cargando datos" />
-
-          <FundsLoading v-if="loadingAccounts && !accounts.length" />
-
-          <FundsList
-            v-else
-            :items="specialAccountsWithSimulation"
-            key-prop="fondo"
-            mode="detailed"
-            :show-simulation="isSimulating"
-            :simulator-days="days"
-            :show-history-link="true"
+          <UAlert
+            v-if="errorCriptopesos"
+            color="red"
+            variant="soft"
+            title="Error cargando criptopesos"
           />
+
+          <FundsLoading v-if="loadingCriptopesos && !criptopesos.length" />
+
+          <div v-else class="space-y-3">
+            <FundsList
+              :items="criptopesosWithSimulation"
+              key-prop="fondo"
+              mode="detailed"
+              :show-simulation="isSimulating"
+            />
+
+            <LinkCard
+              title="Ver todas las tasas de criptopesos"
+              description="Compará rendimientos de stablecoins 1:1 con el peso argentino (ARGt, wARS y más)"
+              to="/criptopesos"
+              icon="i-lucide-coins"
+              link-text="Ir a Criptopesos"
+            />
+          </div>
         </div>
 
         <div>
@@ -231,12 +222,7 @@ const fundsByRiskWithSimulation = computed(() => {
             </p>
           </div>
 
-          <UAlert
-            v-if="error || fciVariablesError"
-            color="red"
-            variant="soft"
-            title="Error cargando fondos"
-          />
+          <UAlert v-if="error" color="red" variant="soft" title="Error cargando fondos" />
 
           <div class="space-y-6">
             <div v-for="(funds, riskKey) in fundsByRiskWithSimulation" :key="riskKey">
@@ -270,7 +256,7 @@ const fundsByRiskWithSimulation = computed(() => {
               link-text="Ver gráficos y análisis"
             />
 
-            <FundsLoading v-if="loading || loadingAccounts || loadingFciVariables" />
+            <FundsLoading v-if="loading || loadingAccounts" />
           </div>
         </div>
       </div>

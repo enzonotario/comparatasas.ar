@@ -43,25 +43,8 @@ export const methodologySections: MethodologySection[] = [
         type: 'ul',
         items: [
           'Productos con plazo fijo dentro de la billetera (ej. Frascos de Naranja X) pueden tener varias TNAs según los días que elijas; mostramos cada tramo con su rango de plazo.',
-          'En el simulador, si el producto tiene tope, solo se remuneran los primeros pesos hasta ese límite (salvo casos especiales documentados, como Fiwind).',
+          'En el simulador, si el producto tiene tope (> 0), solo se remuneran los primeros pesos hasta ese límite (salvo casos especiales documentados, como Fiwind). Si la fuente no declara tope o manda 0, se simula sobre el monto completo.',
         ],
-      },
-    ],
-  },
-  {
-    id: 'cuentas-fci-variables',
-    title: 'Rendimiento variable publicado por plataforma',
-    category: 'cuentas',
-    categoryLabel: 'Cuentas y billeteras',
-    source: 'CAFCI / plataformas',
-    blocks: [
-      {
-        type: 'p',
-        text: 'Algunas billeteras y cuentas con rendimiento variable publican TNA y TEA directamente; no las derivamos comparando valores cuotaparte día a día.',
-      },
-      {
-        type: 'p',
-        text: 'Los mostramos tal como vienen de la fuente, con sus condiciones y topes cuando existen.',
       },
     ],
   },
@@ -70,27 +53,23 @@ export const methodologySections: MethodologySection[] = [
     title: 'FCI de mercado de dinero',
     category: 'fci',
     categoryLabel: 'Fondos comunes de inversión',
-    source: 'CAFCI',
+    source: 'CNV / Argentina Datos',
     blocks: [
       {
         type: 'p',
-        text: 'Es el método por defecto del sitio. Tomamos el rendimiento del último mes informado por CAFCI y lo convertimos a TNA y TEA.',
+        text: 'Es el método por defecto del sitio para todos los FCI. La planilla CNV publica retornos de período; estimamos la TNA nominal a 365 días a partir del retorno ~30D (no de un solo día, que es ruidoso).',
       },
       {
         type: 'formula',
-        text: 'Rendimiento base = unMes; si falta, ultimos7Dias',
+        text: 'TNA = unMes × 365 / días (días = diasUnMes de la API o del lookback VCP; si falta: 30). Fallback: ultimos7Dias × 365 / diasUltimos7Dias (o 7); luego variacionDiariaPct × 365',
       },
       {
         type: 'formula',
-        text: 'TNA = rendimiento mensual ÷ 100 (el mes se toma como TNA directa, sin proyectar a 365 días)',
-      },
-      {
-        type: 'formula',
-        text: 'TEA = (1 + rendimiento mensual ÷ 100)^12 − 1',
+        text: 'TEA = (1 + TNA ÷ 365)^365 − 1',
       },
       {
         type: 'p',
-        text: 'Ejemplo: si unMes = 16,5 → TNA mostrada = 16,50%.',
+        text: 'Ejemplo: si unMes = 1,54% → TNA mostrada = 18,73%.',
       },
     ],
   },
@@ -99,40 +78,61 @@ export const methodologySections: MethodologySection[] = [
     title: 'FCI de renta fija y demás tipos (mixta, variable, retorno total)',
     category: 'fci',
     categoryLabel: 'Fondos comunes de inversión',
-    source: 'CAFCI',
+    source: 'CNV / Argentina Datos',
     blocks: [
       {
         type: 'p',
-        text: 'Usamos el rendimiento del último mes (unMes) publicado por CAFCI. A diferencia de mercado de dinero, acá el mes se anualiza de forma lineal.',
+        text: 'Usamos la misma estimación de TNA nominal que en money market: retorno ~30D (rolling desde VCP en el detalle; columna CNV `unMes` en el catálogo si falta histórico), con fallback a 7D y 1D.',
       },
       {
         type: 'formula',
-        text: 'Rendimiento base = unMes (si falta, 0)',
+        text: 'En listados usamos TNA precomputada en build (`public/api/fci/nominal-tna.json`) con días efectivos del lookback VCP para fondos curados y sus clases hermanas. El resto del catálogo usa `diasUnMes`/`diasUltimos7Dias` de ArgentinaDatos cuando vienen; si no, cae a 30/7/1. El detalle recalcula con el histórico del fondo abierto.',
       },
       {
         type: 'formula',
-        text: 'TNA = (rendimiento mensual ÷ 100) × (365 ÷ 30)',
-      },
-      {
-        type: 'formula',
-        text: 'TEA = (1 + rendimiento mensual ÷ 100)^12 − 1',
+        text: 'TEA = (1 + TNA ÷ 365)^365 − 1',
       },
       {
         type: 'p',
-        text: 'Ejemplo: si unMes = 3 → TNA mostrada = 36,50%.',
+        text: 'En el detalle, los días del divisor son los días efectivos del lookback VCP (p. ej. 29 en lugar de 30). Ejemplo: 30D = 1,59% → TNA ≈ 19,98% con 29 días.',
+      },
+    ],
+  },
+  {
+    id: 'fci-detalle-periodos',
+    title: 'Rendimientos del detalle FCI (1D, 30D, YTD, 1Y…)',
+    category: 'fci',
+    categoryLabel: 'Fondos comunes de inversión',
+    source: 'CNV / Argentina Datos (serie de VCP)',
+    blocks: [
+      {
+        type: 'p',
+        text: 'En el detalle del fondo y en el catálogo mostramos retornos de período rolling desde la serie de VCP: 7D/30D/90D/180D/1Y y YTD. La columna CNV “un mes” es variación vs fin de mes previo — no es 30D rolling — y solo se usa como fallback. Los `noventaDias`/`cientoOchentaDias` legacy de CAFCI suelen venir anualizados y no se usan como período.',
+      },
+      {
+        type: 'formula',
+        text: 'Rendimiento N días = (VCP_hoy ÷ VCP_hace_N) − 1',
+      },
+      {
+        type: 'formula',
+        text: 'Si falta histórico, fallback a columnas CNV de período (1D, unMes, YTD, 12M)',
+      },
+      {
+        type: 'p',
+        text: 'Ejemplo: unMes CNV ≈ 0,65% (desde fin de mes previo) vs 30D rolling ≈ 1,47% — catálogo y detalle muestran el rolling.',
       },
     ],
   },
   {
     id: 'fci-series-vcp',
-    title: 'Método alternativo por series de VCP (CAFCI)',
+    title: 'Método alternativo por series de VCP',
     category: 'fci',
     categoryLabel: 'Fondos comunes de inversión',
-    source: 'CAFCI (series de VCP)',
+    source: 'CNV / Argentina Datos (series de VCP)',
     blocks: [
       {
         type: 'p',
-        text: 'Como método alternativo, comparamos el valor cuotaparte (VCP) más reciente con el de hace ~30 días (retrocediendo día a día si falta el dato exacto), usando las series históricas de CAFCI.',
+        text: 'Como método alternativo (rankings curados y algunos gráficos), comparamos el valor cuotaparte (VCP) más reciente con el de hace ~30 días (retrocediendo día a día si falta el dato exacto), usando las series históricas publicadas vía Argentina Datos.',
       },
       {
         type: 'formula',
@@ -152,7 +152,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'La tabla de /fondos y algunos gráficos pueden usar este método para mostrar rendimiento efectivo entre dos VCP consecutivos de la serie.',
+        text: 'La tabla de /fondos usa el catálogo CNV (retornos de período + TNA MM vía unMes × 365/30); este método de series de VCP queda como alternativa para rankings y visualizaciones históricas.',
       },
     ],
   },
@@ -208,26 +208,77 @@ export const methodologySections: MethodologySection[] = [
     title: 'LECAPs y BONCAPs',
     category: 'titulos',
     categoryLabel: 'Títulos públicos',
+    source: 'Docta Terminal',
     blocks: [
       {
         type: 'p',
-        text: 'Usamos precio de mercado, pago final al vencimiento y días hasta el vencimiento (desde la fecha de liquidación operativa) para estimar rentabilidad.',
-      },
-      {
-        type: 'formula',
-        text: 'Factor de ganancia = pago final ÷ precio',
-      },
-      {
-        type: 'formula',
-        text: 'TNA = (factor − 1) × (365 ÷ días)',
-      },
-      {
-        type: 'formula',
-        text: 'TIR = factor^(365 ÷ días) − 1',
+        text: 'Mostramos precio, variación diaria, vencimiento, TNA/TEA/TEM de mercado según Docta Terminal (soberanos a tasa fija), agregados por ArgentinaDatos.',
       },
       {
         type: 'p',
-        text: 'En el simulador, la ganancia compuesta usa la TIR como tasa anual efectiva y limita los días al mínimo entre tu horizonte y los días al vencimiento del papel.',
+        text: 'El precio se muestra por 1 VN (cotización ÷ 100). El residual «a recibir al vto.» se deriva como precio × (1 + TNA mercado × días / 365). La columna TNA es la de mercado (Docta). Con la comisión de compra de letras del broker elegido (+ IVA si aplica) calculamos precio con comisión, ganancia directa, TNA Neta y TEM al vencimiento. El selector de broker arranca al azar y queda en `?broker=`.',
+      },
+      {
+        type: 'formula',
+        text: 'Ganancia directa = (a recibir − precio con comisión) / precio con comisión',
+      },
+      {
+        type: 'formula',
+        text: 'TNA Neta = ganancia directa × (365 ÷ días)',
+      },
+      {
+        type: 'formula',
+        text: 'TEM = (1 + ganancia directa)^(30 ÷ días) − 1',
+      },
+      {
+        type: 'p',
+        text: 'Si la tarifa de letras es one-shot (sin tasaBase) se aplica sobre el precio; si es mensual/anual/TNA se prorratea a los días al vencimiento. La membresía de plan no se incluye. Con un monto a invertir global estimamos cantidad de VN y total a recibir. El diferencial vs plazo fijo usa la TNA del banco elegido según el plazo del instrumento: sin comparación bajo 30 días; con 30/60/90/365 días se toma el tramo estándar más largo ≤ horizonte que publique el proveedor (por defecto el mejor a 30 días en plazos fijos tradicionales).',
+      },
+    ],
+  },
+  {
+    id: 'cauciones',
+    title: 'Cauciones',
+    category: 'titulos',
+    categoryLabel: 'Títulos públicos',
+    source: 'ArgentinaDatos (mercado de cauciones)',
+    blocks: [
+      {
+        type: 'p',
+        text: 'Mostramos plazo en días, tasa actual, tasa min./max. del día, monto contado, fecha de operación y vencimiento para cauciones en ARS y USD, tal como publica ArgentinaDatos. Omitimos filas cuyo plazo no calza con el vencimiento (series espurias de la fuente).',
+      },
+      {
+        type: 'p',
+        text: 'En la curva usamos la tasa actual vs plazo; el tamaño del punto refleja el monto contado relativo de cada plazo.',
+      },
+      {
+        type: 'p',
+        text: 'Comparamos también las comisiones de brokers para cauciones en ARS y USD, según el tarifario retail publicado en ArgentinaDatos (/v1/finanzas/brokers/comisiones). Mostramos tasa publicada y equivalente anual en rol colocadora (las tasas de mercado informadas son colocadora). Si el broker tiene membresía de plan, la mostramos junto a la comisión. La comparación completa de todos los productos está en /comisiones-brokers.',
+      },
+      {
+        type: 'p',
+        text: 'En la tabla de mercado, la columna «Tasa neta» resta comisión + IVA y derecho de mercado al TNA de mercado colocadora, prorrateados al plazo de cada fila. Podés elegir broker en el selector (uno aleatorio por defecto; persiste en ?broker=).',
+      },
+    ],
+  },
+  {
+    id: 'comisiones-brokers',
+    title: 'Comisiones de brokers',
+    category: 'otros',
+    categoryLabel: 'Otros productos',
+    source: 'ArgentinaDatos (/v1/finanzas/brokers/comisiones)',
+    blocks: [
+      {
+        type: 'p',
+        text: 'Comparamos aranceles retail de ALyC por producto: acciones, CEDEARs, bonos, obligaciones negociables, letras, cauciones, opciones, futuros, FCI, cheques, licitaciones y alquiler de títulos. Los datos vienen de ArgentinaDatos y se actualizan cuando cambia el tarifario publicado.',
+      },
+      {
+        type: 'p',
+        text: 'Mostramos todas las filas del filtro (incluye planes con distintos niveles y membresías cuando aplica), sin deduplicar por entidad. Ordenamos por menor comisión publicada; si hay tasaAnualEquivalente (p. ej. cauciones), esa es la clave principal de orden. La membresía mensual condicional (membresiaMensual) aparece en cada fila cuando aplica — no es comisión por operación.',
+      },
+      {
+        type: 'p',
+        text: 'Marcamos tope cuando la fuente publica “hasta X%”, e IVA adicional cuando el arancel no lo incluye. El derecho de mercado y el mínimo pueden alterar el costo final; siempre conviene contrastar con el tarifario oficial del broker.',
       },
     ],
   },
@@ -236,11 +287,19 @@ export const methodologySections: MethodologySection[] = [
     title: 'Bonos CER',
     category: 'titulos',
     categoryLabel: 'Títulos públicos',
-    source: 'Mercado de títulos públicos',
+    source: 'Docta Terminal',
     blocks: [
       {
         type: 'p',
-        text: 'Mostramos precio en pesos, fecha de vencimiento y TIR en porcentaje tal como viene de la fuente de mercado. Los días al vencimiento se calculan en calendario desde hoy para contexto en la UI.',
+        text: 'Mostramos precio en pesos, fecha de vencimiento y TIR en porcentaje tal como publica Docta Terminal para soberanos CER, agregados por ArgentinaDatos. Los días al vencimiento se calculan en calendario desde hoy para contexto en la UI.',
+      },
+      {
+        type: 'formula',
+        text: 'TEM = (1 + TIR)^(30 ÷ 365) − 1',
+      },
+      {
+        type: 'p',
+        text: 'La TEM es la tasa efectiva mensual implícita (base 30 días) derivada de la TIR. En la curva podés alternar TIR vs TEM.',
       },
     ],
   },
@@ -255,7 +314,8 @@ export const methodologySections: MethodologySection[] = [
         items: [
           'Cuentas remuneradas en USD: TNA publicada por la plataforma.',
           'Billeteras en USD: APY informado por cada entidad para depósitos en dólares.',
-          'FCI en USD: rendimiento del último mes de CAFCI o series de VCP, según el tipo de fondo.',
+          'FCI en USD (riesgo bajo / money market, moderado y alto): TNA nominal estimada = retorno ~30D × 365 / días (rolling VCP cuando hay histórico; si no, columna CNV `unMes` con 30 días). Mismo criterio que el resto de FCI del sitio.',
+          'Patrimonio FCI en USD: mostramos el monto en dólares y el equivalente en ARS con el dólar bolsa (MEP, venta) de dolarapi.com. En vistas de administradoras/depositarias sumamos todo en ARS para poder comparar gestoras.',
         ],
       },
     ],
@@ -293,6 +353,95 @@ export const methodologySections: MethodologySection[] = [
       {
         type: 'p',
         text: 'Listamos la TNA de referencia de cada banco para créditos hipotecarios UVA. Es un dato informativo de costo de financiación, no un rendimiento de inversión. Ordenamos de menor a mayor tasa.',
+      },
+    ],
+  },
+  {
+    id: 'comisiones-cobro',
+    title: 'Comisiones de cobro',
+    category: 'otros',
+    categoryLabel: 'Otros productos',
+    source: 'Argentina Datos / fuentes oficiales',
+    blocks: [
+      {
+        type: 'p',
+        text: 'Comparamos aranceles (MDR) de cobro publicados por adquirentes y billeteras. Los valores vienen de Argentina Datos (/v1/finanzas/cobros/comisiones) y se actualizan mensualmente.',
+      },
+      {
+        type: 'p',
+        text: 'El arancel se muestra en porcentaje. Si la fuente dice “hasta X%”, marcamos tope. Si dice “+ IVA” o que el costo no incluye IVA, mostramos el badge correspondiente. Podés filtrar por canal (POS, QR, link, checkout), medio de pago y tipo de acreditación.',
+      },
+      {
+        type: 'p',
+        text: 'El simulador estima el costo de cobro sobre un monto de venta: costo = monto × arancel (+ IVA 21% si el arancel lo indica y dejás activada la opción). El neto es el monto menos ese costo. Los aranceles “hasta X%” usan el tope publicado. Al simular, la tabla se ordena por menor costo.',
+      },
+      {
+        type: 'formula',
+        text: 'costo = monto × arancel × (1 + 0,21 si + IVA)',
+      },
+      {
+        type: 'formula',
+        text: 'neto = monto − costo',
+      },
+      {
+        type: 'p',
+        text: 'Mercado Pago publica costos por provincia; usamos el primer grupo provincial de cada tabla como referencia.',
+      },
+    ],
+  },
+  {
+    id: 'prestamos-personales',
+    title: 'Préstamos personales',
+    category: 'otros',
+    categoryLabel: 'Otros productos',
+    blocks: [
+      {
+        type: 'p',
+        text: 'Relevamos TNA, TEA y CFT TEA desde las landings oficiales de cada entidad, junto con condiciones (cliente, paquete, plan sueldo, etc.) y, cuando se publica, afectación de ingresos o un rango de tasas según evaluación crediticia.',
+      },
+      {
+        type: 'p',
+        text: 'El simulador estima la cuota con sistema francés: tasa mensual = TNA/12. También muestra una cuota de referencia usando la tasa mensual efectiva del CFT TEA, que incorpora IVA y cargos. Si cargás ingresos y hay afectación publicada, marcamos cuando la cuota supera ese tope.',
+      },
+      {
+        type: 'p',
+        text: 'Comparamos el CFT TEA de la mejor oferta con la mediana de inflación esperada a 12 meses del REM (BCRA), vía Argentina Datos (/v1/finanzas/rem/ultimo). El múltiplo CFT÷REM dimensiona cuánto más cara es la financiación respecto de la inflación esperada.',
+      },
+      {
+        type: 'formula',
+        text: 'múltiplo = CFT TEA ÷ REM mediana (próx. 12 meses)',
+      },
+      {
+        type: 'formula',
+        text: 'r = TNA / 12',
+      },
+      {
+        type: 'formula',
+        text: 'cuota = P × [r × (1+r)^n] / [(1+r)^n − 1]',
+      },
+      {
+        type: 'p',
+        text: 'Opcionalmente podés cargar ingresos netos mensuales del hogar para ver la relación cuota/ingreso y el ingreso mínimo requerido para no superar el tope orientativo del BCRA (~30%). Bandas: menos de 20% óptimo, 20–30% aceptable, 30–40% alerta, más de 40% riesgo.',
+      },
+      {
+        type: 'formula',
+        text: 'relación = cuota ÷ ingreso neto × 100',
+      },
+      {
+        type: 'formula',
+        text: 'ingreso requerido ≈ cuota ÷ 0,30',
+      },
+      {
+        type: 'p',
+        text: 'También es opcional el aumento salarial esperado (anual, semestral o trimestral) para proyectar esa relación año a año con cuota fija en pesos. El escenario de estrés deja el ingreso sin aumentos. Si hay REM, deflactamos la cuota a poder de compra de hoy para comparar.',
+      },
+      {
+        type: 'p',
+        text: 'Además mostramos techos BCRA (TEA/CFT máximos del CSV PERSONALES) solo para entidades del ranking, priorizando territorio nacional y productos generales. Son máximos regulatorios, no las tasas publicitadas del listado principal.',
+      },
+      {
+        type: 'p',
+        text: 'Es un dato informativo sujeto a aprobación crediticia; el banco puede usar otra amortización, seguros o comisiones no reflejadas en la TNA publicada.',
       },
     ],
   },
