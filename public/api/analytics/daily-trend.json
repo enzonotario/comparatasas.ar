@@ -1,18 +1,33 @@
 [
   {
+    "date": "20260917",
+    "event_type": "click",
+    "clicks": 109
+  },
+  {
+    "date": "20260917",
+    "event_type": "provider_click",
+    "clicks": 43
+  },
+  {
+    "date": "20260917",
+    "event_type": "sponsor_click",
+    "clicks": 6
+  },
+  {
     "date": "20260916",
     "event_type": "click",
-    "clicks": 112
+    "clicks": 271
   },
   {
     "date": "20260916",
     "event_type": "provider_click",
-    "clicks": 71
+    "clicks": 107
   },
   {
     "date": "20260916",
     "event_type": "sponsor_click",
-    "clicks": 3
+    "clicks": 8
   },
   {
     "date": "20260915",
@@ -433,20 +448,5 @@
     "date": "20260819",
     "event_type": "sponsor_click",
     "clicks": 9
-  },
-  {
-    "date": "20260818",
-    "event_type": "click",
-    "clicks": 287
-  },
-  {
-    "date": "20260818",
-    "event_type": "provider_click",
-    "clicks": 97
-  },
-  {
-    "date": "20260818",
-    "event_type": "sponsor_click",
-    "clicks": 3
   }
 ]
