@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
-import 'vue-data-ui/style.css'
+import { provide } from 'vue'
+import type { ComposeOption } from 'echarts/core'
+import type { BarSeriesOption } from 'echarts/charts'
+import type {
+  GridComponentOption,
+  TooltipComponentOption,
+  TitleComponentOption,
+} from 'echarts/components'
 import { CHART_COLORS, useChartTheme } from '~/composables/useChartConfig'
-import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
 
 export interface PlazoFijoTnaChartItem {
   institution: string
@@ -27,449 +32,165 @@ const props = withDefaults(defineProps<Props>(), {
   preserveTnaPrecision: false,
 })
 
-type BarChild = {
-  name: string
-  value: number
-  color: string
-  logo?: string
-  rightLabel?: string
+type BarOption = ComposeOption<
+  BarSeriesOption | GridComponentOption | TooltipComponentOption | TitleComponentOption
+>
+
+const colorMode = computed(() => useColorMode().value)
+provide(THEME_KEY, colorMode)
+
+const initOptions = computed(() => ({
+  renderer: 'svg' as const,
+}))
+provide(INIT_OPTIONS_KEY, initOptions)
+
+const { textColor, gridLineColor } = useChartTheme()
+
+function formatTnaPreservingPrecision(value: number): string {
+  if (!Number.isFinite(value)) return '0'
+  return value.toFixed(6).replace(/\.?0+$/, '')
 }
 
-function escapeTooltipHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+function formatTna(value: number): string {
+  if (props.preserveTnaPrecision) return formatTnaPreservingPrecision(value)
+  return value.toFixed(2)
 }
 
-function formatTnaPreservingPrecision(value: number | string): string {
-  const n = Number(value)
-  if (!Number.isFinite(n)) return '0'
-
-  // Evita ceros de más y mantiene los decimales relevantes.
-  return n.toFixed(6).replace(/\.?0+$/, '')
-}
-
-/** Mismas constantes que TNAGroupedTnaChart (VueUiHorizontalBar + slot #svg). */
-const BAR_GAP = 4
-const BAR_PARENT_FS = 11
-const BAR_NAME_FS = 11
-const BAR_DATA_FS = 11
-const BAR_L = BAR_PARENT_FS * 3
-const BAR_MIN_ROW = 20
-const BAR_TAIL = 24
-const BAR_LIB_PAD_V = 24
-const BAR_LIB_TOP = 12
-const LOGO_PX = 18
-const BAR_CHART_WIDTH = 520
-const BAR_RIGHT_LABEL_PAD = 96
-
-const { textColor, gridLineColor, colorMode } = useChartTheme()
-const solidTooltip = useVueDataUiSolidTooltip()
-const horizontalBarComponent = shallowRef<Component | null>(null)
-const logoClipUid = `pf-tna-bar-${useId().replace(/[^a-zA-Z0-9_-]/g, '-')}`
-
-onMounted(async () => {
-  const { VueUiHorizontalBar } = await import('vue-data-ui/vue-ui-horizontal-bar')
-  horizontalBarComponent.value = VueUiHorizontalBar
-})
-
-const chartDataset = computed(() => {
-  const sorted = [...props.items]
+const sortedItems = computed(() =>
+  [...props.items]
     .filter((i) => i.tna > 0)
-    .sort((a, b) => (props.sortTnaAscending ? a.tna - b.tna : b.tna - a.tna))
-  if (sorted.length === 0) return []
+    .sort((a, b) => (props.sortTnaAscending ? a.tna - b.tna : b.tna - a.tna)),
+)
 
-  const children: BarChild[] = sorted.map((item, index) => ({
-    name: item.institution,
-    value: item.tna,
-    color: CHART_COLORS[index % CHART_COLORS.length],
-    logo: item.logo,
-    rightLabel: '',
-  }))
-
-  const value = Math.max(...children.map((c) => c.value))
-
-  return [
-    {
-      name: props.parentGroupName,
-      value,
-      children,
-    },
-  ]
-})
-
-/** Misma idea que TNAGroupedTnaChart en layout de columna (`section !== 'all'`). */
-const chartRootClass = 'w-full min-w-0 [&_svg]:max-w-full [&_svg]:h-auto'
+/** ECharts category axis: primer ítem abajo → invertimos para que el mejor TNA quede arriba. */
+const chartRows = computed(() => [...sortedItems.value].reverse())
 
 const chartHeight = computed(() => {
-  const ds = chartDataset.value
-  const bt = ds.reduce((s, g) => s + g.children.length, 0)
-  const numGroups = ds.length
-  if (bt === 0) return 420
-  return Math.max(
-    280,
-    BAR_LIB_PAD_V + (bt - 1) * BAR_GAP + numGroups * BAR_L + bt * BAR_MIN_ROW + BAR_TAIL,
-  )
+  const n = chartRows.value.length
+  if (n === 0) return 280
+  return Math.max(280, 56 + n * 36)
 })
 
-const chartConfig = computed<any>(() => ({
-  skeletonDataset: null,
-  skeletonConfig: null,
-  debug: false,
-  loading: false,
-  autoSize: false,
-  // Si responsive cambia width/height internos, las coordenadas del slot #svg dejan de coincidir con las barras.
-  responsive: false,
-  theme: '',
-  customPalette: CHART_COLORS,
-  useCssAnimation: false,
-  a11y: {
-    translations: {
-      keyboardNavigation:
-        'Use the left and right, or up and down arrow keys to move between datapoints',
-      tableAvailable: 'A data table for this chart is available below.',
-      tableCaption: 'Chart data table',
-    },
-  },
-  events: {
-    datapointEnter: null,
-    datapointLeave: null,
-    datapointClick: null,
-  },
-  style: {
-    fontFamily: 'inherit',
-    chart: {
-      backgroundColor: 'transparent',
+const option = computed<BarOption>(() => {
+  const rows = chartRows.value
+  const colorByInstitution = new Map(
+    sortedItems.value.map((item, index) => [
+      item.institution,
+      CHART_COLORS[index % CHART_COLORS.length],
+    ]),
+  )
+  const rich: Record<string, Record<string, unknown>> = {
+    name: {
       color: textColor.value,
-      width: BAR_CHART_WIDTH,
-      height: chartHeight.value,
-      layout: {
-        bars: {
-          rowColor: null,
-          rowRadius: 3,
-          sort: 'none',
-          useStroke: false,
-          strokeWidth: 2,
-          height: 22,
-          gap: BAR_GAP,
-          borderRadius: 3,
-          offsetX: 56,
-          paddingRight: BAR_RIGHT_LABEL_PAD,
-          useGradient: true,
-          gradientIntensity: 20,
-          fillOpacity: 90,
-          underlayerColor: 'transparent',
-          dataLabels: {
-            color: textColor.value,
-            bold: true,
-            fontSize: BAR_DATA_FS,
-            value: {
-              show: true,
-              roundingValue: 0,
-              prefix: '',
-              suffix: '%',
-              formatter: props.preserveTnaPrecision
-                ? ({ value }: { value: number | string }) => formatTnaPreservingPrecision(value)
-                : null,
-            },
-            percentage: {
-              show: false,
-              roundingPercentage: 0,
-            },
-            offsetX: 0,
-          },
-          nameLabels: {
-            show: true,
-            color: textColor.value,
-            bold: false,
-            fontSize: BAR_NAME_FS,
-            offsetX: 0,
-          },
-          parentLabels: {
-            show: true,
-            color: textColor.value,
-            bold: false,
-            fontSize: BAR_PARENT_FS,
-            offsetX: 4,
-            paddingBottom: 0,
-          },
-        },
-        highlighter: {
-          color: textColor.value,
-          opacity: 5,
-        },
-        separators: {
-          show: false,
-          color: gridLineColor.value,
-          strokeWidth: 1,
-          fullWidth: true,
-        },
-      },
-      title: {
-        text: '',
-        color: textColor.value,
-        fontSize: 20,
-        bold: true,
-        textAlign: 'center',
-        paddingLeft: 0,
-        paddingRight: 0,
-        subtitle: {
-          color: '#A1A1A1',
-          text: '',
-          fontSize: 16,
-          bold: false,
-        },
-      },
-      legend: {
-        show: false,
-        bold: false,
-        backgroundColor: 'transparent',
-        color: textColor.value,
-        fontSize: 14,
-        selectAllToggle: {
-          show: false,
-          backgroundColor: '#e1e5e8',
-          color: textColor.value,
-        },
-        position: 'top',
-        roundingValue: 0,
-        roundingPercentage: 0,
-        prefix: '',
-        suffix: '',
-      },
-      tooltip: {
-        ...solidTooltip.value,
-        show: true,
-        customFormat: ({ datapoint }: { datapoint: { name?: string; value?: number } }) => {
-          const name = datapoint?.name ?? ''
-          const v = datapoint?.value
-          const tna = v != null && Number.isFinite(Number(v)) ? `${Number(v).toFixed(2)}%` : '—'
-          return `<div style="font-family:inherit"><b>${escapeTooltipHtml(name)}</b><br/>TNA: ${tna}</div>`
-        },
-        showValue: false,
-        showPercentage: false,
-        roundingValue: 0,
-        roundingPercentage: 0,
-        prefix: '',
-        suffix: '',
-      },
+      fontSize: 11,
+      padding: [0, 0, 0, 6],
     },
-  },
-  userOptions: {
-    show: false,
-    showOnChartHover: false,
-    keepStateOnChartLeave: true,
-    position: 'right',
-    buttons: {
-      tooltip: true,
-      pdf: true,
-      csv: true,
-      img: true,
-      table: true,
-      labels: false,
-      fullscreen: true,
-      sort: true,
-      stack: false,
-      animation: false,
-      annotator: true,
-      svg: true,
-      zoom: false,
-      altCopy: false,
-    },
-    callbacks: {
-      animation: null,
-      annotator: null,
-      csv: null,
-      fullscreen: null,
-      img: null,
-      labels: null,
-      pdf: null,
-      sort: null,
-      stack: null,
-      table: null,
-      tooltip: null,
-      svg: null,
-      zoom: null,
-      altCopy: null,
-    },
-    buttonTitles: {
-      open: 'Open options',
-      close: 'Close options',
-      tooltip: 'Toggle tooltip',
-      pdf: 'Download PDF',
-      csv: 'Download CSV',
-      img: 'Download PNG',
-      table: 'Toggle table',
-      fullscreen: 'Toggle fullscreen',
-      sort: 'Toggle sort',
-      annotator: 'Toggle annotator',
-      svg: 'Download SVG',
-      altCopy: 'Copy alt text',
-    },
-    print: {
-      scale: 2,
-      orientation: 'auto',
-      overflowTolerance: 0.2,
-    },
-    useCursorPointer: false,
-  },
-  table: {
-    show: false,
-    responsiveBreakpoint: 400,
-    useDialog: false,
-    th: {
-      backgroundColor: '#FFFFFF',
-      color: textColor.value,
-      outline: 'none',
-    },
-    td: {
-      backgroundColor: '#FFFFFF',
-      color: textColor.value,
-      outline: 'none',
-      roundingValue: 0,
-      roundingPercentage: 0,
-      prefix: '',
-      suffix: '',
-    },
-  },
-  translations: {
-    parentName: 'Serie',
-    childName: 'Child',
-    value: 'value',
-    percentageToTotal: '%/total',
-    percentageToSerie: '%/serie',
-  },
-}))
-
-const barCaptionFill = computed(() => (colorMode.value === 'dark' ? '#a3a3a3' : '#525252'))
-
-const barLogoLayout = computed(() => {
-  const dataset = chartDataset.value
-  const K = chartHeight.value
-  const gap = BAR_GAP
-  const paddingTop = BAR_LIB_TOP
-  const nameFontSize = BAR_NAME_FS
-  const showParent = true
-  const parentFontSize = BAR_PARENT_FS
-  const parentPaddingBottom = 0
-  const Lpx = showParent ? parentFontSize * 3 + parentPaddingBottom : 0
-  const LOGO = LOGO_PX
-  const logoX = 6
-
-  const flat: Array<{ key: string; logo?: string; rightLabel?: string }> = []
-  for (const g of dataset) {
-    g.children.forEach((c: BarChild, idx: number) => {
-      flat.push({
-        key: `${g.name}::${c.name}::${idx}`,
-        logo: c.logo,
-        rightLabel: c.rightLabel,
-      })
-    })
   }
 
-  const bt = flat.length
-  if (bt === 0)
-    return [] as Array<{
-      key: string
-      logo?: string
-      rightLabel?: string
-      x: number
-      y: number
-      size: number
-      textY: number
-    }>
-
-  const Acounts: number[] = []
-  let parentBlocks = 0
-  for (const g of dataset) {
-    g.children.forEach((_c: BarChild, idx: number) => {
-      if (idx === 0 && showParent) parentBlocks += 1
-      Acounts.push(parentBlocks)
-    })
-  }
-
-  const maxA = Math.max(0, ...Acounts)
-  const d = (K - 24 - (bt - 1) * gap - maxA * Lpx) / bt
-
-  return flat.map((row, o) => {
-    const rowTextY = paddingTop + (gap + d) * o + d / 2 + nameFontSize / 3 + Acounts[o] * Lpx
-    const y = rowTextY - LOGO / 2
-    return {
-      ...row,
-      x: logoX,
-      y,
-      size: LOGO,
-      textY: rowTextY,
+  rows.forEach((row, index) => {
+    if (!row.logo) return
+    rich[`logo${index}`] = {
+      height: 18,
+      width: 18,
+      borderRadius: 3,
+      backgroundColor: { image: row.logo },
     }
   })
+
+  return {
+    animationDuration: 400,
+    title: {
+      text: props.parentGroupName,
+      left: 0,
+      top: 0,
+      textStyle: {
+        color: textColor.value,
+        fontSize: 11,
+        fontWeight: 500,
+      },
+    },
+    grid: {
+      top: 28,
+      right: 72,
+      bottom: 8,
+      left: 8,
+      containLabel: true,
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: (params) => {
+        const items = Array.isArray(params) ? params : [params]
+        const first = items[0] as { name?: string; value?: number | string }
+        const name = first?.name ?? ''
+        const value = Number(first?.value)
+        const tna = Number.isFinite(value) ? `${formatTna(value)}%` : '—'
+        return `<div style="font-family:inherit"><b>${name}</b><br/>TNA: ${tna}</div>`
+      },
+    },
+    xAxis: {
+      type: 'value',
+      axisLabel: {
+        color: textColor.value,
+        formatter: (value: number) => `${formatTna(value)}%`,
+      },
+      splitLine: { lineStyle: { color: gridLineColor.value } },
+    },
+    yAxis: {
+      type: 'category',
+      data: rows.map((row) => row.institution),
+      axisLabel: {
+        color: textColor.value,
+        formatter: (value: string, index: number) => {
+          const row = rows[index]
+          if (row?.logo) return `{logo${index}|}{name|${value}}`
+          return `{name|${value}}`
+        },
+        rich,
+      },
+      axisTick: { show: false },
+      axisLine: { show: false },
+    },
+    series: [
+      {
+        type: 'bar',
+        name: props.parentGroupName,
+        data: rows.map((row) => ({
+          value: row.tna,
+          itemStyle: {
+            color: colorByInstitution.get(row.institution) ?? CHART_COLORS[0],
+            borderRadius: [0, 3, 3, 0],
+          },
+        })),
+        barMaxWidth: 22,
+        label: {
+          show: true,
+          position: 'right',
+          color: textColor.value,
+          fontWeight: 600,
+          fontSize: 11,
+          formatter: (params) => `${formatTna(Number(params.value))}%`,
+        },
+      },
+    ],
+  }
 })
 </script>
 
 <template>
-  <div :class="chartRootClass">
+  <div class="w-full min-w-0">
     <ClientOnly>
-      <component
-        :is="horizontalBarComponent"
-        v-if="horizontalBarComponent && chartDataset.length > 0"
-        :dataset="chartDataset"
-        :config="chartConfig"
-      >
-        <template #svg>
-          <defs>
-            <template v-for="(pos, i) in barLogoLayout" :key="`clip-${pos.key}`">
-              <clipPath v-if="pos.logo" :id="`${logoClipUid}-clip-${i}`">
-                <rect :x="pos.x" :y="pos.y" :width="pos.size" :height="pos.size" rx="3" ry="3" />
-              </clipPath>
-            </template>
-          </defs>
-          <g class="pointer-events-none" aria-hidden="true">
-            <template v-for="(pos, i) in barLogoLayout" :key="`img-${pos.key}`">
-              <image
-                v-if="pos.logo"
-                :href="pos.logo"
-                :x="pos.x"
-                :y="pos.y"
-                :width="pos.size"
-                :height="pos.size"
-                preserveAspectRatio="xMidYMid slice"
-                :clip-path="`url(#${logoClipUid}-clip-${i})`"
-              />
-            </template>
-          </g>
-          <g class="pointer-events-none" aria-hidden="true">
-            <text
-              v-for="pos in barLogoLayout"
-              v-show="pos.rightLabel"
-              :key="`cap-${pos.key}`"
-              :x="BAR_CHART_WIDTH - 6"
-              :y="pos.textY"
-              text-anchor="end"
-              :fill="barCaptionFill"
-              font-size="9"
-              font-family="inherit"
-              >{{ pos.rightLabel }}</text
-            >
-          </g>
-        </template>
-      </component>
-      <div
-        v-else-if="horizontalBarComponent && chartDataset.length === 0"
-        class="py-6 text-center text-sm text-neutral-500 dark:text-neutral-400"
-      >
+      <div v-if="chartRows.length > 0" class="w-full" :style="{ height: `${chartHeight}px` }">
+        <VChart :option="option" class="h-full w-full" autoresize />
+      </div>
+      <div v-else class="py-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
         No hay datos para graficar.
       </div>
-      <div v-else class="w-full min-h-96 flex items-center justify-center">
-        <div class="text-neutral-500">Cargando gráfico...</div>
-      </div>
+      <template #fallback>
+        <div class="w-full min-h-96 flex items-center justify-center">
+          <div class="text-neutral-500">Cargando gráfico...</div>
+        </div>
+      </template>
     </ClientOnly>
   </div>
 </template>
-
-<style scoped>
-:deep(.vue-ui-horizontal-bar-parent-label > text:last-of-type) {
-  opacity: 0;
-  pointer-events: none;
-}
-</style>

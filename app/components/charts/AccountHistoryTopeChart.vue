@@ -1,11 +1,25 @@
 <script setup lang="ts">
+import { provide } from 'vue'
+import type { ComposeOption } from 'echarts/core'
+import type { LineSeriesOption } from 'echarts/charts'
+import type {
+  DataZoomComponentOption,
+  GridComponentOption,
+  TooltipComponentOption,
+} from 'echarts/components'
 import type { AccountHistoryItem } from '~/composables/useAccountHistory'
-import 'vue-data-ui/style.css'
-import type { VueUiXyConfig, VueUiXyDatasetItem } from 'vue-data-ui'
-import type { ChartZoomRange } from '~/composables/useAccountHistoryChartZoomSync'
+import {
+  dataZoomPercentToZoomRange,
+  filterHistoryWithTope,
+  isFullDataZoomPercent,
+  zoomRangeToDataZoomPercent,
+  type ChartZoomRange,
+} from '~/composables/useAccountHistoryChartZoomSync'
 import { formatCurrency, useChartTheme } from '~/composables/useChartConfig'
-import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
-import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
+
+type ChartOption = ComposeOption<
+  LineSeriesOption | GridComponentOption | TooltipComponentOption | DataZoomComponentOption
+>
 
 interface Props {
   history: AccountHistoryItem[]
@@ -22,131 +36,205 @@ const emit = defineEmits<{
   zoomReset: []
 }>()
 
-const chart = useVueDataUiChart('VueUiXy')
+const colorMode = computed(() => useColorMode().value)
+provide(THEME_KEY, colorMode)
+
+const initOptions = computed(() => ({
+  height: 384,
+  width: 'auto' as const,
+  renderer: 'svg' as const,
+}))
+provide(INIT_OPTIONS_KEY, initOptions)
+
 const { textColor, gridLineColor } = useChartTheme()
-const solidTooltip = useVueDataUiSolidTooltip()
+
+const SERIES_COLOR = '#10b981'
 
 function formatShortDate(iso: string) {
   const d = new Date(iso)
-  return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear().toString().slice(-2)}`
+  return d.toLocaleDateString('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  })
 }
 
-const filtered = computed(() =>
-  props.history.filter((item) => item.tope != null && item.tope !== undefined),
-)
+const filtered = computed(() => filterHistoryWithTope(props.history))
 
 const xLabels = computed(() => filtered.value.map((item) => formatShortDate(item.fecha)))
+const topeValues = computed(() => filtered.value.map((item) => item.tope!))
 
-const dataset = computed<VueUiXyDatasetItem[]>(() => {
-  if (!filtered.value.length) return []
-  return [
-    {
-      name: 'Tope',
-      series: filtered.value.map((item) => item.tope!),
-      type: 'line' as const,
-      useArea: true,
-      smooth: true,
-      color: '#10b981',
-    },
-  ]
-})
+const dataZoomWindow = computed(() =>
+  zoomRangeToDataZoomPercent(props.zoomRange, filtered.value.length),
+)
 
-const chartConfig = computed<VueUiXyConfig>(() => ({
-  responsive: true,
-  theme: '',
-  useCssAnimation: false,
-  chart: {
-    fontFamily: 'inherit',
+const chartOption = computed<ChartOption>(() => {
+  if (!filtered.value.length) return {}
+
+  const isDark = colorMode.value === 'dark'
+  const { start, end } = dataZoomWindow.value
+
+  return {
     backgroundColor: 'transparent',
-    color: textColor.value,
-    height: 384,
-    userOptions: { show: false },
-    padding: {
-      bottom: 0,
-    },
-    zoom: {
-      ...(props.zoomRange != null
-        ? {
-            startIndex: props.zoomRange.start,
-            endIndex: props.zoomRange.end,
-          }
-        : {}),
-      minimap: {
-        show: true,
-        selectedColor: '#3b82f6',
-        frameColor: gridLineColor.value,
+    animationDuration: 300,
+    tooltip: {
+      trigger: 'axis',
+      formatter: (params: unknown) => {
+        const item = Array.isArray(params) ? params[0] : params
+        if (!item || typeof item !== 'object') return ''
+        const dataIndex = (item as { dataIndex?: number }).dataIndex ?? 0
+        const point = filtered.value[dataIndex]
+        const label = xLabels.value[dataIndex] ?? ''
+        if (!point || point.tope == null) return ''
+        return `<strong>${label}</strong><br/>Tope: ${formatCurrency(point.tope)}<br/>TNA: ${(point.tna * 100).toFixed(2)}%`
       },
     },
-    highlighter: {
-      color: textColor.value,
-    },
     grid: {
-      stroke: gridLineColor.value,
-      showHorizontalLines: true,
-      showVerticalLines: false,
-      labels: {
+      left: '2%',
+      right: '3%',
+      top: '12%',
+      bottom: '18%',
+      containLabel: true,
+    },
+    xAxis: {
+      type: 'category',
+      name: 'Fecha',
+      nameLocation: 'middle',
+      nameGap: 28,
+      nameTextStyle: { color: textColor.value },
+      data: xLabels.value,
+      boundaryGap: false,
+      axisLabel: {
         color: textColor.value,
-        show: true,
+        hideOverlap: true,
+        rotate: 45,
         fontSize: 11,
-        axis: {
-          yLabel: 'Tope (ARS)',
-          xLabel: 'Fecha',
+      },
+      axisLine: {
+        lineStyle: { color: gridLineColor.value },
+      },
+      axisTick: { show: false },
+      splitLine: { show: false },
+    },
+    yAxis: {
+      type: 'value',
+      name: 'Tope (ARS)',
+      nameTextStyle: { color: textColor.value },
+      axisLabel: {
+        color: textColor.value,
+        formatter: (value: number) => formatCurrency(Number(value)),
+      },
+      axisLine: { show: false },
+      splitLine: {
+        lineStyle: {
+          color: gridLineColor.value,
+          type: 'dashed',
         },
-        yAxis: {
-          formatter: ({ value }) => formatCurrency(Number(value)),
+      },
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        xAxisIndex: [0],
+        start,
+        end,
+        filterMode: 'none',
+      },
+      {
+        type: 'slider',
+        xAxisIndex: [0],
+        height: 18,
+        bottom: 8,
+        start,
+        end,
+        filterMode: 'none',
+        borderColor: gridLineColor.value,
+        fillerColor: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.15)',
+        handleStyle: { color: SERIES_COLOR },
+        textStyle: { color: textColor.value },
+        dataBackground: {
+          lineStyle: { color: SERIES_COLOR },
+          areaStyle: { color: isDark ? 'rgba(16, 185, 129, 0.25)' : 'rgba(16, 185, 129, 0.2)' },
         },
-        xAxisLabels: {
-          values: xLabels.value,
-          color: textColor.value,
-          autoRotate: {
-            enable: true,
-            angle: -45,
+        selectedDataBackground: {
+          lineStyle: { color: SERIES_COLOR },
+          areaStyle: { color: isDark ? 'rgba(16, 185, 129, 0.35)' : 'rgba(16, 185, 129, 0.3)' },
+        },
+      },
+    ],
+    series: [
+      {
+        name: 'Tope',
+        type: 'line',
+        data: topeValues.value,
+        smooth: true,
+        showSymbol: false,
+        sampling: 'lttb',
+        itemStyle: { color: SERIES_COLOR },
+        lineStyle: { color: SERIES_COLOR, width: 2 },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: `${SERIES_COLOR}55` },
+              { offset: 1, color: `${SERIES_COLOR}05` },
+            ],
           },
         },
       },
-    },
-    tooltip: {
-      ...solidTooltip.value,
-      show: true,
-      customFormat: (params: { absoluteIndex?: number }) => {
-        const i = params.absoluteIndex ?? 0
-        const item = filtered.value[i]
-        const label = xLabels.value[i] ?? ''
-        if (!item || item.tope == null) return ''
-        const tna = `TNA: ${(item.tna * 100).toFixed(2)}%`
-        return `<div style="font-family:inherit"><b>${label}</b><br/>Tope: ${formatCurrency(item.tope)}<br/>${tna}</div>`
-      },
-    },
-    legend: { show: false, color: textColor.value },
-  },
-  line: {
-    area: { opacity: 35, useGradient: true },
-    labels: { show: false },
-  },
-}))
+    ],
+  }
+})
+
+function readDataZoomPercents(event: {
+  start?: number
+  end?: number
+  batch?: Array<{ start?: number; end?: number }>
+}) {
+  const payload = event.batch?.[0] ?? event
+  return {
+    start: payload.start ?? 0,
+    end: payload.end ?? 100,
+  }
+}
+
+function onDataZoom(event: {
+  start?: number
+  end?: number
+  batch?: Array<{ start?: number; end?: number }>
+}) {
+  const length = filtered.value.length
+  if (!length) return
+
+  const { start, end } = readDataZoomPercents(event)
+  if (isFullDataZoomPercent(start, end)) {
+    if (props.zoomRange != null) emit('zoomReset')
+    return
+  }
+
+  const next = dataZoomPercentToZoomRange(start, end, length)
+  const prev = props.zoomRange
+  if (prev && prev.start === next.start && prev.end === next.end) return
+
+  emit('zoomStart', { index: next.start })
+  emit('zoomEnd', { index: next.end })
+}
 </script>
 
 <template>
-  <div class="w-full min-h-96 [&_svg]:max-w-full [&_svg]:h-auto">
-    <ClientOnly>
-      <component
-        :is="chart"
-        v-if="chart && dataset.length > 0"
-        :dataset="dataset"
-        :config="chartConfig"
-        @zoom-start="emit('zoomStart', $event)"
-        @zoom-end="emit('zoomEnd', $event)"
-        @zoom-reset="emit('zoomReset')"
-      />
-      <div
-        v-else-if="chart && dataset.length === 0"
-        class="py-12 text-center text-sm text-neutral-500"
-      >
-        No hay datos de tope disponibles.
-      </div>
-      <div v-else class="min-h-96 flex items-center justify-center text-neutral-500">
-        Cargando gráfico…
-      </div>
-    </ClientOnly>
-  </div>
+  <ClientOnly>
+    <div v-if="filtered.length > 0" class="h-96 w-full">
+      <VChart :option="chartOption" class="h-full w-full" autoresize @datazoom="onDataZoom" />
+    </div>
+    <div v-else class="flex h-96 items-center justify-center text-sm text-neutral-500">
+      No hay datos de tope disponibles.
+    </div>
+    <template #fallback>
+      <div class="flex h-96 items-center justify-center text-neutral-500">Cargando gráfico…</div>
+    </template>
+  </ClientOnly>
 </template>

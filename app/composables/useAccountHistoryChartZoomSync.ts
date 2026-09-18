@@ -15,6 +15,39 @@ export function clampZoomRange(range: ChartZoomRange, length: number): ChartZoom
   return { start, end }
 }
 
+/** Convierte rango de índices (end exclusivo) a start/end % de dataZoom. */
+export function zoomRangeToDataZoomPercent(
+  range: ChartZoomRange | null | undefined,
+  length: number,
+): { start: number; end: number } {
+  if (length <= 0 || range == null) return { start: 0, end: 100 }
+  const { start, end } = clampZoomRange(range, length)
+  return {
+    start: (start / length) * 100,
+    end: (end / length) * 100,
+  }
+}
+
+/** Convierte start/end % de dataZoom a rango de índices (end exclusivo). */
+export function dataZoomPercentToZoomRange(
+  startPct: number,
+  endPct: number,
+  length: number,
+): ChartZoomRange {
+  if (length <= 0) return { start: 0, end: 0 }
+  return clampZoomRange(
+    {
+      start: Math.round((startPct / 100) * length),
+      end: Math.round((endPct / 100) * length),
+    },
+    length,
+  )
+}
+
+export function isFullDataZoomPercent(startPct: number, endPct: number): boolean {
+  return startPct <= 0.05 && endPct >= 99.95
+}
+
 /** Convierte rango canónico (historial completo) al subconjunto con tope. */
 export function canonicalToTopeRange(
   history: AccountHistoryItem[],
