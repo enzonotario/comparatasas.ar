@@ -340,7 +340,7 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Las TNAs provienen directamente de las plataformas para sus tokens en pesos (DAI, USDT, etc. atados a ARS). No las anualizamos ni las recalculamos.',
+        text: 'Cuando la plataforma publica APY (p. ej. Belo ARGt, Ripio wARS), la convertimos a TNA con capitalización diaria: TNA = 365 × ((1 + APY)^(1/365) − 1). El frontend muestra esa TNA tal como la publica ArgentinaDatos; no la vuelve a recalcular.',
       },
     ],
   },
