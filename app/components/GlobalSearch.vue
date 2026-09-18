@@ -4,18 +4,37 @@ import { plazosFijosNavTabs } from '~/lib/plazos-fijos-nav'
 const open = ref(false)
 const searchTerm = ref('')
 
+function plazosFijosSearchId(to: string) {
+  return `plazos-fijos-${to.replace(/^\/plazos-fijos\/?/, '') || 'tradicional'}`
+}
+
 const subpages = plazosFijosNavTabs.map((tab) => ({
-  id: `plazos-fijos-${tab.to.replace(/^\/plazos-fijos\/?/, '') || 'tradicional'}`,
+  id: plazosFijosSearchId(tab.to),
   label: `Plazo Fijo / ${tab.label}`,
   suffix: 'Plazos Fijos',
   icon: tab.icon,
   to: tab.to,
 }))
 
+/** Prioridad de aparición al buscar (mismo orden que las tabs). */
+const plazosFijosSearchPriority = Object.fromEntries(
+  plazosFijosNavTabs.map((tab, index) => [plazosFijosSearchId(tab.to), index]),
+) as Record<string, number>
+
+function sortPagesByPlazosFijosPriority<T extends { id?: string }>(_term: string, items: T[]) {
+  return [...items].sort((a, b) => {
+    const pa = a.id != null ? plazosFijosSearchPriority[a.id] : undefined
+    const pb = b.id != null ? plazosFijosSearchPriority[b.id] : undefined
+    if (pa != null && pb != null) return pa - pb
+    return 0
+  })
+}
+
 const groups = [
   {
     id: 'pages',
     label: 'Páginas',
+    postFilter: sortPagesByPlazosFijosPriority,
     items: [
       ...subpages,
       {
