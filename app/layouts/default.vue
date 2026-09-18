@@ -112,7 +112,7 @@ const showProductScenariosRail = computed(() => {
               fetchpriority="high"
             />
             <span
-              class="text-lg sm:text-xl font-bold text-zinc-900 dark:text-white hidden lg:block"
+              class="text-xs md:text-sm lg:text-xl font-bold text-zinc-900 dark:text-white"
             >
               ComparaTasas.ar
             </span>
@@ -120,10 +120,11 @@ const showProductScenariosRail = computed(() => {
         </template>
 
         <template #default>
-          <CategorySelector v-if="!isSumarsePage" />
+          <CategorySelector v-if="!isSumarsePage" class="hidden md:flex" />
         </template>
 
         <template #right>
+          <CategorySelector v-if="!isSumarsePage" class="flex md:hidden" />
           <UButton
             class="hidden h-7 sm:inline-flex"
             color="neutral"

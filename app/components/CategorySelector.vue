@@ -31,7 +31,7 @@ const getIconComponent = (icon: string) => {
       :key="category.id"
       :to="getCategoryRoute(category)"
       :aria-label="category.ariaLabel"
-      class="relative flex justify-center items-center gap-2 px-3 h-full sm:w-28 text-sm"
+      class="relative flex justify-center items-center gap-2 px-3 h-full md:w-28 text-sm"
       :class="
         isCategoryActive(category, route.path)
           ? 'text-primary-600 dark:text-primary-400 bg-primary-100/30 dark:bg-primary-900/20 border-t-2 border-primary-500 dark:border-primary-800'
@@ -45,7 +45,7 @@ const getIconComponent = (icon: string) => {
         aria-hidden="true"
       />
       <UIcon v-else :name="category.icon" class="size-4" aria-hidden="true" />
-      <span class="hidden sm:inline-block text-base">{{ category.label }}</span>
+      <span class="hidden md:inline-block text-base">{{ category.label }}</span>
     </NuxtLink>
   </div>
 </template>
