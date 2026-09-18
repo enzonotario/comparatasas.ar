@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { filterBySearchTokens, sortByPriorityMap } from '~/lib/global-search'
 import { plazosFijosNavTabs } from '~/lib/plazos-fijos-nav'
 
 const open = ref(false)
@@ -21,20 +22,19 @@ const plazosFijosSearchPriority = Object.fromEntries(
   plazosFijosNavTabs.map((tab, index) => [plazosFijosSearchId(tab.to), index]),
 ) as Record<string, number>
 
-function sortPagesByPlazosFijosPriority<T extends { id?: string }>(_term: string, items: T[]) {
-  return [...items].sort((a, b) => {
-    const pa = a.id != null ? plazosFijosSearchPriority[a.id] : undefined
-    const pb = b.id != null ? plazosFijosSearchPriority[b.id] : undefined
-    if (pa != null && pb != null) return pa - pb
-    return 0
-  })
+function postFilterSearchItems<T extends { id?: string; label?: string; suffix?: string; keywords?: string[] }>(
+  term: string,
+  items: T[],
+) {
+  return sortByPriorityMap(filterBySearchTokens(term, items), plazosFijosSearchPriority)
 }
 
 const groups = [
   {
     id: 'pages',
     label: 'Páginas',
-    postFilter: sortPagesByPlazosFijosPriority,
+    ignoreFilter: true,
+    postFilter: postFilterSearchItems,
     items: [
       ...subpages,
       {
@@ -127,6 +127,8 @@ const groups = [
   {
     id: 'charts',
     label: 'Gráficos',
+    ignoreFilter: true,
+    postFilter: postFilterSearchItems,
     items: [
       {
         id: 'cuentas-billeteras-graficos',
@@ -140,6 +142,8 @@ const groups = [
   {
     id: 'links',
     label: 'Enlaces',
+    ignoreFilter: true,
+    postFilter: postFilterSearchItems,
     items: [
       {
         id: 'sumarse',
@@ -167,8 +171,6 @@ const groups = [
     ],
   },
 ]
-
-const nuxtApp = useNuxtApp()
 
 useRuntimeHook('dashboard:search:toggle', () => {
   open.value = !open.value
@@ -200,13 +202,6 @@ function onSelect(val: any) {
       <UCommandPalette
         v-model:search-term="searchTerm"
         :groups="groups"
-        :fuse="{
-          fuseOptions: {
-            keys: ['label', 'suffix', 'keywords'],
-            threshold: 0.3,
-            ignoreLocation: true,
-          },
-        }"
         placeholder="Buscar página..."
         :autofocus="true"
         close
