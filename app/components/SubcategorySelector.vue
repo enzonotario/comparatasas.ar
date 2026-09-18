@@ -201,6 +201,22 @@ function pageLinkClass(page: NavigationPage) {
           </UButton>
 
           <UDrawer v-model:open="openMobile" :title="`Comparadores ${currentCategory.label}`">
+            <template #header>
+              <div class="flex w-full items-center justify-between gap-3">
+                <h2 class="text-base font-semibold text-highlighted">
+                  Comparadores {{ currentCategory.label }}
+                </h2>
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  size="sm"
+                  square
+                  icon="i-lucide-x"
+                  aria-label="Cerrar menú"
+                  @click="openMobile = false"
+                />
+              </div>
+            </template>
             <template #body>
               <div class="space-y-5 px-1 pb-4">
                 <section v-for="group in pageGroups" :key="group.id" class="space-y-1">
