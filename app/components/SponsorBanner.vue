@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useAnalytics } from '~/composables/useAnalytics'
-import { withOutboundUtm } from '~/lib/outbound-url'
 
 interface Banner {
   id: number
@@ -12,11 +11,6 @@ interface Banner {
   linkUrl?: string
 }
 
-interface PlaylistEntry {
-  bannerId: number
-  duration: number
-}
-
 interface Props {
   bannerId?: number
 }
@@ -26,64 +20,28 @@ const { trackSponsorClick } = useAnalytics()
 
 const BASE_URL = 'https://api.argentinadatos.com/static/assets/arq/'
 
-const LINK_URL = withOutboundUtm('https://www.arqfinance.com/', 'sponsor', {
-  campaign: 'arq-banner',
-})
+const LINK_URL =
+  'https://www.arqfinance.com/referrals/arr?referralCode=enzonotario_sJx&pid=referral&c=arr&is_retargeting=true'
 
-const defaultBanners: Banner[] = [
-  {
-    id: 10,
-    desktopUrl: `${BASE_URL}Desktop_banner_10.png`,
-    mobileUrl: `${BASE_URL}Mobile_banner_10.png`,
-    altText: 'Banner 10',
-    linkUrl: LINK_URL,
-  },
-  {
-    id: 20,
-    desktopUrl: `${BASE_URL}Desktop_banner_20.png`,
-    mobileUrl: `${BASE_URL}Mobile_banner_20.png`,
-    altText: 'Banner 20',
-    linkUrl: LINK_URL,
-  },
-  {
-    id: 30,
-    desktopUrl: `${BASE_URL}Desktop_banner_30.png`,
-    mobileUrl: `${BASE_URL}Mobile_banner_30.png`,
-    altText: 'Banner 30',
-    linkUrl: LINK_URL,
-  },
-  {
-    id: 40,
-    desktopUrl: `${BASE_URL}Desktop_banner_40.png`,
-    mobileUrl: `${BASE_URL}Mobile_banner_40.png`,
-    altText: 'Banner 40',
-    linkUrl: LINK_URL,
-  },
-]
-
-const playlist: PlaylistEntry[] = [
-  { bannerId: 10, duration: 5000 },
-  { bannerId: 20, duration: 5000 },
-  { bannerId: 30, duration: 5000 },
-  { bannerId: 40, duration: 3000 },
-]
+const banner: Banner = {
+  id: 1,
+  desktopUrl: `${BASE_URL}desktop.gif`,
+  mobileUrl: `${BASE_URL}mobile.gif`,
+  altText: 'ARQ — Pagá tus compras online en dólares',
+  linkUrl: LINK_URL,
+}
 
 const isMobile = ref(false)
 const isDarkMode = ref(false)
 const imageError = ref(false)
-const currentPlaylistIndex = ref(0)
 
 let cleanup: (() => void) | null = null
 
 const currentBanner = computed(() => {
   if (imageError.value) return null
-
-  if (props.bannerId !== undefined) {
-    return defaultBanners.find((b) => b.id === props.bannerId) || null
-  }
-
-  const entry = playlist[currentPlaylistIndex.value]
-  return defaultBanners.find((b) => b.id === entry.bannerId) || null
+  // bannerId se mantiene por compatibilidad de analytics / usos legacy
+  if (props.bannerId !== undefined && props.bannerId !== banner.id) return null
+  return banner
 })
 
 const bannerImageUrl = computed(() => {
@@ -120,24 +78,9 @@ onMounted(() => {
       }
       darkModeQuery.addEventListener('change', handleDarkModeChange)
 
-      let timeoutId: ReturnType<typeof setTimeout>
-
-      const scheduleNext = () => {
-        const entry = playlist[currentPlaylistIndex.value]
-        timeoutId = setTimeout(() => {
-          currentPlaylistIndex.value = (currentPlaylistIndex.value + 1) % playlist.length
-          scheduleNext()
-        }, entry.duration)
-      }
-
-      if (props.bannerId === undefined) {
-        scheduleNext()
-      }
-
       cleanup = () => {
         window.removeEventListener('resize', checkMobile)
         darkModeQuery.removeEventListener('change', handleDarkModeChange)
-        clearTimeout(timeoutId)
       }
     })
   }
