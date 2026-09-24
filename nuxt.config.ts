@@ -1,7 +1,17 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { fileURLToPath } from 'node:url'
 import { AGENT_NEGOTIATED_ROUTES, getPublicRoutes } from './app/lib/agent-routes'
+import { readCategoryIconVersions } from './app/lib/category-icons'
+import { CATEGORY_ICON_MAX_AGE } from './app/lib/category-icon-url'
 import { getPrerenderRoutes } from './app/lib/prerender-routes'
 import { jsonLdScript, siteOrganization } from './app/lib/json-ld'
+
+const categoryIconsDir = fileURLToPath(new URL('./public/assets/icons', import.meta.url))
+// `nuxt build` fija NODE_ENV=production antes de cargar este archivo.
+const categoryIconVersions = readCategoryIconVersions(
+  categoryIconsDir,
+  process.env.NODE_ENV === 'production',
+)
 
 export default defineNuxtConfig({
   modules: [
@@ -102,6 +112,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       showProductScenarios: false,
+      categoryIconVersions,
     },
   },
   routeRules: Object.fromEntries(
@@ -112,6 +123,21 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'cloudflare_pages',
+    // Carpeta aparte de `public/` para que Pages la sirva como asset estático
+    // (fuera del Worker) y Nitro escriba Cache-Control en `dist/_headers`.
+    // El query `?v=` es el hash del archivo: un icono igual conserva la URL;
+    // un icono nuevo obtiene otra URL. Por eso `immutable` es seguro.
+    // https://developers.cloudflare.com/pages/configuration/headers/
+    publicAssets:
+      process.env.NODE_ENV === 'production'
+        ? [
+            {
+              baseURL: '/assets/icons',
+              dir: categoryIconsDir,
+              maxAge: CATEGORY_ICON_MAX_AGE,
+            },
+          ]
+        : [],
     prerender: {
       // Las rutas negociadas quedan fuera y llegan al Worker. crawlLinks expandía
       // hermanos del catálogo a ~700+ /fondos/* y ~9 min de generate.

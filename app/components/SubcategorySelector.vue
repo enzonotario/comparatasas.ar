@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
+import { categoryIconUrl } from '~/lib/category-icon-url'
 import { groupNavigationPages, type NavigationPage } from '~/composables/useNavigationPages'
 
+const iconVersions =
+  (useRuntimeConfig().public.categoryIconVersions as Record<string, string> | undefined) ?? {}
+
+const GROUP_IMAGES: Record<string, string> = {
+  inversion: categoryIconUrl('inversion.png', iconVersions['inversion.png']),
+  mercado: categoryIconUrl('mercado.png', iconVersions['mercado.png']),
+  credito: categoryIconUrl('credito.png', iconVersions['credito.png']),
+  'costos-y-herramientas': categoryIconUrl('costos.png', iconVersions['costos.png']),
+}
+
 const GROUP_ICONS: Record<string, string> = {
-  inversion: 'i-lucide-wallet',
-  mercado: 'i-lucide-chart-line',
-  credito: 'i-lucide-landmark',
-  'costos-y-herramientas': 'i-lucide-wrench',
   usd: 'i-lucide-dollar-sign',
   otros: 'i-lucide-layout-grid',
 }
@@ -38,9 +45,12 @@ const desktopItems = computed<NavigationMenuItem[]>(() => {
   // Varios grupos: label + icon + children (patrón docs NavigationMenu)
   return groups.map((group) => {
     const groupActive = group.pages.some((page) => isActive(page))
+    const image = GROUP_IMAGES[group.id]
     return {
       label: group.label,
-      icon: GROUP_ICONS[group.id] ?? GROUP_ICONS.otros,
+      ...(image
+        ? { avatar: { src: image, alt: '' } }
+        : { icon: GROUP_ICONS[group.id] ?? GROUP_ICONS.otros }),
       active: groupActive,
       children: group.pages.map((page) => ({
         ...toPageItem(page),
@@ -63,6 +73,7 @@ function toPageItem(page: NavigationPage): NavigationMenuItem {
   return {
     label: page.label,
     icon: page.icon,
+    avatar: { src: page.image, alt: '' },
     to: page.to,
     active: isActive(page),
     ...(page.badge
@@ -124,6 +135,21 @@ function pageLinkClass(page: NavigationPage) {
               childLinkIcon: 'size-4 shrink-0',
             }"
           >
+            <template #item-leading="{ item }">
+              <img
+                v-if="item.avatar?.src"
+                :src="item.avatar.src"
+                alt=""
+                class="size-5 shrink-0 object-contain"
+                aria-hidden="true"
+              />
+              <UIcon
+                v-else-if="item.icon"
+                :name="item.icon"
+                class="size-4 shrink-0"
+                aria-hidden="true"
+              />
+            </template>
             <!-- Children no soportan avatar; slot con PNG de producto -->
             <template v-if="useGroupedDesktop" #item-content="{ item }">
               <ul class="flex flex-col gap-0.5 p-1.5">
@@ -222,8 +248,15 @@ function pageLinkClass(page: NavigationPage) {
                 <section v-for="group in pageGroups" :key="group.id" class="space-y-1">
                   <h3
                     v-if="showGroupLabels"
-                    class="px-3 pb-1 text-[10px] font-medium uppercase tracking-wide text-muted"
+                    class="flex items-center gap-2 px-3 pb-1 text-[10px] font-medium uppercase tracking-wide text-muted"
                   >
+                    <img
+                      v-if="GROUP_IMAGES[group.id]"
+                      :src="GROUP_IMAGES[group.id]"
+                      alt=""
+                      class="size-4 shrink-0 object-contain"
+                      aria-hidden="true"
+                    />
                     {{ group.label }}
                   </h3>
                   <ul class="space-y-0.5">
