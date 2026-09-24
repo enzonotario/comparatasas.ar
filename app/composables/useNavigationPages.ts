@@ -107,7 +107,7 @@ export const useNavigationPages = () => {
       id: 'ars',
       label: 'ARS',
       ariaLabel:
-        'ARS — comparadores en pesos: cuentas y billeteras, plazos fijos, FCI, contado vs cuotas, LECAPs, cauciones, bonos CER, créditos hipotecarios UVA, préstamos personales y comisiones',
+        'ARS — comparadores en pesos: cuentas y billeteras, gráficos, plazos fijos, FCI, contado vs cuotas, LECAPs, cauciones, bonos CER, créditos hipotecarios UVA, préstamos personales y comisiones',
       icon: 'flag-ars',
       pages: [
         {
@@ -129,6 +129,13 @@ export const useNavigationPages = () => {
           label: 'Criptopesos',
           icon: 'i-lucide-coins',
           image: categoryIcon('criptopesos.png'),
+          group: 'Inversión',
+        },
+        {
+          to: '/cuentas-billeteras/graficos',
+          label: 'Gráficos',
+          icon: 'i-lucide-chart-column',
+          image: categoryIcon('graficos.png'),
           group: 'Inversión',
         },
         {
