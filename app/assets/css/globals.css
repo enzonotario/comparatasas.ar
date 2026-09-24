@@ -9,6 +9,20 @@
   --ui-header-height: --spacing(9);
 }
 
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/text-wrap
+   pretty evita una última línea de una sola palabra. El valor se hereda.
+   Las utilidades de Tailwind pueden reemplazarlo. */
+@layer base {
+  html {
+    text-wrap: pretty;
+  }
+
+  /* Los h1 de esta app son títulos cortos. Una última palabra sola es el corte correcto. */
+  h1 {
+    text-wrap: wrap;
+  }
+}
+
 /*
  * vue-data-ui: con `customFormat` el Tooltip usa `isCustom` y la librería no inyecta background/color
  * en el estilo inline (solo .vue-data-ui-custom-tooltip en CSS, sin fondo). Sin esto el tooltip se ve
