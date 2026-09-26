@@ -320,7 +320,7 @@ const fundMappings: FundMapping[] = [
     ],
   },
   {
-    fundName: 'ST Zero - Clase D',
+    fundName: 'Consultatio Zero · Clase D',
     institutions: [
       {
         institution: 'letsbit',
@@ -939,7 +939,7 @@ export const comparatasasFondosArs = [
   'premier-renta-cp-en-pesos-clase-a',
   'sbs-acciones-argentina-clase-a',
   'sbs-ahorro-pesos-clase-a',
-  'st-zero-clase-d',
+  'consultatio-zero-clase-d',
   'super-ahorro-clase-a',
   'toronto-trust-ahorro-clase-a',
   'toronto-trust-multimercado-clase-a',
