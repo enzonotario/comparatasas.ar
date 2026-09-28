@@ -323,17 +323,22 @@ const fundMappings: FundMapping[] = [
     fundName: 'Consultatio Zero · Clase D',
     institutions: [
       {
-        institution: 'letsbit',
-        displayName: 'LB Finanzas',
+        institution: 'Astropay',
+        displayName: 'AstroPay',
         showInAccounts: true,
         showInFunds: true,
         showInUsdFunds: false,
         showInStockFunds: false,
         showInUsdMoneyMarket: false,
       },
+    ],
+  },
+  {
+    fundName: 'MEGAQM Pesos - Clase E',
+    institutions: [
       {
-        institution: 'Astropay',
-        displayName: 'AstroPay',
+        institution: 'letsbit',
+        displayName: 'LB Finanzas',
         showInAccounts: true,
         showInFunds: true,
         showInUsdFunds: false,
@@ -932,6 +937,7 @@ export const comparatasasFondosArs = [
   'ciclo-nova-ahorro-clase-a',
   'ciclo-nova-value-clase-a',
   'iol-cash-management-clase-a',
+  'megaqm-pesos-clase-e',
   'mercado-fondo-clase-a',
   'mp-ahorro-clase-a',
   'pionero-acciones-clase-a',
