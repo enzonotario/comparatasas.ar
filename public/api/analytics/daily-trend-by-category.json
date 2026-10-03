@@ -1,24 +1,44 @@
 [
   {
-    "date": "20261001",
+    "date": "20261002",
     "categories": {
-      "Otro": 37,
-      "Billetera": 26,
-      "Plazo Fijo": 36,
-      "Cuenta Remunerada": 29,
-      "Página Amiga": 9,
-      "Money Market": 2,
+      "Página Amiga": 16,
+      "Billetera": 18,
+      "Plazo Fijo": 31,
+      "Cuenta Remunerada": 26,
+      "Otro": 50,
+      "Money Market": 4,
       "ARGt": 1,
-      "Billetera USD": 19,
-      "Cuenta Remunerada USD": 1,
-      "Frascos": 8,
-      "PF UVA precancelable": 1,
-      "General": 2,
-      "Criptomonedas": 6,
+      "Billetera USD": 13,
+      "Frascos": 11,
+      "PF UVA pago periódico": 1,
+      "General": 10,
+      "Criptomonedas": 7,
       "plazo fijo tradicional": 23,
-      "wARS": 17
+      "wARS": 6
     },
     "total": 217
+  },
+  {
+    "date": "20261001",
+    "categories": {
+      "Otro": 86,
+      "Billetera": 63,
+      "Plazo Fijo": 77,
+      "Cuenta Remunerada": 72,
+      "Página Amiga": 24,
+      "Money Market": 5,
+      "ARGt": 1,
+      "Billetera USD": 24,
+      "Cuenta Remunerada USD": 2,
+      "Frascos": 16,
+      "PF UVA precancelable": 1,
+      "General": 11,
+      "Criptomonedas": 8,
+      "plazo fijo tradicional": 32,
+      "wARS": 23
+    },
+    "total": 445
   },
   {
     "date": "20260930",
@@ -66,32 +86,12 @@
   {
     "date": "20260928",
     "categories": {
-      "Otro": 76,
-      "Página Amiga": 35,
-      "Money Market": 19,
-      "Plazo Fijo": 89,
-      "Cuenta Remunerada": 47,
-      "Billetera": 35,
-      "Billetera USD": 20,
-      "Frascos": 7,
-      "PF UVA pago periódico": 2,
-      "General": 7,
-      "Criptomonedas": 8,
-      "plazo fijo tradicional": 37,
-      "wARS": 8
+      "Otro": 7,
+      "Página Amiga": 9,
+      "Money Market": 2,
+      "Plazo Fijo": 4,
+      "Cuenta Remunerada": 6
     },
-    "total": 390
-  },
-  {
-    "date": "20260927",
-    "categories": {
-      "Página Amiga": 7,
-      "Billetera": 3,
-      "Plazo Fijo": 3,
-      "Cuenta Remunerada": 6,
-      "Otro": 9,
-      "Money Market": 1
-    },
-    "total": 29
+    "total": 28
   }
 ]
