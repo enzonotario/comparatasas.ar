@@ -1,23 +1,43 @@
 [
   {
+    "date": "20261003",
+    "categories": {
+      "Página Amiga": 5,
+      "Billetera": 8,
+      "Money Market": 5,
+      "Plazo Fijo": 7,
+      "Cuenta Remunerada": 15,
+      "Otro": 24,
+      "Billetera USD": 7,
+      "Cuenta Remunerada USD": 1,
+      "Frascos": 3,
+      "General": 4,
+      "Criptomonedas": 2,
+      "plazo fijo tradicional": 9,
+      "wARS": 7
+    },
+    "total": 97
+  },
+  {
     "date": "20261002",
     "categories": {
-      "Página Amiga": 16,
-      "Billetera": 18,
-      "Plazo Fijo": 31,
-      "Cuenta Remunerada": 26,
-      "Otro": 50,
-      "Money Market": 4,
+      "Página Amiga": 35,
+      "Billetera": 40,
+      "Plazo Fijo": 64,
+      "Cuenta Remunerada": 54,
+      "Otro": 114,
+      "Money Market": 11,
       "ARGt": 1,
-      "Billetera USD": 13,
-      "Frascos": 11,
+      "Billetera USD": 17,
+      "Cuenta Remunerada USD": 1,
+      "Frascos": 12,
       "PF UVA pago periódico": 1,
-      "General": 10,
+      "General": 11,
       "Criptomonedas": 7,
-      "plazo fijo tradicional": 23,
+      "plazo fijo tradicional": 28,
       "wARS": 6
     },
-    "total": 217
+    "total": 402
   },
   {
     "date": "20261001",
@@ -65,33 +85,13 @@
   {
     "date": "20260929",
     "categories": {
-      "Otro": 109,
-      "Página Amiga": 27,
-      "Billetera": 56,
-      "Money Market": 17,
-      "Plazo Fijo": 81,
-      "Cuenta Remunerada": 72,
-      "ARGt": 2,
-      "Billetera USD": 19,
-      "Cuenta Remunerada USD": 6,
-      "Frascos": 6,
-      "PF UVA pago periódico": 4,
-      "General": 13,
-      "Criptomonedas": 12,
-      "plazo fijo tradicional": 32,
-      "wARS": 10
+      "Otro": 55,
+      "Página Amiga": 15,
+      "Billetera": 31,
+      "Money Market": 10,
+      "Plazo Fijo": 48,
+      "Cuenta Remunerada": 30
     },
-    "total": 466
-  },
-  {
-    "date": "20260928",
-    "categories": {
-      "Otro": 7,
-      "Página Amiga": 9,
-      "Money Market": 2,
-      "Plazo Fijo": 4,
-      "Cuenta Remunerada": 6
-    },
-    "total": 28
+    "total": 189
   }
 ]
