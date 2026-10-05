@@ -1,22 +1,41 @@
 [
   {
-    "date": "20261003",
+    "date": "20261004",
     "categories": {
-      "Página Amiga": 5,
-      "Billetera": 8,
-      "Money Market": 5,
-      "Plazo Fijo": 7,
+      "Página Amiga": 1,
+      "Billetera": 11,
+      "Money Market": 3,
+      "Plazo Fijo": 15,
       "Cuenta Remunerada": 15,
-      "Otro": 24,
-      "Billetera USD": 7,
-      "Cuenta Remunerada USD": 1,
+      "Otro": 16,
+      "Billetera USD": 8,
       "Frascos": 3,
-      "General": 4,
-      "Criptomonedas": 2,
-      "plazo fijo tradicional": 9,
+      "PF UVA pago periódico": 2,
+      "General": 9,
+      "Criptomonedas": 4,
+      "plazo fijo tradicional": 13,
       "wARS": 7
     },
-    "total": 97
+    "total": 107
+  },
+  {
+    "date": "20261003",
+    "categories": {
+      "Página Amiga": 14,
+      "Billetera": 17,
+      "Money Market": 12,
+      "Plazo Fijo": 19,
+      "Cuenta Remunerada": 36,
+      "Otro": 58,
+      "Billetera USD": 8,
+      "Cuenta Remunerada USD": 1,
+      "Frascos": 8,
+      "General": 6,
+      "Criptomonedas": 3,
+      "plazo fijo tradicional": 13,
+      "wARS": 5
+    },
+    "total": 200
   },
   {
     "date": "20261002",
@@ -70,28 +89,8 @@
       "Otro": 92,
       "Money Market": 9,
       "ARGt": 3,
-      "Billetera USD": 24,
-      "Cuenta Remunerada USD": 2,
-      "Frascos": 3,
-      "PF UVA pago periódico": 1,
-      "PF UVA precancelable": 1,
-      "General": 7,
-      "Criptomonedas": 19,
-      "plazo fijo tradicional": 37,
-      "wARS": 15
+      "Billetera USD": 1
     },
-    "total": 429
-  },
-  {
-    "date": "20260929",
-    "categories": {
-      "Otro": 55,
-      "Página Amiga": 15,
-      "Billetera": 31,
-      "Money Market": 10,
-      "Plazo Fijo": 48,
-      "Cuenta Remunerada": 30
-    },
-    "total": 189
+    "total": 321
   }
 ]
