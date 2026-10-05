@@ -113,6 +113,8 @@ export default defineNuxtConfig({
     public: {
       showProductScenarios: false,
       categoryIconVersions,
+      opinaUrl: process.env.NUXT_PUBLIC_OPINA_URL || 'https://opina.enzonotario.me',
+      opinaKey: process.env.NUXT_PUBLIC_OPINA_KEY || 'pk_ukf7rlillrzg7io6',
     },
   },
   routeRules: Object.fromEntries(
