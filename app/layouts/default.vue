@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { withOutboundUtm } from '~/lib/outbound-url'
-
 const nuxtApp = useNuxtApp()
 
 useFunds()
@@ -200,113 +198,7 @@ const showProductScenariosRail = computed(() => {
         </UContainer>
       </UMain>
 
-      <USeparator type="dashed" class="h-px mt-6" />
-
-      <UFooter
-        :ui="{
-          top: '!py-6',
-          container: '!p-0',
-        }"
-      >
-        <template #top>
-          <UContainer class="w-full max-w-3xl mx-auto space-y-12 !py-0">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-8">
-              <div class="flex flex-col items-start gap-2">
-                <h3 class="text-xl font-bold">Apoyá el proyecto</h3>
-                <p class="text-sm text-muted">
-                  Ayudame a mantener y mejorar este proyecto con una donación.
-                </p>
-                <UButton
-                  :to="withOutboundUtm('https://cafecito.app/enzonotario', 'footer')"
-                  external
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  color="neutral"
-                  variant="outline"
-                  size="lg"
-                >
-                  <UIcon name="i-heroicons-heart" />
-                  Invitame un café
-                </UButton>
-              </div>
-
-              <div class="space-y-4">
-                <h3 class="text-xl font-bold">Mapa del Sitio</h3>
-                <div class="flex flex-col gap-2">
-                  <NuxtLink
-                    to="/plazos-fijos"
-                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
-                  >
-                    Plazos Fijos
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/fondos"
-                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
-                  >
-                    Fondos
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/metodologia"
-                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
-                  >
-                    Metodología de cálculos
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/about"
-                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
-                  >
-                    Acerca de
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/contact"
-                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
-                  >
-                    Contacto
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/privacy"
-                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
-                  >
-                    Privacidad
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/sumarse"
-                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
-                  >
-                    Sumarse
-                  </NuxtLink>
-                  <a
-                    href="/llms.txt"
-                    class="text-sm text-zinc-600 dark:text-white/60 hover:underline"
-                  >
-                    llms.txt
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex flex-col items-start gap-2">
-              <h3 class="text-xl font-bold">Open Source</h3>
-              <p class="text-sm text-muted">
-                Este proyecto es de código abierto. Contribuciones y sugerencias son bienvenidas.
-              </p>
-              <UButton
-                :href="withOutboundUtm('https://github.com/enzonotario/comparatasas.ar', 'footer')"
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="outline"
-                color="neutral"
-                class="space-x-2"
-              >
-                <UIcon name="i-lucide-github" class="size-4" />
-                GitHub
-              </UButton>
-            </div>
-
-            <FriendlyPages />
-          </UContainer>
-        </template>
-      </UFooter>
+      <AppFooter class="mt-12" />
     </div>
   </UApp>
 </template>

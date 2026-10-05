@@ -46,19 +46,25 @@ const friendlyPages = [
 </script>
 
 <template>
-  <div class="space-y-4">
-    <h3 class="text-xl font-bold">Páginas amigas</h3>
-    <div class="flex flex-wrap gap-4">
-      <a
-        v-for="page in friendlyPages"
-        :key="page.label"
-        :href="page.to"
-        class="block text-sm text-zinc-600 dark:text-white/60 hover:underline"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {{ page.label }}
-      </a>
-    </div>
-  </div>
+  <nav aria-labelledby="footer-friendly-pages" class="border-t border-default pt-8">
+    <h2
+      id="footer-friendly-pages"
+      class="text-xs font-semibold uppercase tracking-wider text-highlighted"
+    >
+      Páginas amigas
+    </h2>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      <li v-for="page in friendlyPages" :key="page.label">
+        <a
+          :href="page.to"
+          class="inline-flex items-center gap-1 rounded-full border border-default px-3 py-1 text-xs text-muted transition-colors hover:border-primary hover:text-primary"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ page.label }}
+          <UIcon name="i-lucide-arrow-up-right" class="size-3" aria-hidden="true" />
+        </a>
+      </li>
+    </ul>
+  </nav>
 </template>
