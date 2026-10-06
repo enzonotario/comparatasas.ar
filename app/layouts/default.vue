@@ -190,6 +190,8 @@ const showProductScenariosRail = computed(() => {
         <UContainer v-if="!isProviderHistoryPage" class="w-full max-w-3xl mx-auto space-y-6">
           <span class="flex-1" />
 
+          <OpinaPageFeedback />
+
           <FinancialAdviceCard v-if="!isSumarsePage" />
 
           <PageNavigation />
@@ -198,8 +200,8 @@ const showProductScenariosRail = computed(() => {
         </UContainer>
       </UMain>
 
-      <OpinaPageFeedback />
       <AppFooter class="mt-12" />
+
     </div>
   </UApp>
 </template>
