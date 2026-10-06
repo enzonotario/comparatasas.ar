@@ -122,16 +122,28 @@ function scrollToTop() {
                   Es gratis y de código abierto. Tu aporte ayuda a mantenerlo y mejorarlo.
                 </p>
               </div>
-              <UButton
-                :to="withOutboundUtm('https://cafecito.app/enzonotario', 'footer')"
-                target="_blank"
-                rel="noopener noreferrer"
-                color="neutral"
-                variant="outline"
-                size="sm"
-                icon="i-lucide-coffee"
-                label="Invitame un café"
-              />
+              <div class="flex flex-wrap gap-2">
+                <UButton
+                  :to="withOutboundUtm('https://cafecito.app/enzonotario', 'footer')"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  color="neutral"
+                  variant="outline"
+                  size="sm"
+                  icon="i-lucide-coffee"
+                  label="Invitame un café"
+                />
+                <span data-opina class="inline-flex">
+                  <UButton
+                    type="button"
+                    color="neutral"
+                    variant="ghost"
+                    size="sm"
+                    icon="i-lucide-message-circle"
+                    label="Dejá tu opinión"
+                  />
+                </span>
+              </div>
             </div>
           </div>
 
