@@ -80,6 +80,25 @@ const currentYear = new Date().getFullYear()
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
+
+function openOpinaFeedback() {
+  const w = window as Window & { Opina?: { show: (id?: string) => void } }
+  if (w.Opina?.show) {
+    w.Opina.show()
+    return
+  }
+  let tries = 0
+  const timer = window.setInterval(() => {
+    tries += 1
+    if (w.Opina?.show) {
+      window.clearInterval(timer)
+      w.Opina.show()
+    }
+    else if (tries >= 20) {
+      window.clearInterval(timer)
+    }
+  }, 100)
+}
 </script>
 
 <template>
@@ -133,16 +152,15 @@ function scrollToTop() {
                   icon="i-lucide-coffee"
                   label="Invitame un café"
                 />
-                <span data-opina class="inline-flex">
-                  <UButton
-                    type="button"
-                    color="neutral"
-                    variant="ghost"
-                    size="sm"
-                    icon="i-lucide-message-circle"
-                    label="Dejá tu opinión"
-                  />
-                </span>
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="ghost"
+                  size="sm"
+                  icon="i-lucide-message-circle"
+                  label="Dejá tu opinión"
+                  @click="openOpinaFeedback"
+                />
               </div>
             </div>
           </div>

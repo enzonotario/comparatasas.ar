@@ -13,7 +13,7 @@ export default defineNuxtPlugin(() => {
       {
         key: 'opina-widget',
         // Query busts Cloudflare edge cache of /widget.js (4h TTL).
-        src: `${base}/widget.js?v=ms2`,
+        src: `${base}/widget.js?v=ms3`,
         defer: true,
         tagPosition: 'bodyClose',
         'data-key': key,
