@@ -198,7 +198,9 @@ const showProductScenariosRail = computed(() => {
         </UContainer>
       </UMain>
 
+      <OpinaPageFeedback />
       <AppFooter class="mt-12" />
     </div>
   </UApp>
 </template>
+
