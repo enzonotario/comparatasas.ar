@@ -11,6 +11,7 @@ import {
   getComparatasasReturnPercent,
   getComparatasasTnaAndTea,
 } from '../lib/finance/fci-comparatasas-returns'
+import { hasDeclaredTope } from '../lib/finance/tope'
 import { normalizeFundSlug } from '../lib/funds-detail'
 import type { ProcessedFund } from '../types/investments'
 import type { StaticNominalTnaFile } from './useStaticNominalTna'
@@ -151,6 +152,7 @@ async function transformComparatasasData(
             inst.fundUrl || getInstitutionUrl(inst.institution, 'fondos') || '#',
             'fondos',
           ),
+          ...(hasDeclaredTope(inst.tope) ? { tope: inst.tope } : {}),
           ...(getProcessedFundTypeInfo(fondo, inst) ?? {}),
           meta: {
             showInFunds: inst.showInFunds || false,

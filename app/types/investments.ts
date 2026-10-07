@@ -13,6 +13,8 @@ export interface ProcessedFund {
   typeLabel?: string
   url?: string
   valorCuotaparte?: number
+  /** Tope de monto remunerado/invertible (ARS). Ausente = no declarado. */
+  tope?: number | null
   meta?: {
     showInFunds?: boolean
     showInAccounts?: boolean

@@ -1,5 +1,7 @@
 import { normalizeFundSlug } from '../funds-detail'
 
+export const LEMON_VINCI_COMPASS_LIQUIDEZ_CLASE_F_TOPE = 2_000_000
+
 export interface FundInstitution {
   institution: string
   displayName: string
@@ -12,6 +14,8 @@ export interface FundInstitution {
   showInUsdMoneyMarket: boolean
   showInUsdHighRisk?: boolean
   fundUrl?: string
+  /** Tope de monto (ARS). Opcional; hoy hardcodeado en mappings puntuales. */
+  tope?: number
 }
 
 export interface FundMapping {
@@ -217,6 +221,7 @@ const fundMappings: FundMapping[] = [
         showInUsdFunds: false,
         showInStockFunds: false,
         showInUsdMoneyMarket: false,
+        tope: LEMON_VINCI_COMPASS_LIQUIDEZ_CLASE_F_TOPE,
       },
     ],
   },
