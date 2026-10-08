@@ -3,7 +3,6 @@ import FondosDashboardSidebar from '~/components/funds/FondosDashboardSidebar.vu
 import { withOutboundUtm } from '~/lib/outbound-url'
 
 const nuxtApp = useNuxtApp()
-const { initialize } = useHotjar()
 
 useFunds()
 useAccounts()
@@ -11,10 +10,6 @@ useAccounts()
 const open = ref(false)
 
 const { allFunds } = useFondosCatalog()
-
-onMounted(() => {
-  initialize()
-})
 </script>
 
 <template>

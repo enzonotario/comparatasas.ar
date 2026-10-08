@@ -8,7 +8,6 @@ usePlazosFijos()
 usePlazosFijosUvaPagoPeriodico()
 usePlazosFijosPrecancelables()
 useCriptopesos()
-const { initialize } = useHotjar()
 
 const route = useRoute()
 const { showProductScenarios } = useProductScenarios()
@@ -21,10 +20,6 @@ const useSponsorBanner = computed(() => {
   const cutoffDate = new Date('2026-01-01')
   const today = new Date()
   return today >= cutoffDate
-})
-
-onMounted(() => {
-  initialize()
 })
 
 const isWideLayout = computed(() => {

@@ -21,7 +21,6 @@ export default defineNuxtConfig({
     'nuxt-gtag',
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
-    'nuxt-module-hotjar',
     'nuxt-highcharts',
     'nuxt-echarts',
     'nuxt-og-image',
@@ -185,11 +184,6 @@ export default defineNuxtConfig({
 
   highcharts: {
     exporting: true,
-  },
-
-  hotjar: {
-    hotjarId: 6522567,
-    scriptVersion: 6,
   },
 
   // Dentro de node_modules/.cache/nuxt (allow-list de Cloudflare Pages build cache).
