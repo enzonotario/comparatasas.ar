@@ -1,235 +1,197 @@
 <script setup lang="ts">
-import { provide } from 'vue'
-import type { ComposeOption } from 'echarts/core'
-import type { LineSeriesOption } from 'echarts/charts'
-import type {
-  DataZoomComponentOption,
-  GridComponentOption,
-  TooltipComponentOption,
-} from 'echarts/components'
+import { areaY, defineChart, lineY } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { controlledSignal } from '@tanstack/charts/interaction/signal'
+import { zoomX } from '@tanstack/charts/interaction/zoom'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { Chart } from '@tanstack/charts/vue'
+import { scaleUtc } from 'd3-scale'
 import type { AccountHistoryItem } from '~/composables/useAccountHistory'
 import {
-  dataZoomPercentToZoomRange,
-  isFullDataZoomPercent,
-  zoomRangeToDataZoomPercent,
-  type ChartZoomRange,
+  historyDateExtent,
+  parseHistoryDate,
+  type ChartDateWindow,
+  useZoomPlotHover,
 } from '~/composables/useAccountHistoryChartZoomSync'
 import { formatCurrency, useChartTheme } from '~/composables/useChartConfig'
-
-type ChartOption = ComposeOption<
-  LineSeriesOption | GridComponentOption | TooltipComponentOption | DataZoomComponentOption
->
 
 interface Props {
   history: AccountHistoryItem[]
   providerName: string
-  /** Rango de zoom sincronizado (índices del historial; end exclusivo). */
-  zoomRange?: ChartZoomRange | null
+  /** Ventana de fechas compartida con el gráfico de tope. */
+  zoomWindow?: ChartDateWindow | null
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  zoomStart: [payload: { index: number }]
-  zoomEnd: [payload: { index: number }]
-  zoomReset: []
+  'update:zoomWindow': [window: ChartDateWindow]
 }>()
 
-const colorMode = computed(() => useColorMode().value)
-provide(THEME_KEY, colorMode)
-
-const initOptions = computed(() => ({
-  height: 384,
-  width: 'auto' as const,
-  renderer: 'svg' as const,
-}))
-provide(INIT_OPTIONS_KEY, initOptions)
-
 const { textColor, gridLineColor } = useChartTheme()
+const { onRender: onZoomPlotHover } = useZoomPlotHover()
 
 const SERIES_COLOR = '#3b82f6'
 
-function formatShortDate(iso: string) {
-  const d = new Date(iso)
-  return d.toLocaleDateString('es-AR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: '2-digit',
-  })
+const shortDate = new Intl.DateTimeFormat('es-AR', {
+  day: '2-digit',
+  month: '2-digit',
+  year: '2-digit',
+  timeZone: 'UTC',
+})
+
+function formatShortDate(value: string | Date) {
+  const date = value instanceof Date ? value : parseHistoryDate(value)
+  return shortDate.format(date)
 }
 
-const xLabels = computed(() => props.history.map((item) => formatShortDate(item.fecha)))
-const tnaValues = computed(() => props.history.map((item) => item.tna * 100))
+function tnaPercent(item: AccountHistoryItem) {
+  return item.tna * 100
+}
 
-const dataZoomWindow = computed(() =>
-  zoomRangeToDataZoomPercent(props.zoomRange, props.history.length),
-)
+function paddedDomain(values: readonly number[]): [number, number] {
+  if (!values.length) return [0, 1]
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return [0, 1]
+  if (min === max) {
+    const pad = Math.abs(min) * 0.1 || 1
+    return [min - pad, max + pad]
+  }
+  const pad = (max - min) * 0.1
+  const lower = min >= 0 ? Math.max(0, min - pad) : min - pad
+  return [lower, max + pad]
+}
 
-const chartOption = computed<ChartOption>(() => {
-  if (!props.history.length) return {}
+const extent = computed(() => historyDateExtent(props.history))
 
-  const isDark = colorMode.value === 'dark'
-  const { start, end } = dataZoomWindow.value
+const window = computed(() => {
+  if (props.zoomWindow) return props.zoomWindow
+  const dates = extent.value
+  if (!dates) return null
+  return { start: dates[0], end: dates[1] }
+})
 
-  return {
-    backgroundColor: 'transparent',
-    animationDuration: 300,
-    tooltip: {
-      trigger: 'axis',
-      formatter: (params: unknown) => {
-        const item = Array.isArray(params) ? params[0] : params
-        if (!item || typeof item !== 'object') return ''
-        const dataIndex = (item as { dataIndex?: number }).dataIndex ?? 0
-        const point = props.history[dataIndex]
-        const label = xLabels.value[dataIndex] ?? ''
-        if (!point) return ''
-        const y = (point.tna * 100).toFixed(2)
-        const topeText = point.tope
-          ? `Tope: ${formatCurrency(point.tope)}`
-          : 'Tope: Sin límite'
-        return `<strong>${label}</strong><br/>TNA: ${y}%<br/>${topeText}`
+const definition = computed(() => {
+  const rows = props.history
+  const current = window.value
+  const dates = extent.value
+  if (!rows.length || !current || !dates) return null
+
+  const yValues = rows.map(tnaPercent)
+  const [yMin, yMax] = paddedDomain(yValues)
+  const xScale = scaleUtc().domain([current.start, current.end])
+
+  return defineChart(
+    {
+      clip: true,
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
       },
-    },
-    grid: {
-      left: '2%',
-      right: '3%',
-      top: '12%',
-      bottom: '18%',
-      containLabel: true,
-    },
-    xAxis: {
-      type: 'category',
-      name: 'Fecha',
-      nameLocation: 'middle',
-      nameGap: 28,
-      nameTextStyle: { color: textColor.value },
-      data: xLabels.value,
-      boundaryGap: false,
-      axisLabel: {
-        color: textColor.value,
-        hideOverlap: true,
-        rotate: 45,
-        fontSize: 11,
-      },
-      axisLine: {
-        lineStyle: { color: gridLineColor.value },
-      },
-      axisTick: { show: false },
-      splitLine: { show: false },
-    },
-    yAxis: {
-      type: 'value',
-      name: 'TNA (%)',
-      nameTextStyle: { color: textColor.value },
-      axisLabel: {
-        color: textColor.value,
-        formatter: (value: number) => `${Number(value).toFixed(1)}%`,
-      },
-      axisLine: { show: false },
-      splitLine: {
-        lineStyle: {
-          color: gridLineColor.value,
-          type: 'dashed',
+      gradients: [
+        {
+          id: 'tna-area-fill',
+          x1: 0,
+          y1: 0,
+          x2: 0,
+          y2: 1,
+          stops: [
+            { offset: 0, color: SERIES_COLOR, opacity: 0.33 },
+            { offset: 1, color: SERIES_COLOR, opacity: 0.02 },
+          ],
         },
-      },
-    },
-    dataZoom: [
-      {
-        type: 'inside',
-        xAxisIndex: [0],
-        start,
-        end,
-        filterMode: 'none',
-      },
-      {
-        type: 'slider',
-        xAxisIndex: [0],
-        height: 18,
-        bottom: 8,
-        start,
-        end,
-        filterMode: 'none',
-        borderColor: gridLineColor.value,
-        fillerColor: isDark ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)',
-        handleStyle: { color: SERIES_COLOR },
-        textStyle: { color: textColor.value },
-        dataBackground: {
-          lineStyle: { color: SERIES_COLOR },
-          areaStyle: { color: isDark ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.2)' },
+      ],
+      marks: [
+        decorative(
+          areaY(rows, {
+            x: (row) => parseHistoryDate(row.fecha),
+            y1: yMin,
+            y2: (row) => tnaPercent(row),
+            fill: 'url(#tna-area-fill)',
+            key: (row) => row.fecha,
+          }),
+        ),
+        lineY(rows, {
+          x: (row) => parseHistoryDate(row.fecha),
+          y: (row) => tnaPercent(row),
+          stroke: SERIES_COLOR,
+          strokeWidth: 2,
+          key: (row) => row.fecha,
+        }),
+      ],
+      scales: {
+        x: {
+          scale: xScale,
+          grid: false,
+          axis: {
+            label: { text: 'Fecha', fill: textColor.value },
+            line: { stroke: gridLineColor.value },
+            ticks: { format: (value: Date) => formatShortDate(value) },
+            tickLabels: { rotate: 45, fontSize: 11, thin: true },
+          },
         },
-        selectedDataBackground: {
-          lineStyle: { color: SERIES_COLOR },
-          areaStyle: { color: isDark ? 'rgba(59, 130, 246, 0.35)' : 'rgba(59, 130, 246, 0.3)' },
-        },
-      },
-    ],
-    series: [
-      {
-        name: 'TNA',
-        type: 'line',
-        data: tnaValues.value,
-        smooth: true,
-        showSymbol: false,
-        sampling: 'lttb',
-        itemStyle: { color: SERIES_COLOR },
-        lineStyle: { color: SERIES_COLOR, width: 2 },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: `${SERIES_COLOR}55` },
-              { offset: 1, color: `${SERIES_COLOR}05` },
-            ],
+        y: {
+          scale: scaleLinear().domain([yMin, yMax]),
+          grid: { stroke: gridLineColor.value, strokeDasharray: '4 4' },
+          axis: {
+            label: { text: 'TNA (%)', fill: textColor.value },
+            line: false,
+            ticks: { format: (value: number) => `${Number(value).toFixed(1)}%` },
           },
         },
       },
-    ],
-  }
+      controls: [
+        zoomX({
+          window: controlledSignal(current, (next) => {
+            emit('update:zoomWindow', { start: next.start, end: next.end })
+          }),
+          extent: [dates[0], dates[1]],
+          ariaLabel: `Período visible del historial de TNA de ${props.providerName}`,
+          format: (value) => formatShortDate(value),
+        }),
+      ],
+    },
+    {
+      focus: 'nearest-x',
+      maxFocusDistance: Number.POSITIVE_INFINITY,
+      tooltip: {
+        use: tooltip,
+        content: (points) => {
+          const row = points[0]?.datum as AccountHistoryItem | undefined
+          if (!row) return { rows: [] }
+          return {
+            title: formatShortDate(row.fecha),
+            color: SERIES_COLOR,
+            rows: [
+              { label: 'TNA', value: `${tnaPercent(row).toFixed(2)}%` },
+              {
+                label: 'Tope',
+                value: row.tope != null ? formatCurrency(row.tope) : 'Sin límite',
+              },
+            ],
+          }
+        },
+      },
+    },
+  )
 })
-
-function readDataZoomPercents(event: {
-  start?: number
-  end?: number
-  batch?: Array<{ start?: number; end?: number }>
-}) {
-  const payload = event.batch?.[0] ?? event
-  return {
-    start: payload.start ?? 0,
-    end: payload.end ?? 100,
-  }
-}
-
-function onDataZoom(event: {
-  start?: number
-  end?: number
-  batch?: Array<{ start?: number; end?: number }>
-}) {
-  const length = props.history.length
-  if (!length) return
-
-  const { start, end } = readDataZoomPercents(event)
-  if (isFullDataZoomPercent(start, end)) {
-    if (props.zoomRange != null) emit('zoomReset')
-    return
-  }
-
-  const next = dataZoomPercentToZoomRange(start, end, length)
-  const prev = props.zoomRange
-  if (prev && prev.start === next.start && prev.end === next.end) return
-
-  emit('zoomStart', { index: next.start })
-  emit('zoomEnd', { index: next.end })
-}
 </script>
 
 <template>
   <ClientOnly>
-    <div v-if="history.length > 0" class="h-96 w-full">
-      <VChart :option="chartOption" class="h-full w-full" autoresize @datazoom="onDataZoom" />
+    <div v-if="history.length > 0 && definition" class="h-96 w-full">
+      <Chart
+        :definition="definition"
+        :aria-label="`Evolución de TNA de ${providerName}`"
+        id-prefix="account-history-tna"
+        :height="384"
+        class="h-full w-full"
+        @render="onZoomPlotHover"
+      />
     </div>
     <div v-else class="flex h-96 items-center justify-center text-sm text-neutral-500">
       Sin datos de historial.

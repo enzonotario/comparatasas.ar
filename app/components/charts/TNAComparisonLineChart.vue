@@ -1,116 +1,141 @@
 <script setup lang="ts">
+import { defineChart, lineY, text } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { scalePoint } from '@tanstack/charts/scales/point'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { Chart } from '@tanstack/charts/vue'
 import type { AccountItem } from '~/composables/useAccounts'
-import 'vue-data-ui/style.css'
 import { useChartTheme } from '~/composables/useChartConfig'
-import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
-import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
+import { providerLogoMap, useProviderLogos } from '~/lib/charts/provider-logos'
 
 interface Props {
   accounts: AccountItem[]
 }
 
+type TnaPoint = {
+  id: string
+  name: string
+  tna: number
+  label: string
+}
+
 const props = defineProps<Props>()
+const { textColor, gridLineColor, colorMode } = useChartTheme()
 
-const chart = useVueDataUiChart('VueUiXy')
-const { textColor, gridLineColor } = useChartTheme()
-const solidTooltip = useVueDataUiSolidTooltip()
+const logos = computed(() =>
+  providerLogoMap(props.accounts.map((account) => ({ name: account.fondo, logo: account.logo }))),
+)
 
-const names = computed(() => {
-  if (!props.accounts.length) return []
-  return [...props.accounts].sort((a, b) => b.tna - a.tna).map((a) => a.fondo)
+const { onRender: paintLogos } = useProviderLogos(logos, 'before')
+
+const points = computed(() => {
+  return [...props.accounts]
+    .sort((a, b) => b.tna - a.tna)
+    .map((account, index) => {
+      const tna = account.tna * 100
+      return {
+        id: `${index}:${account.fondo}`,
+        name: account.fondo,
+        tna,
+        label: `${tna.toFixed(1)}%`,
+      } satisfies TnaPoint
+    })
 })
 
-const dataset = computed(() => {
-  if (!props.accounts.length) return []
-  const sorted = [...props.accounts].sort((a, b) => b.tna - a.tna)
-  return [
+const definition = computed(() => {
+  const rows = points.value
+  const nameById = new Map(rows.map((row) => [row.id, row.name]))
+  const maxTna = rows.reduce((max, row) => Math.max(max, row.tna), 0)
+  const muted = colorMode.value === 'dark' ? '#a3a3a3' : '#525252'
+
+  return defineChart(
     {
-      name: 'TNA',
-      series: sorted.map((a) => a.tna * 100),
-      type: 'line' as const,
-      useArea: true,
-      smooth: false,
-      color: '#10b981',
-      suffix: '%',
-      dataLabels: true,
+      marks: [
+        lineY(rows, {
+          x: 'id',
+          y: 'tna',
+          key: 'id',
+          stroke: '#10b981',
+          strokeWidth: 2,
+          points: true,
+        }),
+        decorative(
+          text(rows, {
+            x: 'id',
+            y: 'tna',
+            text: 'label',
+            key: 'id',
+            anchor: 'middle',
+            dy: -10,
+            fontSize: 9,
+            fill: textColor.value,
+          }),
+        ),
+      ],
+      scales: {
+        x: {
+          scale: () => scalePoint<string>().padding(0.5),
+          axis: {
+            tickLabels: {
+              thin: false,
+              rotate: -45,
+              fontSize: 9,
+            },
+            ticks: {
+              format: (value) => nameById.get(String(value)) ?? String(value),
+            },
+          },
+        },
+        y: {
+          scale: scaleLinear().domain([0, maxTna > 0 ? maxTna * 1.12 : 1]),
+          nice: true,
+          grid: { stroke: gridLineColor.value },
+          axis: {
+            label: 'TNA (%)',
+            ticks: {
+              format: (value) => `${Number(value).toFixed(1)}%`,
+            },
+          },
+        },
+      },
+      theme: {
+        foreground: textColor.value,
+        muted,
+        grid: gridLineColor.value,
+        background: 'transparent',
+        palette: ['#10b981'],
+      },
     },
-  ]
+    {
+      svgAnimation: false,
+      tooltip: {
+        use: tooltip,
+        content: (focused) => {
+          const row = focused[0]?.datum
+          if (!row) return { rows: [] }
+          return {
+            title: row.name,
+            color: '#10b981',
+            rows: [{ label: 'TNA', value: `${row.tna.toFixed(2)}%` }],
+          }
+        },
+      },
+    },
+  )
 })
-
-const chartConfig = computed(() => ({
-  responsive: true,
-  theme: '',
-  useCssAnimation: false,
-  chart: {
-    fontFamily: 'inherit',
-    backgroundColor: 'transparent',
-    color: textColor.value,
-    height: 384,
-    userOptions: { show: false },
-    grid: {
-      stroke: gridLineColor.value,
-      showHorizontalLines: true,
-      showVerticalLines: false,
-      labels: {
-        color: textColor.value,
-        show: true,
-        fontSize: 10,
-        axis: { yLabel: 'TNA (%)' },
-        yAxis: {
-          formatter: (v: number | string) => `${Number(v).toFixed(1)}%`,
-        },
-        xAxisLabels: {
-          values: names.value,
-          rotation: -45,
-          fontSize: 9,
-        },
-      },
-    },
-    tooltip: {
-      ...solidTooltip.value,
-      show: true,
-      customFormat: (params: { absoluteIndex?: number }) => {
-        const i = params.absoluteIndex ?? 0
-        const label = names.value[i] ?? ''
-        const sorted = [...props.accounts].sort((a, b) => b.tna - a.tna)
-        const acc = sorted[i]
-        const y = acc ? (acc.tna * 100).toFixed(2) : ''
-        return `<div style="font-family:inherit"><b>${label}</b><br/>TNA: ${y}%</div>`
-      },
-    },
-    legend: { show: false, color: textColor.value },
-  },
-  line: {
-    area: { opacity: 0.35, useGradient: true },
-    labels: {
-      show: true,
-      color: textColor.value,
-      fontSize: 9,
-      rounding: 1,
-    },
-  },
-  table: { show: false },
-}))
 </script>
 
 <template>
-  <div class="w-full min-h-96 [&_svg]:max-w-full [&_svg]:h-auto">
-    <ClientOnly>
-      <component
-        :is="chart"
-        v-if="chart && dataset.length > 0"
-        :dataset="dataset"
-        :config="chartConfig"
-      />
-      <div
-        v-else-if="chart && dataset.length === 0"
-        class="py-12 text-center text-sm text-neutral-500"
-      >
-        Sin datos para el gráfico.
-      </div>
-      <div v-else class="min-h-96 flex items-center justify-center text-neutral-500">
-        Cargando gráfico…
-      </div>
-    </ClientOnly>
+  <div class="w-full min-h-96">
+    <Chart
+      v-if="points.length"
+      :definition="definition"
+      :height="384"
+      aria-label="Comparación de TNA"
+      class="w-full"
+      @render="paintLogos"
+    />
+    <div v-else class="py-12 text-center text-sm text-neutral-500">Sin datos para el gráfico.</div>
   </div>
 </template>

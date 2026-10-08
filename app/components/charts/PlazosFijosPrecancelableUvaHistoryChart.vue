@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import type { SeriesLineOptions } from 'highcharts'
+import { colorLegend, colorLegendItems, defineChart, dot, lineY } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { Chart } from '@tanstack/charts/vue'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { portal } from '@tanstack/charts/tooltip/portal'
+import { scaleUtc } from 'd3-scale'
 import type { PlazoFijoPrecancelableItem } from '~/composables/usePlazosFijosPrecancelables'
 import { formatCurrencyFull, useChartTheme } from '~/composables/useChartConfig'
+import { providerLogoMap, useProviderLogos } from '~/lib/charts/provider-logos'
 import {
   buildPrecancelableUvaTimelineSeries,
   sortUvaByDateAsc,
@@ -23,10 +30,15 @@ const props = withDefaults(defineProps<Props>(), {
   stepDias: 1,
 })
 
-const colorMode = useColorMode()
 const { textColor, gridLineColor } = useChartTheme()
 
-const tooltipBackground = computed(() => (colorMode.value === 'dark' ? '#171717' : '#ffffff'))
+const logos = computed(() => {
+  const entidad = props.item?.institution ?? ''
+  if (!entidad) return new Map<string, string>()
+  return providerLogoMap([{ name: `UVA + TNA adic. (${entidad})`, logo: props.item?.logo }])
+})
+
+const { onRender: paintLogos } = useProviderLogos(logos, 'after')
 
 const uvaSorted = computed(() => sortUvaByDateAsc(props.uvaRows))
 
@@ -44,17 +56,9 @@ const fechaInicioYmd = computed(() => {
   return subtractCalendarDaysYmd(fin, props.diasContrato)
 })
 
-function ymdToUtcMs(ymd: string): number {
+function ymdToUtcDate(ymd: string): Date {
   const [y = 1970, m = 1, d = 1] = ymd.split('-').map(Number)
-  return Date.UTC(y, m - 1, d)
-}
-
-function utcMsToYmd(ms: number): string {
-  const d = new Date(ms)
-  const y = d.getUTCFullYear()
-  const m = String(d.getUTCMonth() + 1).padStart(2, '0')
-  const day = String(d.getUTCDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
+  return new Date(Date.UTC(y, m - 1, d))
 }
 
 function formatFechaCorta(ymd: string): string {
@@ -66,6 +70,15 @@ function formatFechaCorta(ymd: string): string {
     year: 'numeric',
     timeZone: 'UTC',
   }).format(new Date(Date.UTC(yy, mm - 1, dd)))
+}
+
+function formatAxisDate(value: Date): string {
+  return new Intl.DateTimeFormat('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+    timeZone: 'UTC',
+  }).format(value)
 }
 
 /** Variación % respecto al capital colocado (mismo criterio que el eje en pesos). */
@@ -98,174 +111,148 @@ const historyPoints = computed(() => {
   })
 })
 
-const chartOptions = computed(() => {
+interface HistoryRow {
+  date: Date
+  y: number
+  series: string
+  tooltipLabel: string
+  fechaYmd: string
+  diasDesdeInicio: number
+  monto: number
+  capital: number
+}
+
+const definition = computed(() => {
   const pts = historyPoints.value
   const entidad = props.item?.institution ?? ''
   const inicio = fechaInicioYmd.value
   const fin = fechaFinYmd.value
   if (!pts.length || !props.item || !inicio || !fin) return null
 
-  const dataVencimiento = pts.map(
-    (p) => [ymdToUtcMs(p.fechaYmd), p.montoFinalUva] as [number, number],
-  )
-  const tienePrec = pts[0]?.montoFinalPrecancelacion != null
-  const dataPrec = tienePrec
-    ? pts.map((p) => [ymdToUtcMs(p.fechaYmd), p.montoFinalPrecancelacion ?? 0] as [number, number])
-    : []
-
   const nameVencimiento = entidad ? `UVA + TNA adic. (${entidad})` : 'UVA + TNA adicional'
-  const showMarkers = pts.length <= 90
-
-  const series: SeriesLineOptions[] = [
-    {
-      type: 'line',
-      name: nameVencimiento,
-      data: dataVencimiento,
-      color: '#3b82f6',
-      lineWidth: 2.5,
-      marker: {
-        enabled: showMarkers,
-        radius: 3,
-        symbol: 'circle',
-      },
-    },
-  ]
-
-  if (tienePrec && dataPrec.length) {
-    series.push({
-      type: 'line',
-      name: 'Precancelación (solo TNA)',
-      data: dataPrec,
-      color: '#f59e0b',
-      lineWidth: 2.5,
-      marker: {
-        enabled: showMarkers,
-        radius: 3,
-        symbol: 'square',
-      },
+  const namePrec = 'Precancelación (solo TNA)'
+  const capital = props.montoSimulacion
+  const rows: HistoryRow[] = []
+  for (const point of pts) {
+    rows.push({
+      date: ymdToUtcDate(point.fechaYmd),
+      y: point.montoFinalUva,
+      series: nameVencimiento,
+      tooltipLabel: 'UVA + TNA adic.',
+      fechaYmd: point.fechaYmd,
+      diasDesdeInicio: point.diasDesdeInicio,
+      monto: point.montoFinalUva,
+      capital,
     })
+    if (point.montoFinalPrecancelacion != null) {
+      rows.push({
+        date: ymdToUtcDate(point.fechaYmd),
+        y: point.montoFinalPrecancelacion,
+        series: namePrec,
+        tooltipLabel: 'Solo TNA prec.',
+        fechaYmd: point.fechaYmd,
+        diasDesdeInicio: point.diasDesdeInicio,
+        monto: point.montoFinalPrecancelacion,
+        capital,
+      })
+    }
   }
 
-  const capitalInicial = props.montoSimulacion
+  const seriesOrder = [...new Set(rows.map((row) => row.series))]
+  const seriesColors = seriesOrder.map((series) => (series === namePrec ? '#f59e0b' : '#3b82f6'))
+  const showMarkers = pts.length <= 90
+  const grid = { stroke: gridLineColor.value, strokeOpacity: 1 }
 
-  const todasY = pts.flatMap((p) =>
-    p.montoFinalPrecancelacion != null
-      ? [p.montoFinalUva, p.montoFinalPrecancelacion]
-      : [p.montoFinalUva],
-  )
-  const minY = Math.min(...todasY)
-  const maxY = Math.max(...todasY)
-  const span = maxY - minY
-  const pad = span > 0 ? span * 0.08 : maxY * 0.02
-
-  return {
-    chart: {
-      backgroundColor: 'transparent',
-      height: 420,
-      spacing: [12, 12, 16, 12],
-    },
-    title: { text: '' },
-    accessibility: {
-      enabled: false,
-    },
-    time: {
-      useUTC: true,
-    },
-    xAxis: {
-      type: 'datetime',
-      title: {
-        text: 'Fecha',
-        style: { color: textColor.value },
-      },
-      labels: {
-        style: { color: textColor.value },
-      },
-      gridLineWidth: 0,
-      lineColor: gridLineColor.value,
-      tickColor: gridLineColor.value,
-    },
-    yAxis: {
-      title: {
-        text: 'Monto (ARS)',
-        style: { color: textColor.value },
-      },
-      min: minY - pad,
-      max: maxY + pad,
-      labels: {
-        style: { color: textColor.value },
-        formatter(): string {
-          return formatCurrencyFull(Number((this as unknown as { value: number }).value))
+  return defineChart(
+    {
+      marks: [
+        lineY(rows, {
+          x: 'date',
+          y: 'y',
+          z: 'series',
+          color: 'series',
+          strokeWidth: 2.5,
+        }),
+        ...(showMarkers
+          ? [
+              decorative(
+                dot(rows, {
+                  x: 'date',
+                  y: 'y',
+                  color: 'series',
+                  r: 3,
+                }),
+              ),
+            ]
+          : []),
+      ],
+      scales: {
+        x: {
+          scale: scaleUtc,
+          nice: true,
+          grid: false,
+          axis: {
+            label: 'Fecha',
+            ticks: { format: formatAxisDate },
+            tickLabels: { thin: true },
+          },
+        },
+        y: {
+          scale: scaleLinear,
+          nice: true,
+          grid,
+          axis: {
+            label: 'Monto (ARS)',
+            ticks: { format: (value: number) => formatCurrencyFull(value) },
+          },
         },
       },
-      gridLineColor: gridLineColor.value,
-      lineColor: gridLineColor.value,
-    },
-    tooltip: {
-      shared: true,
-      outside: true,
-      useHTML: true,
-      xDateFormat: '%d/%m/%Y',
-      backgroundColor: tooltipBackground.value,
-      borderColor: gridLineColor.value,
-      borderWidth: 1,
-      padding: 12,
-      style: {
-        color: textColor.value,
-        zIndex: 10050,
+      color: {
+        domain: seriesOrder,
+        range: seriesColors,
+        legend: colorLegend({
+          items: colorLegendItems({
+            indicator: { shape: 'line' },
+          }),
+        }),
       },
-      formatter(): string {
-        const ctx = this as unknown as {
-          x: number
-          points?: Array<{ series: { name: string }; y: number }>
-        }
-        const t = new Date(ctx.x)
-        const fechaStr = new Intl.DateTimeFormat('es-AR', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          timeZone: 'UTC',
-        }).format(t)
-        const xMs = ctx.x
-        const p = pts.find((row) => row.fechaYmd === utcMsToYmd(xMs))
-        const inst = entidad
-        let html = `<div style="font-family:inherit"><b>${inst}</b><br/><span style="opacity:.85">${fechaStr}</span><br/>`
-        if (p) {
-          const pctUva = pctSobreCapital(p.montoFinalUva, capitalInicial)
-          html += `<span style="color:#3b82f6">●</span> UVA + TNA adic.: <b>${formatCurrencyFull(p.montoFinalUva)}</b>`
-          if (pctUva) html += ` <span style="opacity:.9">(${pctUva} sobre capital inicial)</span>`
-          html += '<br/>'
-          if (p.montoFinalPrecancelacion != null) {
-            const pctPrec = pctSobreCapital(p.montoFinalPrecancelacion, capitalInicial)
-            html += `<span style="color:#f59e0b">■</span> Solo TNA prec.: <b>${formatCurrencyFull(p.montoFinalPrecancelacion)}</b>`
-            if (pctPrec)
-              html += ` <span style="opacity:.9">(${pctPrec} sobre capital inicial)</span>`
-            html += '<br/>'
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
+      },
+    },
+    {
+      focus: 'group-x',
+      maxFocusDistance: Number.POSITIVE_INFINITY,
+      tooltip: {
+        use: tooltip,
+        portal,
+        content: (points) => {
+          const first = points[0]?.datum
+          if (!first) return { rows: [] }
+          const fechaStr = formatFechaCorta(first.fechaYmd)
+          return {
+            title: entidad || fechaStr,
+            rows: [
+              { label: 'Fecha', value: fechaStr },
+              ...points.map((point) => {
+                const pct = pctSobreCapital(point.datum.monto, point.datum.capital)
+                const amount = formatCurrencyFull(point.datum.monto)
+                return {
+                  label: point.datum.tooltipLabel,
+                  value: pct ? `${amount} (${pct} sobre capital inicial)` : amount,
+                  color: point.color,
+                }
+              }),
+              { label: 'Días desde colocación', value: String(first.diasDesdeInicio) },
+            ],
           }
-          html += `<span style="opacity:.85">Días desde colocación: ${p.diasDesdeInicio}</span>`
-        } else if (ctx.points?.length) {
-          for (const pt of ctx.points) {
-            const pct = pctSobreCapital(pt.y, capitalInicial)
-            html += `${pt.series.name}: <b>${formatCurrencyFull(pt.y)}</b>`
-            if (pct) html += ` <span style="opacity:.9">(${pct} sobre capital inicial)</span>`
-            html += '<br/>'
-          }
-        }
-        html += '</div>'
-        return html
+        },
       },
     },
-    plotOptions: {
-      line: {
-        animation: { duration: 400 },
-      },
-    },
-    series,
-    legend: {
-      itemStyle: { color: textColor.value },
-      itemHoverStyle: { color: textColor.value },
-    },
-    credits: { enabled: false },
-  }
+  )
 })
 
 const rangoTexto = computed(() => {
@@ -282,8 +269,15 @@ const rangoTexto = computed(() => {
       Colocación estimada según plazo del simulador ({{ diasContrato }} días antes del último UVA):
       {{ rangoTexto }}
     </p>
-    <div class="precancelable-uva-history-chart w-full" style="height: 26rem; min-height: 420px">
-      <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
+    <div class="w-full" style="height: 26rem; min-height: 420px">
+      <Chart
+        v-if="definition"
+        :definition="definition"
+        aria-label="Historial de plazo fijo precancelable UVA"
+        class="h-full w-full"
+        :height="420"
+        @render="paintLogos"
+      />
       <div
         v-else
         class="w-full h-full min-h-[420px] flex items-center justify-center text-sm text-neutral-500"
@@ -295,9 +289,3 @@ const rangoTexto = computed(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.precancelable-uva-history-chart :deep(.highcharts-tooltip) {
-  z-index: 10050;
-}
-</style>

@@ -5,7 +5,7 @@ import type { VueUiDonutConfig, VueUiDonutDatasetItem } from 'vue-data-ui'
 import type { FciFundDetail } from '~/composables/useFciFundDetails'
 import type { ReturnRow } from '~/composables/useFciFundPresentation'
 import { CHART_COLORS, useChartTheme } from '~/composables/useChartConfig'
-import { useVueDataUiChart } from '~/composables/useVueDataUiChart'
+import { useVueDataUiDonut } from '~/composables/useVueDataUiChart'
 import {
   formatCurrency,
   formatDate,
@@ -25,7 +25,7 @@ const props = defineProps<{
 }>()
 
 const { textColor, colorMode } = useChartTheme()
-const compositionDonutChart = useVueDataUiChart('VueUiDonut')
+const compositionDonutChart = useVueDataUiDonut()
 
 const compositionChartSegments = computed(() => {
   return props.compositionRows
@@ -42,12 +42,6 @@ const compositionDonutDataset = computed<VueUiDonutDatasetItem[]>(() => {
     color: segment.color,
     values: [segment.porcentaje ?? 0],
   }))
-})
-
-const visibleFeeRows = computed(() => {
-  return props.feeRows.filter(([, value]) => {
-    return typeof value === 'number' && value > 0
-  })
 })
 
 const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
@@ -146,6 +140,13 @@ const compositionDonutConfig = computed<VueUiDonutConfig>(() => ({
     },
   },
 }))
+
+const visibleFeeRows = computed(() => {
+  return props.feeRows.filter(([, value]) => {
+    return typeof value === 'number' && value > 0
+  })
+})
+
 const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 </script>
 

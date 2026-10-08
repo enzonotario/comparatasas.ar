@@ -185,7 +185,7 @@ onMounted(() => {
                 name="i-lucide-circle-dot-dashed"
                 class="size-5 text-primary-600 dark:text-primary-400"
               />
-              <h3 class="font-semibold text-lg">FCI: Patrimonio (circle pack)</h3>
+              <h3 class="font-semibold text-lg">FCI: Patrimonio</h3>
             </div>
           </template>
           <FundsPatrimonioCirclePackChart :funds="variableReturnFunds" />

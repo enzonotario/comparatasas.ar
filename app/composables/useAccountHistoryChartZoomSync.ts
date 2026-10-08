@@ -1,188 +1,140 @@
 import type { Ref } from 'vue'
 import type { AccountHistoryItem } from '~/composables/useAccountHistory'
 
-/** Rango de zoom en índices del eje X (end exclusivo, como en VueUiXy). */
-export type ChartZoomRange = { start: number; end: number }
+/** Ventana semántica del eje X, compartida por los dos gráficos. */
+export type ChartDateWindow = { start: Date; end: Date }
 
-export function filterHistoryWithTope(history: AccountHistoryItem[]) {
+export function filterHistoryWithTope(history: readonly AccountHistoryItem[]) {
   return history.filter((item) => item.tope != null && item.tope !== undefined)
 }
 
-export function clampZoomRange(range: ChartZoomRange, length: number): ChartZoomRange {
-  if (length <= 0) return { start: 0, end: 0 }
-  const start = Math.max(0, Math.min(range.start, length - 1))
-  const end = Math.max(start + 1, Math.min(range.end, length))
-  return { start, end }
+/** Fecha de calendario del historial, sin corrimiento por zona horaria. */
+export function parseHistoryDate(fecha: string): Date {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(fecha)
+  if (!match) return new Date(fecha)
+  return new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])))
 }
 
-/** Convierte rango de índices (end exclusivo) a start/end % de dataZoom. */
-export function zoomRangeToDataZoomPercent(
-  range: ChartZoomRange | null | undefined,
-  length: number,
-): { start: number; end: number } {
-  if (length <= 0 || range == null) return { start: 0, end: 100 }
-  const { start, end } = clampZoomRange(range, length)
-  return {
-    start: (start / length) * 100,
-    end: (end / length) * 100,
+export function historyDateExtent(
+  history: readonly AccountHistoryItem[],
+): readonly [Date, Date] | null {
+  let min = Number.POSITIVE_INFINITY
+  let max = Number.NEGATIVE_INFINITY
+
+  for (const item of history) {
+    const time = parseHistoryDate(item.fecha).getTime()
+    if (!Number.isFinite(time)) continue
+    if (time < min) min = time
+    if (time > max) max = time
   }
+
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return null
+  return [new Date(min), new Date(max)]
 }
 
-/** Convierte start/end % de dataZoom a rango de índices (end exclusivo). */
-export function dataZoomPercentToZoomRange(
-  startPct: number,
-  endPct: number,
-  length: number,
-): ChartZoomRange {
-  if (length <= 0) return { start: 0, end: 0 }
-  return clampZoomRange(
-    {
-      start: Math.round((startPct / 100) * length),
-      end: Math.round((endPct / 100) * length),
-    },
-    length,
-  )
-}
+export function clampDateWindow(
+  window: ChartDateWindow,
+  extent: readonly [Date, Date],
+): ChartDateWindow {
+  const min = extent[0].getTime()
+  const max = extent[1].getTime()
+  const full = { start: new Date(min), end: new Date(max) }
+  if (!Number.isFinite(min) || !Number.isFinite(max) || max < min) return full
+  if (max === min) return full
 
-export function isFullDataZoomPercent(startPct: number, endPct: number): boolean {
-  return startPct <= 0.05 && endPct >= 99.95
-}
-
-/** Convierte rango canónico (historial completo) al subconjunto con tope. */
-export function canonicalToTopeRange(
-  history: AccountHistoryItem[],
-  filtered: AccountHistoryItem[],
-  start: number,
-  end: number,
-): ChartZoomRange {
-  const n = history.length
-  const m = filtered.length
-  if (!n || !m) return { start: 0, end: Math.max(0, m) }
-
-  const { start: s, end: e } = clampZoomRange({ start, end }, n)
-  const startDate = history[s]!.fecha
-  const lastHistIdx = e - 1
-  const lastDate = history[Math.min(Math.max(lastHistIdx, 0), n - 1)]!.fecha
-
-  let fStart = filtered.findIndex((f) => f.fecha >= startDate)
-  if (fStart < 0) fStart = 0
-
-  let fEnd = m
-  for (let i = 0; i < m; i++) {
-    if (filtered[i]!.fecha > lastDate) {
-      fEnd = i
-      break
-    }
+  const startTime = window.start.getTime()
+  const endTime = window.end.getTime()
+  if (!Number.isFinite(startTime) || !Number.isFinite(endTime) || endTime <= startTime) {
+    return full
   }
-  return clampZoomRange({ start: fStart, end: fEnd }, m)
+
+  const start = Math.min(Math.max(startTime, min), max)
+  const end = Math.min(Math.max(endTime, min), max)
+  if (end <= start) return full
+  return { start: new Date(start), end: new Date(end) }
 }
 
-/** Convierte rango del gráfico de tope a índices del historial completo. */
-export function topeToCanonicalRange(
-  history: AccountHistoryItem[],
-  filtered: AccountHistoryItem[],
-  fStart: number,
-  fEnd: number,
-): ChartZoomRange {
-  const n = history.length
-  const m = filtered.length
-  if (!n) return { start: 0, end: 0 }
-  if (!m) return { start: 0, end: n }
-
-  const { start: fs, end: fe } = clampZoomRange({ start: fStart, end: fEnd }, m)
-  const startDate = filtered[fs]!.fecha
-  const lastIdx = fe - 1
-  const lastDate = filtered[Math.min(Math.max(lastIdx, 0), m - 1)]!.fecha
-
-  let cStart = history.findIndex((h) => h.fecha >= startDate)
-  if (cStart < 0) cStart = 0
-
-  let cEnd = n
-  for (let i = 0; i < n; i++) {
-    if (history[i]!.fecha > lastDate) {
-      cEnd = i
-      break
-    }
-  }
-  return clampZoomRange({ start: cStart, end: cEnd }, n)
+/**
+ * Ventana que deben mostrar ambos gráficos.
+ * El historial completo define las fechas disponibles. Quitar filas sin tope
+ * no cambia el significado: start y end siguen siendo esas fechas.
+ */
+export function resolveSharedZoomWindow(
+  history: readonly AccountHistoryItem[],
+  proposed: ChartDateWindow | null | undefined,
+): ChartDateWindow | null {
+  const extent = historyDateExtent(history)
+  if (!extent) return null
+  if (proposed == null) return { start: extent[0], end: extent[1] }
+  return clampDateWindow(proposed, extent)
 }
 
 export function useAccountHistoryChartZoomSync(
   history: Ref<AccountHistoryItem[] | null | undefined>,
 ) {
-  const syncedZoom = ref<ChartZoomRange | null>(null)
+  const proposedWindow = ref<ChartDateWindow | null>(null)
 
   watch(
     () => history.value?.length,
     () => {
-      syncedZoom.value = null
+      proposedWindow.value = null
     },
   )
 
-  const filtered = computed(() => (history.value ? filterHistoryWithTope(history.value) : []))
+  const zoomWindow = computed(() =>
+    resolveSharedZoomWindow(history.value ?? [], proposedWindow.value),
+  )
 
-  const tnaZoom = computed(() => syncedZoom.value)
-
-  const topeZoom = computed(() => {
-    const h = history.value
-    const sync = syncedZoom.value
-    if (!h?.length || !sync || !filtered.value.length) return null
-    return canonicalToTopeRange(h, filtered.value, sync.start, sync.end)
-  })
-
-  function onTnaZoomStart(payload: { index: number }) {
-    const h = history.value
-    if (!h?.length) return
-    const prev = syncedZoom.value
-    const next = clampZoomRange({ start: payload.index, end: prev?.end ?? h.length }, h.length)
-    if (prev && prev.start === next.start && prev.end === next.end) return
-    syncedZoom.value = next
-  }
-
-  function onTnaZoomEnd(payload: { index: number }) {
-    const h = history.value
-    if (!h?.length) return
-    const prev = syncedZoom.value
-    const next = clampZoomRange({ start: prev?.start ?? 0, end: payload.index }, h.length)
-    if (prev && prev.start === next.start && prev.end === next.end) return
-    syncedZoom.value = next
-  }
-
-  function onTopeZoomStart(payload: { index: number }) {
-    const h = history.value
-    const f = filtered.value
-    if (!h?.length || !f.length) return
-    const prev = syncedZoom.value
-    const topeEnd = prev ? canonicalToTopeRange(h, f, prev.start, prev.end).end : f.length
-    const topeRange = clampZoomRange({ start: payload.index, end: topeEnd }, f.length)
-    const next = topeToCanonicalRange(h, f, topeRange.start, topeRange.end)
-    if (prev && prev.start === next.start && prev.end === next.end) return
-    syncedZoom.value = next
-  }
-
-  function onTopeZoomEnd(payload: { index: number }) {
-    const h = history.value
-    const f = filtered.value
-    if (!h?.length || !f.length) return
-    const prev = syncedZoom.value
-    const topeStart = prev ? canonicalToTopeRange(h, f, prev.start, prev.end).start : 0
-    const topeRange = clampZoomRange({ start: topeStart, end: payload.index }, f.length)
-    const next = topeToCanonicalRange(h, f, topeRange.start, topeRange.end)
-    if (prev && prev.start === next.start && prev.end === next.end) return
-    syncedZoom.value = next
-  }
-
-  function onZoomReset() {
-    syncedZoom.value = null
+  function setZoomWindow(next: ChartDateWindow) {
+    const resolved = resolveSharedZoomWindow(history.value ?? [], next)
+    const current = zoomWindow.value
+    if (
+      current &&
+      resolved &&
+      current.start.getTime() === resolved.start.getTime() &&
+      current.end.getTime() === resolved.end.getTime()
+    ) {
+      return
+    }
+    proposedWindow.value = resolved
   }
 
   return {
-    tnaZoom,
-    topeZoom,
-    onTnaZoomStart,
-    onTnaZoomEnd,
-    onTopeZoomStart,
-    onTopeZoomEnd,
-    onZoomReset,
+    zoomWindow,
+    setZoomWindow,
   }
+}
+
+/**
+ * El overlay de zoomX cubre el área del gráfico y el host borra el foco ahí.
+ * Este listener corre después y vuelve a mostrar el tooltip en esa zona.
+ */
+export function useZoomPlotHover() {
+  let detach: (() => void) | undefined
+
+  function onRender(context: {
+    container: HTMLElement
+    interaction: {
+      resolvePointer: (clientX: number, clientY: number) => unknown
+      setControlledFocus: (target: unknown, options?: { source?: 'pointer' }) => void
+    }
+  }) {
+    detach?.()
+
+    const onPointerMove = (event: PointerEvent) => {
+      const target = event.target
+      if (!(target instanceof Element) || !target.closest('[data-chart-zoom-surface]')) return
+      context.interaction.setControlledFocus(
+        context.interaction.resolvePointer(event.clientX, event.clientY),
+        { source: 'pointer' },
+      )
+    }
+
+    context.container.addEventListener('pointermove', onPointerMove)
+    detach = () => context.container.removeEventListener('pointermove', onPointerMove)
+  }
+
+  onBeforeUnmount(() => detach?.())
+
+  return { onRender }
 }

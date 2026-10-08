@@ -1,6 +1,13 @@
 <script setup lang="ts">
+import { colorLegend, colorLegendItems, defineChart, dot, lineY, text } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { Chart } from '@tanstack/charts/vue'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { portal } from '@tanstack/charts/tooltip/portal'
 import { type CerBondRow, diasAlVencimientoCer } from '~/composables/useBonosCer'
 import { useChartTheme } from '~/composables/useChartConfig'
+import { hideOverlappingYieldLabels } from '~/lib/charts/yield-label-collision'
 import { isPositiveYieldRate } from '~/lib/finance/yield-curve'
 
 export type CerYieldMode = 'tir' | 'tem'
@@ -15,10 +22,7 @@ const props = withDefaults(defineProps<Props>(), {
   mode: 'tir',
 })
 
-const colorMode = useColorMode()
 const { textColor, gridLineColor } = useChartTheme()
-
-const tooltipBackground = computed(() => (colorMode.value === 'dark' ? '#171717' : '#ffffff'))
 
 const yieldLabel = computed(() => (props.mode === 'tem' ? 'TEM' : 'TIR'))
 
@@ -52,7 +56,7 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
     for (let k = i + 1; k < m; k++) {
       const f = A[k]![i]! / A[i]![i]!
       for (let j = i; j < m; j++) A[k]![j]! -= f * A[i]![j]!
-      B[k] -= f * B[i]!
+      B[k]! -= f * B[i]!
     }
   }
   const coeffs = new Array(m)
@@ -74,125 +78,162 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
   return result
 }
 
-const chartOptions = computed(() => {
-  const curveBonds = props.bonds.filter((b) => isPositiveYieldRate(b.tirPorcentaje))
+interface CurveRow {
+  x: number
+  y: number
+  series: string
+}
+
+interface BondRow {
+  x: number
+  y: number
+  name: string
+  series: string
+}
+
+const definition = computed(() => {
+  const curveBonds = props.bonds.filter((bond) => isPositiveYieldRate(bond.tirPorcentaje))
   if (!curveBonds.length) return null
 
   const label = yieldLabel.value
+  const curveName = 'Curva (aprox.)'
+  const seriesName = 'Bonos CER'
+  const curveColor =
+    textColor.value === '#fff' ? 'rgba(255, 255, 255, 0.35)' : 'rgba(0, 0, 0, 0.18)'
 
-  const scatterData = curveBonds.map((b) => ({
-    x: diasAlVencimientoCer(b.fechaVencimiento),
-    y: yieldPercent(b),
-    name: b.ticker,
+  const bondRows: BondRow[] = curveBonds.map((bond) => ({
+    x: diasAlVencimientoCer(bond.fechaVencimiento),
+    y: yieldPercent(bond),
+    name: bond.ticker,
+    series: seriesName,
   }))
 
-  const allPoints: [number, number][] = curveBonds
-    .map((b) => [diasAlVencimientoCer(b.fechaVencimiento), yieldPercent(b)] as [number, number])
+  const allPoints: [number, number][] = bondRows
+    .map((bond) => [bond.x, bond.y] as [number, number])
     .sort((a, b) => a[0] - b[0])
+  const curveRows: CurveRow[] = fitPolyCurve(allPoints, 2, 40).map(([x, y]) => ({
+    x,
+    y,
+    series: curveName,
+  }))
 
-  const curveData = fitPolyCurve(allPoints, 2, 40)
+  const domain = curveRows.length ? [curveName, seriesName] : [seriesName]
+  const range = curveRows.length ? [curveColor, '#d97706'] : ['#d97706']
+  const grid = { stroke: gridLineColor.value, strokeOpacity: 1 }
 
-  return {
-    chart: { backgroundColor: 'transparent' },
-    title: { text: '' },
-    accessibility: { enabled: false },
-    xAxis: {
-      title: { text: 'Días al vencimiento', style: { color: textColor.value } },
-      labels: { style: { color: textColor.value } },
-      gridLineColor: gridLineColor.value,
-    },
-    yAxis: {
-      title: { text: `${label} (%)`, style: { color: textColor.value } },
-      labels: {
-        formatter(): string {
-          return `${(this as any).value.toFixed(1)}%`
+  return defineChart(
+    {
+      marks: [
+        decorative(
+          lineY(curveRows, {
+            x: 'x',
+            y: 'y',
+            color: 'series',
+            strokeDasharray: '6 4',
+            strokeWidth: 2,
+          }),
+        ),
+        dot(bondRows, {
+          x: 'x',
+          y: 'y',
+          r: 6,
+          color: 'series',
+        }),
+        decorative(
+          text(bondRows, {
+            x: 'x',
+            y: 'y',
+            text: (row) => row.name,
+            anchor: 'middle',
+            dy: -26,
+            fontSize: 11,
+            fontWeight: 600,
+            fill: textColor.value,
+          }),
+        ),
+        decorative(
+          text(bondRows, {
+            x: 'x',
+            y: 'y',
+            text: (row) => `${label} ${row.y.toFixed(2)}%`,
+            anchor: 'middle',
+            dy: -14,
+            fontSize: 11,
+            fontWeight: 500,
+            fill: textColor.value,
+          }),
+        ),
+      ],
+      scales: {
+        x: {
+          scale: scaleLinear,
+          nice: true,
+          grid: false,
+          axis: { label: 'Días al vencimiento' },
         },
-        style: { color: textColor.value },
-      },
-      gridLineColor: gridLineColor.value,
-    },
-    tooltip: {
-      shared: false,
-      outside: true,
-      useHTML: true,
-      shape: 'rect',
-      backgroundColor: tooltipBackground.value,
-      borderColor: gridLineColor.value,
-      borderWidth: 1,
-      shadow: true,
-      padding: 10,
-      style: { color: textColor.value, zIndex: 10050 },
-      formatter(): string {
-        const point = (this as any).point
-        if (point.name) {
-          return `<b>${point.name}</b><br/>${label}: ${point.y.toFixed(2)}%<br/>Días: ${point.x}`
-        }
-        return `Curva: ${point.y.toFixed(2)}%`
-      },
-    },
-    plotOptions: {
-      scatter: {
-        marker: { radius: 6 },
-        dataLabels: {
-          enabled: true,
-          useHTML: true,
-          crop: false,
-          overflow: 'allow',
-          allowOverlap: false,
-          verticalAlign: 'bottom',
-          y: -10,
-          style: {
-            color: textColor.value,
-            fontSize: '11px',
-            fontWeight: '500',
-            textOutline: '1px contrast',
-          },
-          formatter(): string {
-            const point = (this as any).point
-            if (!point.name) return `${point.y.toFixed(2)}%`
-            return `<span style="display:block;text-align:center;line-height:1.25"><b>${point.name}</b><br/>${label} ${point.y.toFixed(2)}%</span>`
+        y: {
+          scale: scaleLinear,
+          nice: true,
+          grid,
+          axis: {
+            label: `${label} (%)`,
+            ticks: { format: (value: number) => `${value.toFixed(1)}%` },
           },
         },
       },
+      margin: { top: 36 },
+      color: {
+        domain,
+        range,
+        legend: colorLegend({
+          items: colorLegendItems({
+            indicator: {
+              shape: (value) => (value === curveName ? 'line' : 'dot'),
+            },
+          }),
+        }),
+      },
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
+      },
     },
-    series: [
-      {
-        name: 'Curva (aprox.)',
-        type: 'spline',
-        data: curveData,
-        color: textColor.value === '#fff' ? 'rgba(255, 255, 255, 0.35)' : 'rgba(0, 0, 0, 0.18)',
-        dashStyle: 'Dash',
-        marker: { enabled: false },
-        enableMouseTracking: false,
+    {
+      tooltip: {
+        use: tooltip,
+        portal,
+        content: (points) => {
+          const row = points[0]?.datum
+          if (!row) return { rows: [] }
+          return {
+            title: row.name,
+            color: points[0]?.color,
+            rows: [
+              { label, value: `${row.y.toFixed(2)}%` },
+              { label: 'Días', value: String(row.x) },
+            ],
+          }
+        },
       },
-      {
-        name: 'Bonos CER',
-        type: 'scatter',
-        data: scatterData,
-        color: '#d97706',
-        marker: { symbol: 'diamond' },
-      },
-    ],
-    legend: { itemStyle: { color: textColor.value } },
-    credits: { enabled: false },
-  }
+    },
+  )
 })
 </script>
 
 <template>
-  <div class="cer-yield-curve-chart w-full" style="height: 24rem; min-height: 384px">
-    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
+  <div class="w-full" style="height: 24rem; min-height: 384px">
+    <Chart
+      v-if="definition"
+      :definition="definition"
+      aria-label="Curva de rendimientos de bonos CER"
+      class="h-full w-full"
+      :height="384"
+      @render="({ svg }) => hideOverlappingYieldLabels(svg)"
+    />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-muted text-sm italic">Sin datos para la curva.</div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.cer-yield-curve-chart :deep(.highcharts-data-labels) {
-  z-index: 1;
-}
-.cer-yield-curve-chart :deep(.highcharts-label.highcharts-tooltip) {
-  z-index: 10050;
-}
-</style>

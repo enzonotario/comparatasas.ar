@@ -1,6 +1,17 @@
 <script setup lang="ts">
+import { barX, defineChart, text } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { Chart } from '@tanstack/charts/vue'
+import { scaleBand } from '@tanstack/charts/scales/band'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
 import type { InvestmentCarryAllocation } from '~/lib/finance/contado-cuotas-carry'
 import { CHART_COLORS, formatCurrencyFull, useChartTheme } from '~/composables/useChartConfig'
+import {
+  PROVIDER_AXIS_LOGO_DX,
+  providerLogoMap,
+  useProviderLogos,
+} from '~/lib/charts/provider-logos'
 
 interface Props {
   allocations: InvestmentCarryAllocation[]
@@ -10,102 +21,130 @@ const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-const chartOptions = computed(() => {
+const MAX_CHART_HEIGHT = 384
+const MAX_BAR_HEIGHT = 36
+const AXIS_CHROME = 48
+const BAND_PADDING = 0.2
+
+const chartHeight = computed(() => {
+  const count = props.allocations.length
+  if (count === 0) return AXIS_CHROME + MAX_BAR_HEIGHT
+  const plotHeight = (MAX_BAR_HEIGHT * (count + BAND_PADDING)) / (1 - BAND_PADDING)
+  return Math.min(MAX_CHART_HEIGHT, Math.round(AXIS_CHROME + plotHeight))
+})
+
+const logos = computed(() =>
+  providerLogoMap(
+    props.allocations.map((allocation) => ({ name: allocation.label, logo: allocation.logo })),
+  ),
+)
+
+const { onRender: paintLogos } = useProviderLogos(logos, 'after')
+
+interface AllocationRow {
+  label: string
+  initialAmount: number
+  tna: number
+  tope: number | null
+  color: string
+}
+
+const definition = computed(() => {
   if (!props.allocations.length) return null
 
-  return {
-    chart: {
-      type: 'bar',
-      backgroundColor: 'transparent',
-    },
-    title: {
-      text: '',
-    },
-    accessibility: {
-      enabled: false,
-    },
-    xAxis: {
-      categories: props.allocations.map((item) => item.label),
-      labels: {
-        style: {
-          color: textColor.value,
-        },
-      },
-      lineColor: gridLineColor.value,
-    },
-    yAxis: {
-      title: {
-        text: 'Monto inicial',
-        style: { color: textColor.value },
-      },
-      labels: {
-        formatter() {
-          return formatCurrencyFull(Number((this as { value: number }).value))
-        },
-        style: { color: textColor.value },
-      },
-      gridLineColor: gridLineColor.value,
-    },
-    tooltip: {
-      useHTML: true,
-      formatter() {
-        const point = (this as { point: { allocation: InvestmentCarryAllocation } }).point
-        const allocation = point.allocation
-        return `
-          <div style="font-family:inherit">
-            <b>${allocation.label}</b><br/>
-            Asignado: <b>${formatCurrencyFull(allocation.initialAmount)}</b><br/>
-            TNA: <b>${(allocation.tna * 100).toFixed(2)}%</b><br/>
-            Tope: <b>${allocation.tope == null ? 'Sin límite' : formatCurrencyFull(allocation.tope)}</b>
-          </div>
-        `
-      },
-    },
-    plotOptions: {
-      series: {
-        borderRadius: 6,
-        animation: false,
-        dataLabels: {
-          enabled: true,
-          formatter() {
-            return formatCurrencyFull(Number((this as { y: number }).y))
+  const rows: AllocationRow[] = props.allocations.map((allocation, index) => ({
+    label: allocation.label,
+    initialAmount: allocation.initialAmount,
+    tna: allocation.tna,
+    tope: allocation.tope,
+    color: allocation.isCashReserve ? '#94a3b8' : CHART_COLORS[index % CHART_COLORS.length]!,
+  }))
+  const grid = { stroke: gridLineColor.value, strokeOpacity: 1 }
+
+  return defineChart(
+    {
+      marks: [
+        barX(rows, {
+          y: 'label',
+          x: 'initialAmount',
+          fill: (row) => row.color,
+          radius: 6,
+        }),
+        decorative(
+          text(rows, {
+            x: 'initialAmount',
+            y: 'label',
+            text: (row) => formatCurrencyFull(row.initialAmount),
+            anchor: 'start',
+            dx: 6,
+            fontSize: 10,
+            fill: textColor.value,
+          }),
+        ),
+      ],
+      scales: {
+        x: {
+          scale: scaleLinear,
+          nice: true,
+          grid,
+          axis: {
+            label: 'Monto inicial',
+            ticks: { format: (value: number) => formatCurrencyFull(value) },
           },
-          style: {
-            color: textColor.value,
-            textOutline: 'none',
-            fontSize: '10px',
+        },
+        y: {
+          scale: () => scaleBand<string>().padding(0.2),
+          reverse: true,
+          grid: false,
+          axis: {
+            tickLabels: {
+              dx: ({ value }) => (logos.value.has(String(value)) ? PROVIDER_AXIS_LOGO_DX : 0),
+            },
           },
         },
       },
-    },
-    legend: {
-      enabled: false,
-    },
-    credits: {
-      enabled: false,
-    },
-    navigation: {
-      buttonOptions: {
-        enabled: false,
+      margin: { right: 96 },
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
       },
     },
-    series: [
-      {
-        name: 'Asignación inicial',
-        data: props.allocations.map((allocation, index) => ({
-          y: allocation.initialAmount,
-          color: allocation.isCashReserve ? '#94a3b8' : CHART_COLORS[index % CHART_COLORS.length],
-          allocation,
-        })),
+    {
+      tooltip: {
+        use: tooltip,
+        content: (points) => {
+          const row = points[0]?.datum
+          if (!row) return { rows: [] }
+          return {
+            title: row.label,
+            rows: [
+              { label: 'Asignado', value: formatCurrencyFull(row.initialAmount) },
+              { label: 'TNA', value: `${(row.tna * 100).toFixed(2)}%` },
+              {
+                label: 'Tope',
+                value: row.tope == null ? 'Sin límite' : formatCurrencyFull(row.tope),
+              },
+            ],
+          }
+        },
       },
-    ],
-  }
+    },
+  )
 })
 </script>
 
 <template>
-  <div class="w-full" style="height: 24rem; min-height: 384px">
-    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
+  <div class="w-full" :style="{ height: `${chartHeight}px` }">
+    <Chart
+      v-if="definition"
+      :definition="definition"
+      aria-label="Asignación inicial del carry en contado con cuotas"
+      class="h-full w-full"
+      :height="chartHeight"
+      @render="paintLogos"
+    />
     <div v-else class="w-full h-full flex items-center justify-center text-neutral-500">
       Sin datos para el gráfico.
     </div>

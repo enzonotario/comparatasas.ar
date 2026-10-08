@@ -118,15 +118,7 @@ function formatCompactCurrency(value: number): string {
   }).format(value)
 }
 
-const {
-  tnaZoom,
-  topeZoom,
-  onTnaZoomStart,
-  onTnaZoomEnd,
-  onTopeZoomStart,
-  onTopeZoomEnd,
-  onZoomReset,
-} = useAccountHistoryChartZoomSync(history)
+const { zoomWindow, setZoomWindow } = useAccountHistoryChartZoomSync(history)
 
 function handleProviderClick() {
   if (providerUrl.value) {
@@ -269,10 +261,8 @@ useSeoMeta({
         <AccountHistoryTNAChart
           :history="history"
           :provider-name="displayName"
-          :zoom-range="tnaZoom"
-          @zoom-start="onTnaZoomStart"
-          @zoom-end="onTnaZoomEnd"
-          @zoom-reset="onZoomReset"
+          :zoom-window="zoomWindow"
+          @update:zoom-window="setZoomWindow"
         />
       </UCard>
 
@@ -289,10 +279,8 @@ useSeoMeta({
         <AccountHistoryTopeChart
           :history="history"
           :provider-name="displayName"
-          :zoom-range="topeZoom"
-          @zoom-start="onTopeZoomStart"
-          @zoom-end="onTopeZoomEnd"
-          @zoom-reset="onZoomReset"
+          :zoom-window="zoomWindow"
+          @update:zoom-window="setZoomWindow"
         />
       </UCard>
     </div>

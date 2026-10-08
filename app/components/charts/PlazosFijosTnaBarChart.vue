@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { provide } from 'vue'
-import type { ComposeOption } from 'echarts/core'
-import type { BarSeriesOption } from 'echarts/charts'
-import type {
-  GridComponentOption,
-  TooltipComponentOption,
-  TitleComponentOption,
-} from 'echarts/components'
+import { barX, defineChart, text } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { scaleBand } from '@tanstack/charts/scales/band'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { Chart } from '@tanstack/charts/vue'
 import { CHART_COLORS, useChartTheme } from '~/composables/useChartConfig'
+import {
+  PROVIDER_AXIS_LOGO_DX,
+  providerLogoMap,
+  useProviderLogos,
+} from '~/lib/charts/provider-logos'
 
 export interface PlazoFijoTnaChartItem {
   institution: string
@@ -32,18 +35,6 @@ const props = withDefaults(defineProps<Props>(), {
   preserveTnaPrecision: false,
 })
 
-type BarOption = ComposeOption<
-  BarSeriesOption | GridComponentOption | TooltipComponentOption | TitleComponentOption
->
-
-const colorMode = computed(() => useColorMode().value)
-provide(THEME_KEY, colorMode)
-
-const initOptions = computed(() => ({
-  renderer: 'svg' as const,
-}))
-provide(INIT_OPTIONS_KEY, initOptions)
-
 const { textColor, gridLineColor } = useChartTheme()
 
 function formatTnaPreservingPrecision(value: number): string {
@@ -58,12 +49,16 @@ function formatTna(value: number): string {
 
 const sortedItems = computed(() =>
   [...props.items]
-    .filter((i) => i.tna > 0)
+    .filter((item) => item.tna > 0)
     .sort((a, b) => (props.sortTnaAscending ? a.tna - b.tna : b.tna - a.tna)),
 )
 
-/** ECharts category axis: primer ítem abajo → invertimos para que el mejor TNA quede arriba. */
-const chartRows = computed(() => [...sortedItems.value].reverse())
+const chartRows = computed(() =>
+  sortedItems.value.map((item, index) => ({
+    ...item,
+    color: CHART_COLORS[index % CHART_COLORS.length]!,
+  })),
+)
 
 const chartHeight = computed(() => {
   const n = chartRows.value.length
@@ -71,117 +66,112 @@ const chartHeight = computed(() => {
   return Math.max(280, 56 + n * 36)
 })
 
-const option = computed<BarOption>(() => {
+const logos = computed(() =>
+  providerLogoMap(chartRows.value.map((item) => ({ name: item.institution, logo: item.logo }))),
+)
+
+const { onRender: paintLogos } = useProviderLogos(logos, 'after')
+
+const definition = computed(() => {
   const rows = chartRows.value
-  const colorByInstitution = new Map(
-    sortedItems.value.map((item, index) => [
-      item.institution,
-      CHART_COLORS[index % CHART_COLORS.length],
-    ]),
-  )
-  const rich: Record<string, Record<string, unknown>> = {
-    name: {
-      color: textColor.value,
-      fontSize: 11,
-      padding: [0, 0, 0, 6],
-    },
-  }
 
-  rows.forEach((row, index) => {
-    if (!row.logo) return
-    rich[`logo${index}`] = {
-      height: 18,
-      width: 18,
-      borderRadius: 3,
-      backgroundColor: { image: row.logo },
-    }
-  })
-
-  return {
-    animationDuration: 400,
-    title: {
-      text: props.parentGroupName,
-      left: 0,
-      top: 0,
-      textStyle: {
-        color: textColor.value,
-        fontSize: 11,
-        fontWeight: 500,
-      },
-    },
-    grid: {
-      top: 28,
-      right: 72,
-      bottom: 8,
-      left: 8,
-      containLabel: true,
-    },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: { type: 'shadow' },
-      formatter: (params) => {
-        const items = Array.isArray(params) ? params : [params]
-        const first = items[0] as { name?: string; value?: number | string }
-        const name = first?.name ?? ''
-        const value = Number(first?.value)
-        const tna = Number.isFinite(value) ? `${formatTna(value)}%` : '—'
-        return `<div style="font-family:inherit"><b>${name}</b><br/>TNA: ${tna}</div>`
-      },
-    },
-    xAxis: {
-      type: 'value',
-      axisLabel: {
-        color: textColor.value,
-        formatter: (value: number) => `${formatTna(value)}%`,
-      },
-      splitLine: { lineStyle: { color: gridLineColor.value } },
-    },
-    yAxis: {
-      type: 'category',
-      data: rows.map((row) => row.institution),
-      axisLabel: {
-        color: textColor.value,
-        formatter: (value: string, index: number) => {
-          const row = rows[index]
-          if (row?.logo) return `{logo${index}|}{name|${value}}`
-          return `{name|${value}}`
-        },
-        rich,
-      },
-      axisTick: { show: false },
-      axisLine: { show: false },
-    },
-    series: [
-      {
-        type: 'bar',
-        name: props.parentGroupName,
-        data: rows.map((row) => ({
-          value: row.tna,
-          itemStyle: {
-            color: colorByInstitution.get(row.institution) ?? CHART_COLORS[0],
-            borderRadius: [0, 3, 3, 0],
+  return defineChart(
+    {
+      marks: [
+        barX(rows, {
+          x: 'tna',
+          y: 'institution',
+          key: 'institution',
+          fill: (row) => row.color,
+          maxThickness: 22,
+          radius: { end: 3 },
+        }),
+        decorative(
+          text(rows, {
+            x: 'tna',
+            y: 'institution',
+            text: (row) => `${formatTna(row.tna)}%`,
+            key: 'institution',
+            anchor: 'start',
+            dx: 6,
+            fontSize: 11,
+            fontWeight: 600,
+            fill: textColor.value,
+          }),
+        ),
+      ],
+      scales: {
+        x: {
+          scale: scaleLinear,
+          nice: true,
+          grid: { stroke: gridLineColor.value },
+          axis: {
+            ticks: {
+              format: (value: number) => `${formatTna(value)}%`,
+            },
           },
-        })),
-        barMaxWidth: 22,
-        label: {
-          show: true,
-          position: 'right',
-          color: textColor.value,
-          fontWeight: 600,
-          fontSize: 11,
-          formatter: (params) => `${formatTna(Number(params.value))}%`,
+        },
+        y: {
+          scale: () => scaleBand<string>().padding(0.2),
+          grid: false,
+          axis: {
+            line: false,
+            ticks: { size: 0 },
+            tickLabels: {
+              dx: ({ value }) => (logos.value.has(String(value)) ? PROVIDER_AXIS_LOGO_DX : 0),
+            },
+          },
         },
       },
-    ],
-  }
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
+        palette: CHART_COLORS,
+      },
+    },
+    {
+      focus: 'group-y',
+      maxFocusDistance: Number.POSITIVE_INFINITY,
+      tooltip: {
+        use: tooltip,
+        content: (points) => {
+          const point = points[0]
+          if (!point) return { rows: [] }
+          const tna = typeof point.xValue === 'number' ? point.xValue : point.datum.tna
+          return {
+            title: point.datum.institution,
+            color: point.datum.color,
+            rows: [{ label: 'TNA', value: `${formatTna(tna)}%` }],
+          }
+        },
+      },
+    },
+  )
 })
 </script>
 
 <template>
   <div class="w-full min-w-0">
     <ClientOnly>
-      <div v-if="chartRows.length > 0" class="w-full" :style="{ height: `${chartHeight}px` }">
-        <VChart :option="option" class="h-full w-full" autoresize />
+      <div
+        v-if="chartRows.length > 0"
+        class="flex w-full flex-col"
+        :style="{ height: `${chartHeight}px` }"
+      >
+        <p class="mb-1 shrink-0 text-[11px] font-medium leading-none" :style="{ color: textColor }">
+          {{ parentGroupName }}
+        </p>
+        <div class="min-h-0 flex-1">
+          <Chart
+            :definition="definition"
+            :aria-label="parentGroupName"
+            class="h-full w-full"
+            :style="{ height: '100%' }"
+            @render="paintLogos"
+          />
+        </div>
       </div>
       <div v-else class="py-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
         No hay datos para graficar.

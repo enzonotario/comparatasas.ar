@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { provide } from 'vue'
 import type { TabsItem } from '@nuxt/ui'
+import { colorLegend, defineChart, lineY } from '@tanstack/charts'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { scaleOrdinal } from '@tanstack/charts/scales/ordinal'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { Chart } from '@tanstack/charts/vue'
 import { useRouteQuery } from '@vueuse/router'
+import { scaleUtc } from 'd3-scale'
 import type { FciFundHistoryItem } from '~/composables/useFciFundDetails'
 import { CHART_COLORS, formatCurrency, useChartTheme } from '~/composables/useChartConfig'
 import {
@@ -15,25 +20,17 @@ import {
   isFundHistoryPeriod,
   type FundHistoryPeriod,
 } from '~/lib/funds-detail'
+import { providerLogoMap, useProviderLogos } from '~/lib/charts/provider-logos'
 
 const props = defineProps<{
   funds: Array<{
     key: string
     label: string
     points: FciFundHistoryItem[]
+    logo?: string
   }>
   loading?: boolean
 }>()
-
-const colorMode = computed(() => useColorMode().value)
-provide(THEME_KEY, colorMode)
-
-const initOptions = computed(() => ({
-  height: 360,
-  width: 'auto',
-  renderer: 'svg' as const,
-}))
-provide(INIT_OPTIONS_KEY, initOptions)
 
 const { textColor, gridLineColor } = useChartTheme()
 
@@ -68,6 +65,12 @@ const seriesOptions: Array<{
   { key: 'vcp', label: 'VCP indexado (base 100)', shortLabel: 'VCP' },
 ]
 
+const logos = computed(() =>
+  providerLogoMap(props.funds.map((fund) => ({ name: fund.label, logo: fund.logo }))),
+)
+
+const { onRender: paintLogos } = useProviderLogos(logos, 'after')
+
 const coloredFunds = computed(() =>
   props.funds.map((fund, index) => ({
     ...fund,
@@ -100,115 +103,99 @@ function formatLatestValue(value: number | null) {
   return formatTooltipValue(value)
 }
 
-const chartOption = computed(() => {
-  if (!preparedSeries.value.length) return {}
+function formatAxisDate(date: Date) {
+  return date.toLocaleDateString('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  })
+}
 
-  const isDark = colorMode.value === 'dark'
+interface CompareRow {
+  series: string
+  date: Date
+  value: number
+}
 
-  return {
-    backgroundColor: 'transparent',
-    animationDuration: 300,
-    legend: {
-      top: 0,
-      textStyle: { color: textColor.value },
-      data: preparedSeries.value.map((series) => series.label),
-    },
-    tooltip: {
-      trigger: 'axis',
-      formatter: (params: any) => {
-        const items = Array.isArray(params) ? params : [params]
-        if (!items.length) return ''
-
-        const timestamp = items[0]?.value?.[0] ?? items[0]?.axisValue
-        const date =
-          typeof timestamp === 'number' ? new Date(timestamp) : new Date(String(timestamp))
-
-        const lines = [`<strong>${date.toLocaleDateString('es-AR')}</strong>`]
-        for (const item of items) {
-          lines.push(
-            `${item.marker || ''} ${item.seriesName}: ${formatTooltipValue(item.value?.[1])}`,
-          )
-        }
-        return lines.join('<br/>')
-      },
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '14%',
-      top: '18%',
-      containLabel: true,
-    },
-    xAxis: {
-      type: 'time',
-      axisLabel: {
-        color: textColor.value,
-        formatter: (value: number) => {
-          const date = new Date(value)
-          return date.toLocaleDateString('es-AR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: '2-digit',
-          })
-        },
-      },
-      axisLine: {
-        lineStyle: { color: gridLineColor.value },
-      },
-      splitLine: { show: false },
-    },
-    yAxis: {
-      type: 'value',
-      name: activeSeriesMeta.value.label,
-      nameTextStyle: { color: textColor.value },
-      scale: true,
-      axisLabel: {
-        color: textColor.value,
-        formatter: (value: number) => formatAxisValue(value),
-      },
-      axisLine: { show: false },
-      splitLine: {
-        lineStyle: {
-          color: gridLineColor.value,
-          type: 'dashed',
-        },
-      },
-    },
-    dataZoom: [
-      {
-        type: 'inside',
-        xAxisIndex: [0],
-        filterMode: 'none',
-      },
-      {
-        type: 'slider',
-        xAxisIndex: [0],
-        height: 18,
-        bottom: 8,
-        start: 0,
-        end: 100,
-        filterMode: 'none',
-        borderColor: gridLineColor.value,
-        fillerColor: isDark ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)',
-        handleStyle: {
-          color: CHART_COLORS[1],
-        },
-        textStyle: {
-          color: textColor.value,
-        },
-      },
-    ],
-    series: preparedSeries.value.map((series) => ({
-      name: series.label,
-      type: 'line' as const,
-      data: series.points.map((point) => [point.timestamp, point.value] as [number, number]),
-      smooth: true,
-      showSymbol: false,
-      sampling: 'lttb',
-      itemStyle: { color: series.color },
-      lineStyle: { color: series.color, width: 2 },
+const definition = computed(() => {
+  const series = preparedSeries.value
+  const rows: CompareRow[] = series.flatMap((item) =>
+    item.points.map((point) => ({
+      series: item.label,
+      date: new Date(point.timestamp),
+      value: point.value,
     })),
-  }
+  )
+
+  return defineChart(
+    {
+      marks: [
+        lineY(rows, {
+          x: 'date',
+          y: 'value',
+          z: 'series',
+          strokeWidth: 2,
+          key: (row) => `${row.series}:${row.date.getTime()}`,
+        }),
+      ],
+      scales: {
+        x: {
+          scale: scaleUtc,
+          nice: true,
+          grid: false,
+          axis: {
+            line: { stroke: gridLineColor.value },
+            ticks: { format: formatAxisDate },
+            tickLabels: { thin: true },
+          },
+        },
+        y: {
+          scale: scaleLinear,
+          nice: true,
+          grid: { stroke: gridLineColor.value, strokeDasharray: '4 4' },
+          axis: {
+            line: false,
+            label: activeSeriesMeta.value.label,
+            ticks: {
+              format: (value: number) => formatAxisValue(value),
+            },
+          },
+        },
+      },
+      color: {
+        scale: scaleOrdinal<string, string>()
+          .domain(series.map((item) => item.label))
+          .range(series.map((item) => item.color)),
+        legend: colorLegend(),
+      },
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
+        palette: CHART_COLORS,
+      },
+    },
+    {
+      focus: 'group-x',
+      maxFocusDistance: Number.POSITIVE_INFINITY,
+      tooltip: {
+        use: tooltip,
+        content: (points) => {
+          const first = points[0]
+          const date = first?.xValue
+          return {
+            title: date instanceof Date ? date.toLocaleDateString('es-AR') : '',
+            rows: points.map((point) => ({
+              label: point.groupLabel,
+              value: formatTooltipValue(typeof point.yValue === 'number' ? point.yValue : null),
+              color: point.color,
+            })),
+          }
+        },
+      },
+    },
+  )
 })
 </script>
 
@@ -301,7 +288,13 @@ const chartOption = computed(() => {
       </div>
 
       <ClientOnly v-else-if="preparedSeries.length">
-        <VChart :option="chartOption" class="h-80 w-full" autoresize />
+        <Chart
+          :definition="definition"
+          aria-label="Evolución comparada de fondos"
+          class="h-80 w-full"
+          :style="{ height: '100%' }"
+          @render="paintLogos"
+        />
       </ClientOnly>
 
       <div v-else class="flex h-80 items-center justify-center text-sm text-muted">

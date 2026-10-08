@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { provide } from 'vue'
+import { areaY, barY, defineChart, lineY } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { Chart } from '@tanstack/charts/vue'
+import { scaleUtc } from 'd3-scale'
 import type { FciFundHistoryItem } from '~/composables/useFciFundDetails'
 import { CHART_COLORS, formatCurrency, useChartTheme } from '~/composables/useChartConfig'
 import { formatCompactNumber, formatDecimal, formatPercentAuto } from '~/lib/fci-fund-formatters'
@@ -10,16 +15,6 @@ const props = defineProps<{
   points: FciFundHistoryItem[]
   loading?: boolean
 }>()
-
-const colorMode = computed(() => useColorMode().value)
-provide(THEME_KEY, colorMode)
-
-const initOptions = computed(() => ({
-  height: 360,
-  width: 'auto',
-  renderer: 'svg' as const,
-}))
-provide(INIT_OPTIONS_KEY, initOptions)
 
 const { textColor, gridLineColor } = useChartTheme()
 
@@ -35,7 +30,7 @@ const seriesOptions: Array<{
     key: 'vcp',
     label: 'Valor cuotaparte',
     shortLabel: 'VCP',
-    color: CHART_COLORS[1],
+    color: CHART_COLORS[1]!,
     chartType: 'line',
     useArea: true,
   },
@@ -43,7 +38,7 @@ const seriesOptions: Array<{
     key: 'patrimonio',
     label: 'Patrimonio',
     shortLabel: 'Patrimonio',
-    color: CHART_COLORS[0],
+    color: CHART_COLORS[0]!,
     chartType: 'line',
     useArea: true,
   },
@@ -51,7 +46,7 @@ const seriesOptions: Array<{
     key: 'retornoAcumulado',
     label: 'Retorno acumulado',
     shortLabel: 'Acumulado',
-    color: CHART_COLORS[4],
+    color: CHART_COLORS[4]!,
     chartType: 'line',
     useArea: true,
   },
@@ -59,7 +54,7 @@ const seriesOptions: Array<{
     key: 'retornoDiario',
     label: 'Retorno diario',
     shortLabel: 'Diario',
-    color: CHART_COLORS[2],
+    color: CHART_COLORS[2]!,
     chartType: 'bar',
     useArea: false,
   },
@@ -67,7 +62,7 @@ const seriesOptions: Array<{
     key: 'flujo',
     label: 'Flujo estimado',
     shortLabel: 'Flujo',
-    color: CHART_COLORS[6],
+    color: CHART_COLORS[6]!,
     chartType: 'bar',
     useArea: false,
   },
@@ -80,7 +75,7 @@ const chronologicalPoints = computed(() => {
 })
 
 const activeSeries = computed(
-  () => seriesOptions.find((item) => item.key === selectedSeries.value) ?? seriesOptions[0],
+  () => seriesOptions.find((item) => item.key === selectedSeries.value) ?? seriesOptions[0]!,
 )
 
 function readSeriesValue(point: FciFundHistoryItem, key: SeriesKey): number | null {
@@ -140,156 +135,184 @@ const yAxisLabel = computed(() => {
   }
 })
 
-const seriesData = computed<Array<[number, number]>>(() => {
-  return chartPoints.value.map((point) => {
-    const value = readSeriesValue(point, selectedSeries.value) as number
-    return [Date.parse(`${point.fecha}T00:00:00.000Z`), value]
-  })
-})
+interface EvolutionRow {
+  date: Date
+  value: number
+  valorCuotaparte: number | null
+  patrimonio: number | null
+}
 
-const chartOption = computed(() => {
-  if (!seriesData.value.length) return {}
-
-  const series = activeSeries.value
-  const isDark = colorMode.value === 'dark'
-
-  return {
-    backgroundColor: 'transparent',
-    animationDuration: 300,
-    tooltip: {
-      trigger: 'axis',
-      formatter: (params: any) => {
-        const item = Array.isArray(params) ? params[0] : params
-        if (!item) return ''
-
-        const timestamp = item.value?.[0] ?? item.axisValue
-        const date =
-          typeof timestamp === 'number' ? new Date(timestamp) : new Date(String(timestamp))
-        const point = chartPoints.value.find(
-          (row) => Date.parse(`${row.fecha}T00:00:00.000Z`) === date.getTime(),
-        )
-
-        const lines = [
-          `<strong>${date.toLocaleDateString('es-AR')}</strong>`,
-          `${item.marker || ''} ${series.label}: ${formatTooltipValue(item.value?.[1])}`,
-        ]
-
-        if (point && selectedSeries.value !== 'vcp' && point.valorCuotaparte != null) {
-          lines.push(`VCP: ${formatDecimal(point.valorCuotaparte)}`)
-        }
-        if (point && selectedSeries.value !== 'patrimonio' && point.patrimonio != null) {
-          lines.push(`Patrimonio: ${formatCurrency(point.patrimonio)}`)
-        }
-
-        return lines.join('<br/>')
-      },
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '14%',
-      top: '12%',
-      containLabel: true,
-    },
-    xAxis: {
-      type: 'time',
-      boundaryGap: series.chartType === 'bar',
-      axisLabel: {
-        color: textColor.value,
-        formatter: (value: number) => {
-          const date = new Date(value)
-          return date.toLocaleDateString('es-AR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: '2-digit',
-          })
-        },
-      },
-      axisLine: {
-        lineStyle: { color: gridLineColor.value },
-      },
-      splitLine: { show: false },
-    },
-    yAxis: {
-      type: 'value',
-      name: yAxisLabel.value,
-      nameTextStyle: { color: textColor.value },
-      scale: true,
-      axisLabel: {
-        color: textColor.value,
-        formatter: (value: number) => formatAxisValue(value),
-      },
-      axisLine: {
-        show: false,
-      },
-      splitLine: {
-        lineStyle: {
-          color: gridLineColor.value,
-          type: 'dashed',
-        },
-      },
-    },
-    dataZoom: [
-      {
-        type: 'inside',
-        xAxisIndex: [0],
-        filterMode: 'none',
-      },
-      {
-        type: 'slider',
-        xAxisIndex: [0],
-        height: 18,
-        bottom: 8,
-        start: 0,
-        end: 100,
-        filterMode: 'none',
-        borderColor: gridLineColor.value,
-        fillerColor: isDark ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)',
-        handleStyle: {
-          color: series.color,
-        },
-        textStyle: {
-          color: textColor.value,
-        },
-      },
-    ],
-    series: [
-      {
-        name: series.label,
-        type: series.chartType,
-        data: seriesData.value,
-        smooth: series.chartType === 'line',
-        showSymbol: false,
-        sampling: 'lttb',
-        barMaxWidth: 18,
-        itemStyle: {
-          color: series.color,
-        },
-        lineStyle:
-          series.chartType === 'line'
-            ? {
-                color: series.color,
-                width: 2,
-              }
-            : undefined,
-        areaStyle: series.useArea
-          ? {
-              color: {
-                type: 'linear',
-                x: 0,
-                y: 0,
-                x2: 0,
-                y2: 1,
-                colorStops: [
-                  { offset: 0, color: `${series.color}55` },
-                  { offset: 1, color: `${series.color}05` },
-                ],
-              },
-            }
-          : undefined,
-      },
-    ],
+function seriesExtent(values: readonly number[]): [number, number] {
+  let min = Infinity
+  let max = -Infinity
+  for (const value of values) {
+    if (value < min) min = value
+    if (value > max) max = value
   }
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return [0, 1]
+  if (min === max) {
+    const offset = Math.abs(min) * 0.05 || 1
+    return [min - offset, max + offset]
+  }
+  return [min, max]
+}
+
+function formatAxisDate(date: Date) {
+  return date.toLocaleDateString('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  })
+}
+
+const definition = computed(() => {
+  const series = activeSeries.value
+  const rows: EvolutionRow[] = chartPoints.value.map((point) => ({
+    date: new Date(Date.parse(`${point.fecha}T00:00:00.000Z`)),
+    value: readSeriesValue(point, selectedSeries.value) as number,
+    valorCuotaparte: point.valorCuotaparte,
+    patrimonio: point.patrimonio,
+  }))
+  const theme = {
+    foreground: textColor.value,
+    muted: textColor.value,
+    grid: gridLineColor.value,
+    background: 'transparent',
+    palette: CHART_COLORS,
+  }
+  const scales = {
+    x: {
+      scale: scaleUtc,
+      nice: true,
+      grid: false,
+      axis: {
+        line: { stroke: gridLineColor.value },
+        ticks: { format: formatAxisDate },
+        tickLabels: { thin: true },
+      },
+    },
+    y: {
+      scale: scaleLinear().domain(seriesExtent(rows.map((row) => row.value))),
+      nice: true,
+      grid: { stroke: gridLineColor.value, strokeDasharray: '4 4' },
+      axis: {
+        line: false,
+        label: yAxisLabel.value,
+        ticks: {
+          format: (value: number) => formatAxisValue(value),
+        },
+      },
+    },
+  }
+  const tooltipOptions = {
+    use: tooltip,
+    content: (
+      points: readonly { datum: EvolutionRow; xValue: unknown; yValue: unknown; color: string }[],
+    ) => {
+      const point = points[0]
+      if (!point) return { rows: [] }
+      const date = point.xValue instanceof Date ? point.xValue : point.datum.date
+      const value = typeof point.yValue === 'number' ? point.yValue : point.datum.value
+      const tooltipRows = [
+        {
+          label: series.label,
+          value: formatTooltipValue(value),
+          color: series.color,
+        },
+      ]
+      if (selectedSeries.value !== 'vcp' && point.datum.valorCuotaparte != null) {
+        tooltipRows.push({
+          label: 'VCP',
+          value: formatDecimal(point.datum.valorCuotaparte),
+          color: series.color,
+        })
+      }
+      if (selectedSeries.value !== 'patrimonio' && point.datum.patrimonio != null) {
+        tooltipRows.push({
+          label: 'Patrimonio',
+          value: formatCurrency(point.datum.patrimonio),
+          color: series.color,
+        })
+      }
+      return {
+        title: date.toLocaleDateString('es-AR'),
+        rows: tooltipRows,
+      }
+    },
+  }
+
+  if (series.chartType === 'bar') {
+    return defineChart(
+      {
+        marks: [
+          barY(rows, {
+            x: 'date',
+            y: 'value',
+            key: (row) => row.date.getTime(),
+            fill: series.color,
+            maxThickness: 18,
+            radius: { end: 4 },
+          }),
+        ],
+        scales,
+        clip: true,
+        theme,
+      },
+      {
+        focus: 'group-x',
+        maxFocusDistance: Number.POSITIVE_INFINITY,
+        tooltip: tooltipOptions,
+      },
+    )
+  }
+
+  return defineChart(
+    {
+      marks: [
+        ...(series.useArea
+          ? [
+              decorative(
+                areaY(rows, {
+                  x: 'date',
+                  y: 'value',
+                  fill: 'url(#series-fill)',
+                }),
+              ),
+            ]
+          : []),
+        lineY(rows, {
+          x: 'date',
+          y: 'value',
+          key: (row) => row.date.getTime(),
+          stroke: series.color,
+          strokeWidth: 2,
+        }),
+      ],
+      scales,
+      clip: true,
+      gradients: series.useArea
+        ? [
+            {
+              id: 'series-fill',
+              x1: 0,
+              y1: 1,
+              x2: 0,
+              y2: 0,
+              stops: [
+                { offset: 0, color: series.color, opacity: 0.02 },
+                { offset: 1, color: series.color, opacity: 0.33 },
+              ],
+            },
+          ]
+        : undefined,
+      theme,
+    },
+    {
+      focus: 'group-x',
+      maxFocusDistance: Number.POSITIVE_INFINITY,
+      tooltip: tooltipOptions,
+    },
+  )
 })
 
 const availableSeriesKeys = computed(() => {
@@ -350,15 +373,23 @@ watch(
         </div>
       </template>
 
-      <div v-if="props.loading && !seriesData.length" class="flex h-80 items-center justify-center">
+      <div
+        v-if="props.loading && !chartPoints.length"
+        class="flex h-80 items-center justify-center"
+      >
         <div class="text-center text-sm text-neutral-500">
           <UIcon name="i-lucide-loader-2" class="mx-auto mb-2 h-8 w-8 animate-spin" />
           Cargando evolución…
         </div>
       </div>
 
-      <ClientOnly v-else-if="seriesData.length">
-        <VChart :option="chartOption" class="h-80 w-full" autoresize />
+      <ClientOnly v-else-if="chartPoints.length">
+        <Chart
+          :definition="definition"
+          aria-label="Evolución histórica del fondo"
+          class="h-80 w-full"
+          :style="{ height: '100%' }"
+        />
       </ClientOnly>
 
       <div v-else class="flex h-80 items-center justify-center text-sm text-neutral-500">

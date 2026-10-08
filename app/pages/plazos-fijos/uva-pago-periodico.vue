@@ -167,7 +167,7 @@ onMounted(() => {
         </template>
         <PlazosFijosUvaPagoPeriodicoTnaChart
           :items="plazosFijosUvaPagoPeriodicoItems"
-          :selected-days="days"
+          :selected-days="isSimulating ? days : null"
         />
       </UCard>
     </div>

@@ -1,32 +1,16 @@
 import type { Component } from 'vue'
 
-export type VueDataUiLazyChart =
-  | 'VueUiVerticalBar'
-  | 'VueUiScatter'
-  | 'VueUiXy'
-  | 'VueUiHorizontalBar'
-  | 'VueUiCirclePack'
-  | 'VueUiDonut'
-
-const chartLoaders = {
-  VueUiXy: () => import('vue-data-ui/vue-ui-xy').then((m) => m.VueUiXy),
-  VueUiVerticalBar: () => import('vue-data-ui/vue-ui-vertical-bar').then((m) => m.VueUiVerticalBar),
-  VueUiScatter: () => import('vue-data-ui/vue-ui-scatter').then((m) => m.VueUiScatter),
-  VueUiHorizontalBar: () =>
-    import('vue-data-ui/vue-ui-horizontal-bar').then((m) => m.VueUiHorizontalBar),
-  VueUiCirclePack: () => import('vue-data-ui/vue-ui-circle-pack').then((m) => m.VueUiCirclePack),
-  VueUiDonut: () => import('vue-data-ui/vue-ui-donut').then((m) => m.VueUiDonut),
-} satisfies Record<VueDataUiLazyChart, () => Promise<Component>>
+const loadDonut = () => import('vue-data-ui/vue-ui-donut').then((module) => module.VueUiDonut)
 
 /**
- * Carga perezosa de un componente de vue-data-ui (evita SSR / HTMLElement en import estático).
- * Usa subpath `vue-data-ui/vue-ui-*` para que el bundle solo incluya ese chart.
+ * Carga perezosa de VueUiDonut (evita SSR / HTMLElement en un import estático).
+ * El subpath `vue-data-ui/vue-ui-donut` deja el resto de la librería fuera del bundle.
  */
-export function useVueDataUiChart(componentName: VueDataUiLazyChart) {
+export function useVueDataUiDonut() {
   const Chart = shallowRef<Component | null>(null)
 
   onMounted(async () => {
-    Chart.value = await chartLoaders[componentName]()
+    Chart.value = await loadDonut()
   })
 
   return Chart

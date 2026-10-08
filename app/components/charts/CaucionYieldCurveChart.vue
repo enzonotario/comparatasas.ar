@@ -1,6 +1,13 @@
 <script setup lang="ts">
+import { colorLegend, colorLegendItems, defineChart, dot, lineY, text } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { Chart } from '@tanstack/charts/vue'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { portal } from '@tanstack/charts/tooltip/portal'
 import type { CaucionRow } from '~/composables/useCauciones'
 import { useChartTheme } from '~/composables/useChartConfig'
+import { hideOverlappingYieldLabels } from '~/lib/charts/yield-label-collision'
 import { isPositiveYieldRate } from '~/lib/finance/yield-curve'
 
 interface Props {
@@ -10,10 +17,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const colorMode = useColorMode()
 const { textColor, gridLineColor } = useChartTheme()
-
-const tooltipBackground = computed(() => (colorMode.value === 'dark' ? '#171717' : '#ffffff'))
 
 const seriesColor = computed(() => (props.moneda === 'usd' ? '#2563eb' : '#059669'))
 
@@ -49,7 +53,7 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
     for (let k = i + 1; k < m; k++) {
       const f = A[k]![i]! / A[i]![i]!
       for (let j = i; j < m; j++) A[k]![j]! -= f * A[i]![j]!
-      B[k] -= f * B[i]!
+      B[k]! -= f * B[i]!
     }
   }
   const coeffs = new Array(m)
@@ -71,119 +75,183 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
   return result
 }
 
-const chartOptions = computed(() => {
+interface CurveRow {
+  x: number
+  y: number
+  series: string
+}
+
+interface ScatterRow {
+  x: number
+  y: number
+  series: string
+  radius: number
+  monto: number
+  min: number
+  max: number
+  op: string
+  vto: string
+}
+
+const definition = computed(() => {
   const curveItems = props.items.filter((item) => isPositiveYieldRate(item.tasaActual))
   if (!curveItems.length) return null
 
   const maxMonto = Math.max(...curveItems.map((item) => item.montoContado), 1)
+  const seriesName = props.moneda === 'usd' ? 'Cauciones USD' : 'Cauciones ARS'
+  const curveName = 'Curva (aprox.)'
+  const curveColor =
+    textColor.value === '#fff' ? 'rgba(255, 255, 255, 0.35)' : 'rgba(0, 0, 0, 0.18)'
+  const maxPlazo = Math.max(...curveItems.map((item) => item.plazo), 1)
 
-  const scatterData = curveItems.map((item) => {
+  const scatterRows: ScatterRow[] = curveItems.map((item) => {
     const ratio = Math.sqrt(item.montoContado / maxMonto)
     return {
       x: item.plazo,
       y: item.tasaActual,
-      name: `${item.plazo}d`,
+      series: seriesName,
+      radius: 4 + ratio * 10,
       monto: item.montoContado,
       min: item.tasaMinDia,
       max: item.tasaMaxDia,
       op: item.fechaOperacionDate,
       vto: item.fechaVencimientoDate,
-      marker: {
-        radius: 4 + ratio * 10,
-      },
     }
   })
 
   const allPoints: [number, number][] = curveItems
     .map((item) => [item.plazo, item.tasaActual] as [number, number])
     .sort((a, b) => a[0] - b[0])
+  const curveRows: CurveRow[] = fitPolyCurve(
+    allPoints,
+    Math.min(2, Math.max(1, allPoints.length - 1)),
+    40,
+  ).map(([x, y]) => ({ x, y, series: curveName }))
 
-  const curveData = fitPolyCurve(allPoints, Math.min(2, Math.max(1, allPoints.length - 1)), 40)
+  const domain = curveRows.length ? [curveName, seriesName] : [seriesName]
+  const range = curveRows.length ? [curveColor, seriesColor.value] : [seriesColor.value]
+  const grid = { stroke: gridLineColor.value, strokeOpacity: 1 }
 
-  return {
-    chart: { backgroundColor: 'transparent' },
-    title: { text: '' },
-    accessibility: { enabled: false },
-    xAxis: {
-      title: { text: 'Plazo (días)', style: { color: textColor.value } },
-      labels: { style: { color: textColor.value } },
-      gridLineColor: gridLineColor.value,
-      min: 0,
-    },
-    yAxis: {
-      title: { text: 'Tasa actual (%)', style: { color: textColor.value } },
-      labels: {
-        formatter(): string {
-          return `${(this as any).value.toFixed(1)}%`
-        },
-        style: { color: textColor.value },
-      },
-      gridLineColor: gridLineColor.value,
-    },
-    tooltip: {
-      shared: false,
-      outside: true,
-      useHTML: true,
-      shape: 'rect',
-      backgroundColor: tooltipBackground.value,
-      borderColor: gridLineColor.value,
-      borderWidth: 1,
-      shadow: true,
-      padding: 10,
-      style: { color: textColor.value, zIndex: 10050 },
-      formatter(): string {
-        const point = (this as any).point
-        if (point.monto != null) {
-          return `<b>Plazo ${point.x} días</b><br/>Tasa actual: ${point.y.toFixed(2)}%<br/>Tasa min. día: ${point.min.toFixed(2)}%<br/>Tasa max. día: ${point.max.toFixed(2)}%<br/>Monto: ${formatMonto(point.monto)}<br/>Op.: ${point.op}<br/>Vto: ${point.vto}`
-        }
-        return `Curva: ${point.y.toFixed(2)}%`
-      },
-    },
-    plotOptions: {
-      scatter: {
-        marker: {
+  return defineChart(
+    {
+      marks: [
+        decorative(
+          lineY(curveRows, {
+            x: 'x',
+            y: 'y',
+            color: 'series',
+            strokeDasharray: '6 4',
+            strokeWidth: 2,
+          }),
+        ),
+        dot(scatterRows, {
+          x: 'x',
+          y: 'y',
+          r: (row) => row.radius,
+          color: 'series',
           fillOpacity: 0.7,
-          lineWidth: 1,
-          lineColor: seriesColor.value,
+          stroke: seriesColor.value,
+          strokeWidth: 1,
+        }),
+        decorative(
+          text(scatterRows, {
+            x: 'x',
+            y: 'y',
+            text: (row) => (row.x === 1 ? '1 día' : `${row.x} días`),
+            anchor: 'middle',
+            dy: -26,
+            fontSize: 11,
+            fontWeight: 600,
+            fill: textColor.value,
+          }),
+        ),
+        decorative(
+          text(scatterRows, {
+            x: 'x',
+            y: 'y',
+            text: (row) => `${row.y.toFixed(2)}%`,
+            anchor: 'middle',
+            dy: -14,
+            fontSize: 11,
+            fontWeight: 500,
+            fill: textColor.value,
+          }),
+        ),
+      ],
+      scales: {
+        x: {
+          scale: scaleLinear().domain([0, maxPlazo]),
+          nice: true,
+          grid: false,
+          axis: { label: 'Plazo (días)' },
+        },
+        y: {
+          scale: scaleLinear,
+          nice: true,
+          grid,
+          axis: {
+            label: 'Tasa actual (%)',
+            ticks: { format: (value: number) => `${value.toFixed(1)}%` },
+          },
+        },
+      },
+      margin: { top: 36 },
+      color: {
+        domain,
+        range,
+        legend: colorLegend({
+          items: colorLegendItems({
+            indicator: {
+              shape: (value) => (value === curveName ? 'line' : 'dot'),
+            },
+          }),
+        }),
+      },
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
+      },
+    },
+    {
+      tooltip: {
+        use: tooltip,
+        portal,
+        content: (points) => {
+          const row = points[0]?.datum
+          if (!row) return { rows: [] }
+          return {
+            title: `Plazo ${row.x} días`,
+            color: points[0]?.color,
+            rows: [
+              { label: 'Tasa actual', value: `${row.y.toFixed(2)}%` },
+              { label: 'Tasa min. día', value: `${row.min.toFixed(2)}%` },
+              { label: 'Tasa max. día', value: `${row.max.toFixed(2)}%` },
+              { label: 'Monto', value: formatMonto(row.monto) },
+              { label: 'Op.', value: row.op },
+              { label: 'Vto', value: row.vto },
+            ],
+          }
         },
       },
     },
-    series: [
-      {
-        name: 'Curva (aprox.)',
-        type: 'spline',
-        data: curveData,
-        color: textColor.value === '#fff' ? 'rgba(255, 255, 255, 0.35)' : 'rgba(0, 0, 0, 0.18)',
-        dashStyle: 'Dash',
-        marker: { enabled: false },
-        enableMouseTracking: false,
-        zIndex: 1,
-      },
-      {
-        name: props.moneda === 'usd' ? 'Cauciones USD' : 'Cauciones ARS',
-        type: 'scatter',
-        data: scatterData,
-        color: seriesColor.value,
-        zIndex: 2,
-      },
-    ],
-    legend: { itemStyle: { color: textColor.value } },
-    credits: { enabled: false },
-  }
+  )
 })
 </script>
 
 <template>
-  <div class="caucion-yield-curve-chart w-full" style="height: 24rem; min-height: 384px">
-    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
+  <div class="w-full" style="height: 24rem; min-height: 384px">
+    <Chart
+      v-if="definition"
+      :definition="definition"
+      aria-label="Curva de tasas de cauciones"
+      class="h-full w-full"
+      :height="384"
+      @render="({ svg }) => hideOverlappingYieldLabels(svg)"
+    />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-muted text-sm italic">Sin datos para la curva.</div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.caucion-yield-curve-chart :deep(.highcharts-label.highcharts-tooltip) {
-  z-index: 10050;
-}
-</style>

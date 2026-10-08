@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import type { SeriesLineOptions } from 'highcharts'
+import { areaY, defineChart, dot, lineY, ruleY, text } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { crosshair } from '@tanstack/charts/crosshair'
+import { Chart } from '@tanstack/charts/vue'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { portal } from '@tanstack/charts/tooltip/portal'
+import { scaleUtc } from 'd3-scale'
 import { useChartTheme } from '~/composables/useChartConfig'
 import {
   formatUvaDolarRatio,
@@ -20,13 +27,11 @@ const props = withDefaults(defineProps<Props>(), {
 const colorMode = useColorMode()
 const { textColor, gridLineColor } = useChartTheme()
 
-const tooltipBackground = computed(() => (colorMode.value === 'dark' ? '#171717' : '#ffffff'))
-
 const isDark = computed(() => colorMode.value === 'dark')
 
-function ymdToUtcMs(ymd: string): number {
+function ymdToUtcDate(ymd: string): Date {
   const [y = 1970, m = 1, d = 1] = ymd.split('-').map(Number)
-  return Date.UTC(y, m - 1, d)
+  return new Date(Date.UTC(y, m - 1, d))
 }
 
 function formatFechaCorta(ymd: string): string {
@@ -40,6 +45,15 @@ function formatFechaCorta(ymd: string): string {
   }).format(new Date(Date.UTC(yy, mm - 1, dd)))
 }
 
+function formatAxisDate(value: Date): string {
+  return new Intl.DateTimeFormat('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+    timeZone: 'UTC',
+  }).format(value)
+}
+
 function formatArs(value: number): string {
   return value.toLocaleString('es-AR', {
     style: 'currency',
@@ -49,7 +63,7 @@ function formatArs(value: number): string {
   })
 }
 
-/** Un punto cada N días para no saturar Highcharts; siempre incluye max y último. */
+/** Un punto cada N días para no saturar el gráfico; siempre incluye max y último. */
 function downsamplePoints(
   points: UvaDolarPoderCompraPoint[],
   stepDias: number,
@@ -59,17 +73,25 @@ function downsamplePoints(
   const out: UvaDolarPoderCompraPoint[] = []
   let lastKeptMs = -Infinity
   const stepMs = stepDias * 86400000
-  for (const p of points) {
-    const ms = ymdToUtcMs(p.fecha)
-    if (keepFechas.has(p.fecha) || ms - lastKeptMs >= stepMs) {
-      out.push(p)
+  for (const point of points) {
+    const ms = ymdToUtcDate(point.fecha).getTime()
+    if (keepFechas.has(point.fecha) || ms - lastKeptMs >= stepMs) {
+      out.push(point)
       lastKeptMs = ms
     }
   }
   return out
 }
 
-const chartOptions = computed(() => {
+interface RatioRow {
+  date: Date
+  fecha: string
+  ratio: number
+  uva: number
+  dolarVenta: number
+}
+
+const definition = computed(() => {
   const series = props.series
   if (!series || series.points.length === 0) return null
 
@@ -77,198 +99,196 @@ const chartOptions = computed(() => {
   const maxFecha = series.maximo?.fecha
   const lastFecha = series.ultimo?.fecha
   const keep = new Set([maxFecha, lastFecha].filter(Boolean) as string[])
-  const sampled = downsamplePoints(series.points, 3, keep)
+  const sampled = downsamplePoints(series.points, 3, keep).map(
+    (point): RatioRow => ({
+      date: ymdToUtcDate(point.fecha),
+      fecha: point.fecha,
+      ratio: point.ratio,
+      uva: point.uva,
+      dolarVenta: point.dolarVenta,
+    }),
+  )
+  if (!sampled.length) return null
 
-  const ratios = sampled.map((p) => p.ratio)
+  const ratios = sampled.map((point) => point.ratio)
   const minY = Math.min(...ratios, avg)
   const maxY = Math.max(...ratios, avg)
   const span = maxY - minY
   const pad = span > 0 ? span * 0.08 : 0.05
-
-  const lineData = sampled.map((p) => {
-    const base: { x: number; y: number; dataLabels?: object; marker?: object } = {
-      x: ymdToUtcMs(p.fecha),
-      y: p.ratio,
-    }
-    if (p.fecha === maxFecha || p.fecha === lastFecha) {
-      const label = formatUvaDolarRatio(p.ratio)
-      base.dataLabels = {
-        enabled: true,
-        formatter(): string {
-          return label
-        },
-        style: {
-          color: textColor.value,
-          fontWeight: '700',
-          textOutline: isDark.value ? '1px #171717' : '1px #ffffff',
-        },
-        verticalAlign: p.fecha === maxFecha ? 'bottom' : 'top',
-        y: p.fecha === maxFecha ? -8 : 16,
-      }
-      base.marker = {
-        enabled: true,
-        radius: 4,
-        fillColor: '#1e3a5f',
-        lineWidth: 2,
-        lineColor: '#ffffff',
-      }
-    }
-    return base
-  })
-
-  const lineSeries: SeriesLineOptions = {
-    type: 'line',
-    name: 'UVA por dólar',
-    data: lineData,
-    color: '#1e3a5f',
-    lineWidth: 2,
-    marker: { enabled: false },
-  }
+  const yMin = Math.max(0, minY - pad)
+  const yMax = maxY + pad
 
   const bandAbove = isDark.value ? 'rgba(34, 197, 94, 0.16)' : 'rgba(34, 197, 94, 0.12)'
   const bandBelow = isDark.value ? 'rgba(244, 63, 94, 0.18)' : 'rgba(251, 113, 133, 0.16)'
   const avgColor = isDark.value ? '#c4b5fd' : '#7c3aed'
+  const labelAbove = isDark.value ? '#86efac' : '#15803d'
+  const labelBelow = isDark.value ? '#fda4af' : '#be123c'
+  const grid = { stroke: gridLineColor.value, strokeOpacity: 1 }
+  const first = sampled[0]!
+  const last = sampled[sampled.length - 1]!
+  const highlights = sampled.filter(
+    (point) => point.fecha === maxFecha || point.fecha === lastFecha,
+  )
+  const dolarLabel = props.dolarLabel
 
-  return {
-    chart: {
-      backgroundColor: 'transparent',
-      height: 440,
-      spacing: [16, 12, 16, 12],
-      zoomType: 'x',
-    },
-    title: { text: '' },
-    accessibility: { enabled: false },
-    time: { useUTC: true },
-    xAxis: {
-      type: 'datetime',
-      title: { text: undefined },
-      labels: { style: { color: textColor.value } },
-      gridLineWidth: 0,
-      lineColor: gridLineColor.value,
-      tickColor: gridLineColor.value,
-      crosshair: true,
-    },
-    yAxis: {
-      title: {
-        text: 'UVA por USD',
-        style: { color: textColor.value },
-      },
-      min: Math.max(0, minY - pad),
-      max: maxY + pad,
-      labels: {
-        style: { color: textColor.value },
-        formatter(): string {
-          return formatUvaDolarRatio(Number((this as unknown as { value: number }).value))
-        },
-      },
-      gridLineColor: gridLineColor.value,
-      plotLines: [
-        {
-          value: avg,
-          color: avgColor,
-          width: 2,
-          dashStyle: 'Dash',
-          zIndex: 5,
-          label: {
-            text: `Promedio histórico: ${formatUvaDolarRatio(avg)}`,
-            align: 'right',
-            x: -8,
-            style: {
-              color: avgColor,
-              fontWeight: '600',
-              fontSize: '11px',
-            },
-          },
-        },
+  return defineChart(
+    {
+      marks: [
+        decorative(
+          areaY(sampled, {
+            x: 'date',
+            y1: yMin,
+            y2: avg,
+            fill: bandBelow,
+            fillOpacity: 1,
+          }),
+        ),
+        decorative(
+          areaY(sampled, {
+            x: 'date',
+            y1: avg,
+            y2: yMax,
+            fill: bandAbove,
+            fillOpacity: 1,
+          }),
+        ),
+        decorative(
+          ruleY([avg], {
+            stroke: avgColor,
+            strokeWidth: 2,
+            strokeDasharray: '6 4',
+          }),
+        ),
+        lineY(sampled, {
+          x: 'date',
+          y: 'ratio',
+          stroke: '#1e3a5f',
+          strokeWidth: 2,
+        }),
+        decorative(
+          dot(highlights, {
+            x: 'date',
+            y: 'ratio',
+            r: 4,
+            fill: '#1e3a5f',
+            stroke: '#ffffff',
+            strokeWidth: 2,
+          }),
+        ),
+        decorative(
+          text(highlights, {
+            x: 'date',
+            y: 'ratio',
+            text: (row) => formatUvaDolarRatio(row.ratio),
+            anchor: 'middle',
+            dy: (row) => (row.fecha === maxFecha ? -10 : 16),
+            fontSize: 11,
+            fontWeight: 700,
+            fill: textColor.value,
+          }),
+        ),
+        decorative(
+          text([{ date: last.date, y: avg }], {
+            x: 'date',
+            y: 'y',
+            text: () => `Promedio histórico: ${formatUvaDolarRatio(avg)}`,
+            anchor: 'end',
+            dx: -8,
+            fontSize: 11,
+            fontWeight: 600,
+            fill: avgColor,
+          }),
+        ),
+        decorative(
+          text([{ date: first.date, y: yMax }], {
+            x: 'date',
+            y: 'y',
+            text: () => 'UVA barata → cancelar',
+            anchor: 'start',
+            dx: 8,
+            dy: 16,
+            fontSize: 11,
+            fontWeight: 600,
+            fill: labelAbove,
+          }),
+        ),
+        decorative(
+          text([{ date: first.date, y: yMin }], {
+            x: 'date',
+            y: 'y',
+            text: () => 'UVA cara → endeudarse',
+            anchor: 'start',
+            dx: 8,
+            dy: -8,
+            fontSize: 11,
+            fontWeight: 600,
+            fill: labelBelow,
+          }),
+        ),
+        crosshair({ x: true, y: false }),
       ],
-      plotBands: [
-        {
-          from: avg,
-          to: maxY + pad + 1,
-          color: bandAbove,
-          label: {
-            text: 'UVA barata → cancelar',
-            align: 'left',
-            x: 8,
-            verticalAlign: 'top',
-            y: 18,
-            style: {
-              color: isDark.value ? '#86efac' : '#15803d',
-              fontSize: '11px',
-              fontWeight: '600',
-            },
+      scales: {
+        x: {
+          scale: scaleUtc,
+          nice: true,
+          grid: false,
+          axis: {
+            ticks: { format: formatAxisDate },
+            tickLabels: { thin: true },
           },
         },
-        {
-          from: 0,
-          to: avg,
-          color: bandBelow,
-          label: {
-            text: 'UVA cara → endeudarse',
-            align: 'left',
-            x: 8,
-            verticalAlign: 'bottom',
-            y: -12,
-            style: {
-              color: isDark.value ? '#fda4af' : '#be123c',
-              fontSize: '11px',
-              fontWeight: '600',
-            },
+        y: {
+          scale: scaleLinear().domain([yMin, yMax]),
+          grid,
+          axis: {
+            label: 'UVA por USD',
+            ticks: { format: (value: number) => formatUvaDolarRatio(value) },
           },
         },
-      ],
-    },
-    tooltip: {
-      shared: false,
-      outside: true,
-      useHTML: true,
-      backgroundColor: tooltipBackground.value,
-      borderColor: gridLineColor.value,
-      borderWidth: 1,
-      padding: 12,
-      style: {
-        color: textColor.value,
-        zIndex: 10050,
       },
-      formatter(): string {
-        const ctx = this as unknown as { x: number; y: number }
-        const fecha = new Date(ctx.x).toISOString().slice(0, 10)
-        const point = series.points.find((p) => p.fecha === fecha)
-        const fechaStr = formatFechaCorta(fecha)
-        let html = `<div style="font-family:inherit"><b>${fechaStr}</b><br/>`
-        html += `UVA por dólar: <b>${formatUvaDolarRatio(ctx.y)}</b><br/>`
-        if (point) {
-          html += `<span style="opacity:.85">UVA: ${formatArs(point.uva)} · ${props.dolarLabel} venta: ${formatArs(point.dolarVenta)}</span><br/>`
-        }
-        html += `<span style="opacity:.85">Promedio histórico: ${formatUvaDolarRatio(avg)}</span>`
-        html += '</div>'
-        return html
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
       },
     },
-    plotOptions: {
-      line: {
-        animation: { duration: 400 },
-        turboThreshold: 0,
-      },
-      series: {
-        states: {
-          hover: { lineWidthPlus: 0 },
+    {
+      focus: 'nearest-x',
+      maxFocusDistance: Number.POSITIVE_INFINITY,
+      tooltip: {
+        use: tooltip,
+        portal,
+        content: (points) => {
+          const row = points[0]?.datum
+          if (!row || !('fecha' in row)) return { rows: [] }
+          return {
+            title: formatFechaCorta(row.fecha),
+            rows: [
+              { label: 'UVA por dólar', value: formatUvaDolarRatio(row.ratio) },
+              {
+                label: 'Cotización',
+                value: `UVA: ${formatArs(row.uva)} · ${dolarLabel} venta: ${formatArs(row.dolarVenta)}`,
+              },
+              { label: 'Promedio histórico', value: formatUvaDolarRatio(avg) },
+            ],
+          }
         },
       },
     },
-    series: [lineSeries],
-    legend: { enabled: false },
-    credits: { enabled: false },
-    navigation: {
-      buttonOptions: { enabled: false },
-    },
-  }
+  )
 })
 </script>
 
 <template>
-  <div class="uva-dolar-poder-compra-chart w-full" style="height: 27.5rem; min-height: 440px">
-    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
+  <div class="w-full" style="height: 27.5rem; min-height: 440px">
+    <Chart
+      v-if="definition"
+      :definition="definition"
+      aria-label="Poder de compra de la UVA frente al dólar"
+      class="h-full w-full"
+      :height="440"
+    />
     <div
       v-else
       class="w-full h-full min-h-[440px] flex items-center justify-center text-sm text-neutral-500"
@@ -277,9 +297,3 @@ const chartOptions = computed(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.uva-dolar-poder-compra-chart :deep(.highcharts-tooltip) {
-  z-index: 10050;
-}
-</style>

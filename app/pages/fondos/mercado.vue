@@ -12,6 +12,8 @@ import {
   metricTone,
 } from '~/lib/fci-fund-formatters'
 import { getFundDetailPath } from '~/lib/funds-detail'
+import { getInstitutionLogo } from '~/lib/mappings/institutions'
+import { getLogoForEntity } from '~/lib/mappings/logos'
 import type { MarketCurrencyFilter } from '~/lib/fci-market-overview'
 
 definePageMeta({
@@ -138,9 +140,15 @@ const typeChart = computed(() => {
 
 const managerChart = computed(() => {
   const rows = (universe.value?.byManager ?? []).slice(0, 10)
+  const logos: Record<string, string> = {}
+  for (const row of rows) {
+    const logo = getLogoForEntity(row.label) || getInstitutionLogo(row.label)
+    if (logo) logos[row.label] = logo
+  }
   return {
     labels: rows.map((row) => row.label),
     values: rows.map((row) => row.value),
+    logos,
   }
 })
 
@@ -461,6 +469,7 @@ const flowKpis = computed(() => {
             <FciMarketBarChart
               :labels="managerChart.labels"
               :values="managerChart.values"
+              :logos="managerChart.logos"
               height-class="h-[28rem] w-full"
             />
           </UCard>

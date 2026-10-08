@@ -1,28 +1,30 @@
 <script setup lang="ts">
+import { defineChart, rect, ruleX, text } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { Chart } from '@tanstack/charts/vue'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { portal } from '@tanstack/charts/tooltip/portal'
 import type { PlazoFijoUvaPagoPeriodicoItem } from '~/composables/usePlazosFijosUvaPagoPeriodico'
 import { CHART_COLORS, useChartTheme } from '~/composables/useChartConfig'
 
 interface Props {
   items: PlazoFijoUvaPagoPeriodicoItem[]
-  selectedDays: number
+  /** Días del simulador. `null` cuando el simulador está cerrado. */
+  selectedDays: number | null
 }
 
 const props = defineProps<Props>()
 
 const { textColor, gridLineColor } = useChartTheme()
 
-/** top: espacio para etiquetas sobre cada barra */
-const padding = { top: 56, right: 20, bottom: 44, left: 52 }
-/** viewBox interno (coordenadas lógicas). */
-const vb = { w: 900, h: 500 }
-
 const bounds = computed(() => {
-  const rows = props.items.filter((i) => i.tna > 0)
+  const rows = props.items.filter((item) => item.tna > 0)
   if (!rows.length) return null
-  const minD = Math.min(...rows.map((r) => r.plazoMinDias))
-  const maxD = Math.max(...rows.map((r) => r.plazoMaxDias))
-  const minT = Math.min(...rows.map((r) => r.tna))
-  const maxT = Math.max(...rows.map((r) => r.tna))
+  const minD = Math.min(...rows.map((row) => row.plazoMinDias))
+  const maxD = Math.max(...rows.map((row) => row.plazoMaxDias))
+  const minT = Math.min(...rows.map((row) => row.tna))
+  const maxT = Math.max(...rows.map((row) => row.tna))
   const spanT = maxT - minT || 1
   const padT = Math.max(0.25, spanT * 0.12)
   return {
@@ -34,298 +36,200 @@ const bounds = computed(() => {
 })
 
 const rowsSorted = computed(() => {
-  const rows = props.items.filter((i) => i.tna > 0)
+  const rows = props.items.filter((item) => item.tna > 0)
   return [...rows].sort(
     (a, z) =>
       a.plazoMinDias - z.plazoMinDias || a.institution.localeCompare(z.institution, 'es-AR'),
   )
 })
 
-function xPx(d: number): number {
-  const b = bounds.value
-  if (!b) return 0
-  const span = b.maxD - b.minD || 1
-  const innerW = vb.w - padding.left - padding.right
-  return padding.left + ((d - b.minD) / span) * innerW
-}
-
-function yPx(tna: number): number {
-  const b = bounds.value
-  if (!b) return 0
-  const span = b.maxY - b.minY || 1
-  const innerH = vb.h - padding.top - padding.bottom
-  return padding.top + (1 - (tna - b.minY) / span) * innerH
-}
-
-/** Marcas del eje Y (TNA). */
 const yTicks = computed(() => {
-  const b = bounds.value
-  if (!b) return []
+  const current = bounds.value
+  if (!current) return []
   const n = 5
   const ticks: number[] = []
   for (let i = 0; i <= n; i++) {
-    ticks.push(b.minY + (i / n) * (b.maxY - b.minY))
+    ticks.push(current.minY + (i / n) * (current.maxY - current.minY))
   }
   return ticks
 })
 
-/** Marcas del eje X (días). */
 const xTicks = computed(() => {
-  const b = bounds.value
-  if (!b) return []
+  const current = bounds.value
+  if (!current) return []
   const target = 8
-  const span = b.maxD - b.minD || 1
+  const span = current.maxD - current.minD || 1
   const step = Math.max(30, Math.ceil(span / target / 30) * 30)
   const ticks: number[] = []
-  for (let d = Math.ceil(b.minD / step) * step; d <= b.maxD; d += step) {
-    ticks.push(d)
+  for (let day = Math.ceil(current.minD / step) * step; day <= current.maxD; day += step) {
+    ticks.push(day)
   }
-  if (ticks.length === 0 || ticks[0]! > b.minD) ticks.unshift(b.minD)
-  if (ticks[ticks.length - 1]! < b.maxD) ticks.push(b.maxD)
+  if (ticks.length === 0 || ticks[0]! > current.minD) ticks.unshift(current.minD)
+  if (ticks[ticks.length - 1]! < current.maxD) ticks.push(current.maxD)
   return [...new Set(ticks)].sort((a, z) => a - z)
-})
-
-const simX = computed(() => {
-  const b = bounds.value
-  if (!b) return null
-  const d = props.selectedDays
-  if (d < b.minD || d > b.maxD) return null
-  return xPx(d)
 })
 
 function fmtPct(n: number): string {
   return `${n.toFixed(n < 10 ? 2 : 1)}%`
 }
 
-function segmentTitle(r: PlazoFijoUvaPagoPeriodicoItem): string {
-  return `${r.institution} · ${r.plazoMinDias}–${r.plazoMaxDias} d · TNA ${fmtPct(r.tna)}`
+interface LadderRow {
+  rowKey: string
+  institution: string
+  plazoMinDias: number
+  plazoMaxDias: number
+  x2: number
+  tna: number
+  y1: number
+  y2: number
+  color: string
 }
 
-function segCenterX(r: PlazoFijoUvaPagoPeriodicoItem): number {
-  return (xPx(r.plazoMinDias) + xPx(r.plazoMaxDias)) / 2
-}
+const definition = computed(() => {
+  const current = bounds.value
+  const source = rowsSorted.value
+  if (!current || !source.length) return null
 
-/** Baseline Y de la línea de TNA (encima del trazo). */
-function labelTnaY(r: PlazoFijoUvaPagoPeriodicoItem): number {
-  return yPx(r.tna) - 22
-}
+  const spanX = current.maxD - current.minD || 1
+  const spanY = current.maxY - current.minY || 1
+  const minWidth = Math.max(spanX * 0.012, 1)
+  const half = Math.max(spanY * 0.015, 0.04)
+  const rows: LadderRow[] = source.map((row, index) => ({
+    rowKey: row.rowKey,
+    institution: row.institution,
+    plazoMinDias: row.plazoMinDias,
+    plazoMaxDias: row.plazoMaxDias,
+    x2: row.plazoMaxDias <= row.plazoMinDias ? row.plazoMinDias + minWidth : row.plazoMaxDias,
+    tna: row.tna,
+    y1: row.tna - half,
+    y2: row.tna + half,
+    color: CHART_COLORS[index % CHART_COLORS.length]!,
+  }))
+  const selected = props.selectedDays
+  const showSim = selected != null && selected >= current.minD && selected <= current.maxD
+  const grid = { stroke: gridLineColor.value, strokeOpacity: 1 }
 
-/** Baseline Y del rango de días (debajo del %). */
-function labelRangoY(r: PlazoFijoUvaPagoPeriodicoItem): number {
-  return yPx(r.tna) - 8
-}
-
-/** Área sensible (etiquetas + barra) para hover / tooltip. */
-function segmentHitRect(r: PlazoFijoUvaPagoPeriodicoItem) {
-  const x1 = xPx(r.plazoMinDias)
-  const x2 = xPx(r.plazoMaxDias)
-  const x = Math.min(x1, x2)
-  const width = Math.max(10, Math.abs(x2 - x1))
-  const yTop = labelTnaY(r) - 6
-  const yBottom = yPx(r.tna) + 10
-  return {
-    x,
-    y: yTop,
-    width,
-    height: Math.max(22, yBottom - yTop),
-  }
-}
-
-const TIP_OFFSET = 14
-
-const hoverTip = ref<{
-  x: number
-  y: number
-  row: PlazoFijoUvaPagoPeriodicoItem
-} | null>(null)
-
-function onTipEnter(r: PlazoFijoUvaPagoPeriodicoItem, e: MouseEvent) {
-  hoverTip.value = {
-    x: e.clientX + TIP_OFFSET,
-    y: e.clientY + TIP_OFFSET,
-    row: r,
-  }
-}
-
-function onTipMove(e: MouseEvent) {
-  if (!hoverTip.value) return
-  hoverTip.value = {
-    ...hoverTip.value,
-    x: e.clientX + TIP_OFFSET,
-    y: e.clientY + TIP_OFFSET,
-  }
-}
-
-function onTipLeave() {
-  hoverTip.value = null
-}
+  return defineChart(
+    {
+      marks: [
+        ...(selected != null && showSim
+          ? [
+              decorative(
+                ruleX([selected], {
+                  stroke: '#6366f1',
+                  strokeWidth: 1.5,
+                  strokeDasharray: '5 4',
+                  strokeOpacity: 0.85,
+                }),
+              ),
+            ]
+          : []),
+        rect(rows, {
+          x1: 'plazoMinDias',
+          x2: 'x2',
+          y1: 'y1',
+          y2: 'y2',
+          color: 'rowKey',
+          radius: 6,
+        }),
+        decorative(
+          text(rows, {
+            x: (row) => (row.plazoMinDias + row.plazoMaxDias) / 2,
+            y: 'y2',
+            text: (row) => fmtPct(row.tna),
+            anchor: 'middle',
+            dy: -18,
+            fontSize: 11,
+            fontWeight: 600,
+            fill: textColor.value,
+          }),
+        ),
+        decorative(
+          text(rows, {
+            x: (row) => (row.plazoMinDias + row.plazoMaxDias) / 2,
+            y: 'y2',
+            text: (row) => `${row.plazoMinDias}–${row.plazoMaxDias} d`,
+            anchor: 'middle',
+            dy: -6,
+            fontSize: 10,
+            fill: textColor.value,
+          }),
+        ),
+      ],
+      scales: {
+        x: {
+          scale: scaleLinear().domain([current.minD, current.maxD]),
+          grid: false,
+          axis: {
+            label: 'Días de plazo',
+            ticks: {
+              values: xTicks.value,
+              format: (value: number) => String(Math.round(value)),
+            },
+            tickLabels: { thin: false },
+          },
+        },
+        y: {
+          scale: scaleLinear().domain([current.minY, current.maxY]),
+          grid,
+          axis: {
+            label: 'TNA (%)',
+            ticks: {
+              values: yTicks.value,
+              format: (value: number) => fmtPct(value),
+            },
+            tickLabels: { thin: false },
+          },
+        },
+      },
+      margin: { top: 36 },
+      color: {
+        domain: rows.map((row) => row.rowKey),
+        range: rows.map((row) => row.color),
+      },
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
+      },
+    },
+    {
+      tooltip: {
+        use: tooltip,
+        portal,
+        content: (points) => {
+          const row = points[0]?.datum
+          if (!row || !('institution' in row)) return { rows: [] }
+          return {
+            title: row.institution,
+            rows: [
+              { label: 'TNA', value: fmtPct(row.tna) },
+              { label: 'Plazo', value: `${row.plazoMinDias}–${row.plazoMaxDias} días` },
+            ],
+          }
+        },
+      },
+    },
+  )
+})
 </script>
 
 <template>
   <div class="w-full min-w-0">
     <div
-      v-if="bounds && rowsSorted.length"
-      class="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white/50 dark:bg-neutral-900/30 overflow-x-auto"
+      v-if="definition"
+      class="h-[500px] rounded-lg border border-neutral-200 bg-white/50 dark:border-neutral-700 dark:bg-neutral-900/30"
     >
-      <svg
-        class="min-w-[min(100%,52rem)] w-full h-auto block"
-        :viewBox="`0 0 ${vb.w} ${vb.h}`"
-        role="img"
+      <Chart
+        :definition="definition"
         aria-label="Gráfico escalera TNA por tramo de días"
-      >
-        <title>PF UVA pago periódico: TNA por rango de días</title>
-
-        <!-- Grid horizontal -->
-        <g v-for="(yt, i) in yTicks" :key="`gy-${i}`">
-          <line
-            :x1="padding.left"
-            :x2="vb.w - padding.right"
-            :y1="yPx(yt)"
-            :y2="yPx(yt)"
-            :stroke="gridLineColor"
-            stroke-width="1"
-            opacity="0.55"
-          />
-        </g>
-
-        <!-- Eje Y etiquetas -->
-        <g v-for="(yt, i) in yTicks" :key="`yl-${i}`">
-          <text
-            :x="padding.left - 8"
-            :y="yPx(yt) + 4"
-            text-anchor="end"
-            font-size="11"
-            :fill="textColor"
-            font-family="inherit"
-          >
-            {{ fmtPct(yt) }}
-          </text>
-        </g>
-
-        <!-- Eje X etiquetas -->
-        <g v-for="(xd, i) in xTicks" :key="`xl-${i}`">
-          <text
-            :x="xPx(xd)"
-            :y="vb.h - 12"
-            text-anchor="middle"
-            font-size="11"
-            :fill="textColor"
-            font-family="inherit"
-          >
-            {{ xd }}
-          </text>
-        </g>
-
-        <!-- Ejes -->
-        <line
-          :x1="padding.left"
-          :y1="padding.top"
-          :x2="padding.left"
-          :y2="vb.h - padding.bottom"
-          :stroke="gridLineColor"
-          stroke-width="1.5"
-        />
-        <line
-          :x1="padding.left"
-          :y1="vb.h - padding.bottom"
-          :x2="vb.w - padding.right"
-          :y2="vb.h - padding.bottom"
-          :stroke="gridLineColor"
-          stroke-width="1.5"
-        />
-
-        <!-- Línea referencia simulador -->
-        <line
-          v-if="simX != null"
-          :x1="simX"
-          :x2="simX"
-          :y1="padding.top"
-          :y2="vb.h - padding.bottom"
-          class="text-primary-500"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-dasharray="5 4"
-          opacity="0.85"
-        />
-
-        <!-- Segmentos horizontales (escalera) -->
-        <g v-for="(r, i) in rowsSorted" :key="r.rowKey">
-          <rect
-            v-bind="segmentHitRect(r)"
-            fill="transparent"
-            class="cursor-pointer"
-            @mouseenter="onTipEnter(r, $event)"
-            @mousemove="onTipMove"
-            @mouseleave="onTipLeave"
-          />
-          <line
-            :x1="xPx(r.plazoMinDias)"
-            :x2="xPx(r.plazoMaxDias)"
-            :y1="yPx(r.tna)"
-            :y2="yPx(r.tna)"
-            :stroke="CHART_COLORS[i % CHART_COLORS.length]"
-            stroke-width="12"
-            stroke-linecap="round"
-            pointer-events="none"
-          >
-            <title>{{ segmentTitle(r) }}</title>
-          </line>
-          <text :fill="textColor" font-family="inherit" text-anchor="middle" pointer-events="none">
-            <tspan :x="segCenterX(r)" :y="labelTnaY(r)" font-size="11" font-weight="600">
-              {{ fmtPct(r.tna) }}
-            </tspan>
-            <tspan :x="segCenterX(r)" :y="labelRangoY(r)" font-size="10" opacity="0.92">
-              {{ r.plazoMinDias }}–{{ r.plazoMaxDias }} d
-            </tspan>
-          </text>
-        </g>
-
-        <!-- Etiquetas ejes nombre -->
-        <text
-          :x="(padding.left + vb.w - padding.right) / 2"
-          :y="vb.h - 2"
-          text-anchor="middle"
-          font-size="12"
-          font-weight="500"
-          :fill="textColor"
-          font-family="inherit"
-        >
-          Días de plazo
-        </text>
-        <text
-          :x="14"
-          :y="vb.h / 2"
-          text-anchor="middle"
-          font-size="12"
-          font-weight="500"
-          :fill="textColor"
-          font-family="inherit"
-          :transform="`rotate(-90, 14, ${vb.h / 2})`"
-        >
-          TNA (%)
-        </text>
-      </svg>
+        class="h-full w-full"
+        :height="500"
+      />
     </div>
-
     <p v-else class="py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
       No hay datos para el gráfico.
     </p>
-
-    <Teleport to="body">
-      <div
-        v-if="hoverTip"
-        class="fixed z-[300] pointer-events-none max-w-xs rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 shadow-lg dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
-        :style="{ left: `${hoverTip.x}px`, top: `${hoverTip.y}px` }"
-        role="tooltip"
-      >
-        <p class="font-semibold leading-snug">{{ hoverTip.row.institution }}</p>
-        <p class="mt-1.5 text-neutral-600 dark:text-neutral-300">
-          TNA: {{ fmtPct(hoverTip.row.tna) }}
-        </p>
-        <p class="text-neutral-600 dark:text-neutral-300">
-          Plazo: {{ hoverTip.row.plazoMinDias }}–{{ hoverTip.row.plazoMaxDias }} días
-        </p>
-      </div>
-    </Teleport>
   </div>
 </template>

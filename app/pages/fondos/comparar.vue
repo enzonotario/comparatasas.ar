@@ -27,6 +27,8 @@ import {
   metricTone,
 } from '~/lib/fci-fund-formatters'
 import { getFundDetailPath, normalizeFundSlug } from '~/lib/funds-detail'
+import { getInstitutionLogo } from '~/lib/mappings/institutions'
+import { getLogoForEntity } from '~/lib/mappings/logos'
 
 definePageMeta({
   layout: 'fondos',
@@ -159,9 +161,16 @@ const chartFunds = computed(() =>
   comparedFunds.value.map((fund) => {
     const slug = normalizeFundSlug(fund.primaryFondo)
     const history = historyBySlug.value?.[slug]
+    const label = fund.baseName || fund.displayName
+    const logo =
+      getLogoForEntity(fund.administradora || '') ||
+      getInstitutionLogo(fund.administradora || '') ||
+      getLogoForEntity(label) ||
+      getInstitutionLogo(label)
     return {
       key: fund.compareKey,
-      label: fund.baseName || fund.displayName,
+      label,
+      logo,
       points: history?.historico ?? [],
     }
   }),

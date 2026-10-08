@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { provide } from 'vue'
-import type { ComposeOption } from 'echarts/core'
-import type { PieSeriesOption } from 'echarts/charts'
-import type { TooltipComponentOption } from 'echarts/components'
-import { CHART_COLORS, useChartTheme } from '~/composables/useChartConfig'
+import { defineChart } from '@tanstack/charts'
+import { pie, polar, radialArc } from '@tanstack/charts/polar'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { Chart } from '@tanstack/charts/vue'
+import { CHART_COLORS } from '~/composables/useChartConfig'
 import { formatCompactNumber } from '~/lib/fci-fund-formatters'
-
-type PieOption = ComposeOption<PieSeriesOption | TooltipComponentOption>
 
 const props = defineProps<{
   labels: string[]
@@ -17,50 +15,93 @@ const props = defineProps<{
   heightClass?: string
 }>()
 
-const colorMode = computed(() => useColorMode().value)
-provide(THEME_KEY, colorMode)
+interface Slice {
+  name: string
+  amount: number
+  color: string
+}
 
-const initOptions = computed(() => ({
-  renderer: 'svg' as const,
-}))
-provide(INIT_OPTIONS_KEY, initOptions)
-
-const { textColor } = useChartTheme()
-
-const option = computed<PieOption>(() => ({
-  animationDuration: 400,
-  tooltip: {
-    trigger: 'item',
-    formatter: (params) => {
-      const item = params as { name?: string; value?: number; percent?: number }
-      return `${item.name}<br/>${formatCompactNumber(item.value)} · ${item.percent}%`
-    },
-  },
-  series: [
-    {
-      type: 'pie',
-      radius: ['58%', '78%'],
-      center: ['50%', '52%'],
-      avoidLabelOverlap: true,
-      itemStyle: { borderRadius: 6, borderWidth: 2, borderColor: 'transparent' },
-      label: { show: false },
-      data: props.labels.map((name, index) => ({
+const slices = computed<Slice[]>(() =>
+  props.labels.flatMap((name, index) => {
+    const amount = props.values[index] ?? 0
+    if (!Number.isFinite(amount) || amount < 0) return []
+    return [
+      {
         name,
-        value: props.values[index] ?? 0,
-        itemStyle: {
-          color: props.colors?.[index] ?? CHART_COLORS[index % CHART_COLORS.length],
-        },
-      })),
+        amount,
+        color: props.colors?.[index] ?? CHART_COLORS[index % CHART_COLORS.length]!,
+      },
+    ]
+  }),
+)
+
+function formatShare(fraction: number) {
+  return `${new Intl.NumberFormat('es-AR', {
+    maximumFractionDigits: 1,
+  }).format(fraction * 100)}%`
+}
+
+const definition = computed(() => {
+  const arcs = pie(slices.value, { value: 'amount', gapAngle: 0.02 })
+
+  return defineChart(
+    {
+      marks: [
+        polar({
+          radiusRatio: 0.78,
+          marks: [
+            radialArc(arcs, {
+              innerRadius: ({ radius }) => radius * (0.58 / 0.78),
+              cornerRadius: 6,
+              key: (slice) => slice.source[0]?.name ?? String(slice.index),
+              fill: (slice) => slice.source[0]?.color ?? CHART_COLORS[0]!,
+            }),
+          ],
+          scales: {
+            angle: null,
+            radius: null,
+          },
+        }),
+      ],
+      scales: {
+        x: null,
+        y: null,
+      },
     },
-  ],
-  textStyle: { color: textColor.value },
-}))
+    {
+      tooltip: {
+        use: tooltip,
+        content: (points) => {
+          const point = points[0]
+          if (!point) return { rows: [] }
+          const source = point.datum.source[0]
+          if (!source) return { rows: [] }
+          return {
+            title: source.name,
+            color: source.color,
+            rows: [
+              {
+                label: formatCompactNumber(point.datum.value),
+                value: formatShare(point.datum.fraction),
+              },
+            ],
+          }
+        },
+      },
+    },
+  )
+})
 </script>
 
 <template>
   <div class="relative" :class="heightClass ?? 'h-72 w-full'">
     <ClientOnly>
-      <VChart :option="option" class="h-full w-full" autoresize />
+      <Chart
+        :definition="definition"
+        aria-label="Distribución"
+        class="h-full w-full"
+        :style="{ height: '100%' }"
+      />
       <template #fallback>
         <div class="h-full w-full rounded-lg bg-elevated/40" />
       </template>

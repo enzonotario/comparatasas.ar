@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { provide } from 'vue'
-import type { ComposeOption } from 'echarts/core'
-import type { BarSeriesOption, LineSeriesOption } from 'echarts/charts'
-import type { GridComponentOption, TooltipComponentOption } from 'echarts/components'
+import { areaY, barY, defineChart, lineY } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { scaleBand } from '@tanstack/charts/scales/band'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { scalePoint } from '@tanstack/charts/scales/point'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { Chart } from '@tanstack/charts/vue'
 import { useChartTheme } from '~/composables/useChartConfig'
 import { formatCompactNumber, formatDate } from '~/lib/fci-fund-formatters'
 import type { MarketHistoryPoint } from '~/lib/fci-market-flows'
-
-type ChartOption = ComposeOption<
-  LineSeriesOption | BarSeriesOption | GridComponentOption | TooltipComponentOption
->
 
 const props = defineProps<{
   points: MarketHistoryPoint[]
@@ -17,87 +16,174 @@ const props = defineProps<{
   heightClass?: string
 }>()
 
-const colorMode = computed(() => useColorMode().value)
-provide(THEME_KEY, colorMode)
-
-const initOptions = computed(() => ({
-  renderer: 'svg' as const,
-}))
-provide(INIT_OPTIONS_KEY, initOptions)
-
 const { textColor, gridLineColor } = useChartTheme()
 
-const option = computed<ChartOption>(() => {
-  const labels = props.points.map((point) => formatDate(point.fecha))
-  const values = props.points.map((point) =>
-    props.mode === 'flujo' ? point.flujoEstimado : point.patrimonio,
-  )
-  const isFlow = props.mode === 'flujo'
+const rows = computed(() =>
+  props.points.map((point) => ({
+    fecha: point.fecha,
+    value: props.mode === 'flujo' ? point.flujoEstimado : point.patrimonio,
+  })),
+)
 
-  return {
-    animationDuration: 400,
-    grid: { top: 16, right: 16, bottom: 8, left: 8, containLabel: true },
-    tooltip: {
-      trigger: 'axis',
-      valueFormatter: (value) => formatCompactNumber(Number(value)),
+const definition = computed(() => {
+  const isFlow = props.mode === 'flujo'
+  const data = rows.value
+  const theme = {
+    foreground: textColor.value,
+    muted: textColor.value,
+    grid: gridLineColor.value,
+    background: 'transparent',
+  }
+  const xAxis = {
+    line: { stroke: gridLineColor.value },
+    ticks: {
+      format: (value: string) => formatDate(value),
     },
-    xAxis: {
-      type: 'category',
-      data: labels,
-      axisLabel: { color: textColor.value, hideOverlap: true },
-      axisTick: { show: false },
-      axisLine: { lineStyle: { color: gridLineColor.value } },
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        color: textColor.value,
-        formatter: (value: number) => formatCompactNumber(value),
-      },
-      splitLine: { lineStyle: { color: gridLineColor.value } },
-    },
-    series: [
-      isFlow
-        ? {
-            type: 'bar',
-            data: values.map((value) => ({
-              value,
-              itemStyle: {
-                color: value >= 0 ? '#0f766e' : '#e11d48',
-                borderRadius: value >= 0 ? [4, 4, 0, 0] : [0, 0, 4, 4],
-              },
-            })),
-            barMaxWidth: 18,
-          }
-        : {
-            type: 'line',
-            data: values,
-            smooth: true,
-            showSymbol: false,
-            color: '#0f766e',
-            areaStyle: {
-              color: {
-                type: 'linear',
-                x: 0,
-                y: 0,
-                x2: 0,
-                y2: 1,
-                colorStops: [
-                  { offset: 0, color: '#0f766e55' },
-                  { offset: 1, color: '#0f766e05' },
-                ],
+    tickLabels: { thin: true },
+  }
+
+  if (isFlow) {
+    return defineChart(
+      {
+        marks: [
+          barY(data, {
+            x: 'fecha',
+            y: 'value',
+            key: 'fecha',
+            fill: (row) => (row.value >= 0 ? '#0f766e' : '#e11d48'),
+            maxThickness: 18,
+            radius: { end: 4 },
+          }),
+        ],
+        scales: {
+          x: {
+            scale: () => scaleBand<string>().padding(0.2),
+            grid: false,
+            axis: xAxis,
+          },
+          y: {
+            scale: scaleLinear,
+            nice: true,
+            grid: { stroke: gridLineColor.value },
+            axis: {
+              ticks: {
+                format: (value: number) => formatCompactNumber(value),
               },
             },
           },
-    ],
+        },
+        theme,
+      },
+      {
+        focus: 'group-x',
+        maxFocusDistance: Number.POSITIVE_INFINITY,
+        tooltip: {
+          use: tooltip,
+          content: (points) => {
+            const point = points[0]
+            if (!point) return { rows: [] }
+            const value = point.datum.value
+            return {
+              title: formatDate(point.datum.fecha),
+              rows: [
+                {
+                  label: 'Flujo',
+                  value: formatCompactNumber(value),
+                  color: value >= 0 ? '#0f766e' : '#e11d48',
+                },
+              ],
+            }
+          },
+        },
+      },
+    )
   }
+
+  return defineChart(
+    {
+      marks: [
+        decorative(
+          areaY(data, {
+            x: 'fecha',
+            y: 'value',
+            fill: 'url(#aum-fill)',
+          }),
+        ),
+        lineY(data, {
+          x: 'fecha',
+          y: 'value',
+          key: 'fecha',
+          stroke: '#0f766e',
+          strokeWidth: 2,
+        }),
+      ],
+      scales: {
+        x: {
+          scale: () => scalePoint<string>().padding(0.2),
+          grid: false,
+          axis: xAxis,
+        },
+        y: {
+          scale: scaleLinear,
+          nice: true,
+          grid: { stroke: gridLineColor.value },
+          axis: {
+            ticks: {
+              format: (value: number) => formatCompactNumber(value),
+            },
+          },
+        },
+      },
+      clip: true,
+      gradients: [
+        {
+          id: 'aum-fill',
+          x1: 0,
+          y1: 1,
+          x2: 0,
+          y2: 0,
+          stops: [
+            { offset: 0, color: '#0f766e', opacity: 0.02 },
+            { offset: 1, color: '#0f766e', opacity: 0.33 },
+          ],
+        },
+      ],
+      theme,
+    },
+    {
+      focus: 'group-x',
+      maxFocusDistance: Number.POSITIVE_INFINITY,
+      tooltip: {
+        use: tooltip,
+        content: (points) => {
+          const point = points[0]
+          if (!point) return { rows: [] }
+          return {
+            title: formatDate(point.datum.fecha),
+            rows: [
+              {
+                label: 'Patrimonio',
+                value: formatCompactNumber(point.datum.value),
+                color: '#0f766e',
+              },
+            ],
+          }
+        },
+      },
+    },
+  )
 })
 </script>
 
 <template>
   <ClientOnly>
     <div :class="heightClass ?? 'h-80 w-full'">
-      <VChart :option="option" class="h-full w-full" autoresize />
+      <Chart
+        :definition="definition"
+        :aria-label="mode === 'flujo' ? 'Flujo estimado' : 'Evolución del patrimonio'"
+        class="h-full w-full"
+        :style="{ height: '100%' }"
+      />
     </div>
     <template #fallback>
       <div :class="heightClass ?? 'h-80 w-full'" class="rounded-lg bg-elevated/40" />

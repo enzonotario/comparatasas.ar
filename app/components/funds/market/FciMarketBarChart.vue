@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { provide } from 'vue'
-import type { ComposeOption } from 'echarts/core'
-import type { BarSeriesOption } from 'echarts/charts'
-import type { GridComponentOption, TooltipComponentOption } from 'echarts/components'
+import { barX, defineChart, text } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { scaleBand } from '@tanstack/charts/scales/band'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { Chart } from '@tanstack/charts/vue'
 import { useChartTheme } from '~/composables/useChartConfig'
 import { formatCompactNumber } from '~/lib/fci-fund-formatters'
-
-type BarOption = ComposeOption<BarSeriesOption | GridComponentOption | TooltipComponentOption>
+import {
+  PROVIDER_AXIS_LOGO_DX,
+  providerLogoMap,
+  useProviderLogos,
+} from '~/lib/charts/provider-logos'
 
 const props = defineProps<{
   labels: string[]
@@ -14,15 +19,8 @@ const props = defineProps<{
   colors?: string[]
   format?: 'compact' | 'percent'
   heightClass?: string
+  logos?: Readonly<Record<string, string>>
 }>()
-
-const colorMode = computed(() => useColorMode().value)
-provide(THEME_KEY, colorMode)
-
-const initOptions = computed(() => ({
-  renderer: 'svg' as const,
-}))
-provide(INIT_OPTIONS_KEY, initOptions)
 
 const { textColor, gridLineColor } = useChartTheme()
 
@@ -35,62 +33,108 @@ function formatValue(value: number) {
   return formatCompactNumber(value)
 }
 
-const option = computed<BarOption>(() => {
-  const labels = [...props.labels].reverse()
-  const values = [...props.values].reverse()
-  const colors = props.colors ? [...props.colors].reverse() : undefined
+const rows = computed(() =>
+  props.labels.map((label, index) => ({
+    label,
+    value: props.values[index] ?? 0,
+    color: props.colors?.[index],
+  })),
+)
 
-  return {
-    animationDuration: 400,
-    grid: { top: 8, right: 56, bottom: 8, left: 8, containLabel: true },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: { type: 'shadow' },
-      valueFormatter: (value) => formatValue(Number(value)),
-    },
-    xAxis: {
-      type: 'value',
-      axisLabel: {
-        color: textColor.value,
-        formatter: (value: number) => formatValue(value),
-      },
-      splitLine: { lineStyle: { color: gridLineColor.value } },
-    },
-    yAxis: {
-      type: 'category',
-      data: labels,
-      axisLabel: {
-        color: textColor.value,
-        width: 140,
-        overflow: 'truncate',
-      },
-      axisTick: { show: false },
-      axisLine: { show: false },
-    },
-    series: [
-      {
-        type: 'bar',
-        data: values.map((value, index) => ({
-          value,
-          itemStyle: { color: colors?.[index], borderRadius: [0, 6, 6, 0] },
-        })),
-        barMaxWidth: 22,
-        label: {
-          show: true,
-          position: 'right',
-          color: textColor.value,
-          formatter: (params) => formatValue(Number(params.value)),
+const logos = computed(() =>
+  providerLogoMap(Object.entries(props.logos ?? {}).map(([name, logo]) => ({ name, logo }))),
+)
+
+const { onRender: paintLogos } = useProviderLogos(logos, 'after')
+
+const definition = computed(() => {
+  const data = rows.value
+
+  return defineChart(
+    {
+      marks: [
+        barX(data, {
+          x: 'value',
+          y: 'label',
+          key: 'label',
+          fill: (row) => row.color ?? '#2563eb',
+          maxThickness: 22,
+          radius: { end: 6 },
+        }),
+        decorative(
+          text(data, {
+            x: 'value',
+            y: 'label',
+            text: (row) => formatValue(row.value),
+            key: 'label',
+            anchor: (row) => (row.value < 0 ? 'end' : 'start'),
+            dx: (row) => (row.value < 0 ? -6 : 6),
+            fontSize: 11,
+            fill: textColor.value,
+          }),
+        ),
+      ],
+      scales: {
+        x: {
+          scale: scaleLinear,
+          nice: true,
+          grid: { stroke: gridLineColor.value },
+          axis: {
+            ticks: {
+              format: (value: number) => formatValue(value),
+            },
+          },
+        },
+        y: {
+          scale: () => scaleBand<string>().padding(0.2),
+          grid: false,
+          axis: {
+            line: false,
+            ticks: { size: 0 },
+            tickLabels: {
+              dx: ({ value }) => (logos.value.has(String(value)) ? PROVIDER_AXIS_LOGO_DX : 0),
+            },
+          },
         },
       },
-    ],
-  }
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
+      },
+    },
+    {
+      focus: 'group-y',
+      maxFocusDistance: Number.POSITIVE_INFINITY,
+      tooltip: {
+        use: tooltip,
+        content: (points) => {
+          const point = points[0]
+          if (!point) return { rows: [] }
+          const value = typeof point.xValue === 'number' ? point.xValue : point.datum.value
+          return {
+            title: point.datum.label,
+            color: point.datum.color,
+            rows: [{ label: 'Valor', value: formatValue(value) }],
+          }
+        },
+      },
+    },
+  )
 })
 </script>
 
 <template>
   <ClientOnly>
     <div :class="heightClass ?? 'h-80 w-full'">
-      <VChart :option="option" class="h-full w-full" autoresize />
+      <Chart
+        :definition="definition"
+        aria-label="Comparación por categoría"
+        class="h-full w-full"
+        :style="{ height: '100%' }"
+        @render="paintLogos"
+      />
     </div>
     <template #fallback>
       <div :class="heightClass ?? 'h-80 w-full'" class="rounded-lg bg-elevated/40" />

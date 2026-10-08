@@ -21,8 +21,6 @@ export default defineNuxtConfig({
     'nuxt-gtag',
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
-    'nuxt-highcharts',
-    'nuxt-echarts',
     'nuxt-og-image',
   ],
   ssr: true,
@@ -160,18 +158,6 @@ export default defineNuxtConfig({
     },
   },
 
-  echarts: {
-    charts: ['LineChart', 'BarChart', 'PieChart', 'CustomChart'],
-    components: [
-      'GridComponent',
-      'TooltipComponent',
-      'LegendComponent',
-      'DataZoomComponent',
-      'MarkLineComponent',
-      'TitleComponent',
-    ],
-  },
-
   eslint: {
     config: {
       stylistic: true,
@@ -180,10 +166,6 @@ export default defineNuxtConfig({
 
   gtag: {
     id: 'G-MVDC98G0E2',
-  },
-
-  highcharts: {
-    exporting: true,
   },
 
   // Dentro de node_modules/.cache/nuxt (allow-list de Cloudflare Pages build cache).

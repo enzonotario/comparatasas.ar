@@ -1,6 +1,13 @@
 <script setup lang="ts">
+import { colorLegend, colorLegendItems, defineChart, dot, lineY, text } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { Chart } from '@tanstack/charts/vue'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { portal } from '@tanstack/charts/tooltip/portal'
 import type { Lecap } from '~/types/investments'
 import { useChartTheme } from '~/composables/useChartConfig'
+import { hideOverlappingYieldLabels } from '~/lib/charts/yield-label-collision'
 import { isPositiveYieldRate } from '~/lib/finance/yield-curve'
 
 export type LecapYieldMode = 'tir' | 'tem'
@@ -15,10 +22,7 @@ const props = withDefaults(defineProps<Props>(), {
   mode: 'tir',
 })
 
-const colorMode = useColorMode()
 const { textColor, gridLineColor } = useChartTheme()
-
-const tooltipBackground = computed(() => (colorMode.value === 'dark' ? '#171717' : '#ffffff'))
 
 const yieldLabel = computed(() => (props.mode === 'tem' ? 'TEM' : 'TEA'))
 
@@ -33,7 +37,6 @@ function isEligibleForCurve(item: Lecap): boolean {
   return isPositiveYieldRate(item.tir)
 }
 
-// Polynomial regression (degree 2)
 function fitPolyCurve(points: [number, number][], degree: number, n: number) {
   if (points.length < degree + 1) return []
 
@@ -41,7 +44,6 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
   const ys = points.map((p) => p[1])
   const m = degree + 1
 
-  // Build normal equations (Vandermonde)
   const A: number[][] = []
   const B: number[] = []
   for (let i = 0; i < m; i++) {
@@ -52,7 +54,6 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
     B[i] = xs.reduce((s, x, k) => s + ys[k]! * Math.pow(x, i), 0)
   }
 
-  // Gaussian elimination
   for (let i = 0; i < m; i++) {
     let maxRow = i
     for (let k = i + 1; k < m; k++) if (Math.abs(A[k]![i]!) > Math.abs(A[maxRow]![i]!)) maxRow = k
@@ -60,178 +61,203 @@ function fitPolyCurve(points: [number, number][], degree: number, n: number) {
     ;[B[i], B[maxRow]] = [B[maxRow]!, B[i]!]
     for (let k = i + 1; k < m; k++) {
       const f = A[k]![i]! / A[i]![i]!
-      for (let j = i; j < m; j++) A[k]![j] -= f * A[i]![j]!
-      B[k] -= f * B[i]!
+      for (let j = i; j < m; j++) A[k]![j]! -= f * A[i]![j]!
+      B[k]! -= f * B[i]!
     }
   }
   const coeffs = new Array(m)
   for (let i = m - 1; i >= 0; i--) {
     coeffs[i] = B[i]
-    for (let j = i + 1; j < m; j++) coeffs[i] -= A[i]![j]! * coeffs[j]
-    coeffs[i] /= A[i]![i]!
+    for (let j = i + 1; j < m; j++) coeffs[i]! -= A[i]![j]! * coeffs[j]
+    coeffs[i]! /= A[i]![i]!
   }
 
-  // Generate curve points
   const minX = Math.min(...xs)
   const maxX = Math.max(...xs)
-  const result = []
+  const result: [number, number][] = []
   for (let i = 0; i <= n; i++) {
     const x = minX + (maxX - minX) * (i / n)
     let y = 0
-    for (let j = 0; j < m; j++) y += coeffs[j] * Math.pow(x, j)
+    for (let j = 0; j < m; j++) y += coeffs[j]! * Math.pow(x, j)
     result.push([Math.round(x), y])
   }
   return result
 }
 
-const chartOptions = computed(() => {
+interface CurveRow {
+  x: number
+  y: number
+  series: string
+}
+
+interface InstrumentRow {
+  x: number
+  y: number
+  name: string
+  series: string
+}
+
+const definition = computed(() => {
   const curveItems = props.lecaps.filter(isEligibleForCurve)
   if (!curveItems.length) return null
 
   const label = yieldLabel.value
+  const curveName = 'Curva de Rendimientos'
+  const curveColor = textColor.value === '#fff' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.2)'
 
-  const lecapsData = curveItems
-    .filter((l) => l.type === 'LECAP')
-    .map((l) => ({ x: l.days, y: yieldPercent(l), name: l.symbol }))
-
-  const boncapsData = curveItems
-    .filter((l) => l.type === 'BONCAP')
-    .map((l) => ({ x: l.days, y: yieldPercent(l), name: l.symbol }))
+  const instrumentRows: InstrumentRow[] = [
+    ...curveItems
+      .filter((item) => item.type === 'LECAP')
+      .map((item) => ({
+        x: item.days ?? 0,
+        y: yieldPercent(item),
+        name: item.symbol,
+        series: 'LECAP',
+      })),
+    ...curveItems
+      .filter((item) => item.type === 'BONCAP')
+      .map((item) => ({
+        x: item.days ?? 0,
+        y: yieldPercent(item),
+        name: item.symbol,
+        series: 'BONCAP',
+      })),
+  ]
 
   const allPoints: [number, number][] = curveItems
-    .map((l) => [l.days || 0, yieldPercent(l)] as [number, number])
+    .map((item) => [item.days || 0, yieldPercent(item)] as [number, number])
     .sort((a, b) => a[0] - b[0])
+  const curveRows: CurveRow[] = fitPolyCurve(allPoints, 2, 50).map(([x, y]) => ({
+    x,
+    y,
+    series: curveName,
+  }))
 
-  const curveData = fitPolyCurve(allPoints, 2, 50)
+  const domain = [
+    ...(curveRows.length ? [curveName] : []),
+    ...(instrumentRows.some((row) => row.series === 'LECAP') ? ['LECAP'] : []),
+    ...(instrumentRows.some((row) => row.series === 'BONCAP') ? ['BONCAP'] : []),
+  ]
+  const range = domain.map((series) => {
+    if (series === curveName) return curveColor
+    if (series === 'LECAP') return '#059669'
+    return '#3b82f6'
+  })
+  const grid = { stroke: gridLineColor.value, strokeOpacity: 1 }
 
-  return {
-    chart: {
-      backgroundColor: 'transparent',
-    },
-    title: {
-      text: '',
-    },
-    accessibility: {
-      enabled: false,
-    },
-    xAxis: {
-      title: {
-        text: 'Días al vencimiento',
-        style: { color: textColor.value },
-      },
-      labels: { style: { color: textColor.value } },
-      gridLineColor: gridLineColor.value,
-    },
-    yAxis: {
-      title: {
-        text: `${label} (%)`,
-        style: { color: textColor.value },
-      },
-      labels: {
-        formatter(): string {
-          return (this as any).value.toFixed(1) + '%'
+  return defineChart(
+    {
+      marks: [
+        decorative(
+          lineY(curveRows, {
+            x: 'x',
+            y: 'y',
+            color: 'series',
+            strokeDasharray: '6 4',
+            strokeWidth: 2,
+          }),
+        ),
+        dot(instrumentRows, {
+          x: 'x',
+          y: 'y',
+          r: 6,
+          color: 'series',
+        }),
+        decorative(
+          text(instrumentRows, {
+            x: 'x',
+            y: 'y',
+            text: (row) => row.name,
+            anchor: 'middle',
+            dy: -26,
+            fontSize: 11,
+            fontWeight: 600,
+            fill: textColor.value,
+          }),
+        ),
+        decorative(
+          text(instrumentRows, {
+            x: 'x',
+            y: 'y',
+            text: (row) => `${label} ${row.y.toFixed(2)}%`,
+            anchor: 'middle',
+            dy: -14,
+            fontSize: 11,
+            fontWeight: 500,
+            fill: textColor.value,
+          }),
+        ),
+      ],
+      scales: {
+        x: {
+          scale: scaleLinear,
+          nice: true,
+          grid: false,
+          axis: { label: 'Días al vencimiento' },
         },
-        style: { color: textColor.value },
-      },
-      gridLineColor: gridLineColor.value,
-    },
-    tooltip: {
-      shared: false,
-      outside: true,
-      useHTML: true,
-      shape: 'rect',
-      backgroundColor: tooltipBackground.value,
-      borderColor: gridLineColor.value,
-      borderWidth: 1,
-      shadow: true,
-      padding: 10,
-      style: {
-        color: textColor.value,
-        zIndex: 10050,
-      },
-      formatter(): string {
-        const point = (this as any).point
-        if (point.name) {
-          return `<b>${point.name}</b><br/>${label}: ${point.y.toFixed(2)}%<br/>Días: ${point.x}`
-        }
-        return `Curva: ${point.y.toFixed(2)}%`
-      },
-    },
-    plotOptions: {
-      scatter: {
-        marker: {
-          radius: 6,
-        },
-        dataLabels: {
-          enabled: true,
-          useHTML: true,
-          crop: false,
-          overflow: 'allow',
-          allowOverlap: false,
-          verticalAlign: 'bottom',
-          y: -10,
-          style: {
-            color: textColor.value,
-            fontSize: '11px',
-            fontWeight: '500',
-            textOutline: '1px contrast',
-          },
-          formatter(): string {
-            const point = (this as any).point
-            if (!point.name) return `${point.y.toFixed(2)}%`
-            return `<span style="display:block;text-align:center;line-height:1.25"><b>${point.name}</b><br/>${label} ${point.y.toFixed(2)}%</span>`
+        y: {
+          scale: scaleLinear,
+          nice: true,
+          grid,
+          axis: {
+            label: `${label} (%)`,
+            ticks: { format: (value: number) => `${value.toFixed(1)}%` },
           },
         },
       },
+      margin: { top: 36 },
+      color: {
+        domain,
+        range,
+        legend: colorLegend({
+          items: colorLegendItems({
+            indicator: {
+              shape: (value) => (value === curveName ? 'line' : 'dot'),
+            },
+          }),
+        }),
+      },
+      theme: {
+        foreground: textColor.value,
+        muted: textColor.value,
+        grid: gridLineColor.value,
+        background: 'transparent',
+      },
     },
-    series: [
-      {
-        name: 'Curva de Rendimientos',
-        type: 'spline',
-        data: curveData,
-        color: textColor.value === '#fff' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.2)',
-        dashStyle: 'Dash',
-        marker: { enabled: false },
-        enableMouseTracking: false,
+    {
+      tooltip: {
+        use: tooltip,
+        portal,
+        content: (points) => {
+          const row = points[0]?.datum
+          if (!row) return { rows: [] }
+          return {
+            title: row.name,
+            color: points[0]?.color,
+            rows: [
+              { label, value: `${row.y.toFixed(2)}%` },
+              { label: 'Días', value: String(row.x) },
+            ],
+          }
+        },
       },
-      {
-        name: 'LECAP',
-        type: 'scatter',
-        data: lecapsData,
-        color: '#059669', // Emerald 600
-        marker: { symbol: 'circle' },
-      },
-      {
-        name: 'BONCAP',
-        type: 'scatter',
-        data: boncapsData,
-        color: '#3b82f6', // Blue 500
-        marker: { symbol: 'square' },
-      },
-    ],
-    legend: {
-      itemStyle: { color: textColor.value },
     },
-    credits: { enabled: false },
-  }
+  )
 })
 </script>
 
 <template>
-  <div class="lecap-yield-curve-chart w-full" style="height: 24rem; min-height: 384px">
-    <highchart v-if="chartOptions" :options="chartOptions" class="w-full h-full" />
+  <div class="w-full" style="height: 24rem; min-height: 384px">
+    <Chart
+      v-if="definition"
+      :definition="definition"
+      aria-label="Curva de rendimientos de LECAP y BONCAP"
+      class="h-full w-full"
+      :height="384"
+      @render="({ svg }) => hideOverlappingYieldLabels(svg)"
+    />
     <div v-else class="w-full h-full flex items-center justify-center">
       <div class="text-muted text-sm italic">Cargando curva de rendimientos...</div>
     </div>
   </div>
 </template>
-
-<style scoped>
-/* HTML dataLabels sit above SVG tooltip by default; keep labels under the HTML tooltip */
-.lecap-yield-curve-chart :deep(.highcharts-data-labels) {
-  z-index: 1;
-}
-.lecap-yield-curve-chart :deep(.highcharts-label.highcharts-tooltip) {
-  z-index: 10050;
-}
-</style>

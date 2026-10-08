@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
-import 'vue-data-ui/style.css'
+import { barX, defineChart, text } from '@tanstack/charts'
+import { decorative } from '@tanstack/charts/mark/decorative'
+import { scaleBand } from '@tanstack/charts/scales/band'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
+import { Chart } from '@tanstack/charts/vue'
 import type { AccountItem } from '~/composables/useAccounts'
 import { CHART_COLORS, formatCurrency, useChartTheme } from '~/composables/useChartConfig'
-import { useVueDataUiSolidTooltip } from '~/composables/useVueDataUiSolidTooltip'
 import {
   getVariableFundRiskLevel,
   VARIABLE_FUND_RISK_LABELS,
@@ -11,6 +14,11 @@ import {
   type VariableFundRiskLevel,
 } from '~/lib/variable-fund-risk'
 import type { ProcessedFund } from '~/types/investments'
+import {
+  PROVIDER_AXIS_LOGO_DX,
+  providerLogoMap,
+  useProviderLogos,
+} from '~/lib/charts/provider-logos'
 
 const SECTION_GUARANTEED_NAMES = [
   'Rendimiento garantizado',
@@ -36,7 +44,18 @@ type BarChild = {
   value: number
   color: string
   logo?: string
-  /** Condiciones / límite (cuentas) o tipo FCI (fondos), columna derecha del SVG. */
+  rightLabel?: string
+  condicionesCorto?: string
+}
+
+type RankBar = {
+  id: string
+  name: string
+  group: string
+  value: number
+  valueLabel: string
+  color: string
+  logo?: string
   rightLabel?: string
   condicionesCorto?: string
 }
@@ -45,14 +64,6 @@ function truncateBarCaption(s: string, max = 38): string {
   const t = s.trim()
   if (t.length <= max) return t
   return `${t.slice(0, max - 1)}…`
-}
-
-function escapeTooltipHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
 }
 
 function rightLabelForAccount(a: AccountItem): string {
@@ -74,42 +85,12 @@ function rightLabelForFund(f: ProcessedFund): string {
   return truncateBarCaption('FCI · Rendimiento variable')
 }
 
-/** Compactación vertical (debe coincidir con layout.bars en chartConfig y con barLogoLayout). */
-const BAR_GAP = 4
-const BAR_PARENT_FS = 11
-const BAR_NAME_FS = 11
-const BAR_DATA_FS = 11
-const BAR_L = BAR_PARENT_FS * 3
-const BAR_MIN_ROW = 20
-const BAR_TAIL = 24
-/** padding top/bottom fijos en vue-data-ui (K - 24 en la fórmula de d). */
-const BAR_LIB_PAD_V = 24
-const BAR_LIB_TOP = 12
-const LOGO_PX = 18
-/** Mismo valor que style.chart.width (viewBox). */
-const BAR_CHART_WIDTH = 520
-/** Suma al margen derecho interno (64 + paddingRight) para columna de condiciones. */
-const BAR_RIGHT_LABEL_PAD = 96
-
 const props = withDefaults(defineProps<Props>(), {
   section: 'all',
 })
 const { textColor, gridLineColor, colorMode } = useChartTheme()
-const solidTooltip = useVueDataUiSolidTooltip()
-const horizontalBarComponent = shallowRef<Component | null>(null)
-/** IDs únicos para clipPath (válidos en SVG y sin colisiones entre instancias). */
-const logoClipUid = `tna-bar-${useId().replace(/[^a-zA-Z0-9_-]/g, '-')}`
 
-onMounted(async () => {
-  const { VueUiHorizontalBar } = await import('vue-data-ui/vue-ui-horizontal-bar')
-  horizontalBarComponent.value = VueUiHorizontalBar
-})
-
-/** Dataset completo; la prop `section` filtra para layouts en columnas. */
 const fullChartDataset = computed(() => {
-  // Con sort "desc" la librería también reordena los PADRES por value → Variable pasa arriba.
-  // sort "none" mantiene el orden del dataset: primero Garantizado (tasa fija → condiciones),
-  // luego Variable (riesgo muy bajo → bajo → moderado). Los hijos los ordenamos nosotros.
   const sortChildrenByTnaDesc = (items: BarChild[]) =>
     [...items].sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, 'es-AR'))
 
@@ -156,32 +137,22 @@ const fullChartDataset = computed(() => {
     colorOffset += 1
   }
 
-  const getGroupValue = (items: Array<{ value: number }>) =>
-    items.length > 0 ? Math.max(...items.map((item) => item.value)) : 0
-
   const garantizadoSorted = sortChildrenByTnaDesc(garantizado)
   const conCondicionesEspecialesSorted = sortChildrenByTnaDesc(conCondicionesEspeciales)
 
-  // Orden fijo: 1) Garantizado 2) Variable (muy bajo → bajo → moderado)
   return [
     {
       name: 'Rendimiento garantizado',
-      value: getGroupValue(garantizadoSorted),
       children: garantizadoSorted,
     },
     {
       name: 'Rendimiento garantizado / Con condiciones especiales',
-      value: getGroupValue(conCondicionesEspecialesSorted),
       children: conCondicionesEspecialesSorted,
     },
-    ...VARIABLE_FUND_RISK_ORDER.map((level) => {
-      const children = sortChildrenByTnaDesc(fundsByRisk[level])
-      return {
-        name: `Rendimiento Variable / ${VARIABLE_FUND_RISK_LABELS[level]}`,
-        value: getGroupValue(children),
-        children,
-      }
-    }),
+    ...VARIABLE_FUND_RISK_ORDER.map((level) => ({
+      name: `Rendimiento Variable / ${VARIABLE_FUND_RISK_LABELS[level]}`,
+      children: sortChildrenByTnaDesc(fundsByRisk[level]),
+    })),
   ].filter((group) => group.children.length > 0)
 })
 
@@ -191,393 +162,164 @@ const chartDataset = computed(() => {
   const allow = new Set<string>(
     props.section === 'guaranteed' ? SECTION_GUARANTEED_NAMES : SECTION_VARIABLE_NAMES,
   )
-  return full.filter((g) => allow.has(g.name))
+  return full.filter((group) => allow.has(group.name))
 })
 
-const chartRootClass = computed(() => {
-  const base = 'w-full [&_svg]:max-w-full [&_svg]:h-auto'
-  if (props.section === 'all') return `${base} max-w-xl`
-  return `${base} min-w-0`
-})
+const rankModel = computed(() => {
+  const bars: RankBar[] = []
+  const domain: string[] = []
+  const tickLabel = new Map<string, string>()
+  const headerIds = new Set<string>()
 
-/** Altura acorde al layout real del chart (solo filas-hijo + bloques de título padre), sin filas extra por grupo. */
-const chartHeight = computed(() => {
-  const ds = chartDataset.value
-  const bt = ds.reduce((s, g) => s + g.children.length, 0)
-  const numGroups = ds.length
-  if (bt === 0) return 420
-  return Math.max(
-    280,
-    BAR_LIB_PAD_V + (bt - 1) * BAR_GAP + numGroups * BAR_L + bt * BAR_MIN_ROW + BAR_TAIL,
-  )
-})
+  chartDataset.value.forEach((group, groupIndex) => {
+    const headerId = `group:${groupIndex}:${group.name}`
+    domain.push(headerId)
+    tickLabel.set(headerId, group.name)
+    headerIds.add(headerId)
 
-const chartConfig = computed<any>(() => ({
-  skeletonDataset: null,
-  skeletonConfig: null,
-  debug: false,
-  loading: false,
-  autoSize: false,
-  // Si responsive cambia width/height internos, las coordenadas del slot #svg dejan de coincidir con las barras.
-  responsive: false,
-  theme: '',
-  customPalette: CHART_COLORS,
-  useCssAnimation: false,
-  a11y: {
-    translations: {
-      keyboardNavigation:
-        'Use the left and right, or up and down arrow keys to move between datapoints',
-      tableAvailable: 'A data table for this chart is available below.',
-      tableCaption: 'Chart data table',
-    },
-  },
-  events: {
-    datapointEnter: null,
-    datapointLeave: null,
-    datapointClick: null,
-  },
-  style: {
-    fontFamily: 'inherit',
-    chart: {
-      backgroundColor: 'transparent',
-      color: textColor.value,
-      width: BAR_CHART_WIDTH,
-      height: chartHeight.value,
-      layout: {
-        bars: {
-          rowColor: null,
-          rowRadius: 3,
-          sort: 'none',
-          useStroke: false,
-          strokeWidth: 2,
-          height: 22,
-          gap: BAR_GAP,
-          borderRadius: 3,
-          // Margen izquierdo extra (logo ~22px + aire); NO usar nameLabels.offsetX para eso:
-          // con text-anchor "end", un offset ahí empuja el texto *sobre* el inicio de la barra.
-          offsetX: 56,
-          paddingRight: BAR_RIGHT_LABEL_PAD,
-          useGradient: true,
-          gradientIntensity: 20,
-          fillOpacity: 90,
-          underlayerColor: 'transparent',
-          dataLabels: {
-            color: textColor.value,
-            bold: true,
-            fontSize: BAR_DATA_FS,
-            value: {
-              show: true,
-              roundingValue: 2,
-              prefix: '',
-              suffix: '%',
-              formatter: null,
-            },
-            percentage: {
-              show: false,
-              roundingPercentage: 2,
-            },
-            offsetX: 0,
-          },
-          nameLabels: {
-            show: true,
-            color: textColor.value,
-            bold: false,
-            fontSize: BAR_NAME_FS,
-            offsetX: 0,
-          },
-          parentLabels: {
-            show: true,
-            color: textColor.value,
-            bold: false,
-            fontSize: BAR_PARENT_FS,
-            offsetX: 4,
-            paddingBottom: 0,
-          },
-        },
-        highlighter: {
-          color: textColor.value,
-          opacity: 5,
-        },
-        separators: {
-          show: false,
-          color: gridLineColor.value,
-          strokeWidth: 1,
-          fullWidth: true,
-        },
-      },
-      title: {
-        text: '',
-        color: textColor.value,
-        fontSize: 20,
-        bold: true,
-        textAlign: 'center',
-        paddingLeft: 0,
-        paddingRight: 0,
-        subtitle: {
-          color: '#A1A1A1',
-          text: '',
-          fontSize: 16,
-          bold: false,
-        },
-      },
-      legend: {
-        show: false,
-        bold: false,
-        backgroundColor: 'transparent',
-        color: textColor.value,
-        fontSize: 14,
-        selectAllToggle: {
-          show: false,
-          backgroundColor: '#e1e5e8',
-          color: textColor.value,
-        },
-        position: 'top',
-        roundingValue: 2,
-        roundingPercentage: 2,
-        prefix: '',
-        suffix: '',
-      },
-      tooltip: {
-        ...solidTooltip.value,
-        show: true,
-        customFormat: ({
-          datapoint,
-        }: {
-          datapoint: { name?: string; value?: number; condicionesCorto?: string }
-        }) => {
-          const name = datapoint?.name ?? ''
-          const v = datapoint?.value
-          const tna = v != null && Number.isFinite(Number(v)) ? `${Number(v).toFixed(2)}%` : '—'
-          const condicionesCorto = datapoint?.condicionesCorto?.trim()
-          const condiciones = condicionesCorto
-            ? `<div style="margin-top:6px;color:inherit;opacity:.8">Condiciones: ${escapeTooltipHtml(condicionesCorto)}</div>`
-            : ''
-          return `<div style="font-family:inherit;max-width:240px;white-space:normal;overflow-wrap:anywhere;line-height:1.35"><b>${escapeTooltipHtml(name)}</b><div>TNA: ${tna}</div>${condiciones}</div>`
-        },
-        showValue: false,
-        showPercentage: false,
-        roundingValue: 2,
-        roundingPercentage: 2,
-        prefix: '',
-        suffix: '',
-      },
-    },
-  },
-  userOptions: {
-    show: false,
-    showOnChartHover: false,
-    keepStateOnChartLeave: true,
-    position: 'right',
-    buttons: {
-      tooltip: true,
-      pdf: true,
-      csv: true,
-      img: true,
-      table: true,
-      labels: false,
-      fullscreen: true,
-      sort: true,
-      stack: false,
-      animation: false,
-      annotator: true,
-      svg: true,
-      zoom: false,
-      altCopy: false,
-    },
-    callbacks: {
-      animation: null,
-      annotator: null,
-      csv: null,
-      fullscreen: null,
-      img: null,
-      labels: null,
-      pdf: null,
-      sort: null,
-      stack: null,
-      table: null,
-      tooltip: null,
-      svg: null,
-      zoom: null,
-      altCopy: null,
-    },
-    buttonTitles: {
-      open: 'Open options',
-      close: 'Close options',
-      tooltip: 'Toggle tooltip',
-      pdf: 'Download PDF',
-      csv: 'Download CSV',
-      img: 'Download PNG',
-      table: 'Toggle table',
-      fullscreen: 'Toggle fullscreen',
-      sort: 'Toggle sort',
-      annotator: 'Toggle annotator',
-      svg: 'Download SVG',
-      altCopy: 'Copy alt text',
-    },
-    print: {
-      scale: 2,
-      orientation: 'auto',
-      overflowTolerance: 0.2,
-    },
-    useCursorPointer: false,
-  },
-  table: {
-    show: false,
-    responsiveBreakpoint: 400,
-    useDialog: false,
-    th: {
-      backgroundColor: '#FFFFFF',
-      color: textColor.value,
-      outline: 'none',
-    },
-    td: {
-      backgroundColor: '#FFFFFF',
-      color: textColor.value,
-      outline: 'none',
-      roundingValue: 2,
-      roundingPercentage: 2,
-      prefix: '',
-      suffix: '',
-    },
-  },
-  translations: {
-    parentName: 'Serie',
-    childName: 'Child',
-    value: 'value',
-    percentageToTotal: '%/total',
-    percentageToSerie: '%/serie',
-  },
-}))
-
-const barCaptionFill = computed(() => (colorMode.value === 'dark' ? '#a3a3a3' : '#525252'))
-
-/** Posiciones Y alineadas al layout interno de VueUiHorizontalBar (misma fórmula que el bundle). */
-const barLogoLayout = computed(() => {
-  const dataset = chartDataset.value
-  const K = chartHeight.value
-  const gap = BAR_GAP
-  const paddingTop = BAR_LIB_TOP
-  const nameFontSize = BAR_NAME_FS
-  const showParent = true
-  const parentFontSize = BAR_PARENT_FS
-  const parentPaddingBottom = 0
-  const Lpx = showParent ? parentFontSize * 3 + parentPaddingBottom : 0
-  const LOGO = LOGO_PX
-  const logoX = 6
-
-  const flat: Array<{ key: string; logo?: string; rightLabel?: string }> = []
-  for (const g of dataset) {
-    g.children.forEach((c: BarChild, idx: number) => {
-      flat.push({
-        key: `${g.name}::${c.name}::${idx}`,
-        logo: c.logo,
-        rightLabel: c.rightLabel,
+    group.children.forEach((child, index) => {
+      const id = `bar:${groupIndex}:${index}:${child.name}`
+      domain.push(id)
+      tickLabel.set(id, child.name)
+      bars.push({
+        id,
+        name: child.name,
+        group: group.name,
+        value: child.value,
+        valueLabel: `${child.value.toFixed(2)}%`,
+        color: child.color,
+        logo: child.logo,
+        rightLabel: child.rightLabel,
+        condicionesCorto: child.condicionesCorto,
       })
     })
-  }
-
-  const bt = flat.length
-  if (bt === 0)
-    return [] as Array<{
-      key: string
-      logo?: string
-      rightLabel?: string
-      x: number
-      y: number
-      size: number
-      textY: number
-    }>
-
-  const Acounts: number[] = []
-  let parentBlocks = 0
-  for (const g of dataset) {
-    g.children.forEach((_c: BarChild, idx: number) => {
-      if (idx === 0 && showParent) parentBlocks += 1
-      Acounts.push(parentBlocks)
-    })
-  }
-
-  const maxA = Math.max(0, ...Acounts)
-  const d = (K - 24 - (bt - 1) * gap - maxA * Lpx) / bt
-
-  return flat.map((row, o) => {
-    const rowTextY = paddingTop + (gap + d) * o + d / 2 + nameFontSize / 3 + Acounts[o] * Lpx
-    const y = rowTextY - LOGO / 2
-    return {
-      ...row,
-      x: logoX,
-      y,
-      size: LOGO,
-      textY: rowTextY,
-    }
   })
+
+  const maxValue = bars.reduce((max, bar) => Math.max(max, bar.value), 0)
+  const logos = providerLogoMap(bars)
+
+  return { bars, domain, tickLabel, headerIds, maxValue, logos }
+})
+
+const { onRender: paintLogos } = useProviderLogos(() => rankModel.value.logos, 'after')
+
+const chartRootClass = computed(() => {
+  if (props.section === 'all') return 'w-full max-w-xl'
+  return 'w-full min-w-0'
+})
+
+const chartHeight = computed(() => {
+  const count = rankModel.value.domain.length
+  if (count === 0) return 280
+  return Math.max(280, 56 + count * 28)
+})
+
+const definition = computed(() => {
+  const { bars, domain, tickLabel, headerIds, maxValue, logos } = rankModel.value
+  const muted = colorMode.value === 'dark' ? '#a3a3a3' : '#525252'
+
+  return defineChart(
+    {
+      marks: [
+        barX(bars, {
+          x: 'value',
+          y: 'id',
+          key: 'id',
+          fill: (bar) => bar.color,
+          fillOpacity: 0.9,
+          maxThickness: 20,
+          inset: 2,
+          radius: 3,
+        }),
+        decorative(
+          text(bars, {
+            x: 'value',
+            y: 'id',
+            text: 'valueLabel',
+            key: 'id',
+            anchor: 'start',
+            dx: 6,
+            fontSize: 11,
+            fill: textColor.value,
+          }),
+        ),
+      ],
+      scales: {
+        x: {
+          scale: scaleLinear().domain([0, maxValue > 0 ? maxValue * 1.22 : 1]),
+          grid: { stroke: gridLineColor.value },
+          axis: {
+            label: 'TNA (%)',
+            ticks: {
+              format: (value) => `${Number(value).toFixed(0)}%`,
+            },
+          },
+        },
+        y: {
+          scale: scaleBand<string>().domain(domain).padding(0.2),
+          axis: {
+            line: false,
+            ticks: {
+              format: (value) => tickLabel.get(String(value)) ?? String(value),
+              size: 0,
+            },
+            tickLabels: {
+              thin: false,
+              fontSize: 11,
+              fontWeight: ({ value }) => (headerIds.has(String(value)) ? 600 : 400),
+              dx: ({ value }) => {
+                const label = tickLabel.get(String(value))
+                return label && logos.has(label) ? PROVIDER_AXIS_LOGO_DX : 0
+              },
+            },
+          },
+        },
+      },
+      theme: {
+        foreground: textColor.value,
+        muted,
+        grid: gridLineColor.value,
+        background: 'transparent',
+        palette: CHART_COLORS,
+      },
+    },
+    {
+      svgAnimation: false,
+      tooltip: {
+        use: tooltip,
+        content: (points) => {
+          const bar = points[0]?.datum
+          if (!bar) return { rows: [] }
+          const rows = [
+            { label: 'Grupo', value: bar.group },
+            { label: 'TNA', value: bar.valueLabel },
+          ]
+          if (bar.rightLabel) rows.push({ label: 'Detalle', value: bar.rightLabel })
+          if (bar.condicionesCorto) rows.push({ label: 'Condiciones', value: bar.condicionesCorto })
+          return {
+            title: bar.name,
+            color: bar.color,
+            rows,
+          }
+        },
+      },
+    },
+  )
 })
 </script>
 
 <template>
   <div :class="chartRootClass">
-    <ClientOnly>
-      <component
-        :is="horizontalBarComponent"
-        v-if="horizontalBarComponent && chartDataset.length > 0"
-        :dataset="chartDataset"
-        :config="chartConfig"
-      >
-        <template #svg>
-          <defs>
-            <template v-for="(pos, i) in barLogoLayout" :key="`clip-${pos.key}`">
-              <clipPath v-if="pos.logo" :id="`${logoClipUid}-clip-${i}`">
-                <rect :x="pos.x" :y="pos.y" :width="pos.size" :height="pos.size" rx="3" ry="3" />
-              </clipPath>
-            </template>
-          </defs>
-          <g class="pointer-events-none" aria-hidden="true">
-            <template v-for="(pos, i) in barLogoLayout" :key="`img-${pos.key}`">
-              <image
-                v-if="pos.logo"
-                :href="pos.logo"
-                :x="pos.x"
-                :y="pos.y"
-                :width="pos.size"
-                :height="pos.size"
-                preserveAspectRatio="xMidYMid slice"
-                :clip-path="`url(#${logoClipUid}-clip-${i})`"
-              />
-            </template>
-          </g>
-          <g class="pointer-events-none" aria-hidden="true">
-            <text
-              v-for="pos in barLogoLayout"
-              v-show="pos.rightLabel"
-              :key="`cap-${pos.key}`"
-              :x="BAR_CHART_WIDTH - 6"
-              :y="pos.textY"
-              text-anchor="end"
-              :fill="barCaptionFill"
-              font-size="9"
-              font-family="inherit"
-              >{{ pos.rightLabel }}</text
-            >
-          </g>
-        </template>
-      </component>
-      <div
-        v-else-if="horizontalBarComponent && chartDataset.length === 0"
-        class="py-6 text-center text-sm text-neutral-500 dark:text-neutral-400"
-      >
-        No hay datos en esta categoría.
-      </div>
-      <div v-else class="w-full min-h-96 flex items-center justify-center">
-        <div class="text-neutral-500">Cargando gráfico...</div>
-      </div>
-    </ClientOnly>
+    <Chart
+      v-if="rankModel.bars.length"
+      :definition="definition"
+      :height="chartHeight"
+      aria-label="Comparación de TNA por grupos"
+      class="w-full"
+      @render="paintLogos"
+    />
+    <div v-else class="py-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
+      No hay datos en esta categoría.
+    </div>
   </div>
 </template>
-
-<style scoped>
-/* Porcentaje duplicado bajo el título de grupo (vue-data-ui pinta nombre + valor en dos <text>) */
-:deep(.vue-ui-horizontal-bar-parent-label > text:last-of-type) {
-  opacity: 0;
-  pointer-events: none;
-}
-</style>
