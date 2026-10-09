@@ -1,24 +1,46 @@
 [
   {
+    "date": "20261008",
+    "categories": {
+      "Otro": 33,
+      "Página Amiga": 15,
+      "Billetera": 23,
+      "Money Market": 9,
+      "Plazo Fijo": 27,
+      "Cuenta Remunerada": 22,
+      "ARGt": 4,
+      "Billetera USD": 12,
+      "Cuenta Remunerada USD": 1,
+      "Frascos": 7,
+      "PF UVA pago periódico": 1,
+      "PF UVA precancelable": 1,
+      "General": 5,
+      "Criptomonedas": 9,
+      "plazo fijo tradicional": 14,
+      "wARS": 12
+    },
+    "total": 195
+  },
+  {
     "date": "20261007",
     "categories": {
-      "Otro": 39,
-      "Página Amiga": 9,
-      "Billetera": 25,
-      "Money Market": 6,
-      "Plazo Fijo": 39,
-      "Cuenta Remunerada": 23,
-      "ARGt": 2,
-      "Billetera USD": 15,
+      "Otro": 83,
+      "Página Amiga": 29,
+      "Billetera": 54,
+      "Money Market": 15,
+      "Plazo Fijo": 85,
+      "Cuenta Remunerada": 52,
+      "ARGt": 3,
+      "Billetera USD": 18,
       "Cuenta Remunerada USD": 1,
-      "Frascos": 13,
+      "Frascos": 11,
       "PF UVA pago periódico": 2,
       "General": 7,
       "Criptomonedas": 10,
-      "plazo fijo tradicional": 22,
-      "wARS": 13
+      "plazo fijo tradicional": 32,
+      "wARS": 14
     },
-    "total": 226
+    "total": 416
   },
   {
     "date": "20261006",
@@ -66,39 +88,12 @@
     "date": "20261004",
     "categories": {
       "Página Amiga": 2,
-      "Billetera": 31,
-      "Money Market": 6,
-      "Plazo Fijo": 34,
-      "Cuenta Remunerada": 33,
-      "Otro": 48,
-      "Billetera USD": 14,
-      "Frascos": 3,
-      "PF UVA pago periódico": 2,
-      "PF UVA precancelable": 1,
-      "General": 16,
-      "Criptomonedas": 3,
-      "plazo fijo tradicional": 13,
-      "wARS": 8
+      "Billetera": 14,
+      "Money Market": 4,
+      "Plazo Fijo": 21,
+      "Cuenta Remunerada": 21,
+      "Otro": 17
     },
-    "total": 214
-  },
-  {
-    "date": "20261003",
-    "categories": {
-      "Página Amiga": 14,
-      "Billetera": 17,
-      "Money Market": 12,
-      "Plazo Fijo": 19,
-      "Cuenta Remunerada": 36,
-      "Otro": 58,
-      "Billetera USD": 8,
-      "Cuenta Remunerada USD": 1,
-      "Frascos": 8,
-      "General": 6,
-      "Criptomonedas": 3,
-      "plazo fijo tradicional": 13,
-      "wARS": 5
-    },
-    "total": 200
+    "total": 79
   }
 ]
