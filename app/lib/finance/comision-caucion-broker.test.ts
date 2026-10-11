@@ -9,6 +9,7 @@ import {
   formatProductoLabel,
   formatTasaAnualComparable,
   formatTasaPublicada,
+  showOperacionColumn,
   matchesOperacionFilter,
   pickBestComisionPorEntidad,
   sortKeyComisionBroker,
@@ -288,6 +289,16 @@ describe('filterComisionesBrokers', () => {
     const sinTae = sample[3]!
     expect(sortKeyComisionBroker(conTae)).toBe(0.018)
     expect(sortKeyComisionBroker(sinTae)).toBe(0.006)
+  })
+})
+
+describe('showOperacionColumn', () => {
+  it('oculta la columna cuando el producto tiene una sola operación', () => {
+    expect(showOperacionColumn(['ambas'])).toBe(false)
+  })
+
+  it('muestra la columna cuando hay colocadora y tomadora', () => {
+    expect(showOperacionColumn(['colocadora', 'tomadora'])).toBe(true)
   })
 })
 

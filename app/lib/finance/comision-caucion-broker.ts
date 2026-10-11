@@ -117,6 +117,11 @@ export function formatOperacionLabel(operacion: string | null | undefined): stri
   return OPERACION_BROKER_LABELS[operacion] ?? operacion.replace(/_/g, ' ')
 }
 
+/** La columna y el filtro de operación sirven solo si el producto tiene más de un valor distinto. */
+export function showOperacionColumn(operaciones: readonly string[]): boolean {
+  return new Set(operaciones.filter(Boolean)).size > 1
+}
+
 /** @deprecated Usar `formatOperacionLabel`. */
 export const formatOperacionBrokerLabel = formatOperacionLabel
 

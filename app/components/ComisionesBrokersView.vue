@@ -12,6 +12,7 @@ import {
   formatMembresiaMensual,
   formatOperacionLabel,
   formatPlanLabel,
+  showOperacionColumn,
   formatProductoLabel,
   formatTasaAnualComparable,
   formatTasaPublicada,
@@ -147,7 +148,9 @@ const operacionOptions = computed(() => {
     }))
 })
 
-const showOperacionFilter = computed(() => operacionOptions.value.length > 1)
+const showOperacionFilter = computed(() =>
+  showOperacionColumn(operacionOptions.value.map((option) => option.value)),
+)
 
 const effectiveMonedaFilter = computed(() => {
   if (!showMonedaFilter.value) return 'all'
@@ -417,16 +420,20 @@ const columns = computed<TableColumn<ComisionRow>[]>(() => {
       header: 'Plan',
       cell: ({ row }) => row.original.planLabel ?? '—',
     },
-    {
+  ]
+
+  if (showOperacionFilter.value) {
+    cols.push({
       accessorKey: 'operacionLabel',
       header: sortableHeader('Operación'),
-    },
-    {
-      accessorKey: 'tasaSort',
-      header: sortableHeader('Comisión'),
-      cell: ({ row }) => renderComisionCell(row.original),
-    },
-  ]
+    })
+  }
+
+  cols.push({
+    accessorKey: 'tasaSort',
+    header: sortableHeader('Comisión'),
+    cell: ({ row }) => renderComisionCell(row.original),
+  })
 
   if (showEquivAnual.value) {
     cols.push({
@@ -680,10 +687,17 @@ const hasActiveFilters = computed(
                   <p v-else class="font-medium">
                     {{ row.displayName }}
                   </p>
-                  <p class="text-sm text-neutral-500">
-                    {{ row.operacionLabel }}
-                    <template v-if="row.planLabel"> · {{ row.planLabel }}</template>
-                    <template v-if="showMonedaFilter"> · {{ row.moneda }}</template>
+                  <p
+                    v-if="showOperacionFilter || row.planLabel || showMonedaFilter"
+                    class="text-sm text-neutral-500"
+                  >
+                    <template v-if="showOperacionFilter">{{ row.operacionLabel }}</template>
+                    <template v-if="row.planLabel">
+                      {{ showOperacionFilter ? ' · ' : '' }}{{ row.planLabel }}
+                    </template>
+                    <template v-if="showMonedaFilter">
+                      {{ showOperacionFilter || row.planLabel ? ' · ' : '' }}{{ row.moneda }}
+                    </template>
                   </p>
                 </div>
               </div>
