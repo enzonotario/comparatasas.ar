@@ -340,7 +340,7 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Cuando la plataforma publica APY (p. ej. Belo ARGt, Ripio wARS), la convertimos a TNA con capitalización diaria: TNA = 365 × ((1 + APY)^(1/365) − 1). El frontend muestra esa TNA tal como la publica ArgentinaDatos; no la vuelve a recalcular.',
+        text: 'Belo publica la TNA de ARGt. Ripio (wARS) y Capyfi publican APY; ArgentinaDatos los convierte a TNA. Ripio usa capitalización diaria: TNA = 365 × ((1 + APY)^(1/365) − 1). El frontend muestra esa TNA tal como la publica ArgentinaDatos; no la vuelve a recalcular.',
       },
     ],
   },

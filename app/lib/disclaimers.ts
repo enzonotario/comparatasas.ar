@@ -60,7 +60,7 @@ export const disclaimerMappings: DisclaimerMapping = {
   ],
   criptopesos: [
     {
-      text: 'Las tasas de criptopesos representan la TNA (Tasa Nominal Anual) de cada entidad. Si la fuente publica APY, ArgentinaDatos la convierte a TNA con capitalización diaria antes de mostrarla.',
+      text: 'Las tasas de criptopesos representan la TNA (Tasa Nominal Anual) de cada entidad. Belo publica TNA. Ripio y Capyfi publican APY; ArgentinaDatos la convierte a TNA antes de mostrarla.',
     },
     {
       text: 'La información representada proviene de las propias plataformas. Puede llegar a estar desactualizada y no garantizamos que estos sean los ultimos rendimientos vigentes.',
