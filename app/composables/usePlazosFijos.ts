@@ -23,6 +23,8 @@ export {
 }
 
 function mapEntityToTableRow(plazoFijo: PlazoFijo): PlazoFijoTableRow | null {
+  if (typeof plazoFijo?.entidad !== 'string' || plazoFijo.entidad.trim() === '') return null
+
   const institution = getPlazoFijoShortName(plazoFijo.entidad)
   const rootTnaDecimal = getRootTnaDecimal(plazoFijo)
   const hasTieredRates = (plazoFijo.tasas?.length ?? 0) > 0

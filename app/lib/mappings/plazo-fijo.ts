@@ -210,8 +210,18 @@ export const plazoFijoInstitutions: Array<{
   },
 ]
 
-export function getPlazoFijoLogo(name: string): string | undefined {
+function plazoFijoNameKey(name: string): string | undefined {
+  if (typeof name !== 'string') return undefined
+
   const key = name.trim().toLowerCase()
+
+  return key || undefined
+}
+
+export function getPlazoFijoLogo(name: string): string | undefined {
+  const key = plazoFijoNameKey(name)
+
+  if (!key) return undefined
 
   for (const inst of plazoFijoInstitutions) {
     if (inst.names.map((n) => n.toLowerCase()).includes(key)) {
@@ -223,7 +233,9 @@ export function getPlazoFijoLogo(name: string): string | undefined {
 }
 
 export function getPlazoFijoShortName(name: string): string {
-  const key = name.trim().toLowerCase()
+  const key = plazoFijoNameKey(name)
+
+  if (!key) return typeof name === 'string' ? name : ''
 
   for (const inst of plazoFijoInstitutions) {
     if (inst.names.map((n) => n.toLowerCase()).includes(key)) {
@@ -235,7 +247,9 @@ export function getPlazoFijoShortName(name: string): string {
 }
 
 export function getPlazoFijoUrl(name: string, medium = 'plazos-fijos'): string | undefined {
-  const key = name.trim().toLowerCase()
+  const key = plazoFijoNameKey(name)
+
+  if (!key) return undefined
 
   for (const inst of plazoFijoInstitutions) {
     if (inst.names.map((n) => n.toLowerCase()).includes(key)) {
