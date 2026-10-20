@@ -1,6 +1,6 @@
 {
-  "total_records": 32555,
-  "total_clicks": 137150,
+  "total_records": 32598,
+  "total_clicks": 137245,
   "unique_providers": 538,
   "days_tracked": 263,
   "first_date": "20260129",
@@ -8,15 +8,15 @@
   "by_event_type": [
     {
       "event_type": "click",
-      "total_clicks": 91839
+      "total_clicks": 91901
     },
     {
       "event_type": "provider_click",
-      "total_clicks": 41720
+      "total_clicks": 41745
     },
     {
       "event_type": "sponsor_click",
-      "total_clicks": 3591
+      "total_clicks": 3599
     }
   ],
   "top_providers": [
@@ -27,12 +27,12 @@
     },
     {
       "provider": "Banco Nación",
-      "total_clicks": 9940,
+      "total_clicks": 9946,
       "days_active": 187
     },
     {
       "provider": "AstroPay",
-      "total_clicks": 9676,
+      "total_clicks": 9679,
       "days_active": 186
     },
     {
@@ -46,5 +46,5 @@
       "days_active": 201
     }
   ],
-  "generated_at": "2026-10-18T23:46:02.538Z"
+  "generated_at": "2026-10-20T00:45:55.696Z"
 }
