@@ -15,7 +15,6 @@ const routes = [
   { path: '/creditos-hipotecarios-uva', name: 'creditos-hipotecarios-uva' },
   { path: '/prestamos-personales', name: 'prestamos-personales' },
   { path: '/comisiones-cobro', name: 'comisiones-cobro' },
-  { path: '/fal', name: 'fal' },
   { path: '/comisiones-brokers', name: 'comisiones-brokers' },
   { path: '/comisiones-brokers/acciones', name: 'comisiones-brokers-acciones' },
   { path: '/contado-cuotas', name: 'contado-cuotas' },

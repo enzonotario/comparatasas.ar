@@ -387,7 +387,7 @@ export const institutions: Array<{
     url: 'https://bancocmf.com.ar/?ref=comparatasas',
   },
   {
-    names: ['Banco Mariva', 'Banco Mariva S.A.', 'Mariva'],
+    names: ['Banco Mariva', 'Banco Mariva S.A.'],
     logo: 'https://api.argentinadatos.com/static/logos/banco-mariva.png',
     shortName: 'Banco Mariva',
     url: 'https://mariva.com.ar/?ref=comparatasas',
