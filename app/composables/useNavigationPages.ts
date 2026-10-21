@@ -146,6 +146,14 @@ export const useNavigationPages = () => {
           group: 'Inversión',
         },
         {
+          to: '/fal',
+          label: 'Fondo de Asistencia Laboral',
+          icon: 'i-lucide-shield-check',
+          image: categoryIcon('fondos.png'),
+          group: 'Inversión',
+          badge: { label: 'Nuevo', color: 'primary' },
+        },
+        {
           to: '/cauciones',
           label: 'Cauciones',
           icon: 'i-lucide-handshake',

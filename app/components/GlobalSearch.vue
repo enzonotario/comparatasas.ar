@@ -94,6 +94,14 @@ const groups = [
         to: '/comisiones-cobro',
       },
       {
+        id: 'fal',
+        label: 'Fondo de Asistencia Laboral',
+        suffix: 'Comparador',
+        icon: 'i-lucide-shield-check',
+        to: '/fal',
+        keywords: ['fal', 'fondo de asistencia laboral', 'indemnizaciones'],
+      },
+      {
         id: 'comisiones-brokers',
         label: 'Comisiones de brokers',
         suffix: 'Comparador',

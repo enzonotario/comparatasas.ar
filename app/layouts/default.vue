@@ -35,6 +35,7 @@ const isWideLayout = computed(() => {
   return [
     'criptomonedas',
     'comisiones-cobro',
+    'fal',
     'contado-cuotas',
     'fondos',
     'fondos-nombre',
@@ -65,6 +66,7 @@ const productScenarioRailPaths = new Set([
   '/creditos-hipotecarios-uva',
   '/prestamos-personales',
   '/comisiones-cobro',
+  '/fal',
   '/comisiones-brokers',
   '/lecaps',
   '/cauciones',

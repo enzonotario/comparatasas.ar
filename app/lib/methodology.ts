@@ -357,6 +357,27 @@ export const methodologySections: MethodologySection[] = [
     ],
   },
   {
+    id: 'fal',
+    title: 'Fondo de Asistencia Laboral',
+    category: 'otros',
+    categoryLabel: 'Otros productos',
+    source: 'Argentina Datos / páginas oficiales',
+    blocks: [
+      {
+        type: 'p',
+        text: 'La tabla lista alternativas del FAL (Ley 27.802), una fila por entidad y plan. Los datos salen de Argentina Datos (/v1/finanzas/fal), que lee la página oficial de cada entidad.',
+      },
+      {
+        type: 'p',
+        text: 'La comisión anual se muestra en porcentaje. Si la página no publica la comisión propia, la celda dice Sin dato. El tope legal del 1% anual no se copia como precio de la entidad. Si hay una comisión promocional, mostramos la fecha de fin y la comisión posterior cuando la fuente la informa.',
+      },
+      {
+        type: 'p',
+        text: 'El aporte legal (1% grandes empresas, 2,5% MiPyMEs) es el mismo para todas las filas y no es una columna. La vigencia es la fecha que informa esa página, no una fecha única del régimen.',
+      },
+    ],
+  },
+  {
     id: 'comisiones-cobro',
     title: 'Comisiones de cobro',
     category: 'otros',
