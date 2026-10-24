@@ -32,6 +32,7 @@ const CATALOG_ROUTES = [
   '/prestamos-personales',
   '/prestamos-personales/bcra',
   '/comisiones-cobro',
+  '/fal',
   '/comisiones-brokers',
   ...comisionesBrokersPrerenderRoutes,
   '/contado-cuotas',

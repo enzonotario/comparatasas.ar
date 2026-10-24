@@ -146,6 +146,14 @@ export const useNavigationPages = () => {
           group: 'Inversión',
         },
         {
+          to: '/fal',
+          label: 'FAL',
+          icon: 'i-lucide-shield-check',
+          image: categoryIcon('fal.png'),
+          group: 'Inversión',
+          badge: { label: 'Nuevo', color: 'primary' },
+        },
+        {
           to: '/cauciones',
           label: 'Cauciones',
           icon: 'i-lucide-handshake',
