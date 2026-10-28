@@ -208,6 +208,12 @@ export const plazoFijoInstitutions: Array<{
     shortName: 'Ualá',
     url: 'https://www.uala.com.ar/?ref=comparatasas',
   },
+  {
+    names: ['Cocos', 'cocos', 'COCOS'],
+    logo: 'https://api.argentinadatos.com/static/logos/cocos.png',
+    shortName: 'Cocos',
+    url: 'https://cocos.capital/?ref=comparatasas',
+  },
 ]
 
 function plazoFijoNameKey(name: string): string | undefined {

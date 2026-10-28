@@ -4,6 +4,9 @@ import { getPlazoFijoLogo, getPlazoFijoShortName, getPlazoFijoUrl } from './plaz
 describe('getPlazoFijoShortName', () => {
   it('returns the short name for a known bank', () => {
     expect(getPlazoFijoShortName('UALA')).toBe('Ualá')
+    expect(getPlazoFijoShortName('Cocos')).toBe('Cocos')
+    expect(getPlazoFijoLogo('Cocos')).toContain('cocos.png')
+    expect(getPlazoFijoUrl('Cocos')).toContain('cocos.capital')
   })
 
   it('does not throw when the API row has no entidad', () => {
