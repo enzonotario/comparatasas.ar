@@ -1,132 +1,422 @@
 [
   {
-    "date": "20261027",
-    "provider": "AstroPay",
-    "clicks": 23
+    "date": "20261028",
+    "provider": "CapyFi",
+    "clicks": 13
   },
   {
-    "date": "20261027",
+    "date": "20261028",
+    "provider": "Reba",
+    "clicks": 12
+  },
+  {
+    "date": "20261028",
+    "provider": "AstroPay",
+    "clicks": 12
+  },
+  {
+    "date": "20261028",
     "provider": "Arqfinance",
+    "clicks": 11
+  },
+  {
+    "date": "20261028",
+    "provider": "Naranja X",
     "clicks": 10
   },
   {
-    "date": "20261027",
+    "date": "20261028",
+    "provider": "Banco Voii",
+    "clicks": 9
+  },
+  {
+    "date": "20261028",
+    "provider": "Banco Nación",
+    "clicks": 9
+  },
+  {
+    "date": "20261028",
+    "provider": "ICBC",
+    "clicks": 8
+  },
+  {
+    "date": "20261028",
+    "provider": "Bancocmf",
+    "clicks": 8
+  },
+  {
+    "date": "20261028",
     "provider": "Banco BICA",
     "clicks": 8
   },
   {
-    "date": "20261027",
-    "provider": "Ualá",
+    "date": "20261028",
+    "provider": "Banco Ciudad",
     "clicks": 7
   },
   {
-    "date": "20261027",
+    "date": "20261028",
+    "provider": "Ualá",
+    "clicks": 6
+  },
+  {
+    "date": "20261028",
+    "provider": "Fiwind",
+    "clicks": 6
+  },
+  {
+    "date": "20261028",
+    "provider": "Banco BICA Cuenta Positiva 1",
+    "clicks": 6
+  },
+  {
+    "date": "20261028",
     "provider": "dolarito.ar",
-    "clicks": 6
-  },
-  {
-    "date": "20261027",
-    "provider": "Banco Nación",
-    "clicks": 6
-  },
-  {
-    "date": "20261027",
-    "provider": "Banco Galicia",
     "clicks": 5
   },
   {
-    "date": "20261027",
-    "provider": "Banco Voii",
+    "date": "20261028",
+    "provider": "BBVA",
+    "clicks": 5
+  },
+  {
+    "date": "20261028",
+    "provider": "Crédito Regional",
     "clicks": 4
   },
   {
-    "date": "20261027",
-    "provider": "Reba",
-    "clicks": 4
-  },
-  {
-    "date": "20261027",
-    "provider": "Naranja X",
-    "clicks": 4
-  },
-  {
-    "date": "20261027",
-    "provider": "Belo",
-    "clicks": 4
-  },
-  {
-    "date": "20261027",
+    "date": "20261028",
     "provider": "LB",
     "clicks": 4
   },
   {
-    "date": "20261027",
-    "provider": "CapyFi",
+    "date": "20261028",
+    "provider": "Cresium",
     "clicks": 4
   },
   {
-    "date": "20261027",
-    "provider": "Ripio",
+    "date": "20261028",
+    "provider": "Banco de Comercio",
     "clicks": 4
   },
   {
-    "date": "20261027",
-    "provider": "Ripio",
-    "clicks": 4
-  },
-  {
-    "date": "20261027",
-    "provider": "Banco Hipotecario",
+    "date": "20261028",
+    "provider": "Nexo",
     "clicks": 3
   },
   {
-    "date": "20261027",
-    "provider": "BBVA",
-    "clicks": 3
-  },
-  {
-    "date": "20261027",
-    "provider": "Lune.fi",
-    "clicks": 3
-  },
-  {
-    "date": "20261027",
-    "provider": "comparapix.ar",
-    "clicks": 3
-  },
-  {
-    "date": "20261027",
+    "date": "20261028",
     "provider": "Banco Macro",
     "clicks": 2
   },
   {
-    "date": "20261027",
-    "provider": "LucaMoney",
+    "date": "20261028",
+    "provider": "Bna",
     "clicks": 2
+  },
+  {
+    "date": "20261028",
+    "provider": "Bancochubut",
+    "clicks": 2
+  },
+  {
+    "date": "20261028",
+    "provider": "Pfweb.mariva",
+    "clicks": 2
+  },
+  {
+    "date": "20261028",
+    "provider": "comparadolar.ar",
+    "clicks": 2
+  },
+  {
+    "date": "20261028",
+    "provider": "Banco Nación",
+    "clicks": 2
+  },
+  {
+    "date": "20261028",
+    "provider": "Banco Nación",
+    "clicks": 2
+  },
+  {
+    "date": "20261028",
+    "provider": "Bibank",
+    "clicks": 2
+  },
+  {
+    "date": "20261028",
+    "provider": "App.doctacapital",
+    "clicks": 2
+  },
+  {
+    "date": "20261028",
+    "provider": "Supervielle",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Banco Santander",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "IOL",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Banco Hipotecario",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Banco Galicia",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Banco Galicia",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Belo",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Lune.fi",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "icons.com.ar",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Help.bullmarketbrokers",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "comparapix.ar",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Bull Market",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Banco Nación",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Ripio",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "Ripio",
+    "clicks": 1
+  },
+  {
+    "date": "20261028",
+    "provider": "argentinadatos.com",
+    "clicks": 1
+  },
+  {
+    "date": "20261027",
+    "provider": "AstroPay",
+    "clicks": 40
+  },
+  {
+    "date": "20261027",
+    "provider": "Arqfinance",
+    "clicks": 25
+  },
+  {
+    "date": "20261027",
+    "provider": "Banco BICA",
+    "clicks": 14
   },
   {
     "date": "20261027",
     "provider": "Banco Galicia",
-    "clicks": 2
+    "clicks": 12
   },
   {
     "date": "20261027",
-    "provider": "Fiwind",
-    "clicks": 2
+    "provider": "dolarito.ar",
+    "clicks": 12
+  },
+  {
+    "date": "20261027",
+    "provider": "Banco Nación",
+    "clicks": 12
+  },
+  {
+    "date": "20261027",
+    "provider": "Belo",
+    "clicks": 11
+  },
+  {
+    "date": "20261027",
+    "provider": "Ualá",
+    "clicks": 10
+  },
+  {
+    "date": "20261027",
+    "provider": "CapyFi",
+    "clicks": 10
+  },
+  {
+    "date": "20261027",
+    "provider": "Ripio",
+    "clicks": 10
+  },
+  {
+    "date": "20261027",
+    "provider": "Reba",
+    "clicks": 9
+  },
+  {
+    "date": "20261027",
+    "provider": "Naranja X",
+    "clicks": 8
+  },
+  {
+    "date": "20261027",
+    "provider": "comparapix.ar",
+    "clicks": 7
+  },
+  {
+    "date": "20261027",
+    "provider": "Banco Voii",
+    "clicks": 6
+  },
+  {
+    "date": "20261027",
+    "provider": "Banco Hipotecario",
+    "clicks": 6
+  },
+  {
+    "date": "20261027",
+    "provider": "BBVA",
+    "clicks": 6
+  },
+  {
+    "date": "20261027",
+    "provider": "LB",
+    "clicks": 6
   },
   {
     "date": "20261027",
     "provider": "Banco Provincia",
-    "clicks": 2
+    "clicks": 5
   },
   {
     "date": "20261027",
-    "provider": "Bancodelsol",
-    "clicks": 2
+    "provider": "Banco Galicia",
+    "clicks": 4
   },
   {
     "date": "20261027",
     "provider": "Nexo",
+    "clicks": 4
+  },
+  {
+    "date": "20261027",
+    "provider": "Lune.fi",
+    "clicks": 4
+  },
+  {
+    "date": "20261027",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 4
+  },
+  {
+    "date": "20261027",
+    "provider": "Ripio",
+    "clicks": 4
+  },
+  {
+    "date": "20261027",
+    "provider": "Banco Macro",
+    "clicks": 3
+  },
+  {
+    "date": "20261027",
+    "provider": "LucaMoney",
+    "clicks": 3
+  },
+  {
+    "date": "20261027",
+    "provider": "Fiwind",
+    "clicks": 3
+  },
+  {
+    "date": "20261027",
+    "provider": "comparatiendas.com.ar",
+    "clicks": 3
+  },
+  {
+    "date": "20261027",
+    "provider": "Bancodelsol",
+    "clicks": 3
+  },
+  {
+    "date": "20261027",
+    "provider": "icons.com.ar",
+    "clicks": 3
+  },
+  {
+    "date": "20261027",
+    "provider": "Banco Nación",
+    "clicks": 3
+  },
+  {
+    "date": "20261027",
+    "provider": "Banco Ciudad",
+    "clicks": 3
+  },
+  {
+    "date": "20261027",
+    "provider": "SatoshiTango",
+    "clicks": 2
+  },
+  {
+    "date": "20261027",
+    "provider": "IOL",
+    "clicks": 2
+  },
+  {
+    "date": "20261027",
+    "provider": "impuestito.org",
+    "clicks": 2
+  },
+  {
+    "date": "20261027",
+    "provider": "IEB+",
+    "clicks": 2
+  },
+  {
+    "date": "20261027",
+    "provider": "ICBC",
+    "clicks": 2
+  },
+  {
+    "date": "20261027",
+    "provider": "Lemon",
     "clicks": 2
   },
   {
@@ -136,8 +426,28 @@
   },
   {
     "date": "20261027",
-    "provider": "Banco Nación",
+    "provider": "comparadolar.ar",
     "clicks": 2
+  },
+  {
+    "date": "20261027",
+    "provider": "comparadolar.ar",
+    "clicks": 2
+  },
+  {
+    "date": "20261027",
+    "provider": "Cafecito",
+    "clicks": 2
+  },
+  {
+    "date": "20261027",
+    "provider": "Balanz",
+    "clicks": 2
+  },
+  {
+    "date": "20261027",
+    "provider": "X (Twitter)",
+    "clicks": 1
   },
   {
     "date": "20261027",
@@ -146,57 +456,27 @@
   },
   {
     "date": "20261027",
-    "provider": "impuestito.org",
+    "provider": "IOL",
     "clicks": 1
   },
   {
     "date": "20261027",
-    "provider": "IEB+",
+    "provider": "BBVA",
     "clicks": 1
   },
   {
     "date": "20261027",
-    "provider": "ICBC",
+    "provider": "Viumi",
     "clicks": 1
   },
   {
     "date": "20261027",
-    "provider": "comparatiendas.com.ar",
+    "provider": "enqueinvierto.ar",
     "clicks": 1
   },
   {
     "date": "20261027",
-    "provider": "icons.com.ar",
-    "clicks": 1
-  },
-  {
-    "date": "20261027",
-    "provider": "Estadisticas.cafci.org",
-    "clicks": 1
-  },
-  {
-    "date": "20261027",
-    "provider": "comparadolar.ar",
-    "clicks": 1
-  },
-  {
-    "date": "20261027",
-    "provider": "comparadolar.ar",
-    "clicks": 1
-  },
-  {
-    "date": "20261027",
-    "provider": "Cafecito",
-    "clicks": 1
-  },
-  {
-    "date": "20261027",
-    "provider": "Banco Ciudad",
-    "clicks": 1
-  },
-  {
-    "date": "20261027",
-    "provider": "Balanz",
+    "provider": "betece.app",
     "clicks": 1
   },
   {
