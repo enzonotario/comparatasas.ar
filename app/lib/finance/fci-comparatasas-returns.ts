@@ -1,9 +1,9 @@
 export interface FciComparatasasRendimientos {
   ultimos7Dias: number | null
   unMes: number | null
-  /** Variación diaria CNV en %; fallback de TNA si no hay 30D/7D. */
+  /** Variación diaria CNV en %; fallback de TNA si no hay 7D (Com. A 8497). */
   variacionDiariaPct?: number | null
-  /** Días reales del lookback API (ArgentinaDatos); si faltan se usan 30/7/1. */
+  /** Días reales del lookback API (ArgentinaDatos); si faltan se usan 7/1. */
   diasUltimos7Dias?: number | null
   diasUnMes?: number | null
 }
@@ -12,13 +12,13 @@ const DAYS_PER_YEAR = 365
 
 type NominalTnaPeriod = '30D' | '7D' | '1D'
 
+/** BCRA Com. A 8497: TNA sobre últimos 7 días corridos; fallback diario. `unMes` no entra al pick. */
 const NOMINAL_TNA_WINDOWS: Array<{
   period: NominalTnaPeriod
   token: string
   fallbackDays: number
   pick: (rendimientos: FciComparatasasRendimientos) => number | null | undefined
 }> = [
-  { period: '30D', token: 'r30D', fallbackDays: 30, pick: (r) => r.unMes },
   { period: '7D', token: 'r7D', fallbackDays: 7, pick: (r) => r.ultimos7Dias },
   { period: '1D', token: 'r1D', fallbackDays: 1, pick: (r) => r.variacionDiariaPct },
 ]

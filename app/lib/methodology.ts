@@ -57,11 +57,11 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Es el método por defecto del sitio para todos los FCI. La planilla CNV publica retornos de período; estimamos la TNA nominal a 365 días a partir del retorno ~30D (no de un solo día, que es ruidoso).',
+        text: 'Es el método por defecto del sitio para todos los FCI, alineado a la Comunicación A 8497 del BCRA (TNA de los últimos 7 días corridos). La planilla CNV publica retornos de período; estimamos la TNA nominal a 365 días a partir del retorno ~7D (no del ~30D ni de un solo día, que es más ruidoso).',
       },
       {
         type: 'formula',
-        text: 'TNA = unMes × 365 / días (días = diasUnMes de la API o del lookback VCP; si falta: 30). Fallback: ultimos7Dias × 365 / diasUltimos7Dias (o 7); luego variacionDiariaPct × 365',
+        text: 'TNA = ultimos7Dias × 365 / días (días = diasUltimos7Dias de la API o del lookback VCP; si falta: 7). Fallback: variacionDiariaPct × 365. El retorno ~30D/`unMes` se muestra como período, no como TNA.',
       },
       {
         type: 'formula',
@@ -69,7 +69,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'Ejemplo: si unMes = 1,54% → TNA mostrada = 18,73%.',
+        text: 'Ejemplo: si ultimos7Dias = 0,38% → TNA mostrada ≈ 19,91%.',
       },
     ],
   },
@@ -82,11 +82,11 @@ export const methodologySections: MethodologySection[] = [
     blocks: [
       {
         type: 'p',
-        text: 'Usamos la misma estimación de TNA nominal que en money market: retorno ~30D (rolling desde VCP en el detalle; columna CNV `unMes` en el catálogo si falta histórico), con fallback a 7D y 1D.',
+        text: 'Usamos la misma estimación de TNA nominal que en money market: retorno ~7D (rolling desde VCP en el detalle; columna CNV `ultimos7Dias` en el catálogo si falta histórico), con fallback a 1D. Coincide con `tnaEstimada` de ArgentinaDatos.',
       },
       {
         type: 'formula',
-        text: 'En listados usamos TNA precomputada en build (`public/api/fci/nominal-tna.json`) con días efectivos del lookback VCP para fondos curados y sus clases hermanas. El resto del catálogo usa `diasUnMes`/`diasUltimos7Dias` de ArgentinaDatos cuando vienen; si no, cae a 30/7/1. El detalle recalcula con el histórico del fondo abierto.',
+        text: 'En listados usamos TNA precomputada en build (`public/api/fci/nominal-tna.json`) con días efectivos del lookback VCP para fondos curados y sus clases hermanas. El resto del catálogo usa `diasUltimos7Dias` de ArgentinaDatos cuando viene; si no, cae a 7/1. El detalle recalcula con el histórico del fondo abierto.',
       },
       {
         type: 'formula',
@@ -94,7 +94,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'En el detalle, los días del divisor son los días efectivos del lookback VCP (p. ej. 29 en lugar de 30). Ejemplo: 30D = 1,59% → TNA ≈ 19,98% con 29 días.',
+        text: 'En el detalle, los días del divisor son los días efectivos del lookback VCP (p. ej. 6 en lugar de 7). Ejemplo: 7D = 0,40% → TNA ≈ 20,83% con 7 días.',
       },
     ],
   },
@@ -152,7 +152,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'p',
-        text: 'La tabla de /fondos usa el catálogo CNV (retornos de período + TNA MM vía unMes × 365/30); este método de series de VCP queda como alternativa para rankings y visualizaciones históricas.',
+        text: 'La tabla de /fondos usa el catálogo CNV (retornos de período + TNA MM vía ultimos7Dias × 365/7, Com. A 8497); este método de series de VCP queda como alternativa para rankings y visualizaciones históricas.',
       },
     ],
   },
@@ -314,7 +314,7 @@ export const methodologySections: MethodologySection[] = [
         items: [
           'Cuentas remuneradas en USD: TNA publicada por la plataforma.',
           'Billeteras en USD: APY informado por cada entidad para depósitos en dólares.',
-          'FCI en USD (riesgo bajo / money market, moderado y alto): TNA nominal estimada = retorno ~30D × 365 / días (rolling VCP cuando hay histórico; si no, columna CNV `unMes` con 30 días). Mismo criterio que el resto de FCI del sitio.',
+          'FCI en USD (riesgo bajo / money market, moderado y alto): TNA nominal estimada = retorno ~7D × 365 / días (rolling VCP cuando hay histórico; si no, columna CNV `ultimos7Dias` con 7 días; fallback 1D). Mismo criterio que el resto de FCI del sitio (Com. A 8497).',
           'Patrimonio FCI en USD: mostramos el monto en dólares y el equivalente en ARS con el dólar bolsa (MEP, venta) de dolarapi.com. En vistas de administradoras/depositarias sumamos todo en ARS para poder comparar gestoras.',
         ],
       },

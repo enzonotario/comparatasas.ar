@@ -53,7 +53,7 @@ function getItemTnaHeadline(item: any): string {
   return `${formatTnaValue(item.tna)}%`
 }
 
-/** FCI: TNA anualizada desde ~30D; la fecha va a nivel lista, no como “vigente desde”. */
+/** FCI: TNA anualizada desde ~7D (Com. A 8497); la fecha va a nivel lista, no como “vigente desde”. */
 function isFciEstimatedTnaItem(item: any): boolean {
   if (item?.valorCuotaparte != null) return true
   const type = item?.type
@@ -74,7 +74,7 @@ function getItemTnaSubline(item: any): string | null {
     return 'TNA según plazo'
   }
   if (isFciEstimatedTnaItem(item)) {
-    return 'TNA est. 30D'
+    return 'TNA est. 7D'
   }
   return null
 }

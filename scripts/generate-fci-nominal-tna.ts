@@ -12,8 +12,8 @@ import { normalizeFundSlug } from '../app/lib/funds-detail'
 const API_BASE = 'https://api.argentinadatos.com/v1/finanzas/fci'
 const OUTPUT_PATH = join(process.cwd(), 'public', 'api', 'fci', 'nominal-tna.json')
 const CONCURRENCY = 6
-/** Solo hace falta ~40 días de VCP para TNA 30D; recortamos para no procesar 1500+ puntos. */
-const HISTORY_LOOKBACK_DAYS = 45
+/** Solo hace falta ~2 semanas de VCP para TNA 7D; margen por feriados/tolerancia de lookback. */
+const HISTORY_LOOKBACK_DAYS = 21
 
 export type StaticNominalTnaEntry = {
   tna: number
