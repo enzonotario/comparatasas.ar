@@ -19,7 +19,8 @@ ENV HOST=0.0.0.0
 ENV PORT=3000
 
 # generate-fci-tna hits api.argentinadatos.com; needs build-time network.
-RUN bun run generate-fci-tna \
+# Run TS with Bun directly (tsx under bun fails on ./cjs/index.cjs).
+RUN bun scripts/generate-fci-nominal-tna.ts \
   && bunx --bun nuxi build
 
 FROM oven/bun:1.3-slim AS runtime
