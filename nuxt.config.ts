@@ -120,8 +120,9 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-07-15',
 
+  // Coolify/Docker sets NITRO_PRESET=bun. Cloudflare Pages keeps the default.
   nitro: {
-    preset: 'cloudflare_pages',
+    preset: process.env.NITRO_PRESET || 'cloudflare_pages',
     // Carpeta aparte de `public/` para que Pages la sirva como asset estático
     // (fuera del Worker) y Nitro escriba Cache-Control en `dist/_headers`.
     // El query `?v=` es el hash del archivo: un icono igual conserva la URL;

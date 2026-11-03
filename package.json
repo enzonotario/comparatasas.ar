@@ -20,7 +20,8 @@
     "import-meli-products": "tsx scripts/import-meli-products.ts --file productos.json",
     "verify:agent-readiness": "tsx scripts/verify-agent-readiness.ts",
     "test": "vitest run",
-    "test:scripts": "vitest run scripts/"
+    "test:scripts": "vitest run scripts/",
+    "start": "bun run .output/server/index.mjs"
   },
   "dependencies": {
     "@nuxt/eslint": "1.15.2",

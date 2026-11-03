@@ -1,0 +1,2 @@
+[install]
+# Prefer bun.lock for Coolify/Docker builds; pnpm remains for Cloudflare Pages.
