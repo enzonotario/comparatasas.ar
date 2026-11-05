@@ -1,5 +1,4 @@
-import { buildFciMarketSnapshot } from '~/lib/fci-market-overview'
-import { fetchFciFundsCatalog } from '~/composables/useFciFundDetails'
+import type { FciMarketSnapshot } from '~/lib/fci-market-overview'
 
 export function useFciMarketOverview() {
   const {
@@ -8,7 +7,8 @@ export function useFciMarketOverview() {
     error,
     refresh,
   } = useAsyncData('fci-market-overview', async () => {
-    return buildFciMarketSnapshot(await fetchFciFundsCatalog())
+    // Server-side cached route; avoids parsing the full upstream catalog per render.
+    return await $fetch<FciMarketSnapshot>('/api/fci/market-overview.json')
   })
 
   return {

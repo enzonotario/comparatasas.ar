@@ -20,6 +20,7 @@ ENV PORT=3000
 
 # generate-fci-tna hits api.argentinadatos.com; needs build-time network.
 # Run TS with Bun directly (tsx under bun fails on ./cjs/index.cjs).
+# Fondos pages use Nitro SWR at runtime (see nuxt.config) to avoid prerender OOM.
 RUN bun scripts/generate-fci-nominal-tna.ts \
   && bunx --bun nuxi build
 

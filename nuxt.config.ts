@@ -7,11 +7,19 @@ import { getPrerenderRoutes } from './app/lib/prerender-routes'
 import { jsonLdScript, siteOrganization } from './app/lib/json-ld'
 
 const categoryIconsDir = fileURLToPath(new URL('./public/assets/icons', import.meta.url))
+// Static nominal TNA JSON (generated before build). Exposed to Nitro as a server
+// asset so API routes can read it without an internal HTTP hop (which does not
+// reach `public/` under `nuxi dev`).
+const fciStaticDir = fileURLToPath(new URL('./public/api/fci', import.meta.url))
 // `nuxt build` fija NODE_ENV=production antes de cargar este archivo.
 const categoryIconVersions = readCategoryIconVersions(
   categoryIconsDir,
   process.env.NODE_ENV === 'production',
 )
+// Coolify Dockerfile sets NITRO_PRESET=bun. Cloudflare Pages keeps the default.
+const isBunPreset = process.env.NITRO_PRESET === 'bun'
+// `isr` is platform-specific (Vercel/Netlify). Bun needs Nitro `swr` cache.
+const FONDOS_SWR_SECONDS = 60 * 60
 
 export default defineNuxtConfig({
   modules: [
@@ -114,9 +122,19 @@ export default defineNuxtConfig({
       opinaKey: process.env.NUXT_PUBLIC_OPINA_KEY || 'pk_ukf7rlillrzg7io6',
     },
   },
-  routeRules: Object.fromEntries(
-    AGENT_NEGOTIATED_ROUTES.map((route) => [route, { prerender: false }]),
-  ),
+  routeRules: {
+    ...Object.fromEntries(
+      AGENT_NEGOTIATED_ROUTES.map((route) => [route, { prerender: false }]),
+    ),
+    // Coolify Bun: no prerender ~110 /fondos/* at build (OOM risk on 8GB hosts).
+    // Cache HTML with Nitro SWR instead of platform `isr`.
+    ...(isBunPreset
+      ? {
+          '/fondos': { prerender: false, swr: FONDOS_SWR_SECONDS },
+          '/fondos/**': { prerender: false, swr: FONDOS_SWR_SECONDS },
+        }
+      : {}),
+  },
 
   compatibilityDate: '2025-07-15',
 
@@ -138,14 +156,36 @@ export default defineNuxtConfig({
             },
           ]
         : [],
+    serverAssets: [{ baseName: 'fci', dir: fciStaticDir }],
+    // Cloudflare Pages: `_routes.json` is capped at 100 rules and Nitro truncates
+    // its auto-generated excludes, which drops these prerendered JSON files and
+    // routes them to the Worker. Explicit excludes are kept first, so Pages
+    // serves them as static assets.
+    cloudflare: isBunPreset
+      ? undefined
+      : {
+          pages: {
+            routes: {
+              exclude: ['/api/fci/catalog.json', '/api/fci/market-overview.json'],
+            },
+          },
+        },
     prerender: {
       // Las rutas negociadas quedan fuera y llegan al Worker. crawlLinks expandía
       // hermanos del catálogo a ~700+ /fondos/* y ~9 min de generate.
       crawlLinks: false,
-      concurrency: 16,
+      // Bun/Coolify builds share a small host with other apps; keep concurrency low.
+      concurrency: isBunPreset ? 4 : 16,
       failOnError: false,
       routes: [],
     },
+    // Route-rule SWR and defineCachedEventHandler write to the `cache:` mount
+    // (Nitro runtime/internal/cache.mjs, base "/cache"). Under Bun it would be
+    // in-memory and grow with every `/fondos?...` query variant, so keep it on
+    // disk. Relative base resolves against the runtime cwd (`/app` in Docker).
+    storage: isBunPreset
+      ? { cache: { driver: 'fsLite', base: './.data/cache' } }
+      : {},
     minify: true,
   },
 
@@ -155,7 +195,16 @@ export default defineNuxtConfig({
       const existing = Array.isArray(nitroConfig.prerender.routes)
         ? nitroConfig.prerender.routes
         : []
-      nitroConfig.prerender.routes = [...new Set([...existing, ...(await getPrerenderRoutes())])]
+      let routes = await getPrerenderRoutes()
+      if (isBunPreset) {
+        routes = routes.filter((route) => !route.startsWith('/fondos'))
+      } else {
+        // Cloudflare Pages: emit the FCI JSON endpoints as static assets so the
+        // Worker never parses the ~31 MB upstream catalog. Bun keeps them fresh
+        // via the runtime cache instead.
+        routes = [...routes, '/api/fci/catalog.json', '/api/fci/market-overview.json']
+      }
+      nitroConfig.prerender.routes = [...new Set([...existing, ...routes])]
     },
   },
 
