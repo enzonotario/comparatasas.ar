@@ -1,0 +1,26 @@
+name: Uptime
+
+# Fails (and GitHub emails the workflow owner) when production is down.
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check production URLs
+        run: |
+          set -u
+          failed=0
+          for path in / /fondos /api/fci/catalog.json; do
+            url="https://comparatasas.ar${path}"
+            code=$(curl -s -o /dev/null -w '%{http_code}' --retry 2 --retry-delay 10 --retry-all-errors --max-time 30 "$url" || true)
+            echo "${code} ${url}"
+            [ "$code" = "200" ] || failed=1
+          done
+          exit "$failed"
