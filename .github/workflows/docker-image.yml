@@ -65,6 +65,6 @@ jobs:
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
           COOLIFY_APP_UUID: ${{ vars.COOLIFY_APP_UUID }}
         run: |
-          curl --fail-with-body -sS \
+          curl --fail-with-body -sS -X POST \
             -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
             "https://app.coolify.io/api/v1/deploy?uuid=${COOLIFY_APP_UUID}&force=false"
