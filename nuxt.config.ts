@@ -166,7 +166,11 @@ export default defineNuxtConfig({
       : {
           pages: {
             routes: {
-              exclude: ['/api/fci/catalog.json', '/api/fci/market-overview.json'],
+              exclude: [
+                '/api/fci/catalog.json',
+                '/api/fci/market-overview.json',
+                '/api/fci/types.json',
+              ],
             },
           },
         },
@@ -202,7 +206,12 @@ export default defineNuxtConfig({
         // Cloudflare Pages: emit the FCI JSON endpoints as static assets so the
         // Worker never parses the ~31 MB upstream catalog. Bun keeps them fresh
         // via the runtime cache instead.
-        routes = [...routes, '/api/fci/catalog.json', '/api/fci/market-overview.json']
+        routes = [
+          ...routes,
+          '/api/fci/catalog.json',
+          '/api/fci/market-overview.json',
+          '/api/fci/types.json',
+        ]
       }
       nitroConfig.prerender.routes = [...new Set([...existing, ...routes])]
     },

@@ -132,22 +132,20 @@ export function toFlatFundCatalogRows(rows: FundCatalogRow[]): FundCatalogGroupR
   return rows.map((row) => toClassRow(row))
 }
 
-export function findSiblingFundClasses(
+/**
+ * Raw catalog rows that belong to the same fund family as `fundName`: same
+ * class-group key (as in the catalog) plus any class sharing the CNV fondoId.
+ * Some funds (e.g. Mills) have classes with the same base name but different
+ * fondoId; filtering by id alone would miss them.
+ */
+export function selectSiblingCatalogRows(
   allFunds: FundCatalogRow[],
   fundName: string,
   options?: { fondoId?: string | null },
-): {
-  baseName: string
-  classLabel: string | null
-  siblings: FundCatalogGroupRow[]
-  patrimonioTotal: number | null
-} {
+): FundCatalogRow[] {
   const parsed = parseFundClassName(fundName)
   const fondoId = options?.fondoId?.trim() || null
 
-  // Misma lógica de familia que el catálogo (groupKey), más cualquier clase
-  // que comparta fondoId CNV. Algunos FCI (ej. Mills) tienen clases del mismo
-  // nombre base con distinto fondoId; si solo filtramos por id se pierden.
   const byGroupKey = parsed.groupKey
     ? allFunds.filter((row) => parseFundClassName(row.fondo).groupKey === parsed.groupKey)
     : []
@@ -165,7 +163,22 @@ export function findSiblingFundClasses(
     matched.push(row)
   }
 
-  const siblings = matched
+  return matched
+}
+
+export function findSiblingFundClasses(
+  allFunds: FundCatalogRow[],
+  fundName: string,
+  options?: { fondoId?: string | null },
+): {
+  baseName: string
+  classLabel: string | null
+  siblings: FundCatalogGroupRow[]
+  patrimonioTotal: number | null
+} {
+  const parsed = parseFundClassName(fundName)
+
+  const siblings = selectSiblingCatalogRows(allFunds, fundName, options)
     .sort((a, b) =>
       compareClassLabels(
         parseFundClassName(a.fondo).classLabel,

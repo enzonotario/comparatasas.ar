@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import type { FundCatalogRow } from '../composables/useFondosCatalog'
-import { findSiblingFundClasses, groupFundCatalogRows } from './fci-fund-groups'
+import {
+  findSiblingFundClasses,
+  groupFundCatalogRows,
+  selectSiblingCatalogRows,
+} from './fci-fund-groups'
 
 function row(partial: Partial<FundCatalogRow> & Pick<FundCatalogRow, 'fondo'>): FundCatalogRow {
   return {
@@ -129,5 +133,33 @@ describe('groupFundCatalogRows', () => {
       'Clase XDB2',
     ])
     expect(result.patrimonioTotal).toBe(300)
+  })
+})
+
+describe('selectSiblingCatalogRows', () => {
+  const catalog = [
+    row({ fondo: 'Mills Renta Fija Pesos - Clase XDA1', fondoId: '1830', claseId: '6290' }),
+    row({ fondo: 'Mills Renta Fija Pesos - Clase XDA2', fondoId: '1873', claseId: '6640' }),
+    row({ fondo: 'Mills Renta Fija Pesos - Clase XDB1', fondoId: '1830', claseId: '6291' }),
+    row({ fondo: 'Renombrado Mills - Clase Z', fondoId: '1830', claseId: '6299' }),
+    row({ fondo: 'Otro - Clase A', fondoId: '1', claseId: '9' }),
+  ]
+
+  it('returns only the fund family rows (by groupKey and fondoId, deduped)', () => {
+    const rows = selectSiblingCatalogRows(catalog, 'Mills Renta Fija Pesos - Clase XDB1', {
+      fondoId: '1830',
+    })
+
+    expect(rows.map((r) => r.claseId).sort()).toEqual(['6290', '6291', '6299', '6640'])
+  })
+
+  it('yields the same sibling info as the full catalog (server subset is lossless)', () => {
+    const name = 'Mills Renta Fija Pesos - Clase XDB1'
+    const options = { fondoId: '1830' }
+    const subset = selectSiblingCatalogRows(catalog, name, options)
+
+    expect(findSiblingFundClasses(subset, name, options)).toEqual(
+      findSiblingFundClasses(catalog, name, options),
+    )
   })
 })

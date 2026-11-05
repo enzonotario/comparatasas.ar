@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
-import type { FundCatalogRow } from '~/composables/useFondosCatalog'
 import { formatCompactPatrimonio, normalizeCurrencyCode } from '~/lib/fci-fund-formatters'
 import { findSiblingFundClasses } from '~/lib/fci-fund-groups'
 import {
@@ -8,10 +7,6 @@ import {
   getFundDetailToOptionsFromRoute,
   normalizeFundSlug,
 } from '~/lib/funds-detail'
-
-const props = defineProps<{
-  allFunds: FundCatalogRow[]
-}>()
 
 const emit = defineEmits<{
   select: []
@@ -77,16 +72,21 @@ function clearTipoQuery() {
 
 const selectedTipo = computed(() => queryValue('tipo'))
 
+// Small dedicated payloads instead of the full catalog, so /fondos/* SSR HTML
+// stays light. On detail pages the class rows are shared with the page.
+const { fundTypes } = useFciFundTypes()
+const { classRows } = useFciFundClasses(() => (isDetailPage.value ? detailSlug.value : ''))
+
 const currentCatalogFund = computed(() => {
   if (!isDetailPage.value || !detailSlug.value) return null
-  return props.allFunds.find((fund) => normalizeFundSlug(fund.fondo) === detailSlug.value) ?? null
+  return classRows.value.find((fund) => normalizeFundSlug(fund.fondo) === detailSlug.value) ?? null
 })
 
 const detailSiblingInfo = computed(() => {
   const fund = currentCatalogFund.value
   if (!fund) return null
 
-  return findSiblingFundClasses(props.allFunds, fund.fondo, {
+  return findSiblingFundClasses(classRows.value, fund.fondo, {
     fondoId: fund.fondoId,
   })
 })
@@ -112,21 +112,13 @@ const claseChildren = computed<NavigationMenuItem[]>(() => {
 })
 
 const tipoChildren = computed<NavigationMenuItem[]>(() => {
-  const map = new Map<string, string>()
-  for (const fund of props.allFunds) {
-    if (!fund.tipoFilterKey) continue
-    map.set(fund.tipoFilterKey, fund.typeLabel)
-  }
-
-  const types = Array.from(map.entries())
-    .map(([value, label]) => ({
-      label,
-      icon: TIPO_ICONS[value] || 'i-lucide-circle-dot',
-      to: catalogQuery({ tipo: value }),
-      active: route.path === '/fondos' && selectedTipo.value === value,
-      onSelect: closeSidebar,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'es'))
+  const types = fundTypes.value.map(({ value, label }) => ({
+    label,
+    icon: TIPO_ICONS[value] || 'i-lucide-circle-dot',
+    to: catalogQuery({ tipo: value }),
+    active: route.path === '/fondos' && selectedTipo.value === value,
+    onSelect: closeSidebar,
+  }))
 
   return [
     {

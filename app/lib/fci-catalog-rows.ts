@@ -100,3 +100,21 @@ export function mapCatalogToRows(
       }
     })
 }
+
+export interface FundTipoOption {
+  value: string
+  label: string
+}
+
+/** Distinct fund types present in the catalog (for the /fondos sidebar filter). */
+export function listFundTipoOptions(rows: FundCatalogRow[]): FundTipoOption[] {
+  const map = new Map<string, string>()
+  for (const row of rows) {
+    if (!row.tipoFilterKey) continue
+    map.set(row.tipoFilterKey, row.typeLabel)
+  }
+
+  return Array.from(map, ([value, label]) => ({ value, label })).sort((a, b) =>
+    a.label.localeCompare(b.label, 'es'),
+  )
+}

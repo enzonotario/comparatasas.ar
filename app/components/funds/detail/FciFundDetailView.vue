@@ -85,7 +85,7 @@ const mappedFundLabel = computed(() => {
 const { fundDetail, fundHistory, status, error, historyStatus, historyError, ensureHistoryLoaded } =
   useFciFundDetailPage(slug)
 
-const { allFunds } = useFondosCatalog()
+const { classRows } = useFciFundClasses(slug)
 const { usdArsRate } = useDolarBolsa()
 
 const fundCurrency = computed(
@@ -102,7 +102,7 @@ const siblingInfo = computed(() => {
       patrimonioTotal: null as number | null,
     }
   }
-  return findSiblingFundClasses(allFunds.value, name, {
+  return findSiblingFundClasses(classRows.value, name, {
     fondoId: fundDetail.value?.fondoId,
   })
 })

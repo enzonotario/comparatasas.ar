@@ -8,8 +8,6 @@ useFunds()
 useAccounts()
 
 const open = ref(false)
-
-const { allFunds } = useFondosCatalog()
 </script>
 
 <template>
@@ -94,7 +92,7 @@ const { allFunds } = useFondosCatalog()
         }"
       >
         <template #default>
-          <FondosDashboardSidebar :all-funds="allFunds ?? []" @select="open = false" />
+          <FondosDashboardSidebar @select="open = false" />
         </template>
 
         <template #footer>
