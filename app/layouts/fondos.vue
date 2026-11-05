@@ -73,8 +73,10 @@ const { allFunds } = useFondosCatalog()
       </template>
     </UHeader>
 
+    <!-- localStorage, not cookie: a Set-Cookie on SSR responses stops the CDN from caching /fondos HTML. -->
     <UDashboardGroup
       unit="rem"
+      storage="local"
       storage-key="fondos-dashboard"
       class="bg-neutral-50 dark:bg-neutral-950 max-lg:relative max-lg:!inset-auto max-lg:!top-auto max-lg:!bottom-auto max-lg:overflow-visible max-lg:h-auto max-lg:min-h-0 lg:fixed lg:!inset-x-0 lg:!top-[var(--ui-header-height)] lg:!bottom-0 lg:overflow-hidden"
     >

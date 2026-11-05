@@ -24,6 +24,15 @@ ENV PORT=3000
 RUN bun scripts/generate-fci-nominal-tna.ts \
   && bunx --bun nuxi build
 
+# Nitro's file trace skips the platform-specific optional binding of
+# @takumi-rs/core, so runtime OG images (/_og/d/*) fail with
+# "Cannot find native binding". The image is built for linux/amd64 (glibc).
+RUN set -e; \
+  src=$(find node_modules -path '*/@takumi-rs/core-linux-x64-gnu' -print -quit); \
+  test -n "$src"; \
+  mkdir -p .output/server/node_modules/@takumi-rs; \
+  cp -rL "$src" .output/server/node_modules/@takumi-rs/
+
 FROM oven/bun:1.3-slim AS runtime
 WORKDIR /app
 
