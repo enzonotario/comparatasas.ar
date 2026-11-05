@@ -1,6 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { fileURLToPath } from 'node:url'
-import { AGENT_NEGOTIATED_ROUTES, getPublicRoutes } from './app/lib/agent-routes'
+import {
+  AGENT_NEGOTIATED_ROUTES,
+  getPublicRoutes,
+  getStaticPrerenderRoutes,
+} from './app/lib/agent-routes'
 import { readCategoryIconVersions } from './app/lib/category-icons'
 import { CATEGORY_ICON_MAX_AGE } from './app/lib/category-icon-url'
 import { getPrerenderRoutes } from './app/lib/prerender-routes'
@@ -20,6 +24,19 @@ const categoryIconVersions = readCategoryIconVersions(
 const isBunPreset = process.env.NITRO_PRESET === 'bun'
 // `isr` is platform-specific (Vercel/Netlify). Bun needs Nitro `swr` cache.
 const FONDOS_SWR_SECONDS = 60 * 60
+// Market data (cauciones, LECAPs, USD, ...) changes during the day.
+const DATA_SWR_SECONDS = 5 * 60
+// Content-only pages: safe to freeze at build time.
+const STATIC_CONTENT_PREFIXES = ['/metodologia/', '/sumarse/']
+const isStaticContentRoute = (route: string) =>
+  STATIC_CONTENT_PREFIXES.some((prefix) => route.startsWith(prefix))
+// Under Bun, prerendered HTML would keep build-time data until the next deploy.
+// Render data pages at runtime instead and cache them with SWR.
+const bunDataRouteRules = Object.fromEntries(
+  getStaticPrerenderRoutes()
+    .filter((route) => !isStaticContentRoute(route) && !route.startsWith('/fondos'))
+    .map((route) => [route, { prerender: false, swr: DATA_SWR_SECONDS }]),
+)
 
 export default defineNuxtConfig({
   modules: [
@@ -130,6 +147,7 @@ export default defineNuxtConfig({
     // Cache HTML with Nitro SWR instead of platform `isr`.
     ...(isBunPreset
       ? {
+          ...bunDataRouteRules,
           '/fondos': { prerender: false, swr: FONDOS_SWR_SECONDS },
           '/fondos/**': { prerender: false, swr: FONDOS_SWR_SECONDS },
         }
@@ -201,7 +219,7 @@ export default defineNuxtConfig({
         : []
       let routes = await getPrerenderRoutes()
       if (isBunPreset) {
-        routes = routes.filter((route) => !route.startsWith('/fondos'))
+        routes = routes.filter(isStaticContentRoute)
       } else {
         // Cloudflare Pages: emit the FCI JSON endpoints as static assets so the
         // Worker never parses the ~31 MB upstream catalog. Bun keeps them fresh
