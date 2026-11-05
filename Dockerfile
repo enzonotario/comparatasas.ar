@@ -54,4 +54,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=25s --retries=5 \
   CMD curl -fsS http://127.0.0.1:3000/ >/dev/null || exit 1
 
-CMD ["bun", "run", ".output/server/index.mjs"]
+# --smol: more aggressive GC; keeps RSS well below the container memory limit.
+CMD ["bun", "--smol", "run", ".output/server/index.mjs"]
