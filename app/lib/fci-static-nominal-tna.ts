@@ -21,6 +21,14 @@ export type StaticNominalTnaFile = {
   bySlug: Record<string, StaticNominalTnaEntry>
 }
 
+/** Shape served when the estimates are unavailable. */
+export const EMPTY_STATIC_NOMINAL_TNA: StaticNominalTnaFile = Object.freeze({
+  generatedAt: '',
+  source: 'missing',
+  count: 0,
+  bySlug: Object.freeze({}),
+}) as StaticNominalTnaFile
+
 export function lookupStaticNominalTna(
   map: StaticNominalTnaFile | null | undefined,
   fondoNameOrSlug: string,

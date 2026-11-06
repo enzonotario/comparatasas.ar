@@ -11,10 +11,6 @@ import { getPrerenderRoutes } from './app/lib/prerender-routes'
 import { jsonLdScript, siteOrganization } from './app/lib/json-ld'
 
 const categoryIconsDir = fileURLToPath(new URL('./public/assets/icons', import.meta.url))
-// Static nominal TNA JSON (generated before build). Exposed to Nitro as a server
-// asset so API routes can read it without an internal HTTP hop (which does not
-// reach `public/` under `nuxi dev`).
-const fciStaticDir = fileURLToPath(new URL('./public/api/fci', import.meta.url))
 // `nuxt build` fija NODE_ENV=production antes de cargar este archivo.
 const categoryIconVersions = readCategoryIconVersions(
   categoryIconsDir,
@@ -174,7 +170,6 @@ export default defineNuxtConfig({
             },
           ]
         : [],
-    serverAssets: [{ baseName: 'fci', dir: fciStaticDir }],
     // Cloudflare Pages: `_routes.json` is capped at 100 rules and Nitro truncates
     // its auto-generated excludes, which drops these prerendered JSON files and
     // routes them to the Worker. Explicit excludes are kept first, so Pages
@@ -187,6 +182,7 @@ export default defineNuxtConfig({
               exclude: [
                 '/api/fci/catalog.json',
                 '/api/fci/market-overview.json',
+                '/api/fci/nominal-tna.json',
                 '/api/fci/types.json',
               ],
             },
@@ -228,6 +224,7 @@ export default defineNuxtConfig({
           ...routes,
           '/api/fci/catalog.json',
           '/api/fci/market-overview.json',
+          '/api/fci/nominal-tna.json',
           '/api/fci/types.json',
         ]
       }

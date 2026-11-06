@@ -25,4 +25,6 @@ logs
 !.env.example
 
 preview-og
+# Served by the /api/fci/nominal-tna.json route; a static copy would shadow it
+public/api/fci/nominal-tna.json
 .ai

@@ -18,11 +18,9 @@ ENV NITRO_PRESET=bun
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# generate-fci-tna hits api.argentinadatos.com; needs build-time network.
-# Run TS with Bun directly (tsx under bun fails on ./cjs/index.cjs).
 # Fondos pages use Nitro SWR at runtime (see nuxt.config) to avoid prerender OOM.
-RUN bun scripts/generate-fci-nominal-tna.ts \
-  && bunx --bun nuxi build
+# Nominal TNA estimates are computed at runtime (/api/fci/nominal-tna.json).
+RUN bunx --bun nuxi build
 
 # Nitro's file trace skips the platform-specific optional binding of
 # @takumi-rs/core, so runtime OG images (/_og/d/*) fail with
@@ -40,6 +38,9 @@ ENV NODE_ENV=production
 ENV NITRO_PRESET=bun
 ENV HOST=0.0.0.0
 ENV PORT=3000
+# Bun.serve closes connections idle for 10 s by default. Cold cache misses
+# (31 MB FCI catalog + nominal TNA history fetches) can take ~20-30 s.
+ENV NITRO_BUN_IDLE_TIMEOUT=60
 
 # curl: Coolify healthchecks require curl/wget in the image.
 RUN apt-get update \

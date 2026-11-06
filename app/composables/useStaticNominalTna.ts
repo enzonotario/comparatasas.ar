@@ -13,7 +13,7 @@ const EMPTY: StaticNominalTnaFile = {
   bySlug: {},
 }
 
-/** Payload estático generado en build (`public/api/fci/nominal-tna.json`). */
+/** Payload computed at runtime and cached server-side (`/api/fci/nominal-tna.json`). */
 export function useStaticNominalTnaMap() {
   return useAsyncData(
     'fci-static-nominal-tna',

@@ -86,7 +86,7 @@ export const methodologySections: MethodologySection[] = [
       },
       {
         type: 'formula',
-        text: 'En listados usamos TNA precomputada en build (`public/api/fci/nominal-tna.json`) con días efectivos del lookback VCP para fondos curados y sus clases hermanas. El resto del catálogo usa `diasUltimos7Dias` de ArgentinaDatos cuando viene; si no, cae a 7/1. El detalle recalcula con el histórico del fondo abierto.',
+        text: 'En listados usamos TNA precomputada en el servidor y renovada cada 6 h (`/api/fci/nominal-tna.json`) con días efectivos del lookback VCP para fondos curados y sus clases hermanas. El resto del catálogo usa `diasUltimos7Dias` de ArgentinaDatos cuando viene; si no, cae a 7/1. El detalle recalcula con el histórico del fondo abierto.',
       },
       {
         type: 'formula',
