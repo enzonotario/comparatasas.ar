@@ -444,8 +444,14 @@ function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = '
   }
 }
 
+// A click that ends a text selection (drag or double-click) must not expand/navigate.
+function hasTextSelection() {
+  return !!window.getSelection()?.toString()
+}
+
 function handleFundRowSelect(e: Event, row: any) {
   if (toggleCompareSelection(row, e)) return
+  if (hasTextSelection()) return
   if (row?.getCanExpand?.()) {
     row.toggleExpanded()
     return
@@ -458,6 +464,7 @@ function handleFundRowSelect(e: Event, row: any) {
 
 function handleEntityRowSelect(e: Event, row: any) {
   if (toggleCompareSelection(row, e)) return
+  if (hasTextSelection()) return
   const original = row?.original
   if (!original) return
 
