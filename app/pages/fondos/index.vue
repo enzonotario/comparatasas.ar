@@ -444,15 +444,19 @@ function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = '
   }
 }
 
-function handleFundRowSelect(row: any, e?: Event) {
+function handleFundRowSelect(e: Event, row: any) {
   if (toggleCompareSelection(row, e)) return
+  if (row?.getCanExpand?.()) {
+    row.toggleExpanded()
+    return
+  }
   const original = row?.original as FundCatalogGroupRow | undefined
   const fundName = original?.primaryFondo || original?.fondo
   if (!fundName) return
   navigateTo(getFundDetailPath(fundName))
 }
 
-function handleEntityRowSelect(row: any, e?: Event) {
+function handleEntityRowSelect(e: Event, row: any) {
   if (toggleCompareSelection(row, e)) return
   const original = row?.original
   if (!original) return
@@ -462,7 +466,7 @@ function handleEntityRowSelect(row: any, e?: Event) {
     return
   }
 
-  handleFundRowSelect(row, e)
+  handleFundRowSelect(e, row)
 }
 
 function entityDepthClass(depth: number) {
