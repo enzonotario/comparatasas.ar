@@ -139,7 +139,7 @@ const {
   status: historyStatus,
   error: historyError,
 } = useAsyncData(
-  'fci-compare-histories',
+  () => `fci-compare-histories:${historySlugsKey.value}`,
   async () => {
     if (import.meta.prerender) return {} as Record<string, FciFundHistory | null>
     const slugs = historySlugsKey.value ? historySlugsKey.value.split('|').filter(Boolean) : []
@@ -152,7 +152,6 @@ const {
   },
   {
     default: () => ({}) as Record<string, FciFundHistory | null>,
-    watch: [historySlugsKey],
     immediate: !import.meta.prerender,
   },
 )
