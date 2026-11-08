@@ -110,8 +110,8 @@
   {
     "provider": "AstroPay",
     "event_type": "click",
-    "total_clicks": 1687,
-    "avg_daily_clicks": 11.25
+    "total_clicks": 1697,
+    "avg_daily_clicks": 11.16
   },
   {
     "provider": "Naranja X",
@@ -188,8 +188,8 @@
   {
     "provider": "Naranja X",
     "event_type": "click",
-    "total_clicks": 1050,
-    "avg_daily_clicks": 7.09
+    "total_clicks": 1060,
+    "avg_daily_clicks": 7.07
   },
   {
     "provider": "Banco CMF",
@@ -200,8 +200,8 @@
   {
     "provider": "AstroPay",
     "event_type": "provider_click",
-    "total_clicks": 990,
-    "avg_daily_clicks": 12.86
+    "total_clicks": 996,
+    "avg_daily_clicks": 12.77
   },
   {
     "provider": "Balanz",
@@ -212,8 +212,8 @@
   {
     "provider": "CapyFi",
     "event_type": "click",
-    "total_clicks": 963,
-    "avg_daily_clicks": 6.88
+    "total_clicks": 971,
+    "avg_daily_clicks": 6.84
   },
   {
     "provider": "Naranja X",
@@ -224,8 +224,8 @@
   {
     "provider": "Banco Nación",
     "event_type": "click",
-    "total_clicks": 935,
-    "avg_daily_clicks": 6.28
+    "total_clicks": 936,
+    "avg_daily_clicks": 6.24
   },
   {
     "provider": "Crédito Regional",
@@ -278,8 +278,8 @@
   {
     "provider": "Reba",
     "event_type": "click",
-    "total_clicks": 726,
-    "avg_daily_clicks": 5.67
+    "total_clicks": 727,
+    "avg_daily_clicks": 5.64
   },
   {
     "provider": "Reba",
@@ -324,16 +324,16 @@
     "avg_daily_clicks": 2.15
   },
   {
+    "provider": "Naranja X",
+    "event_type": "provider_click",
+    "total_clicks": 645,
+    "avg_daily_clicks": 7.41
+  },
+  {
     "provider": "Banco BICA",
     "event_type": "click",
     "total_clicks": 641,
     "avg_daily_clicks": 3.88
-  },
-  {
-    "provider": "Naranja X",
-    "event_type": "provider_click",
-    "total_clicks": 638,
-    "avg_daily_clicks": 7.42
   },
   {
     "provider": "Lemon",
@@ -344,8 +344,8 @@
   {
     "provider": "Banco Voii",
     "event_type": "click",
-    "total_clicks": 620,
-    "avg_daily_clicks": 4.88
+    "total_clicks": 622,
+    "avg_daily_clicks": 4.86
   },
   {
     "provider": "Balanz",
@@ -366,16 +366,16 @@
     "avg_daily_clicks": 5.98
   },
   {
-    "provider": "CapyFi",
-    "event_type": "provider_click",
-    "total_clicks": 562,
-    "avg_daily_clicks": 7.81
-  },
-  {
     "provider": "comparadolar.ar",
     "event_type": "click",
-    "total_clicks": 556,
-    "avg_daily_clicks": 4.18
+    "total_clicks": 568,
+    "avg_daily_clicks": 4.21
+  },
+  {
+    "provider": "CapyFi",
+    "event_type": "provider_click",
+    "total_clicks": 567,
+    "avg_daily_clicks": 7.77
   },
   {
     "provider": "LB",
@@ -414,6 +414,12 @@
     "avg_daily_clicks": 3.33
   },
   {
+    "provider": "Banco Ciudad",
+    "event_type": "click",
+    "total_clicks": 514,
+    "avg_daily_clicks": 3.78
+  },
+  {
     "provider": "Arqfinance",
     "event_type": "click",
     "total_clicks": 512,
@@ -424,12 +430,6 @@
     "event_type": "click",
     "total_clicks": 511,
     "avg_daily_clicks": 2.25
-  },
-  {
-    "provider": "Banco Ciudad",
-    "event_type": "click",
-    "total_clicks": 510,
-    "avg_daily_clicks": 3.81
   },
   {
     "provider": "Banco Meridian",
@@ -452,14 +452,14 @@
   {
     "provider": "Arqfinance",
     "event_type": "click",
-    "total_clicks": 467,
-    "avg_daily_clicks": 4.97
+    "total_clicks": 476,
+    "avg_daily_clicks": 4.96
   },
   {
     "provider": "Arqfinance",
     "event_type": "sponsor_click",
-    "total_clicks": 464,
-    "avg_daily_clicks": 4.94
+    "total_clicks": 475,
+    "avg_daily_clicks": 4.95
   },
   {
     "provider": "Banco Masventas",
@@ -510,16 +510,16 @@
     "avg_daily_clicks": 12.43
   },
   {
+    "provider": "dolarito.ar",
+    "event_type": "click",
+    "total_clicks": 435,
+    "avg_daily_clicks": 3.69
+  },
+  {
     "provider": "CapyFi",
     "event_type": "click",
     "total_clicks": 431,
     "avg_daily_clicks": 2.89
-  },
-  {
-    "provider": "dolarito.ar",
-    "event_type": "click",
-    "total_clicks": 430,
-    "avg_daily_clicks": 3.68
   },
   {
     "provider": "Banco Santander",
@@ -540,6 +540,18 @@
     "avg_daily_clicks": 6.24
   },
   {
+    "provider": "Ualá",
+    "event_type": "click",
+    "total_clicks": 421,
+    "avg_daily_clicks": 3.31
+  },
+  {
+    "provider": "Ripio",
+    "event_type": "click",
+    "total_clicks": 417,
+    "avg_daily_clicks": 3.21
+  },
+  {
     "provider": "Banco BICA",
     "event_type": "provider_click",
     "total_clicks": 417,
@@ -556,18 +568,6 @@
     "event_type": "provider_click",
     "total_clicks": 414,
     "avg_daily_clicks": 7.02
-  },
-  {
-    "provider": "Ripio",
-    "event_type": "click",
-    "total_clicks": 411,
-    "avg_daily_clicks": 3.21
-  },
-  {
-    "provider": "Ualá",
-    "event_type": "click",
-    "total_clicks": 411,
-    "avg_daily_clicks": 3.29
   },
   {
     "provider": "dolarya.info",
@@ -600,22 +600,22 @@
     "avg_daily_clicks": 10.69
   },
   {
+    "provider": "ICBC",
+    "event_type": "click",
+    "total_clicks": 379,
+    "avg_daily_clicks": 3.06
+  },
+  {
     "provider": "Reba",
     "event_type": "provider_click",
     "total_clicks": 378,
     "avg_daily_clicks": 4.34
   },
   {
-    "provider": "ICBC",
-    "event_type": "click",
-    "total_clicks": 378,
-    "avg_daily_clicks": 3.07
-  },
-  {
     "provider": "Banco Galicia",
     "event_type": "click",
-    "total_clicks": 372,
-    "avg_daily_clicks": 3
+    "total_clicks": 377,
+    "avg_daily_clicks": 2.99
   },
   {
     "provider": "argentinadatos.com",
@@ -632,8 +632,8 @@
   {
     "provider": "Banco BICA Cuenta Positiva 1",
     "event_type": "click",
-    "total_clicks": 365,
-    "avg_daily_clicks": 3.02
+    "total_clicks": 367,
+    "avg_daily_clicks": 3.01
   },
   {
     "provider": "Belo",
@@ -666,16 +666,16 @@
     "avg_daily_clicks": 13.6
   },
   {
+    "provider": "Banco Voii",
+    "event_type": "provider_click",
+    "total_clicks": 340,
+    "avg_daily_clicks": 5
+  },
+  {
     "provider": "DolarApp",
     "event_type": "click",
     "total_clicks": 339,
     "avg_daily_clicks": 13.56
-  },
-  {
-    "provider": "Banco Voii",
-    "event_type": "provider_click",
-    "total_clicks": 339,
-    "avg_daily_clicks": 4.99
   },
   {
     "provider": "IEB+",
@@ -698,20 +698,20 @@
   {
     "provider": "Lune.fi",
     "event_type": "click",
-    "total_clicks": 329,
-    "avg_daily_clicks": 2.61
+    "total_clicks": 330,
+    "avg_daily_clicks": 2.6
   },
   {
     "provider": "Docs.google",
     "event_type": "click",
-    "total_clicks": 328,
+    "total_clicks": 329,
     "avg_daily_clicks": 1.49
   },
   {
     "provider": "BBVA",
     "event_type": "click",
-    "total_clicks": 326,
-    "avg_daily_clicks": 2.83
+    "total_clicks": 329,
+    "avg_daily_clicks": 2.81
   },
   {
     "provider": "Personal Pay",
@@ -786,6 +786,12 @@
     "avg_daily_clicks": 3.3
   },
   {
+    "provider": "Bancomeridian",
+    "event_type": "click",
+    "total_clicks": 291,
+    "avg_daily_clicks": 3.03
+  },
+  {
     "provider": "Dub.link",
     "event_type": "click",
     "total_clicks": 290,
@@ -798,16 +804,16 @@
     "avg_daily_clicks": 6.44
   },
   {
-    "provider": "Bancomeridian",
-    "event_type": "click",
-    "total_clicks": 290,
-    "avg_daily_clicks": 3.05
-  },
-  {
     "provider": "Adcap",
     "event_type": "click",
     "total_clicks": 286,
     "avg_daily_clicks": 2.22
+  },
+  {
+    "provider": "Balanz",
+    "event_type": "click",
+    "total_clicks": 281,
+    "avg_daily_clicks": 3.19
   },
   {
     "provider": "Dub.link",
@@ -816,15 +822,9 @@
     "avg_daily_clicks": 4.93
   },
   {
-    "provider": "Balanz",
-    "event_type": "click",
-    "total_clicks": 280,
-    "avg_daily_clicks": 3.22
-  },
-  {
     "provider": "Lune.fi",
     "event_type": "provider_click",
-    "total_clicks": 280,
+    "total_clicks": 281,
     "avg_daily_clicks": 1.45
   },
   {
@@ -834,22 +834,22 @@
     "avg_daily_clicks": 4.87
   },
   {
+    "provider": "Ualá",
+    "event_type": "provider_click",
+    "total_clicks": 259,
+    "avg_daily_clicks": 3.81
+  },
+  {
     "provider": "CapyFi",
     "event_type": "provider_click",
     "total_clicks": 254,
     "avg_daily_clicks": 3.1
   },
   {
-    "provider": "Ualá",
-    "event_type": "provider_click",
-    "total_clicks": 253,
-    "avg_daily_clicks": 3.78
-  },
-  {
     "provider": "Banco Nación",
     "event_type": "click",
-    "total_clicks": 252,
-    "avg_daily_clicks": 2.31
+    "total_clicks": 253,
+    "avg_daily_clicks": 2.3
   },
   {
     "provider": "icons.com.ar",
@@ -872,8 +872,8 @@
   {
     "provider": "Ripio",
     "event_type": "provider_click",
-    "total_clicks": 245,
-    "avg_daily_clicks": 3.45
+    "total_clicks": 247,
+    "avg_daily_clicks": 3.43
   },
   {
     "provider": "X Salinas",
@@ -882,16 +882,16 @@
     "avg_daily_clicks": 2.75
   },
   {
+    "provider": "Belo",
+    "event_type": "provider_click",
+    "total_clicks": 241,
+    "avg_daily_clicks": 1.63
+  },
+  {
     "provider": "Banco Ciudad",
     "event_type": "provider_click",
     "total_clicks": 240,
     "avg_daily_clicks": 2.96
-  },
-  {
-    "provider": "Belo",
-    "event_type": "provider_click",
-    "total_clicks": 240,
-    "avg_daily_clicks": 1.63
   },
   {
     "provider": "Belo",
@@ -974,8 +974,8 @@
   {
     "provider": "Nexo",
     "event_type": "provider_click",
-    "total_clicks": 199,
-    "avg_daily_clicks": 1.51
+    "total_clicks": 201,
+    "avg_daily_clicks": 1.5
   },
   {
     "provider": "Adcap",
@@ -998,14 +998,14 @@
   {
     "provider": "Banco Santander",
     "event_type": "click",
-    "total_clicks": 173,
-    "avg_daily_clicks": 1.92
+    "total_clicks": 174,
+    "avg_daily_clicks": 1.91
   },
   {
     "provider": "Nexo",
     "event_type": "click",
-    "total_clicks": 172,
-    "avg_daily_clicks": 1.93
+    "total_clicks": 173,
+    "avg_daily_clicks": 1.92
   },
   {
     "provider": "Banco BICA",
@@ -1104,6 +1104,12 @@
     "avg_daily_clicks": 1.93
   },
   {
+    "provider": "Banco Nación",
+    "event_type": "provider_click",
+    "total_clicks": 142,
+    "avg_daily_clicks": 2.37
+  },
+  {
     "provider": "Dub.link",
     "event_type": "click",
     "total_clicks": 142,
@@ -1114,12 +1120,6 @@
     "event_type": "provider_click",
     "total_clicks": 142,
     "avg_daily_clicks": 1.34
-  },
-  {
-    "provider": "Banco Nación",
-    "event_type": "provider_click",
-    "total_clicks": 141,
-    "avg_daily_clicks": 2.39
   },
   {
     "provider": "Toronto",
@@ -1134,6 +1134,12 @@
     "avg_daily_clicks": 4.86
   },
   {
+    "provider": "enqueinvierto.ar",
+    "event_type": "click",
+    "total_clicks": 133,
+    "avg_daily_clicks": 1.56
+  },
+  {
     "provider": "Share.global66",
     "event_type": "click",
     "total_clicks": 133,
@@ -1144,12 +1150,6 @@
     "event_type": "click",
     "total_clicks": 131,
     "avg_daily_clicks": 1.87
-  },
-  {
-    "provider": "enqueinvierto.ar",
-    "event_type": "click",
-    "total_clicks": 130,
-    "avg_daily_clicks": 1.57
   },
   {
     "provider": "Bna",
@@ -1200,16 +1200,22 @@
     "avg_daily_clicks": 1.5
   },
   {
+    "provider": "Banco Nación",
+    "event_type": "click",
+    "total_clicks": 115,
+    "avg_daily_clicks": 1.62
+  },
+  {
     "provider": "Dub.link",
     "event_type": "click",
     "total_clicks": 115,
     "avg_daily_clicks": 3.29
   },
   {
-    "provider": "Banco Nación",
+    "provider": "Banco de Comercio",
     "event_type": "click",
-    "total_clicks": 113,
-    "avg_daily_clicks": 1.64
+    "total_clicks": 109,
+    "avg_daily_clicks": 2.95
   },
   {
     "provider": "Bancodelsol",
@@ -1236,12 +1242,6 @@
     "avg_daily_clicks": 1.24
   },
   {
-    "provider": "Banco de Comercio",
-    "event_type": "click",
-    "total_clicks": 101,
-    "avg_daily_clicks": 2.89
-  },
-  {
     "provider": "Dub.link",
     "event_type": "click",
     "total_clicks": 100,
@@ -1262,14 +1262,20 @@
   {
     "provider": "comparatiendas.com.ar",
     "event_type": "click",
-    "total_clicks": 95,
-    "avg_daily_clicks": 1.58
+    "total_clicks": 97,
+    "avg_daily_clicks": 1.56
   },
   {
     "provider": "argentinadatos.com",
     "event_type": "click",
     "total_clicks": 93,
     "avg_daily_clicks": 1.45
+  },
+  {
+    "provider": "comparapix.ar",
+    "event_type": "click",
+    "total_clicks": 93,
+    "avg_daily_clicks": 1.5
   },
   {
     "provider": "Dub.link",
@@ -1296,10 +1302,10 @@
     "avg_daily_clicks": 1.46
   },
   {
-    "provider": "comparapix.ar",
+    "provider": "Banco Macro",
     "event_type": "click",
-    "total_clicks": 91,
-    "avg_daily_clicks": 1.49
+    "total_clicks": 92,
+    "avg_daily_clicks": 1.59
   },
   {
     "provider": "Dub.link",
@@ -1308,16 +1314,10 @@
     "avg_daily_clicks": 2.84
   },
   {
-    "provider": "Banco Macro",
-    "event_type": "click",
-    "total_clicks": 91,
-    "avg_daily_clicks": 1.6
-  },
-  {
     "provider": "Help.bullmarketbrokers",
     "event_type": "click",
-    "total_clicks": 90,
-    "avg_daily_clicks": 1.67
+    "total_clicks": 91,
+    "avg_daily_clicks": 1.65
   },
   {
     "provider": "Banco BICA",
@@ -1328,20 +1328,32 @@
   {
     "provider": "IEB+",
     "event_type": "click",
-    "total_clicks": 89,
-    "avg_daily_clicks": 2.17
+    "total_clicks": 90,
+    "avg_daily_clicks": 2.14
   },
   {
     "provider": "dolarya.info",
     "event_type": "click",
-    "total_clicks": 88,
+    "total_clicks": 89,
     "avg_daily_clicks": 1.44
+  },
+  {
+    "provider": "Cocos",
+    "event_type": "click",
+    "total_clicks": 88,
+    "avg_daily_clicks": 4.89
   },
   {
     "provider": "Bibank",
     "event_type": "click",
     "total_clicks": 87,
     "avg_daily_clicks": 1.4
+  },
+  {
+    "provider": "Banco Nación",
+    "event_type": "click",
+    "total_clicks": 87,
+    "avg_daily_clicks": 1.64
   },
   {
     "provider": "Share.global66",
@@ -1356,12 +1368,6 @@
     "avg_daily_clicks": 1.64
   },
   {
-    "provider": "Banco Nación",
-    "event_type": "click",
-    "total_clicks": 86,
-    "avg_daily_clicks": 1.65
-  },
-  {
     "provider": "Claro Pay",
     "event_type": "provider_click",
     "total_clicks": 86,
@@ -1372,12 +1378,6 @@
     "event_type": "provider_click",
     "total_clicks": 86,
     "avg_daily_clicks": 2
-  },
-  {
-    "provider": "Cocos",
-    "event_type": "click",
-    "total_clicks": 85,
-    "avg_daily_clicks": 5.31
   },
   {
     "provider": "Brubank",
@@ -1410,6 +1410,12 @@
     "avg_daily_clicks": 2.18
   },
   {
+    "provider": "PPI",
+    "event_type": "click",
+    "total_clicks": 82,
+    "avg_daily_clicks": 2.22
+  },
+  {
     "provider": "Data912.apidocs",
     "event_type": "click",
     "total_clicks": 81,
@@ -1420,12 +1426,6 @@
     "event_type": "provider_click",
     "total_clicks": 81,
     "avg_daily_clicks": 1.88
-  },
-  {
-    "provider": "PPI",
-    "event_type": "click",
-    "total_clicks": 81,
-    "avg_daily_clicks": 2.25
   },
   {
     "provider": "Dub.link",
@@ -1440,22 +1440,22 @@
     "avg_daily_clicks": 1.42
   },
   {
-    "provider": "Cresium",
-    "event_type": "click",
-    "total_clicks": 72,
-    "avg_daily_clicks": 1.22
-  },
-  {
     "provider": "impuestito.org",
     "event_type": "click",
-    "total_clicks": 71,
-    "avg_daily_clicks": 1.31
+    "total_clicks": 73,
+    "avg_daily_clicks": 1.33
   },
   {
     "provider": "argentinadatos.com",
     "event_type": "click",
-    "total_clicks": 70,
-    "avg_daily_clicks": 1.19
+    "total_clicks": 72,
+    "avg_daily_clicks": 1.18
+  },
+  {
+    "provider": "Cresium",
+    "event_type": "click",
+    "total_clicks": 72,
+    "avg_daily_clicks": 1.22
   },
   {
     "provider": "Dub.link",
@@ -1468,6 +1468,12 @@
     "event_type": "click",
     "total_clicks": 69,
     "avg_daily_clicks": 1.82
+  },
+  {
+    "provider": "Bna",
+    "event_type": "click",
+    "total_clicks": 69,
+    "avg_daily_clicks": 1.57
   },
   {
     "provider": "Fiwind",
@@ -1486,12 +1492,6 @@
     "event_type": "click",
     "total_clicks": 67,
     "avg_daily_clicks": 1.2
-  },
-  {
-    "provider": "Bna",
-    "event_type": "click",
-    "total_clicks": 66,
-    "avg_daily_clicks": 1.53
   },
   {
     "provider": "Dub.link",
@@ -1516,6 +1516,12 @@
     "event_type": "click",
     "total_clicks": 65,
     "avg_daily_clicks": 1.27
+  },
+  {
+    "provider": "Banco de Comercio",
+    "event_type": "provider_click",
+    "total_clicks": 63,
+    "avg_daily_clicks": 3
   },
   {
     "provider": "Meli.la",
@@ -1566,12 +1572,6 @@
     "avg_daily_clicks": 1.5
   },
   {
-    "provider": "Banco de Comercio",
-    "event_type": "provider_click",
-    "total_clicks": 59,
-    "avg_daily_clicks": 2.95
-  },
-  {
     "provider": "Dub.link",
     "event_type": "click",
     "total_clicks": 58,
@@ -1608,16 +1608,16 @@
     "avg_daily_clicks": 1.38
   },
   {
+    "provider": "Banco Nación",
+    "event_type": "provider_click",
+    "total_clicks": 52,
+    "avg_daily_clicks": 1.58
+  },
+  {
     "provider": "Dub.link",
     "event_type": "click",
     "total_clicks": 52,
     "avg_daily_clicks": 2.48
-  },
-  {
-    "provider": "Banco Nación",
-    "event_type": "provider_click",
-    "total_clicks": 51,
-    "avg_daily_clicks": 1.59
   },
   {
     "provider": "Dub.link",
@@ -1638,6 +1638,12 @@
     "avg_daily_clicks": 1.22
   },
   {
+    "provider": "Banco Provincia",
+    "event_type": "click",
+    "total_clicks": 50,
+    "avg_daily_clicks": 1.56
+  },
+  {
     "provider": "Mercado Pago",
     "event_type": "click",
     "total_clicks": 50,
@@ -1650,10 +1656,28 @@
     "avg_daily_clicks": 1.22
   },
   {
-    "provider": "Banco Provincia",
+    "provider": "Estadisticas.cafci.org",
     "event_type": "click",
-    "total_clicks": 49,
-    "avg_daily_clicks": 1.58
+    "total_clicks": 48,
+    "avg_daily_clicks": 1.2
+  },
+  {
+    "provider": "icons.com.ar",
+    "event_type": "click",
+    "total_clicks": 48,
+    "avg_daily_clicks": 1.09
+  },
+  {
+    "provider": "Banco Nación",
+    "event_type": "click",
+    "total_clicks": 47,
+    "avg_daily_clicks": 1.27
+  },
+  {
+    "provider": "Cocos",
+    "event_type": "provider_click",
+    "total_clicks": 47,
+    "avg_daily_clicks": 4.7
   },
   {
     "provider": "Dub.link",
@@ -1674,24 +1698,6 @@
     "avg_daily_clicks": 7.83
   },
   {
-    "provider": "Estadisticas.cafci.org",
-    "event_type": "click",
-    "total_clicks": 47,
-    "avg_daily_clicks": 1.21
-  },
-  {
-    "provider": "Banco Nación",
-    "event_type": "click",
-    "total_clicks": 46,
-    "avg_daily_clicks": 1.28
-  },
-  {
-    "provider": "Cocos",
-    "event_type": "provider_click",
-    "total_clicks": 46,
-    "avg_daily_clicks": 5.11
-  },
-  {
     "provider": "Dub.link",
     "event_type": "click",
     "total_clicks": 46,
@@ -1702,12 +1708,6 @@
     "event_type": "provider_click",
     "total_clicks": 46,
     "avg_daily_clicks": 7.67
-  },
-  {
-    "provider": "icons.com.ar",
-    "event_type": "click",
-    "total_clicks": 46,
-    "avg_daily_clicks": 1.07
   },
   {
     "provider": "Ualá",
@@ -1722,16 +1722,16 @@
     "avg_daily_clicks": 1.67
   },
   {
+    "provider": "betece.app",
+    "event_type": "click",
+    "total_clicks": 44,
+    "avg_daily_clicks": 1.07
+  },
+  {
     "provider": "comparatiendas.com.ar",
     "event_type": "click",
     "total_clicks": 44,
     "avg_daily_clicks": 1.57
-  },
-  {
-    "provider": "betece.app",
-    "event_type": "click",
-    "total_clicks": 43,
-    "avg_daily_clicks": 1.07
   },
   {
     "provider": "Cresium",
@@ -1770,6 +1770,12 @@
     "avg_daily_clicks": 1.14
   },
   {
+    "provider": "Bna",
+    "event_type": "provider_click",
+    "total_clicks": 41,
+    "avg_daily_clicks": 1.64
+  },
+  {
     "provider": "Balanz",
     "event_type": "click",
     "total_clicks": 40,
@@ -1792,12 +1798,6 @@
     "event_type": "click",
     "total_clicks": 39,
     "avg_daily_clicks": 1.95
-  },
-  {
-    "provider": "Bna",
-    "event_type": "provider_click",
-    "total_clicks": 39,
-    "avg_daily_clicks": 1.56
   },
   {
     "provider": "IOL",
@@ -1896,6 +1896,12 @@
     "avg_daily_clicks": 1.6
   },
   {
+    "provider": "Cresium",
+    "event_type": "click",
+    "total_clicks": 32,
+    "avg_daily_clicks": 1.39
+  },
+  {
     "provider": "Dub.link",
     "event_type": "provider_click",
     "total_clicks": 32,
@@ -1906,12 +1912,6 @@
     "event_type": "click",
     "total_clicks": 31,
     "avg_daily_clicks": 1.24
-  },
-  {
-    "provider": "Cresium",
-    "event_type": "click",
-    "total_clicks": 31,
-    "avg_daily_clicks": 1.41
   },
   {
     "provider": "Dub.link",
@@ -1942,6 +1942,12 @@
     "event_type": "click",
     "total_clicks": 31,
     "avg_daily_clicks": 1.24
+  },
+  {
+    "provider": "Fiwind",
+    "event_type": "click",
+    "total_clicks": 31,
+    "avg_daily_clicks": 1.48
   },
   {
     "provider": "Getnet",
@@ -1975,6 +1981,12 @@
   },
   {
     "provider": "Decrypto",
+    "event_type": "click",
+    "total_clicks": 29,
+    "avg_daily_clicks": 1.16
+  },
+  {
+    "provider": "Banco Santander",
     "event_type": "click",
     "total_clicks": 29,
     "avg_daily_clicks": 1.16
@@ -2026,18 +2038,6 @@
     "event_type": "provider_click",
     "total_clicks": 27,
     "avg_daily_clicks": 1.5
-  },
-  {
-    "provider": "Fiwind",
-    "event_type": "click",
-    "total_clicks": 27,
-    "avg_daily_clicks": 1.35
-  },
-  {
-    "provider": "Banco Santander",
-    "event_type": "click",
-    "total_clicks": 27,
-    "avg_daily_clicks": 1.13
   },
   {
     "provider": "Allaria",
@@ -2148,6 +2148,12 @@
     "avg_daily_clicks": 1.77
   },
   {
+    "provider": "Viumi",
+    "event_type": "click",
+    "total_clicks": 23,
+    "avg_daily_clicks": 1.64
+  },
+  {
     "provider": "Bancor",
     "event_type": "click",
     "total_clicks": 23,
@@ -2188,12 +2194,6 @@
     "event_type": "provider_click",
     "total_clicks": 22,
     "avg_daily_clicks": 1.83
-  },
-  {
-    "provider": "Viumi",
-    "event_type": "click",
-    "total_clicks": 22,
-    "avg_daily_clicks": 1.69
   },
   {
     "provider": "Bancocmf",
@@ -2256,6 +2256,12 @@
     "avg_daily_clicks": 1.11
   },
   {
+    "provider": "Fiwind",
+    "event_type": "provider_click",
+    "total_clicks": 21,
+    "avg_daily_clicks": 1.62
+  },
+  {
     "provider": "Dub.link",
     "event_type": "provider_click",
     "total_clicks": 20,
@@ -2278,6 +2284,12 @@
     "event_type": "provider_click",
     "total_clicks": 19,
     "avg_daily_clicks": 1.06
+  },
+  {
+    "provider": "Cresium",
+    "event_type": "provider_click",
+    "total_clicks": 19,
+    "avg_daily_clicks": 1.36
   },
   {
     "provider": "Dub.link",
@@ -2326,12 +2338,6 @@
     "event_type": "click",
     "total_clicks": 18,
     "avg_daily_clicks": 1.06
-  },
-  {
-    "provider": "Cresium",
-    "event_type": "provider_click",
-    "total_clicks": 18,
-    "avg_daily_clicks": 1.38
   },
   {
     "provider": "Dub.link",
@@ -2428,12 +2434,6 @@
     "event_type": "click",
     "total_clicks": 17,
     "avg_daily_clicks": 1.21
-  },
-  {
-    "provider": "Fiwind",
-    "event_type": "provider_click",
-    "total_clicks": 17,
-    "avg_daily_clicks": 1.42
   },
   {
     "provider": "Wallbit",
@@ -2592,6 +2592,12 @@
     "avg_daily_clicks": 1.3
   },
   {
+    "provider": "IOL",
+    "event_type": "click",
+    "total_clicks": 13,
+    "avg_daily_clicks": 1.08
+  },
+  {
     "provider": "ARQ",
     "event_type": "click",
     "total_clicks": 12,
@@ -2644,12 +2650,6 @@
     "event_type": "click",
     "total_clicks": 12,
     "avg_daily_clicks": 1.2
-  },
-  {
-    "provider": "IOL",
-    "event_type": "click",
-    "total_clicks": 12,
-    "avg_daily_clicks": 1.09
   },
   {
     "provider": "IOL",
@@ -2814,6 +2814,18 @@
     "avg_daily_clicks": 1
   },
   {
+    "provider": "Buhobank",
+    "event_type": "click",
+    "total_clicks": 9,
+    "avg_daily_clicks": 1.13
+  },
+  {
+    "provider": "Bull Market",
+    "event_type": "click",
+    "total_clicks": 9,
+    "avg_daily_clicks": 1.29
+  },
+  {
     "provider": "Estadisticas.cafci.org",
     "event_type": "click",
     "total_clicks": 9,
@@ -2887,18 +2899,6 @@
   },
   {
     "provider": "Buhobank",
-    "event_type": "click",
-    "total_clicks": 8,
-    "avg_daily_clicks": 1.33
-  },
-  {
-    "provider": "Buhobank",
-    "event_type": "click",
-    "total_clicks": 8,
-    "avg_daily_clicks": 1.14
-  },
-  {
-    "provider": "Bull Market",
     "event_type": "click",
     "total_clicks": 8,
     "avg_daily_clicks": 1.33
@@ -3198,6 +3198,12 @@
     "avg_daily_clicks": 1
   },
   {
+    "provider": "Buhobank",
+    "event_type": "provider_click",
+    "total_clicks": 5,
+    "avg_daily_clicks": 1
+  },
+  {
     "provider": "Data912.apidocs",
     "event_type": "click",
     "total_clicks": 5,
@@ -3294,6 +3300,12 @@
     "avg_daily_clicks": 1.25
   },
   {
+    "provider": "Banco de Corrientes",
+    "event_type": "click",
+    "total_clicks": 5,
+    "avg_daily_clicks": 1
+  },
+  {
     "provider": "Bancomasventas",
     "event_type": "click",
     "total_clicks": 5,
@@ -3358,12 +3370,6 @@
     "event_type": "provider_click",
     "total_clicks": 4,
     "avg_daily_clicks": 1.33
-  },
-  {
-    "provider": "Buhobank",
-    "event_type": "provider_click",
-    "total_clicks": 4,
-    "avg_daily_clicks": 1
   },
   {
     "provider": "Dub.link",
@@ -3506,12 +3512,6 @@
   {
     "provider": "Bancochubut",
     "event_type": "provider_click",
-    "total_clicks": 4,
-    "avg_daily_clicks": 1
-  },
-  {
-    "provider": "Banco de Corrientes",
-    "event_type": "click",
     "total_clicks": 4,
     "avg_daily_clicks": 1
   },
@@ -3834,6 +3834,12 @@
     "avg_daily_clicks": 1.5
   },
   {
+    "provider": "Allaria",
+    "event_type": "click",
+    "total_clicks": 2,
+    "avg_daily_clicks": 1
+  },
+  {
     "provider": "Apigentinadatos",
     "event_type": "click",
     "total_clicks": 2,
@@ -3909,7 +3915,19 @@
     "provider": "Estadisticas.cafci.org",
     "event_type": "click",
     "total_clicks": 2,
+    "avg_daily_clicks": 1
+  },
+  {
+    "provider": "Estadisticas.cafci.org",
+    "event_type": "click",
+    "total_clicks": 2,
     "avg_daily_clicks": 2
+  },
+  {
+    "provider": "Estadisticas.cafci.org",
+    "event_type": "click",
+    "total_clicks": 2,
+    "avg_daily_clicks": 1
   },
   {
     "provider": "Estadisticas.cafci.org",
@@ -4326,12 +4344,6 @@
     "avg_daily_clicks": 1
   },
   {
-    "provider": "Allaria",
-    "event_type": "click",
-    "total_clicks": 1,
-    "avg_daily_clicks": 1
-  },
-  {
     "provider": "Apigentinadatos",
     "event_type": "click",
     "total_clicks": 1,
@@ -4430,12 +4442,6 @@
   {
     "provider": "Dub.link",
     "event_type": "provider_click",
-    "total_clicks": 1,
-    "avg_daily_clicks": 1
-  },
-  {
-    "provider": "Estadisticas.cafci.org",
-    "event_type": "click",
     "total_clicks": 1,
     "avg_daily_clicks": 1
   },
@@ -4706,6 +4712,18 @@
   {
     "provider": "Payway",
     "event_type": "click",
+    "total_clicks": 1,
+    "avg_daily_clicks": 1
+  },
+  {
+    "provider": "Prex",
+    "event_type": "click",
+    "total_clicks": 1,
+    "avg_daily_clicks": 1
+  },
+  {
+    "provider": "Prex",
+    "event_type": "provider_click",
     "total_clicks": 1,
     "avg_daily_clicks": 1
   },
