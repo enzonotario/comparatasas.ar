@@ -16,6 +16,8 @@ const isSumarsePage = computed(
   () => route.path === '/sumarse' || route.path.startsWith('/sumarse/'),
 )
 
+const isHomePage = computed(() => route.path === '/')
+
 const useSponsorBanner = computed(() => {
   const cutoffDate = new Date('2026-01-01')
   const today = new Date()
@@ -189,7 +191,7 @@ const showProductScenariosRail = computed(() => {
 
           <OpinaPageFeedback />
 
-          <FinancialAdviceCard v-if="!isSumarsePage" />
+          <FinancialAdviceCard v-if="isHomePage" />
 
           <PageNavigation />
 
