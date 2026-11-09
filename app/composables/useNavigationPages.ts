@@ -1,4 +1,13 @@
 import { categoryIconUrl } from '~/lib/category-icon-url'
+import { hipotecariosUVANavTabs } from '~/lib/hipotecarios-uva-nav'
+import { plazosFijosNavTabs } from '~/lib/plazos-fijos-nav'
+import { prestamosPersonalesNavTabs } from '~/lib/prestamos-personales-nav'
+
+export interface NavigationSubPage {
+  to: string
+  label: string
+  icon?: string
+}
 
 export interface NavigationPage {
   to: string
@@ -12,6 +21,20 @@ export interface NavigationPage {
     label: string
     color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
   }
+  /**
+   * Pestañas con ruta propia. Se incluyen en la navegación anterior/siguiente
+   * para que el recorrido respete el orden de las tabs de la sección.
+   */
+  subPages?: NavigationSubPage[]
+}
+
+function navigationSubPages(
+  parentTo: string,
+  tabs: Array<{ to: string; label: string; icon?: string }>,
+): NavigationSubPage[] {
+  return tabs
+    .filter((tab) => tab.to.replace(/\/$/, '') !== parentTo.replace(/\/$/, ''))
+    .map((tab) => ({ to: tab.to, label: tab.label, icon: tab.icon }))
 }
 
 export interface NavigationPageGroup {
@@ -123,6 +146,7 @@ export const useNavigationPages = () => {
           icon: 'i-lucide-clock',
           image: categoryIcon('safe.png'),
           group: 'Inversión',
+          subPages: navigationSubPages('/plazos-fijos', plazosFijosNavTabs),
         },
         {
           to: '/criptopesos',
@@ -182,6 +206,7 @@ export const useNavigationPages = () => {
           icon: 'i-lucide-home',
           image: categoryIcon('credito-hipotecario.png'),
           group: 'Crédito',
+          subPages: navigationSubPages('/creditos-hipotecarios-uva', hipotecariosUVANavTabs),
         },
         {
           to: '/prestamos-personales',
@@ -189,6 +214,7 @@ export const useNavigationPages = () => {
           icon: 'i-lucide-banknote',
           image: categoryIcon('credito-personal.png'),
           group: 'Crédito',
+          subPages: navigationSubPages('/prestamos-personales', prestamosPersonalesNavTabs),
         },
         {
           to: '/comisiones-cobro',
@@ -262,6 +288,47 @@ export const useNavigationPages = () => {
   // Páginas planas para compatibilidad con código existente
   const pages: NavigationPage[] = categories.flatMap((category) => category.pages)
 
+  // Recorrido completo: cada página seguida por sus tabs/sub-páginas propias.
+  const navigationSequence: NavigationPage[] = categories.flatMap((category) =>
+    category.pages.flatMap((page) => [
+      page,
+      ...(page.subPages ?? []).map((subPage) => ({
+        to: subPage.to,
+        label: subPage.label,
+        icon: subPage.icon ?? page.icon,
+        image: page.image,
+        group: page.group,
+      })),
+    ]),
+  )
+
+  const isExactPageActive = (page: NavigationPage): boolean => {
+    const pagePath = getPagePath(page.to).replace(/\/$/, '') || '/'
+    const routePath = route.path.replace(/\/$/, '') || '/'
+    if (pagePath !== routePath) return false
+
+    // /cauciones vive en ARS y USD: el query `moneda` distingue la entrada activa.
+    if (pagePath === '/cauciones') {
+      const pageMoneda = getPageQuery(page.to).get('moneda') === 'usd' ? 'usd' : 'ars'
+      const routeMoneda = route.query.moneda === 'usd' ? 'usd' : 'ars'
+      return pageMoneda === routeMoneda
+    }
+
+    return true
+  }
+
+  const getSequenceIndex = (): number => {
+    const exactIndex = navigationSequence.findIndex((page) => isExactPageActive(page))
+    if (exactIndex !== -1) return exactIndex
+
+    // Fallback para sub-páginas sin tabs propios (p. ej. /fondos/[nombre]):
+    // navegar desde la página principal que las contiene.
+    const parentPage = pages.find((page) => isPageActive(page))
+    if (!parentPage) return -1
+
+    return navigationSequence.findIndex((page) => page.to === parentPage.to)
+  }
+
   const getCurrentCategory = (): NavigationCategory | null => {
     return categories.find((category) => category.pages.some((page) => isPageActive(page))) ?? null
   }
@@ -289,53 +356,17 @@ export const useNavigationPages = () => {
   }
 
   const getPreviousPage = (): NavigationPage | null => {
-    const normalizedRoute = normalizeRoute(route.path)
-    const currentCategory = getCategoryByRoute(normalizedRoute)
-    if (!currentCategory) return null
+    const currentIndex = getSequenceIndex()
+    if (currentIndex <= 0) return null
 
-    const categoryPages = currentCategory.pages
-    const currentIndex = categoryPages.findIndex((page) => isPageActive(page))
-    const prevIndex = currentIndex - 1
-
-    if (prevIndex >= 0) {
-      return categoryPages[prevIndex] ?? null
-    }
-
-    // Si no hay página anterior en la categoría, buscar en la categoría anterior
-    const currentCategoryIndex = categories.findIndex((cat) => cat.id === currentCategory.id)
-    if (currentCategoryIndex > 0) {
-      const prevCategory = categories[currentCategoryIndex - 1]
-      if (prevCategory && prevCategory.pages.length > 0) {
-        return prevCategory.pages[prevCategory.pages.length - 1] ?? null
-      }
-    }
-
-    return null
+    return navigationSequence[currentIndex - 1] ?? null
   }
 
   const getNextPage = (): NavigationPage | null => {
-    const normalizedRoute = normalizeRoute(route.path)
-    const currentCategory = getCategoryByRoute(normalizedRoute)
-    if (!currentCategory) return null
+    const currentIndex = getSequenceIndex()
+    if (currentIndex === -1 || currentIndex >= navigationSequence.length - 1) return null
 
-    const categoryPages = currentCategory.pages
-    const currentIndex = categoryPages.findIndex((page) => isPageActive(page))
-    const nextIndex = currentIndex + 1
-
-    if (nextIndex < categoryPages.length) {
-      return categoryPages[nextIndex] ?? null
-    }
-
-    // Si no hay página siguiente en la categoría, buscar en la siguiente categoría
-    const currentCategoryIndex = categories.findIndex((cat) => cat.id === currentCategory.id)
-    if (currentCategoryIndex < categories.length - 1) {
-      const nextCategory = categories[currentCategoryIndex + 1]
-      if (nextCategory && nextCategory.pages.length > 0) {
-        return nextCategory.pages[0] ?? null
-      }
-    }
-
-    return null
+    return navigationSequence[currentIndex + 1] ?? null
   }
 
   const isActive = (page: NavigationPage): boolean => isPageActive(page)
