@@ -1,21 +1,39 @@
 [
   {
+    "date": "20261108",
+    "categories": {
+      "Billetera": 11,
+      "Money Market": 12,
+      "Plazo Fijo": 5,
+      "Cuenta Remunerada": 14,
+      "Otro": 18,
+      "Página Amiga": 4,
+      "Billetera USD": 8,
+      "Frascos": 2,
+      "General": 6,
+      "Criptomonedas": 8,
+      "plazo fijo tradicional": 7,
+      "wARS": 6
+    },
+    "total": 101
+  },
+  {
     "date": "20261107",
     "categories": {
-      "Página Amiga": 6,
-      "Billetera": 12,
-      "Money Market": 2,
-      "Plazo Fijo": 10,
-      "Cuenta Remunerada": 11,
-      "Otro": 13,
-      "Billetera USD": 6,
-      "Frascos": 4,
-      "General": 10,
+      "Página Amiga": 14,
+      "Billetera": 25,
+      "Money Market": 7,
+      "Plazo Fijo": 24,
+      "Cuenta Remunerada": 27,
+      "Otro": 32,
+      "Billetera USD": 7,
+      "Frascos": 7,
+      "General": 11,
       "Criptomonedas": 1,
-      "plazo fijo tradicional": 5,
-      "wARS": 4
+      "plazo fijo tradicional": 7,
+      "wARS": 5
     },
-    "total": 84
+    "total": 167
   },
   {
     "date": "20261106",
@@ -81,13 +99,8 @@
   {
     "date": "20261103",
     "categories": {
-      "Otro": 44,
-      "Página Amiga": 41,
-      "Billetera": 29,
-      "Money Market": 15,
-      "Plazo Fijo": 28,
-      "Cuenta Remunerada": 41
+      "Otro": 1
     },
-    "total": 198
+    "total": 1
   }
 ]
