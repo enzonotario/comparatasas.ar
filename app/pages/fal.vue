@@ -102,9 +102,9 @@ function claveComision(item: AlternativaFal): number {
 function filaVisible(grupo: ReturnType<typeof agruparOfertasFal<AlternativaFal>>[number]): FalRow {
   const displayName = grupo.nombreComercial
   const providerUrl =
+    (grupo.enlace ? withOutboundUtm(grupo.enlace, 'fal') : undefined) ||
     getInstitutionUrl(displayName, 'fal') ||
-    getInstitutionUrl(grupo.entidad, 'fal') ||
-    (grupo.enlace ? withOutboundUtm(grupo.enlace, 'fal') : undefined)
+    getInstitutionUrl(grupo.entidad, 'fal')
   const varios = grupo.ofertas.length > 1
   const aclaraciones = varios ? aclaracionesDeTramos(grupo.ofertas) : null
 
