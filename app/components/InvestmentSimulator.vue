@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useMediaQuery } from '@vueuse/core'
-
 interface PresetAmount {
   value: number
   label: string
@@ -100,7 +98,7 @@ const resolvedDaysMax = computed(() => props.daysMax)
 const amountMin = 1
 const amountStep = 1
 
-const isDesktop = useMediaQuery('(min-width: 1024px)')
+const isDesktop = useClientMediaQuery('(min-width: 1024px)')
 
 const openSimulator = () => {
   isOpen.value = true

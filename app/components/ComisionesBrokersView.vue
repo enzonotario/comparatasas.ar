@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import { useMediaQuery } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 import {
   getComisionesBrokersProductoLabel,
@@ -65,7 +64,7 @@ interface ComisionRow extends ComisionBrokerApi {
   derechoLabel: string
 }
 
-const isDesktop = useMediaQuery('(min-width: 1024px)')
+const isDesktop = useClientMediaQuery('(min-width: 1024px)')
 const monedaFilter = useRouteQuery('moneda', 'ARS')
 const operacionFilter = useRouteQuery('operacion', 'all')
 const sortQuery = useRouteQuery('sort', '[{"id":"tasaSort","desc":false}]')

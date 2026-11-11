@@ -26,7 +26,7 @@ const props = defineProps<{
   amount?: number
 }>()
 
-const isDesktop = useMediaQuery('(min-width: 768px)')
+const isDesktop = useClientMediaQuery('(min-width: 768px)')
 const { trackProviderClick } = useAnalytics()
 
 const sorting = ref([

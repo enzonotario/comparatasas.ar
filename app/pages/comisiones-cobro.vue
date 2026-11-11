@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import { useMediaQuery } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 import { formatCurrency } from '~/lib/fci-fund-formatters'
 import { getInstitutionLogo, getInstitutionUrl } from '~/lib/mappings/institutions'
@@ -78,7 +77,7 @@ type ComisionRowSimulada = ComisionCobroSimulada<ComisionRow> & {
   netoSort: number
 }
 
-const isDesktop = useMediaQuery('(min-width: 1024px)')
+const isDesktop = useClientMediaQuery('(min-width: 1024px)')
 const searchQuery = useRouteQuery('q', '')
 const canalFilter = useRouteQuery('canal', 'all')
 const medioFilter = useRouteQuery('medio', 'all')

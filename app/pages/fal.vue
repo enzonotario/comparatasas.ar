@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
-import { useMediaQuery } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 import { getInstitutionLogo, getInstitutionUrl } from '~/lib/mappings/institutions'
 import { withOutboundUtm } from '~/lib/outbound-url'
@@ -57,7 +56,7 @@ interface FalRow extends AlternativaFal {
   tramos: { titulo: string; detalle: string | null }[]
 }
 
-const isDesktop = useMediaQuery('(min-width: 1024px)')
+const isDesktop = useClientMediaQuery('(min-width: 1024px)')
 const searchQuery = useRouteQuery('q', '')
 const horizonteFilter = useRouteQuery('horizonte', 'all')
 const vehiculoFilter = useRouteQuery('vehiculo', 'all')

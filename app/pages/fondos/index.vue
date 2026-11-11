@@ -890,7 +890,7 @@ const displayMenuItems = computed(() => {
 })
 
 const avgTnaLabel = computed(() => formatRatePercent(stats.value.avgTna) ?? '—')
-const isDesktopLayout = useMediaQuery('(min-width: 1024px)')
+const isDesktopLayout = useClientMediaQuery('(min-width: 1024px)')
 
 const selectedCatalogRows = computed((): FundCatalogGroupRow[] => {
   // Depend on rowSelection so the bar updates when checkboxes change.

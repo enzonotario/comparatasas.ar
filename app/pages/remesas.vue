@@ -212,7 +212,7 @@ const comparaDolarQuotesByKey = computed(() => {
 })
 
 const hasHover = useMediaQuery('(hover: hover)')
-const isMobile = useMediaQuery('(max-width: 1023px)')
+const isMobile = useClientMediaQuery('(max-width: 1023px)')
 
 function renderDetailPopover(detail: string | null | undefined) {
   if (!detail) return null
