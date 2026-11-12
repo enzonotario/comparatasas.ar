@@ -34,7 +34,7 @@ const moneda = computed<CaucionMoneda>({
 })
 
 const currencyCode = computed(() => (moneda.value === 'usd' ? 'USD' : 'ARS'))
-const pageTitle = computed(() => `Cauciones ${currencyCode.value}`)
+const pageTitle = computed(() => `Cauciones ${currencyCode.value}: tasas y montos del día`)
 const pageDescription = computed(() =>
   moneda.value === 'usd'
     ? 'Tasas actuales, min./max. del día y montos de cauciones en dólares (USD) en el mercado argentino.'
@@ -56,14 +56,12 @@ watchEffect(() => {
   route.meta.pageDescription = pageDescription.value
 })
 
-const seoTitle = computed(() => `${pageTitle.value}: tasas y montos del día`)
-
 useSeoMeta({
-  title: seoTitle,
+  title: pageTitle,
   description: seoDescription,
-  ogTitle: seoTitle,
+  ogTitle: pageTitle,
   ogDescription: seoDescription,
-  twitterTitle: seoTitle,
+  twitterTitle: pageTitle,
   twitterDescription: seoDescription,
 })
 

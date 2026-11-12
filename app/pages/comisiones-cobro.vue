@@ -10,7 +10,7 @@ import type { ComisionCobroOption } from '~/composables/useComisionesCobro'
 import type { ComisionCobroSimulada } from '~/composables/useComisionesCobroSimulator'
 
 definePageMeta({
-  pageTitle: 'Comisiones de cobro',
+  pageTitle: 'Comisiones de cobro POS, QR y link',
   pageDescription:
     'Compará aranceles (MDR) de adquirentes y billeteras por canal, medio de pago y acreditación.',
 })

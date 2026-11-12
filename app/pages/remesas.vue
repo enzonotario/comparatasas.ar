@@ -9,7 +9,7 @@ import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { RemesaDetalles, RemesaOption } from '~/composables/useRemesas'
 
 definePageMeta({
-  pageTitle: 'Remesas',
+  pageTitle: 'Remesas y pagos del exterior',
   pageDescription:
     'Compará plataformas para cobrar remesas y pagos del exterior: cuenta propia, moneda, inversiones, tarjeta y costos.',
 })

@@ -1,5 +1,5 @@
-/** Matches `titleTemplate: '%s | comparatasas.ar'` in nuxt.config.ts */
-export const SEO_TITLE_TEMPLATE_SUFFIX = ' | comparatasas.ar'
+/** Matches `titleTemplate: '%s | Compara Tasas'` in nuxt.config.ts */
+export const SEO_TITLE_TEMPLATE_SUFFIX = ' | Compara Tasas'
 
 /** Ahrefs Site Audit flags titles longer than 60 characters. */
 export const SEO_TITLE_MAX_LENGTH = 60
@@ -21,7 +21,7 @@ function clipToBudget(text: string, budget: number): string {
 
 /**
  * Fit a page title so the rendered `<title>` stays within Ahrefs' limit
- * after Nuxt appends `| comparatasas.ar`.
+ * after Nuxt appends `| Compara Tasas`.
  *
  * Pass `secondary` (e.g. `Histórico`) to keep that marker when the primary
  * name must be clipped.

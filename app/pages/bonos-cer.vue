@@ -12,7 +12,7 @@ import type { TableColumn } from '@nuxt/ui'
 import { useRouteQuery } from '@vueuse/router'
 
 definePageMeta({
-  pageTitle: 'Bonos CER',
+  pageTitle: 'Bonos CER: cotización y TIR',
   pageDescription: 'Bonos soberanos en pesos ajustados por CER: cotización y TIR según mercado.',
 })
 

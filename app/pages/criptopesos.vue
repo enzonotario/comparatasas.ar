@@ -8,11 +8,14 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Criptopesos Stablecoins 1:1',
+  title: 'Tasas de Criptopesos',
   description:
     'Compará mejores tasas de stablecoins con paridad 1:1 con el peso argentino. Encontrá rendimientos competitivos para tu dinero.',
-  ogTitle: 'Criptopesos - comparatasas.ar',
+  ogTitle: 'Tasas de Criptopesos - Compara Tasas',
   ogDescription:
+    'Compará mejores tasas de stablecoins con paridad 1:1 con el peso argentino. Encontrá rendimientos competitivos para tu dinero.',
+  twitterTitle: 'Tasas de Criptopesos - Compara Tasas',
+  twitterDescription:
     'Compará mejores tasas de stablecoins con paridad 1:1 con el peso argentino. Encontrá rendimientos competitivos para tu dinero.',
 })
 

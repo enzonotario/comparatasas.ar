@@ -56,7 +56,7 @@ export default defineNuxtConfig({
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
       title: 'Compara Tasas - La mejor inversión para vos',
-      titleTemplate: '%s | comparatasas.ar',
+      titleTemplate: '%s | Compara Tasas',
       meta: [
         {
           name: 'description',

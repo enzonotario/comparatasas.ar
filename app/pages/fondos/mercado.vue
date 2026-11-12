@@ -18,7 +18,7 @@ import type { MarketCurrencyFilter } from '~/lib/fci-market-overview'
 
 definePageMeta({
   layout: 'fondos',
-  pageTitle: 'Mercado de FCI',
+  pageTitle: 'Mercado de FCI en Argentina',
   pageDescription:
     'Panorama del mercado de fondos comunes de inversión en Argentina: patrimonio, tipos, gestoras y tenencias.',
 })
@@ -226,7 +226,7 @@ const flowKpis = computed(() => {
     }"
   >
     <UDashboardNavbar
-      title="Mercado de FCI"
+      title="Mercado de FCI en Argentina"
       class="shrink-0"
       :ui="{
         root: 'max-lg:sticky max-lg:top-[var(--ui-header-height)] max-lg:z-40 max-lg:bg-default/95 max-lg:backdrop-blur-md',

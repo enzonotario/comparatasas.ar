@@ -26,7 +26,7 @@ import {
 } from '~/lib/variable-fund-risk'
 
 definePageMeta({
-  pageTitle: 'Contado vs Cuotas',
+  pageTitle: 'Contado vs Cuotas: simulador',
   pageDescription:
     'Compará si conviene pagar al contado o en cuotas usando la inflación esperada REM de Argentina.',
 })

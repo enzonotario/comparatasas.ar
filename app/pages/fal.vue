@@ -20,7 +20,7 @@ import {
 } from '~/lib/finance/fal'
 
 definePageMeta({
-  pageTitle: 'Fondo de Asistencia Laboral',
+  pageTitle: 'Fondo de Asistencia Laboral (FAL)',
   pageDescription:
     'Compará comisión, vehículo y horizonte de las alternativas FAL publicadas por cada entidad.',
 })

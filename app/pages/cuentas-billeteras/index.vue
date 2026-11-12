@@ -25,11 +25,14 @@ defineOgImage('ComparaTasas.takumi', {
 })
 
 useSeoMeta({
-  title: 'Cuentas Remuneradas y Billeteras',
+  title: 'Cuentas Remuneradas y Billeteras Digitales',
   description:
     'Compará las mejores tasas de cuentas remuneradas y billeteras digitales de Argentina. Encontrá la mejor inversión para vos con rendimientos actualizados.',
-  ogTitle: 'Cuentas Remuneradas y Billeteras - Compara Tasas',
+  ogTitle: 'Cuentas Remuneradas y Billeteras Digitales - Compara Tasas',
   ogDescription:
+    'Compará las mejores tasas de cuentas remuneradas y billeteras digitales de Argentina. Encontrá la mejor inversión para vos con rendimientos actualizados.',
+  twitterTitle: 'Cuentas Remuneradas y Billeteras Digitales - Compara Tasas',
+  twitterDescription:
     'Compará las mejores tasas de cuentas remuneradas y billeteras digitales de Argentina. Encontrá la mejor inversión para vos con rendimientos actualizados.',
 })
 

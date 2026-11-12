@@ -2,7 +2,7 @@
 import { ogUpdatedAtDate } from '~/utils/og-data'
 
 definePageMeta({
-  pageTitle: 'Préstamos Personales',
+  pageTitle: 'Préstamos Personales: TNA, TEA y CFT',
   pageDescription:
     'Compará TNA, TEA y CFT TEA de préstamos personales con tasas por plazo en Argentina.',
 })

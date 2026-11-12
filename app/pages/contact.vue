@@ -2,7 +2,7 @@
 import { jsonLdScript, sitePublisher } from '~/lib/json-ld'
 
 definePageMeta({
-  pageTitle: 'Contacto',
+  pageTitle: 'Contacto de Compara Tasas',
   pageDescription: 'Cómo contactar al equipo de Compara Tasas.',
 })
 

@@ -32,7 +32,7 @@ import { getLogoForEntity } from '~/lib/mappings/logos'
 
 definePageMeta({
   layout: 'fondos',
-  pageTitle: 'Comparar FCI',
+  pageTitle: 'Comparar fondos FCI (ARS/USD)',
   pageDescription:
     'Compará fondos comunes de inversión en Argentina por moneda (ARS o USD): rendimientos, TNA, patrimonio e histórico.',
 })
@@ -434,7 +434,7 @@ function patrimonioLabel(fund: FciCompareFund) {
     }"
   >
     <UDashboardNavbar
-      title="Comparar FCI"
+      title="Comparar fondos FCI (ARS/USD)"
       class="shrink-0"
       :ui="{
         root: 'max-lg:sticky max-lg:top-[var(--ui-header-height)] max-lg:z-40 max-lg:bg-default/95 max-lg:backdrop-blur-md',

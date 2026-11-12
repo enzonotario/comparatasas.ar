@@ -6,17 +6,20 @@ import FundsTNAPatrimonioScatterChart from '~/components/charts/FundsTNAPatrimon
 import TopeTnaScatterChart from '~/components/charts/TopeTnaScatterChart.vue'
 
 definePageMeta({
-  pageTitle: 'Análisis Visual y Gráficos',
+  pageTitle: 'Análisis Visual de Cuentas y FCI',
   pageDescription:
     'Visualizá y compará tasas y patrimonios de cuentas remuneradas, billeteras y fondos de inversión en Argentina.',
 })
 
 useSeoMeta({
-  title: 'Análisis Visual de Tasas',
+  title: 'Análisis Visual de Cuentas y FCI',
   description:
     'Gráficos interactivos de tasas de cuentas remuneradas, billeteras y FCI en Argentina. Visualizá TNA y patrimonios fácilmente.',
   ogTitle: 'Análisis Visual de Cuentas y FCI - Compara Tasas',
   ogDescription:
+    'Gráficos interactivos de tasas de cuentas remuneradas, billeteras y FCI en Argentina. Visualizá TNA y patrimonios fácilmente.',
+  twitterTitle: 'Análisis Visual de Cuentas y FCI - Compara Tasas',
+  twitterDescription:
     'Gráficos interactivos de tasas de cuentas remuneradas, billeteras y FCI en Argentina. Visualizá TNA y patrimonios fácilmente.',
 })
 
@@ -40,7 +43,7 @@ useHead({
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebPage',
-        name: 'Análisis Visual - Compara Tasas',
+        name: 'Análisis Visual de Cuentas y FCI - Compara Tasas',
         description: 'Gráficos comparativos de tasas de interés en Argentina.',
         publisher: {
           '@type': 'Organization',

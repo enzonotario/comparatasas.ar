@@ -2,7 +2,7 @@
 import { jsonLdScript, sitePublisher } from '~/lib/json-ld'
 
 definePageMeta({
-  pageTitle: 'Privacidad',
+  pageTitle: 'Política de privacidad',
   pageDescription: 'Política de privacidad de comparatasas.ar.',
 })
 

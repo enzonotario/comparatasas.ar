@@ -2,7 +2,7 @@
 import { jsonLdScript, sitePublisher } from '~/lib/json-ld'
 
 definePageMeta({
-  pageTitle: 'Acerca de',
+  pageTitle: 'Acerca de Compara Tasas',
   pageDescription: 'Qué es Compara Tasas y por qué existe comparatasas.ar.',
 })
 

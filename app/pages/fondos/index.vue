@@ -380,13 +380,13 @@ defineOgImage('ComparaTasas.takumi', {
 })
 
 useSeoMeta({
-  title: 'Fondos Comunes de Inversión',
+  title: 'Fondos Comunes de Inversión (FCI)',
   description:
     'Consultá y compará todos los fondos comunes de inversión (FCI) en Argentina. Información actualizada con datos de rendimiento y patrimonio.',
-  ogTitle: 'Fondos Comunes de Inversión - Compara Tasas',
+  ogTitle: 'Fondos Comunes de Inversión (FCI) - Compara Tasas',
   ogDescription:
     'Consultá y compará todos los fondos comunes de inversión (FCI) en Argentina. Información actualizada con datos de rendimiento y patrimonio.',
-  twitterTitle: 'Fondos Comunes de Inversión - Compara Tasas',
+  twitterTitle: 'Fondos Comunes de Inversión (FCI) - Compara Tasas',
   twitterDescription:
     'Consultá y compará todos los fondos comunes de inversión (FCI) en Argentina. Información actualizada con datos de rendimiento y patrimonio.',
 })
@@ -954,7 +954,7 @@ const selectionCompareHint = computed(() => {
         class="max-lg:sticky max-lg:top-[var(--ui-header-height)] max-lg:z-40 max-lg:bg-default/95 max-lg:backdrop-blur-md max-lg:border-b max-lg:border-default"
       >
         <UDashboardNavbar
-          title="Fondos Comunes de Inversión"
+          title="Fondos Comunes de Inversión (FCI)"
           :ui="{
             root: 'bg-transparent',
             title: 'truncate max-w-[55vw] sm:max-w-none text-base sm:text-lg',
