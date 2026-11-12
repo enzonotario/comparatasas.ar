@@ -7,11 +7,14 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Privacidad',
+  title: 'Política de privacidad',
   description:
     'Cómo Compara Tasas trata datos de navegación, analytics y enlaces a terceros. No pedimos claves bancarias para comparar tasas.',
-  ogTitle: 'Privacidad - Compara Tasas',
+  ogTitle: 'Política de privacidad - Compara Tasas',
   ogDescription:
+    'Cómo Compara Tasas trata datos de navegación, analytics y enlaces a terceros. No pedimos claves bancarias para comparar tasas.',
+  twitterTitle: 'Política de privacidad - Compara Tasas',
+  twitterDescription:
     'Cómo Compara Tasas trata datos de navegación, analytics y enlaces a terceros. No pedimos claves bancarias para comparar tasas.',
 })
 

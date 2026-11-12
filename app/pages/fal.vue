@@ -187,12 +187,15 @@ defineOgImage('ComparaTasas.takumi', {
 })
 
 useSeoMeta({
-  title: 'Fondo de Asistencia Laboral',
+  title: 'Fondo de Asistencia Laboral (FAL)',
   description:
-    'Compará la comisión, el vehículo y el horizonte de las alternativas FAL que publica cada entidad.',
-  ogTitle: 'Fondo de Asistencia Laboral - Compara Tasas',
+    'Compará comisión, vehículo y horizonte de las alternativas del Fondo de Asistencia Laboral (FAL) que publica cada entidad en Argentina.',
+  ogTitle: 'Fondo de Asistencia Laboral (FAL) - Compara Tasas',
   ogDescription:
-    'Tabla de alternativas FAL. La comisión queda en Sin dato cuando la entidad no la publica.',
+    'Compará comisión, vehículo y horizonte de las alternativas del Fondo de Asistencia Laboral (FAL) que publica cada entidad en Argentina.',
+  twitterTitle: 'Fondo de Asistencia Laboral (FAL) - Compara Tasas',
+  twitterDescription:
+    'Compará comisión, vehículo y horizonte de las alternativas del Fondo de Asistencia Laboral (FAL) que publica cada entidad en Argentina.',
 })
 
 useHead({

@@ -22,11 +22,14 @@ defineOgImage('ComparaTasas.takumi', {
 })
 
 useSeoMeta({
-  title: 'Plazos Fijos',
+  title: 'Plazos fijos: mejores tasas',
   description:
     'Compará las mejores tasas de plazos fijos en Argentina. Encontrá bancos con mayor rendimiento para plazos fijos tradicionales y UVA actualizados diariamente.',
-  ogTitle: 'Plazos Fijos - Mejores Tasas Argentina',
+  ogTitle: 'Plazos fijos: mejores tasas - Compara Tasas',
   ogDescription:
+    'Compará las mejores tasas de plazos fijos en Argentina. Encontrá bancos con mayor rendimiento para plazos fijos tradicionales y UVA actualizados diariamente.',
+  twitterTitle: 'Plazos fijos: mejores tasas - Compara Tasas',
+  twitterDescription:
     'Compará las mejores tasas de plazos fijos en Argentina. Encontrá bancos con mayor rendimiento para plazos fijos tradicionales y UVA actualizados diariamente.',
 })
 

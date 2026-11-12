@@ -7,11 +7,14 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Contacto',
+  title: 'Contacto de Compara Tasas',
   description:
     'Contacto de Compara Tasas: email para integraciones, correcciones de tasas y consultas sobre el sitio.',
-  ogTitle: 'Contacto - Compara Tasas',
+  ogTitle: 'Contacto de Compara Tasas',
   ogDescription:
+    'Contacto de Compara Tasas: email para integraciones, correcciones de tasas y consultas sobre el sitio.',
+  twitterTitle: 'Contacto de Compara Tasas',
+  twitterDescription:
     'Contacto de Compara Tasas: email para integraciones, correcciones de tasas y consultas sobre el sitio.',
 })
 

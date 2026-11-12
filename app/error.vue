@@ -7,10 +7,18 @@ const statusCode = computed(() => props.error?.statusCode || 500)
 const isNotFound = computed(() => statusCode.value === 404)
 
 useSeoMeta({
-  title: isNotFound.value ? 'Página no encontrada' : 'Error',
+  title: isNotFound.value ? 'Página no encontrada' : 'Error al cargar la página',
   description: isNotFound.value
     ? 'La ruta no existe en comparatasas.ar. Probá el inicio, llms.txt o el sitemap.'
-    : 'Ocurrió un error al cargar esta página.',
+    : 'Ocurrió un error al cargar esta página en comparatasas.ar. Probá volver al inicio o recargar.',
+  ogTitle: isNotFound.value ? 'Página no encontrada' : 'Error al cargar la página',
+  ogDescription: isNotFound.value
+    ? 'La ruta no existe en comparatasas.ar. Probá el inicio, llms.txt o el sitemap.'
+    : 'Ocurrió un error al cargar esta página en comparatasas.ar. Probá volver al inicio o recargar.',
+  twitterTitle: isNotFound.value ? 'Página no encontrada' : 'Error al cargar la página',
+  twitterDescription: isNotFound.value
+    ? 'La ruta no existe en comparatasas.ar. Probá el inicio, llms.txt o el sitemap.'
+    : 'Ocurrió un error al cargar esta página en comparatasas.ar. Probá volver al inicio o recargar.',
   robots: () => (isNotFound.value ? 'noindex, nofollow' : 'noindex'),
 })
 </script>

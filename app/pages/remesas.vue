@@ -682,11 +682,14 @@ defineOgImage('Remesas.takumi', {
 })
 
 useSeoMeta({
-  title: 'Remesas',
+  title: 'Remesas y pagos del exterior',
   description:
     'Compará plataformas para cobrar remesas y pagos del exterior. Revisá si ofrecen cuenta propia, soporte fiat o cripto, inversiones, tarjeta y costos.',
-  ogTitle: 'Remesas - Compara Tasas',
+  ogTitle: 'Remesas y pagos del exterior - Compara Tasas',
   ogDescription:
+    'Compará plataformas para cobrar remesas y pagos del exterior con cuenta propia, moneda, costos y calificaciones.',
+  twitterTitle: 'Remesas y pagos del exterior - Compara Tasas',
+  twitterDescription:
     'Compará plataformas para cobrar remesas y pagos del exterior con cuenta propia, moneda, costos y calificaciones.',
 })
 

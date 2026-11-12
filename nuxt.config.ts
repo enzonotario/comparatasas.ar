@@ -89,6 +89,15 @@ export default defineNuxtConfig({
         { property: 'og:image:height', content: '630' },
         { property: 'og:image:type', content: 'image/png' },
         { name: 'twitter:card', content: 'summary_large_image' },
+        {
+          name: 'twitter:title',
+          content: 'Compara Tasas - La mejor inversión para vos',
+        },
+        {
+          name: 'twitter:description',
+          content:
+            'Compara tasas de plazos fijos, fondos comunes de inversión, cuentas remuneradas y rendimientos crypto en Argentina. Encontrá la mejor inversión para vos.',
+        },
         { name: 'twitter:image', content: 'https://comparatasas.ar/meta-imagen.png' },
         {
           name: 'twitter:image:alt',

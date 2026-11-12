@@ -326,11 +326,15 @@ defineOgImage('ComparaTasas.takumi', {
 })
 
 useSeoMeta({
-  title: 'Comisiones de cobro',
+  title: 'Comisiones de cobro POS, QR y link',
   description:
-    'Compará aranceles de cobro (POS, QR, link y checkout) de adquirentes y billeteras en Argentina.',
-  ogTitle: 'Comisiones de cobro - Compara Tasas',
-  ogDescription: 'Ranking de comisiones de cobro por canal, medio de pago y plazo de acreditación.',
+    'Compará aranceles de cobro (POS, QR, link y checkout) de adquirentes y billeteras en Argentina, con medio de pago y plazo de acreditación.',
+  ogTitle: 'Comisiones de cobro POS, QR y link - Compara Tasas',
+  ogDescription:
+    'Compará aranceles de cobro (POS, QR, link y checkout) de adquirentes y billeteras en Argentina, con medio de pago y plazo de acreditación.',
+  twitterTitle: 'Comisiones de cobro POS, QR y link - Compara Tasas',
+  twitterDescription:
+    'Compará aranceles de cobro (POS, QR, link y checkout) de adquirentes y billeteras en Argentina, con medio de pago y plazo de acreditación.',
 })
 
 useHead({

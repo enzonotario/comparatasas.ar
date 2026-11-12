@@ -212,25 +212,31 @@ const mobileKpiItems = computed(() =>
   kpiItems.value.filter((item) => item.label !== 'Patrimonio total'),
 )
 
+const seoTitle = computed(() =>
+  fundDetail.value
+    ? `${fundDetail.value.nombre} - Fondo común de inversión`
+    : 'Detalle de fondo común de inversión',
+)
+
+const seoDescription = computed(() => {
+  if (!fundDetail.value) {
+    return 'Consultá rendimientos, composición de cartera, honorarios, patrimonio e histórico de fondos comunes de inversión (FCI) en Argentina.'
+  }
+
+  if (props.tab === 'historico') {
+    return `Histórico de rendimientos y evolución del VCP de ${fundDetail.value.nombre}. Consultá la performance de este FCI en Argentina.`
+  }
+
+  return `Compará ${fundDetail.value.nombre}: rendimientos, composición de cartera, honorarios, patrimonio e histórico de este FCI en Argentina.`
+})
+
 useSeoMeta({
-  title: () =>
-    fundDetail.value ? `${fundDetail.value.nombre} - Fondo común de inversión` : 'Detalle de FCI',
-  description: () =>
-    fundDetail.value
-      ? props.tab === 'historico'
-        ? `Histórico de rendimientos y evolución de ${fundDetail.value.nombre}.`
-        : `Detalle, composición, rendimientos e histórico de ${fundDetail.value.nombre}.`
-      : 'Información detallada de un fondo común de inversión.',
-  ogTitle: () =>
-    fundDetail.value
-      ? `${fundDetail.value.nombre} - Compara Tasas`
-      : 'Detalle de FCI - Compara Tasas',
-  ogDescription: () =>
-    fundDetail.value
-      ? props.tab === 'historico'
-        ? `Consultá la evolución histórica de ${fundDetail.value.nombre}.`
-        : `Consultá rendimientos, composición, honorarios e histórico de ${fundDetail.value.nombre}.`
-      : 'Información detallada de un fondo común de inversión.',
+  title: seoTitle,
+  description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
+  twitterTitle: seoTitle,
+  twitterDescription: seoDescription,
 })
 </script>
 

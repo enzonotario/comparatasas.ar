@@ -279,7 +279,7 @@ const seoTitle = computed(() =>
 const seoDescription = computed(() =>
   props.producto === 'cauciones'
     ? 'Compará comisiones de brokers argentinos por producto, moneda y operación. Incluye membresía de plan cuando aplica.'
-    : `Compará comisiones de ALyC para ${productoLabel.value.toLowerCase()} en ARS y USD.`,
+    : `Compará comisiones de ALyC para operar ${productoLabel.value.toLowerCase()} en ARS y USD: tasa publicada, moneda, operación y membresía cuando aplica.`,
 )
 
 const canonicalUrl = computed(
@@ -306,6 +306,8 @@ useSeoMeta({
   description: seoDescription,
   ogTitle: computed(() => `${seoTitle.value} - Compara Tasas`),
   ogDescription: seoDescription,
+  twitterTitle: computed(() => `${seoTitle.value} - Compara Tasas`),
+  twitterDescription: seoDescription,
 })
 
 useHead({

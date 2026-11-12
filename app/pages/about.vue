@@ -7,11 +7,14 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Acerca de',
+  title: 'Acerca de Compara Tasas',
   description:
     'Compara Tasas es un sitio independiente y open source para comparar tasas de interés y rendimientos en Argentina.',
-  ogTitle: 'Acerca de - Compara Tasas',
+  ogTitle: 'Acerca de Compara Tasas',
   ogDescription:
+    'Compara Tasas es un sitio independiente y open source para comparar tasas de interés y rendimientos en Argentina.',
+  twitterTitle: 'Acerca de Compara Tasas',
+  twitterDescription:
     'Compara Tasas es un sitio independiente y open source para comparar tasas de interés y rendimientos en Argentina.',
 })
 

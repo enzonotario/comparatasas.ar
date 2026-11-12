@@ -42,8 +42,8 @@ const pageDescription = computed(() =>
 )
 const seoDescription = computed(() =>
   moneda.value === 'usd'
-    ? 'Consultá tasa actual, tasa min./max. del día, plazos y montos operados de cauciones en USD.'
-    : 'Consultá tasa actual, tasa min./max. del día, plazos y montos operados de cauciones en ARS.',
+    ? 'Consultá tasa actual, mínima y máxima del día, plazos y montos operados de cauciones en USD en Argentina. Curva de tasas y comisiones de brokers.'
+    : 'Consultá tasa actual, mínima y máxima del día, plazos y montos operados de cauciones en ARS en Argentina. Curva de tasas y comisiones de brokers.',
 )
 const canonicalUrl = computed(() =>
   moneda.value === 'usd'
@@ -56,11 +56,15 @@ watchEffect(() => {
   route.meta.pageDescription = pageDescription.value
 })
 
+const seoTitle = computed(() => `${pageTitle.value}: tasas y montos del día`)
+
 useSeoMeta({
-  title: pageTitle,
+  title: seoTitle,
   description: seoDescription,
-  ogTitle: pageTitle,
+  ogTitle: seoTitle,
   ogDescription: seoDescription,
+  twitterTitle: seoTitle,
+  twitterDescription: seoDescription,
 })
 
 useHead({

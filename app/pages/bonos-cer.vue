@@ -17,11 +17,15 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Bonos CER',
+  title: 'Bonos CER: cotización y TIR',
   description:
-    'Compará cotización y TIR (%) de bonos soberanos en pesos ajustados por CER en Argentina.',
-  ogTitle: 'Bonos CER — TIR y curva',
-  ogDescription: 'Bonos soberanos en pesos ajustados por CER: cotización, TIR y curva por plazo.',
+    'Compará cotización, TIR (%) y curva por plazo de bonos soberanos en pesos ajustados por CER en Argentina. Datos de mercado actualizados.',
+  ogTitle: 'Bonos CER: cotización y TIR — Compara Tasas',
+  ogDescription:
+    'Compará cotización, TIR (%) y curva por plazo de bonos soberanos en pesos ajustados por CER en Argentina. Datos de mercado actualizados.',
+  twitterTitle: 'Bonos CER: cotización y TIR — Compara Tasas',
+  twitterDescription:
+    'Compará cotización, TIR (%) y curva por plazo de bonos soberanos en pesos ajustados por CER en Argentina. Datos de mercado actualizados.',
 })
 
 useHead({

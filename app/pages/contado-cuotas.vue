@@ -32,12 +32,15 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Contado vs Cuotas',
+  title: 'Contado vs Cuotas: simulador',
   description:
-    'Simulá una compra y compará contado contra cuotas con tasa implícita y valor presente usando la REM esperada.',
-  ogTitle: 'Contado vs Cuotas - Compara Tasas',
+    'Simulá una compra y compará contado contra cuotas con tasa implícita y valor presente usando la inflación esperada REM de Argentina.',
+  ogTitle: 'Contado vs Cuotas: simulador - Compara Tasas',
   ogDescription:
-    'Compará el costo implícito de pagar en cuotas contra el contado usando inflación esperada REM.',
+    'Simulá una compra y compará contado contra cuotas con tasa implícita y valor presente usando la inflación esperada REM de Argentina.',
+  twitterTitle: 'Contado vs Cuotas: simulador - Compara Tasas',
+  twitterDescription:
+    'Simulá una compra y compará contado contra cuotas con tasa implícita y valor presente usando la inflación esperada REM de Argentina.',
 })
 
 useHead({

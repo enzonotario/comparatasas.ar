@@ -75,11 +75,15 @@ defineOgImage('ComparaTasas.takumi', {
 })
 
 useSeoMeta({
-  title: 'Préstamos Personales',
+  title: 'Préstamos Personales: TNA, TEA y CFT',
   description:
-    'Compará tasas de préstamos personales en Argentina con tablas por plazo: TNA, TEA y CFT TEA.',
-  ogTitle: 'Préstamos Personales - Compara Tasas Argentina',
-  ogDescription: 'Compará préstamos personales por CFT TEA con tasas por tramo de plazo.',
+    'Compará tasas de préstamos personales en Argentina con tablas por plazo: TNA, TEA y CFT TEA. Simulá cuotas y revisá techos BCRA.',
+  ogTitle: 'Préstamos Personales: TNA, TEA y CFT - Compara Tasas',
+  ogDescription:
+    'Compará tasas de préstamos personales en Argentina con tablas por plazo: TNA, TEA y CFT TEA. Simulá cuotas y revisá techos BCRA.',
+  twitterTitle: 'Préstamos Personales: TNA, TEA y CFT - Compara Tasas',
+  twitterDescription:
+    'Compará tasas de préstamos personales en Argentina con tablas por plazo: TNA, TEA y CFT TEA. Simulá cuotas y revisá techos BCRA.',
 })
 
 useHead({

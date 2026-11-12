@@ -38,11 +38,14 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Comparar FCI',
+  title: 'Comparar fondos FCI (ARS/USD)',
   description:
     'Compará fondos comunes de inversión en Argentina separados por moneda (ARS/USD): rendimientos, TNA, inversión mínima, liquidación y evolución histórica.',
-  ogTitle: 'Comparar FCI',
+  ogTitle: 'Comparar fondos FCI (ARS/USD) - Compara Tasas',
   ogDescription:
+    'Compará fondos comunes de inversión en Argentina separados por moneda (ARS/USD): rendimientos, TNA, inversión mínima, liquidación y evolución histórica.',
+  twitterTitle: 'Comparar fondos FCI (ARS/USD) - Compara Tasas',
+  twitterDescription:
     'Compará fondos comunes de inversión en Argentina separados por moneda (ARS/USD): rendimientos, TNA, inversión mínima, liquidación y evolución histórica.',
 })
 
@@ -431,7 +434,7 @@ function patrimonioLabel(fund: FciCompareFund) {
     }"
   >
     <UDashboardNavbar
-      title="Comparar"
+      title="Comparar FCI"
       class="shrink-0"
       :ui="{
         root: 'max-lg:sticky max-lg:top-[var(--ui-header-height)] max-lg:z-40 max-lg:bg-default/95 max-lg:backdrop-blur-md',

@@ -24,9 +24,15 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Mercado de FCI',
+  title: 'Mercado de FCI en Argentina',
   description:
-    'Dashboard del mercado de FCI en Argentina: AUM por tipo, ranking de gestoras y tenencias agregadas.',
+    'Dashboard del mercado de FCI en Argentina: patrimonio (AUM) por tipo, ranking de gestoras, tenencias agregadas y evolución histórica.',
+  ogTitle: 'Mercado de FCI en Argentina - Compara Tasas',
+  ogDescription:
+    'Dashboard del mercado de FCI en Argentina: patrimonio (AUM) por tipo, ranking de gestoras, tenencias agregadas y evolución histórica.',
+  twitterTitle: 'Mercado de FCI en Argentina - Compara Tasas',
+  twitterDescription:
+    'Dashboard del mercado de FCI en Argentina: patrimonio (AUM) por tipo, ranking de gestoras, tenencias agregadas y evolución histórica.',
 })
 
 useHead({
@@ -220,7 +226,7 @@ const flowKpis = computed(() => {
     }"
   >
     <UDashboardNavbar
-      title="Mercado"
+      title="Mercado de FCI"
       class="shrink-0"
       :ui="{
         root: 'max-lg:sticky max-lg:top-[var(--ui-header-height)] max-lg:z-40 max-lg:bg-default/95 max-lg:backdrop-blur-md',
