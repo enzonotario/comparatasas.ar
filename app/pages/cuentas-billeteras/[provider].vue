@@ -11,6 +11,7 @@ import {
   getInstitutionShortName,
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
+import { fitPageTitle } from '~/lib/seo-title'
 
 interface AccountSummary {
   tna: number
@@ -131,11 +132,19 @@ function handleProviderClick() {
   }
 }
 
+const seoTitle = computed(() => fitPageTitle(displayName.value, 'Historial TNA'))
+const seoDescription = computed(
+  () =>
+    `Evolución histórica de TNA y Tope de ${displayName.value}. Analizá cómo han cambiado las tasas y condiciones a lo largo del tiempo.`,
+)
+
 useSeoMeta({
-  title: `${displayName.value} - Historial de TNA y Tope - comparatasas.ar`,
-  description: `Evolución histórica de TNA y Tope de ${displayName.value}. Analizá cómo han cambiado las tasas y condiciones a lo largo del tiempo.`,
-  ogTitle: `${displayName.value} - Historial de TNA y Tope - comparatasas.ar`,
-  ogDescription: `Evolución histórica de TNA y Tope de ${displayName.value}.`,
+  title: seoTitle,
+  description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
+  twitterTitle: seoTitle,
+  twitterDescription: seoDescription,
 })
 </script>
 

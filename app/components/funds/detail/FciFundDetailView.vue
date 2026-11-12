@@ -22,6 +22,7 @@ import {
 import { getInstitutionUrl } from '~/lib/mappings/institutions'
 import { withOutboundUtm } from '~/lib/outbound-url'
 import { getFundMappingBySlug, getFundTypeInfo } from '~/lib/mappings/funds'
+import { fitPageTitle } from '~/lib/seo-title'
 
 const props = defineProps<{ tab: FundDetailTab }>()
 
@@ -212,11 +213,13 @@ const mobileKpiItems = computed(() =>
   kpiItems.value.filter((item) => item.label !== 'Patrimonio total'),
 )
 
-const seoTitle = computed(() =>
-  fundDetail.value
-    ? `${fundDetail.value.nombre} - Fondo común de inversión`
-    : 'Detalle de fondo común de inversión',
-)
+const seoTitle = computed(() => {
+  if (!fundDetail.value) return fitPageTitle('Detalle de FCI')
+  return fitPageTitle(
+    fundDetail.value.nombre,
+    props.tab === 'historico' ? 'Histórico' : undefined,
+  )
+})
 
 const seoDescription = computed(() => {
   if (!fundDetail.value) {
