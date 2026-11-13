@@ -17,4 +17,10 @@ describe('provider logos', () => {
     expect(resolveProviderLogo('Ualá Plus 2')).toBeTruthy()
     expect(resolveProviderLogo('entidad que no existe')).toBeUndefined()
   })
+
+  it('usa el logo institucional de Adcap en lugar de un data URI embebido', () => {
+    expect(resolveProviderLogo('Adcap')).toBe(
+      'https://api.argentinadatos.com/static/logos/adcap.svg',
+    )
+  })
 })
