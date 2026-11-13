@@ -2,6 +2,7 @@
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { useComisionesCaucionesBrokers } from '~/composables/useComisionesCaucionesBrokers'
+import { withHeaderTooltip, headerLabelWithTooltip } from '~/lib/table-header-tooltip'
 import type { CaucionMoneda } from '~/composables/useCauciones'
 import {
   filterComisionesCauciones,
@@ -102,10 +103,10 @@ const rows = computed<ComisionRow[]>(() => {
 const sorting = ref([{ id: 'tasaAnualSort', desc: false }])
 const { rowSelection, onSelect, withSelection } = useComparableTableRows()
 
-function createSortableHeader(label: string) {
+function createSortableHeader(label: string, fullLabel?: string) {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
-    return h(UButton, {
+    const button = h(UButton, {
       color: 'neutral',
       variant: 'ghost',
       label,
@@ -117,6 +118,7 @@ function createSortableHeader(label: string) {
       class: '-mx-2.5 font-bold',
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
+    return withHeaderTooltip(button, fullLabel)
   }
 }
 
@@ -178,7 +180,7 @@ const columns: TableColumn<ComisionRow>[] = [
   },
   {
     accessorKey: 'tasaPublicada',
-    header: createSortableHeader('Comisión publicada'),
+    header: createSortableHeader('Comisión publicada', 'Comisión publicada por el broker'),
     cell: ({ row }) => {
       const item = row.original
       const badges = []
@@ -210,7 +212,7 @@ const columns: TableColumn<ComisionRow>[] = [
   },
   {
     accessorKey: 'tasaAnualSort',
-    header: createSortableHeader('Anual equiv.'),
+    header: createSortableHeader('Anual equiv.', 'Tasa anual equivalente'),
     cell: ({ row }) =>
       h(
         'p',
@@ -220,7 +222,7 @@ const columns: TableColumn<ComisionRow>[] = [
   },
   {
     accessorKey: 'derechoMercado',
-    header: 'Derecho mercado',
+    header: () => headerLabelWithTooltip('Derecho mercado', 'Derecho de mercado'),
     cell: ({ row }) => {
       const value = row.original.derechoMercado
       if (value == null) return h('span', { class: 'text-muted' }, '—')

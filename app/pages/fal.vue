@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { withHeaderTooltip } from '~/lib/table-header-tooltip'
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { useRouteQuery } from '@vueuse/router'
@@ -206,14 +207,14 @@ useHead({
   ],
 })
 
-function sortableHeader(label: string) {
+function sortableHeader(label: string, fullLabel?: string) {
   return ({
     column,
   }: {
     column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (desc?: boolean) => void }
   }) => {
     const isSorted = column.getIsSorted()
-    return h(UButton, {
+    const button = h(UButton, {
       color: 'neutral',
       variant: 'ghost',
       label,
@@ -226,6 +227,7 @@ function sortableHeader(label: string) {
       ui: { label: 'min-w-0 !whitespace-normal !overflow-visible !text-clip' },
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
+    return withHeaderTooltip(button, fullLabel)
   }
 }
 
@@ -358,7 +360,7 @@ const columns = computed<TableColumn<FalRow>[]>(() => [
   },
   {
     accessorKey: 'vehiculoLabel',
-    header: sortableHeader('Vehículo'),
+    header: sortableHeader('Vehículo', 'Vehículo de inversión'),
     meta: columnMeta('w-[11%]'),
   },
   {
@@ -381,7 +383,7 @@ const columns = computed<TableColumn<FalRow>[]>(() => [
   },
   {
     accessorKey: 'canalLabel',
-    header: sortableHeader('Alta'),
+    header: sortableHeader('Alta', 'Fecha de alta'),
     meta: columnMeta('w-[12%]'),
   },
   {

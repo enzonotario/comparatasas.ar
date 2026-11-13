@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { withHeaderTooltip } from '~/lib/table-header-tooltip'
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { useMediaQuery } from '@vueuse/core'
@@ -642,11 +643,11 @@ const filteredRows = computed(() => {
 
 const formattedUpdatedAt = computed(() => formatUpdatedAt(fechaActualizacion.value))
 
-function createSortableHeader(label: string) {
+function createSortableHeader(label: string, fullLabel?: string) {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
 
-    return h(UButton, {
+    const button = h(UButton, {
       color: 'neutral',
       variant: 'ghost',
       label,
@@ -658,6 +659,7 @@ function createSortableHeader(label: string) {
       class: '-mx-2.5 font-semibold',
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
+    return withHeaderTooltip(button, fullLabel)
   }
 }
 
@@ -796,7 +798,7 @@ const columns: TableColumn<RemesaRow>[] = [
   },
   {
     accessorKey: 'costoRecibirPagosSort',
-    header: createSortableHeader('Recibir pagos'),
+    header: createSortableHeader('Recibir pagos', 'Costo por recibir pagos'),
     cell: ({ row }) =>
       renderCostCell(
         row.original.costoRecibirPagos,
@@ -805,18 +807,18 @@ const columns: TableColumn<RemesaRow>[] = [
   },
   {
     accessorKey: 'retiroArsSort',
-    header: createSortableHeader('Retiro ARS'),
+    header: createSortableHeader('Retiro ARS', 'Costo de retiro en pesos'),
     cell: ({ row }) =>
       renderCostCell(row.original.retiroArs, getDetail(row.original.detalles, 'retiroArs')),
   },
   {
     accessorKey: 'fxSpreadSort',
-    header: createSortableHeader('Spread fx'),
+    header: createSortableHeader('Spread fx', 'Spread cambiario'),
     cell: ({ row }) => renderFxSpreadCell(row.original),
   },
   {
     accessorKey: 'costoMantenimientoTarjetaSort',
-    header: createSortableHeader('Mant. tarjeta'),
+    header: createSortableHeader('Mant. tarjeta', 'Mantenimiento de tarjeta'),
     cell: ({ row }) =>
       renderCostCell(
         row.original.costoMantenimientoTarjeta,
@@ -825,7 +827,7 @@ const columns: TableColumn<RemesaRow>[] = [
   },
   {
     accessorKey: 'costoTarjetaSort',
-    header: createSortableHeader('Uso tarjeta'),
+    header: createSortableHeader('Uso tarjeta', 'Costo por uso de tarjeta'),
     cell: ({ row }) =>
       renderCostCell(row.original.costoTarjeta, getDetail(row.original.detalles, 'costoTarjeta')),
   },

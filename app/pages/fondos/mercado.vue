@@ -540,11 +540,27 @@ const flowKpis = computed(() => {
                     />
                   </th>
                   <th class="py-2 px-1 font-medium">Tipo</th>
-                  <th class="py-2 px-1 font-medium text-right">AUM</th>
-                  <th class="py-2 px-1 font-medium text-right">1D</th>
-                  <th class="py-2 px-1 font-medium text-right">30D</th>
-                  <th class="py-2 px-1 font-medium text-right">YTD</th>
-                  <th class="py-2 px-1 font-medium text-right">TNA</th>
+                  <th class="py-2 px-1 font-medium text-right">
+                    <TableHeaderTooltip text="Activos bajo administración (AUM)"
+                      >AUM</TableHeaderTooltip
+                    >
+                  </th>
+                  <th class="py-2 px-1 font-medium text-right">
+                    <TableHeaderTooltip text="Retorno de los últimos 7 días">1D</TableHeaderTooltip>
+                  </th>
+                  <th class="py-2 px-1 font-medium text-right">
+                    <TableHeaderTooltip text="Retorno de los últimos 30 días"
+                      >30D</TableHeaderTooltip
+                    >
+                  </th>
+                  <th class="py-2 px-1 font-medium text-right">
+                    <TableHeaderTooltip text="Retorno acumulado en el año (YTD)"
+                      >YTD</TableHeaderTooltip
+                    >
+                  </th>
+                  <th class="py-2 px-1 font-medium text-right">
+                    <TableHeaderTooltip text="Tasa nominal anual">TNA</TableHeaderTooltip>
+                  </th>
                 </tr>
               </thead>
               <tbody>

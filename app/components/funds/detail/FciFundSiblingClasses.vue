@@ -326,14 +326,16 @@ const siblingIds = computed(() => sortedSiblings.value.map((row) => row.fondo))
             </th>
             <th class="py-1 px-1 font-medium text-right">
               <div class="flex justify-end">
-                <UButton
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  :icon="sortIcon('tna')"
-                  label="TNA est."
-                  @click="toggleSort('tna')"
-                />
+                <TableHeaderTooltip text="TNA estimada">
+                  <UButton
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    :icon="sortIcon('tna')"
+                    label="TNA est."
+                    @click="toggleSort('tna')"
+                  />
+                </TableHeaderTooltip>
               </div>
             </th>
             <th class="py-1 px-1 font-medium text-right">
@@ -362,14 +364,16 @@ const siblingIds = computed(() => sortedSiblings.value.map((row) => row.fondo))
             </th>
             <th class="py-1 px-1 font-medium text-right">
               <div class="flex justify-end">
-                <UButton
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  :icon="sortIcon('inversionMinima')"
-                  label="Inversión mín."
-                  @click="toggleSort('inversionMinima')"
-                />
+                <TableHeaderTooltip text="Inversión mínima">
+                  <UButton
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    :icon="sortIcon('inversionMinima')"
+                    label="Inversión mín."
+                    @click="toggleSort('inversionMinima')"
+                  />
+                </TableHeaderTooltip>
               </div>
             </th>
           </tr>

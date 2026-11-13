@@ -191,14 +191,14 @@ const rowsWithSimulation = computed((): PlazoFijoTableRowWithSimulation[] => {
   })
 })
 
-function createSortableHeader(label: string) {
+function createSortableHeader(label: string, fullLabel?: string) {
   return ({
     column,
   }: {
     column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (asc?: boolean) => void }
   }) => {
     const isSorted = column.getIsSorted()
-    return h(UButton, {
+    const button = h(UButton, {
       color: 'neutral',
       variant: 'ghost',
       label,
@@ -210,6 +210,7 @@ function createSortableHeader(label: string) {
       class: '-mx-2.5 font-bold whitespace-nowrap',
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
+    return withHeaderTooltip(button, fullLabel)
   }
 }
 
@@ -223,8 +224,11 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
   const plazoColumns: TableColumn<any>[] = props.columns.map((column) => ({
     id: getPlazoColumnSortId(column.key),
     accessorFn: (row: PlazoFijoTableRow) => row.sortTnaByPlazo[column.key] ?? 0,
-    header: ({ column: tableColumn }) =>
-      h(
+    header: ({ column: tableColumn }) => {
+      const fullLabel = /^\d+d$/.test(column.label)
+        ? `TNA a ${column.label.replace(/d$/, ' días')}`
+        : `TNA a ${column.label}`
+      return h(
         'div',
         {
           class: [
@@ -232,8 +236,9 @@ const tableColumns = computed<TableColumn<any>[]>(() => {
             isActivePlazoColumn(column) ? 'text-primary-600 dark:text-primary-400' : '',
           ],
         },
-        createSortableHeader(column.label)({ column: tableColumn }),
-      ),
+        createSortableHeader(column.label, fullLabel)({ column: tableColumn }),
+      )
+    },
     cell: ({ row }) => {
       const item = row.original as PlazoFijoTableRow & {
         simulationDisabled?: boolean

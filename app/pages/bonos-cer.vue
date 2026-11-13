@@ -7,6 +7,7 @@ import {
   diasAlVencimientoCer,
   durationYearsCerAprox,
 } from '~/composables/useBonosCer'
+import { withHeaderTooltip } from '~/lib/table-header-tooltip'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 import type { TableColumn } from '@nuxt/ui'
 import { useRouteQuery } from '@vueuse/router'
@@ -107,10 +108,10 @@ function formatDateShort(value: string): string {
   }).format(date)
 }
 
-function createSortableHeader(label: string, accessorKey: string) {
+function createSortableHeader(label: string, accessorKey: string, fullLabel?: string) {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
-    return h(UButton, {
+    const button = h(UButton, {
       color: 'neutral',
       variant: 'ghost',
       label,
@@ -122,6 +123,7 @@ function createSortableHeader(label: string, accessorKey: string) {
       class: '-mx-2.5 font-bold',
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
+    return withHeaderTooltip(button, fullLabel)
   }
 }
 
@@ -144,7 +146,7 @@ const columns: TableColumn<CerBondRow>[] = [
   },
   {
     accessorKey: 'tirPorcentaje',
-    header: createSortableHeader('TIR (%)', 'tirPorcentaje'),
+    header: createSortableHeader('TIR (%)', 'tirPorcentaje', 'Tasa interna de retorno'),
     cell: ({ row }) => {
       const v = row.getValue('tirPorcentaje') as number
       const cls = v >= 0 ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
@@ -153,7 +155,7 @@ const columns: TableColumn<CerBondRow>[] = [
   },
   {
     accessorKey: 'temPorcentaje',
-    header: createSortableHeader('TEM (%)', 'temPorcentaje'),
+    header: createSortableHeader('TEM (%)', 'temPorcentaje', 'Tasa efectiva mensual'),
     cell: ({ row }) => {
       const v = (row.getValue('temPorcentaje') as number) ?? 0
       return h('div', { class: 'font-bold text-sky-600 dark:text-sky-400' }, formatPctRaw(v))
@@ -162,14 +164,14 @@ const columns: TableColumn<CerBondRow>[] = [
   {
     id: 'durationYears',
     accessorFn: (row) => durationYearsCerAprox(row.fechaVencimiento),
-    header: createSortableHeader('Duration', 'durationYears'),
+    header: createSortableHeader('Duration', 'durationYears', 'Duration (años)'),
     cell: ({ row }) =>
       h('div', {}, durationYearsCerAprox(row.original.fechaVencimiento).toFixed(2)),
   },
   {
     id: 'daysToMaturity',
     accessorFn: (row) => diasAlVencimientoCer(row.fechaVencimiento),
-    header: createSortableHeader('Días', 'daysToMaturity'),
+    header: createSortableHeader('Días', 'daysToMaturity', 'Días al vencimiento'),
     cell: ({ row }) => h('div', {}, String(diasAlVencimientoCer(row.original.fechaVencimiento))),
   },
   {

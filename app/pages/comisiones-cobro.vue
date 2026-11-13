@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { withHeaderTooltip } from '~/lib/table-header-tooltip'
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { useRouteQuery } from '@vueuse/router'
@@ -353,14 +354,14 @@ useHead({
   ],
 })
 
-function sortableHeader(label: string) {
+function sortableHeader(label: string, fullLabel?: string) {
   return ({
     column,
   }: {
     column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (desc?: boolean) => void }
   }) => {
     const isSorted = column.getIsSorted()
-    return h(UButton, {
+    const button = h(UButton, {
       color: 'neutral',
       variant: 'ghost',
       label,
@@ -372,6 +373,7 @@ function sortableHeader(label: string) {
       class: '-mx-2.5 font-semibold',
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
+    return withHeaderTooltip(button, fullLabel)
   }
 }
 
@@ -552,7 +554,7 @@ const columns = computed<TableColumn<ComisionRowSimulada>[]>(() => {
     },
     {
       accessorKey: 'arancelSort',
-      header: sortableHeader('Arancel'),
+      header: sortableHeader('Arancel', 'Arancel publicado por la entidad'),
       cell: ({ row }) => renderArancelCell(row.original),
     },
   ]
@@ -561,12 +563,12 @@ const columns = computed<TableColumn<ComisionRowSimulada>[]>(() => {
     base.push(
       {
         accessorKey: 'costoSort',
-        header: sortableHeader('Costo'),
+        header: sortableHeader('Costo', 'Costo estimado de la operación'),
         cell: ({ row }) => renderCostoCell(row.original),
       },
       {
         accessorKey: 'netoSort',
-        header: sortableHeader('Neto'),
+        header: sortableHeader('Neto', 'Monto neto a recibir'),
         cell: ({ row }) => renderNetoCell(row.original),
       },
     )
@@ -575,7 +577,7 @@ const columns = computed<TableColumn<ComisionRowSimulada>[]>(() => {
   base.push(
     {
       accessorKey: 'acreditacionSort',
-      header: sortableHeader('Acreditación'),
+      header: sortableHeader('Acreditación', 'Plazo de acreditación'),
       cell: ({ row }) => renderAcreditacionCell(row.original),
     },
     {

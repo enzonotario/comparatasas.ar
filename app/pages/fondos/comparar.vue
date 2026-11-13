@@ -207,6 +207,8 @@ type MetricKey =
 interface CompareMetric {
   key: MetricKey
   label: string
+  /** Nombre largo para el tooltip del label corto. */
+  fullLabel?: string
   group: 'perfil' | 'rendimiento' | 'operativa'
   numeric?: boolean
   higherIsBetter?: boolean
@@ -220,6 +222,7 @@ const metrics: CompareMetric[] = [
   {
     key: 'patrimonio',
     label: 'Patrimonio',
+    fullLabel: 'Activos bajo administración (AUM)',
     group: 'perfil',
     numeric: true,
     higherIsBetter: true,
@@ -227,6 +230,7 @@ const metrics: CompareMetric[] = [
   {
     key: 'tna',
     label: 'TNA',
+    fullLabel: 'Tasa nominal anual',
     group: 'rendimiento',
     numeric: true,
     higherIsBetter: true,
@@ -235,6 +239,7 @@ const metrics: CompareMetric[] = [
   {
     key: 'tea',
     label: 'TEA',
+    fullLabel: 'Tasa efectiva anual',
     group: 'rendimiento',
     numeric: true,
     higherIsBetter: true,
@@ -243,6 +248,7 @@ const metrics: CompareMetric[] = [
   {
     key: 'retorno1d',
     label: 'Retorno 1D',
+    fullLabel: 'Retorno de los últimos 7 días',
     group: 'rendimiento',
     numeric: true,
     higherIsBetter: true,
@@ -251,6 +257,7 @@ const metrics: CompareMetric[] = [
   {
     key: 'retorno30d',
     label: 'Retorno 30D',
+    fullLabel: 'Retorno de los últimos 30 días',
     group: 'rendimiento',
     numeric: true,
     higherIsBetter: true,
@@ -259,6 +266,7 @@ const metrics: CompareMetric[] = [
   {
     key: 'retornoYtd',
     label: 'Retorno YTD',
+    fullLabel: 'Retorno acumulado en el año (YTD)',
     group: 'rendimiento',
     numeric: true,
     higherIsBetter: true,
@@ -274,6 +282,7 @@ const metrics: CompareMetric[] = [
   {
     key: 'plazo',
     label: 'Liquidación',
+    fullLabel: 'Plazo de liquidación',
     group: 'operativa',
     numeric: true,
     higherIsBetter: false,
@@ -621,7 +630,12 @@ function patrimonioLabel(fund: FciCompareFund) {
                     class="border-b border-default last:border-0 hover:bg-elevated transition-colors"
                   >
                     <td class="py-2.5 px-3 text-muted sticky left-0 bg-default">
-                      {{ row.metric.label }}
+                      <TableHeaderTooltip
+                        v-if="row.metric.fullLabel"
+                        :text="row.metric.fullLabel"
+                        >{{ row.metric.label }}</TableHeaderTooltip
+                      >
+                      <template v-else>{{ row.metric.label }}</template>
                     </td>
                     <td
                       v-for="(fund, index) in comparedFunds"

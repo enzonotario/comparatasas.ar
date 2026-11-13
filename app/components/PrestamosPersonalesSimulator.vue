@@ -707,7 +707,11 @@ onMounted(() => {
                   <th class="px-2 py-2 font-semibold">Año</th>
                   <th class="px-2 py-2 font-semibold">Ingreso</th>
                   <th class="px-2 py-2 font-semibold">Cuota</th>
-                  <th class="px-2 py-2 font-semibold">Relación</th>
+                  <th class="px-2 py-2 font-semibold">
+                    <TableHeaderTooltip text="Relación cuota / ingreso"
+                      >Relación</TableHeaderTooltip
+                    >
+                  </th>
                 </tr>
               </thead>
               <tbody>

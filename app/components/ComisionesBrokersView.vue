@@ -318,14 +318,14 @@ useHead({
   ]),
 })
 
-function sortableHeader(label: string) {
+function sortableHeader(label: string, fullLabel?: string) {
   return ({
     column,
   }: {
     column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (desc?: boolean) => void }
   }) => {
     const isSorted = column.getIsSorted()
-    return h(UButton, {
+    const button = h(UButton, {
       color: 'neutral',
       variant: 'ghost',
       label,
@@ -337,6 +337,7 @@ function sortableHeader(label: string) {
       class: '-mx-2.5 font-semibold',
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
+    return withHeaderTooltip(button, fullLabel)
   }
 }
 
@@ -432,14 +433,14 @@ const columns = computed<TableColumn<ComisionRow>[]>(() => {
 
   cols.push({
     accessorKey: 'tasaSort',
-    header: sortableHeader('Comisión'),
+    header: sortableHeader('Comisión', 'Comisión por operación'),
     cell: ({ row }) => renderComisionCell(row.original),
   })
 
   if (showEquivAnual.value) {
     cols.push({
       accessorKey: 'tasaAnualLabel',
-      header: 'Equiv. anual',
+      header: () => headerLabelWithTooltip('Equiv. anual', 'Equivalente anual'),
       cell: ({ row }) => h('p', { class: 'tabular-nums text-sm' }, row.original.tasaAnualLabel),
     })
   }
@@ -460,7 +461,7 @@ const columns = computed<TableColumn<ComisionRow>[]>(() => {
   cols.push(
     {
       accessorKey: 'ivaLabel',
-      header: 'IVA',
+      header: () => headerLabelWithTooltip('IVA', 'Impuesto al valor agregado'),
       cell: ({ row }) => {
         if (row.original.ivaAdicional) {
           return h(UBadge, { color: 'neutral', variant: 'subtle', size: 'sm' }, () => '+ IVA')
@@ -470,12 +471,12 @@ const columns = computed<TableColumn<ComisionRow>[]>(() => {
     },
     {
       accessorKey: 'derechoMercado',
-      header: 'Derecho mercado',
+      header: () => headerLabelWithTooltip('Derecho mercado', 'Derecho de mercado'),
       cell: ({ row }) => h('span', { class: 'tabular-nums text-sm' }, row.original.derechoLabel),
     },
     {
       accessorKey: 'comisionMinima',
-      header: 'Mínimo',
+      header: () => headerLabelWithTooltip('Mínimo', 'Comisión mínima'),
       cell: ({ row }) => h('span', { class: 'tabular-nums text-sm' }, row.original.minimoLabel),
     },
     {

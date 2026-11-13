@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { withHeaderTooltip } from '~/lib/table-header-tooltip'
 import { h } from 'vue'
 import { UButton } from '#components'
 import CaucionYieldCurveChart from '~/components/charts/CaucionYieldCurveChart.vue'
@@ -155,10 +156,10 @@ function formatTasaRango(min: number, max: number): string {
   return `${formatPercentAuto(min)} – ${formatPercentAuto(max)}`
 }
 
-function createSortableHeader(label: string) {
+function createSortableHeader(label: string, fullLabel?: string) {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
-    return h(UButton, {
+    const button = h(UButton, {
       color: 'neutral',
       variant: 'ghost',
       label,
@@ -170,6 +171,7 @@ function createSortableHeader(label: string) {
       class: '-mx-2.5 font-bold',
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
+    return withHeaderTooltip(button, fullLabel)
   }
 }
 
@@ -197,7 +199,7 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
     },
     {
       accessorKey: 'tasaNeta',
-      header: createSortableHeader('Tasa neta'),
+      header: createSortableHeader('Tasa neta', 'Tasa neta de comisión'),
       cell: ({ row }) => {
         const neta = row.original.tasaNeta
         if (neta == null) {
@@ -212,7 +214,7 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
     },
     {
       accessorKey: 'tasaMinDia',
-      header: createSortableHeader('Tasa min. día'),
+      header: createSortableHeader('Tasa min. día', 'Tasa mínima del día'),
       cell: ({ row }) =>
         h(
           'div',
@@ -222,7 +224,7 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
     },
     {
       accessorKey: 'tasaMaxDia',
-      header: createSortableHeader('Tasa max. día'),
+      header: createSortableHeader('Tasa max. día', 'Tasa máxima del día'),
       cell: ({ row }) =>
         h(
           'div',
@@ -232,7 +234,7 @@ const columns = computed<TableColumn<CaucionRowConNeta>[]>(() => {
     },
     {
       accessorKey: 'montoContado',
-      header: createSortableHeader('Monto contado'),
+      header: createSortableHeader('Monto contado', 'Monto en pesos a invertir'),
       cell: ({ row }) =>
         h(
           'div',

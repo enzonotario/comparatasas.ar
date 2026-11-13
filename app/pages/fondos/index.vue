@@ -5,6 +5,7 @@ import { useRouteQuery } from '@vueuse/router'
 import type { TableColumn, TabsItem } from '@nuxt/ui'
 import { ogUpdatedAtDate, top3Funds } from '~/utils/og-data'
 import { getFundDetailPath } from '~/lib/funds-detail'
+import { withHeaderTooltip } from '~/lib/table-header-tooltip'
 import { getVariableFundRiskLevel } from '~/lib/variable-fund-risk'
 import { FUND_ACTIVE_REPORT_MAX_AGE_DAYS } from '~/lib/fci-fund-active'
 import {
@@ -415,7 +416,11 @@ useHead({
   ],
 })
 
-function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = 'left') {
+function getSortableHeader(
+  label: string,
+  align: 'left' | 'right' | 'center' = 'left',
+  fullLabel?: string,
+) {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
 
@@ -437,13 +442,14 @@ function getSortableHeader(label: string, align: 'left' | 'right' | 'center' = '
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
 
+    const content = withHeaderTooltip(button, fullLabel)
     if (align === 'right') {
-      return h('div', { class: 'text-right' }, button)
+      return h('div', { class: 'text-right' }, content)
     }
     if (align === 'center') {
-      return h('div', { class: 'text-center' }, button)
+      return h('div', { class: 'text-center' }, content)
     }
-    return button
+    return content
   }
 }
 
@@ -680,7 +686,7 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
   {
     id: 'retorno1d',
     accessorFn: (row) => finiteOrUndefined(row.retorno1d),
-    header: getSortableHeader('1d', 'right'),
+    header: getSortableHeader('1d', 'right', 'Retorno últimos 7 días'),
     cell: ({ row }) => {
       const value = row.original.retorno1d
       const formatted = formatPercentAuto(value)
@@ -693,7 +699,7 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
   {
     id: 'retorno30d',
     accessorFn: (row) => finiteOrUndefined(row.retorno30d),
-    header: getSortableHeader('30d', 'right'),
+    header: getSortableHeader('30d', 'right', 'Retorno últimos 30 días'),
     cell: ({ row }) => {
       const value = row.original.retorno30d
       const formatted = formatPercentAuto(value)
@@ -706,7 +712,7 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
   {
     id: 'tna',
     accessorFn: (row) => finiteOrUndefined(row.tna),
-    header: getSortableHeader('TNA est.', 'right'),
+    header: getSortableHeader('TNA est.', 'right', 'TNA estimada anual'),
     cell: ({ row }) => {
       const formatted = formatRatePercent(row.original.tna)
       if (!formatted) return mutedDash()
@@ -724,7 +730,7 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
   {
     id: 'retornoYtd',
     accessorFn: (row) => finiteOrUndefined(row.retornoYtd),
-    header: getSortableHeader('YTD', 'right'),
+    header: getSortableHeader('YTD', 'right', 'Retorno acumulado en el año (YTD)'),
     cell: ({ row }) => {
       const value = row.original.retornoYtd
       const formatted = formatPercentAuto(value)
@@ -737,7 +743,7 @@ const columns: TableColumn<FundCatalogGroupRow>[] = [
   {
     id: 'vcp',
     accessorFn: (row) => finiteOrUndefined(row.vcp),
-    header: getSortableHeader('VCP', 'right'),
+    header: getSortableHeader('VCP', 'right', 'Valor de la cuotaparte'),
     cell: ({ row }) => {
       const formatted = formatDecimal(row.original.vcp)
       if (formatted === '—') return mutedDash()

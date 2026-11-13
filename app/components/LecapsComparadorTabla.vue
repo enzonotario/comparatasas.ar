@@ -4,6 +4,7 @@ import type { TableColumn } from '@nuxt/ui'
 import type { LecapItem } from '~/composables/useLecaps'
 import { costoCompraLetrasPct, type ComisionBrokerApi } from '~/lib/finance/comision-caucion-broker'
 import { calcularFilaLecap, type LecapCalculoResultado } from '~/lib/finance/lecap-calculos'
+import { withHeaderTooltip } from '~/lib/table-header-tooltip'
 import { resolvePlazoFijoRateForHorizon } from '~/composables/usePlazosFijos'
 import { STANDARD_PLAZO_COLUMNS } from '~/lib/plazo-fijo-rates'
 import type { PlazoFijoTableRow } from '~/types/investments'
@@ -138,10 +139,10 @@ function formatPfPlazoHint(plazoKey: string | null): string | null {
   return column ? `PF ${column.label}` : `PF ${plazoKey}d`
 }
 
-function createSortableHeader(label: string) {
+function createSortableHeader(label: string, fullLabel?: string) {
   return ({ column }: { column: any }) => {
     const isSorted = column.getIsSorted()
-    return h(UButton, {
+    const button = h(UButton, {
       color: 'neutral',
       variant: 'ghost',
       size: 'sm',
@@ -154,6 +155,7 @@ function createSortableHeader(label: string) {
       class: '-mx-1.5 px-1 font-semibold',
       onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     })
+    return withHeaderTooltip(button, fullLabel)
   }
 }
 
@@ -180,7 +182,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   },
   {
     accessorKey: 'maturity',
-    header: createSortableHeader('Vto.'),
+    header: createSortableHeader('Vto.', 'Vencimiento'),
     cell: ({ row }) =>
       h('div', { class: 'tabular-nums text-muted' }, formatDate(row.original.maturity)),
   },
@@ -192,7 +194,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   },
   {
     accessorKey: 'precio1Vn',
-    header: createSortableHeader('Precio'),
+    header: createSortableHeader('Precio', 'Precio por 1 VN (cotización ÷ 100)'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) =>
       h(
@@ -206,7 +208,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   {
     id: 'variacion',
     accessorFn: (row) => row.item.variacionPorcentaje ?? Number.NEGATIVE_INFINITY,
-    header: createSortableHeader('Var.'),
+    header: createSortableHeader('Var.', 'Variación'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) => {
       const v = row.original.item.variacionPorcentaje
@@ -218,7 +220,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   {
     id: 'precioConComision',
     accessorFn: (row) => row.calc.precioConComision,
-    header: createSortableHeader('P. c/com.'),
+    header: createSortableHeader('P. c/com.', 'Precio con comisión'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) =>
       h('div', { class: 'tabular-nums' }, formatPrecio1Vn(row.original.calc.precioConComision)),
@@ -226,7 +228,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   {
     id: 'aRecibir1Vn',
     accessorFn: (row) => row.calc.aRecibir1Vn,
-    header: createSortableHeader('A recibir'),
+    header: createSortableHeader('A recibir', 'A recibir al vencimiento'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) =>
       h('div', { class: 'tabular-nums' }, formatPrecio1Vn(row.original.calc.aRecibir1Vn)),
@@ -234,7 +236,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   {
     id: 'vnARecibir',
     accessorFn: (row) => row.calc.vnARecibir,
-    header: createSortableHeader('VN'),
+    header: createSortableHeader('VN', 'Valor nominal'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) =>
       h('div', { class: 'tabular-nums' }, formatCantidadVn(row.original.calc.vnARecibir)),
@@ -242,7 +244,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   {
     id: 'totalARecibir',
     accessorFn: (row) => row.calc.totalARecibir,
-    header: createSortableHeader('Total'),
+    header: createSortableHeader('Total', 'Total a recibir al vencimiento'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) =>
       h(
@@ -253,7 +255,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   },
   {
     accessorKey: 'gananciaDirecta',
-    header: createSortableHeader('Gan.'),
+    header: createSortableHeader('Gan.', 'Ganancia directa'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) => {
       const v = row.original.gananciaDirecta
@@ -263,7 +265,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   },
   {
     accessorKey: 'tna',
-    header: createSortableHeader('TNA'),
+    header: createSortableHeader('TNA', 'Tasa nominal anual de mercado'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) =>
       h(
@@ -274,7 +276,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   },
   {
     accessorKey: 'tnaNeta',
-    header: createSortableHeader('TNA Neta'),
+    header: createSortableHeader('TNA Neta', 'Tasa nominal anual neta de comisión'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) =>
       h(
@@ -285,7 +287,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   },
   {
     accessorKey: 'tem',
-    header: createSortableHeader('TEM'),
+    header: createSortableHeader('TEM', 'Tasa efectiva mensual'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) =>
       h(
@@ -297,7 +299,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   {
     id: 'plazoFijo',
     accessorFn: (row) => row.calc.plazoFijoMonto ?? Number.NEGATIVE_INFINITY,
-    header: createSortableHeader('PF'),
+    header: createSortableHeader('PF', 'Plazo fijo'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) => {
       const monto = row.original.calc.plazoFijoMonto
@@ -312,7 +314,7 @@ const columns = computed<TableColumn<LecapComparadorRow>[]>(() => [
   {
     id: 'vsPlazoFijo',
     accessorFn: (row) => row.calc.vsPlazoFijo ?? Number.NEGATIVE_INFINITY,
-    header: createSortableHeader('vs PF'),
+    header: createSortableHeader('vs PF', 'Diferencial vs plazo fijo'),
     meta: { class: { th: 'text-right', td: 'text-right' } },
     cell: ({ row }) => {
       const v = row.original.calc.vsPlazoFijo

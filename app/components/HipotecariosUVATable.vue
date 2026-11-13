@@ -401,7 +401,9 @@ const actualizarInflacion = (index: number, valor: number) => {
                   class="size-8 rounded-full object-cover"
                 />
                 <div class="text-xs font-medium">{{ banco.nombreComercial }}</div>
-                <div class="text-sm text-bold">{{ banco.tna.toFixed(1) }}%</div>
+                <TableHeaderTooltip text="TNA del crédito hipotecario UVA">
+                  <div class="text-sm text-bold">{{ banco.tna.toFixed(1) }}%</div>
+                </TableHeaderTooltip>
               </div>
             </th>
             <th

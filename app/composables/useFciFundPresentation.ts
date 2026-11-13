@@ -1,6 +1,7 @@
 import { h, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
+import { headerLabelWithTooltip } from '~/lib/table-header-tooltip'
 import type {
   FciFundDetail,
   FciFundHistory,
@@ -239,7 +240,8 @@ export function useFciFundPresentation(
     },
     {
       accessorKey: 'valorCuotaparte',
-      header: () => h('div', { class: 'text-right' }, 'VCP'),
+      header: () =>
+        h('div', { class: 'text-right' }, headerLabelWithTooltip('VCP', 'Valor de la cuotaparte')),
       meta: {
         class: {
           th: 'text-right whitespace-nowrap',
@@ -255,7 +257,8 @@ export function useFciFundPresentation(
     },
     {
       accessorKey: 'retornoDiario',
-      header: () => h('div', { class: 'text-right' }, 'Ret. diario'),
+      header: () =>
+        h('div', { class: 'text-right' }, headerLabelWithTooltip('Ret. diario', 'Retorno diario')),
       meta: {
         class: {
           th: 'text-right whitespace-nowrap',
@@ -273,7 +276,12 @@ export function useFciFundPresentation(
     },
     {
       accessorKey: 'retornoAcumulado',
-      header: () => h('div', { class: 'text-right' }, 'Ret. acum.'),
+      header: () =>
+        h(
+          'div',
+          { class: 'text-right' },
+          headerLabelWithTooltip('Ret. acum.', 'Retorno acumulado en el período'),
+        ),
       meta: {
         class: {
           th: 'text-right whitespace-nowrap',
@@ -307,7 +315,8 @@ export function useFciFundPresentation(
     },
     {
       accessorKey: 'flujoEstimado',
-      header: () => h('div', { class: 'text-right' }, 'Flujo'),
+      header: () =>
+        h('div', { class: 'text-right' }, headerLabelWithTooltip('Flujo', 'Flujo estimado')),
       meta: {
         class: {
           th: 'text-right whitespace-nowrap',

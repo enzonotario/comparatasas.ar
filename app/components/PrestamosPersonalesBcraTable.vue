@@ -3,6 +3,7 @@ import type { TableColumn } from '@nuxt/ui'
 import type { PrestamoPersonalBcra } from '~/composables/usePrestamosPersonalesBcra'
 import { formatCurrency } from '~/lib/fci-fund-formatters'
 import { getInstitutionLogo, getInstitutionShortName } from '~/lib/mappings/institutions'
+import { headerLabelWithTooltip } from '~/lib/table-header-tooltip'
 
 const props = defineProps<{
   prestamos: PrestamoPersonalBcra[]
@@ -47,10 +48,19 @@ const columns: TableColumn<(typeof rows.value)[number]>[] = [
   { accessorKey: 'institution', header: 'Entidad' },
   { accessorKey: 'producto', header: 'Producto' },
   { accessorKey: 'condiciones', header: 'Condiciones' },
-  { accessorKey: 'montoMax', header: 'Monto' },
-  { accessorKey: 'plazoMaxMeses', header: 'Plazo' },
-  { accessorKey: 'teaMax', header: 'TEA máx.' },
-  { accessorKey: 'cftTeaMax', header: 'CFT máx.' },
+  { accessorKey: 'montoMax', header: () => headerLabelWithTooltip('Monto', 'Monto máximo') },
+  {
+    accessorKey: 'plazoMaxMeses',
+    header: () => headerLabelWithTooltip('Plazo', 'Plazo máximo en meses'),
+  },
+  {
+    accessorKey: 'teaMax',
+    header: () => headerLabelWithTooltip('TEA máx.', 'Tasa efectiva anual máxima'),
+  },
+  {
+    accessorKey: 'cftTeaMax',
+    header: () => headerLabelWithTooltip('CFT máx.', 'Costo financiero total máximo'),
+  },
 ]
 </script>
 
