@@ -490,7 +490,7 @@ export const institutions: Array<{
   },
   {
     names: ['Adcap', 'adcap', 'ADCAP'],
-    logo: 'https://api.argentinadatos.com/static/logos/adcap.webp',
+    logo: 'https://api.argentinadatos.com/static/logos/adcap.svg',
     shortName: 'Adcap',
     url: 'https://asset.ad-cap.com.ar/?ref=comparatasas',
   },
