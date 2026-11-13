@@ -46,6 +46,7 @@ const projectColumn: FooterColumn = {
   id: 'proyecto',
   label: 'Proyecto',
   links: [
+    { to: '/entidades', label: 'Entidades' },
     { to: '/metodologia', label: 'Metodología de cálculos' },
     { to: '/about', label: 'Acerca de' },
     { to: '/contact', label: 'Contacto' },

@@ -130,6 +130,14 @@ const groups = [
         icon: 'i-lucide-handshake',
         to: '/cauciones',
       },
+      {
+        id: 'entidades',
+        label: 'Entidades',
+        suffix: 'Directorio',
+        icon: 'i-lucide-building-2',
+        to: '/entidades',
+        keywords: ['bancos', 'billeteras', 'brokers', 'remesadoras', 'entidad'],
+      },
     ],
   },
   {

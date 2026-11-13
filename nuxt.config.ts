@@ -155,6 +155,8 @@ export default defineNuxtConfig({
           ...bunDataRouteRules,
           '/fondos': { prerender: false, swr: FONDOS_SWR_SECONDS },
           '/fondos/**': { prerender: false, swr: FONDOS_SWR_SECONDS },
+          '/entidades': { prerender: false, swr: DATA_SWR_SECONDS },
+          '/entidades/**': { prerender: false, swr: DATA_SWR_SECONDS },
         }
       : {}),
   },
@@ -193,6 +195,7 @@ export default defineNuxtConfig({
                 '/api/fci/market-overview.json',
                 '/api/fci/nominal-tna.json',
                 '/api/fci/types.json',
+                '/api/entidades.json',
               ],
             },
           },
@@ -228,13 +231,15 @@ export default defineNuxtConfig({
       } else {
         // Cloudflare Pages: emit the FCI JSON endpoints as static assets so the
         // Worker never parses the ~31 MB upstream catalog. Bun keeps them fresh
-        // via the runtime cache instead.
+        // via the runtime cache instead. `/api/entidades.json` aggregates 14
+        // upstream sources; prerendering keeps it in sync with the /entidades pages.
         routes = [
           ...routes,
           '/api/fci/catalog.json',
           '/api/fci/market-overview.json',
           '/api/fci/nominal-tna.json',
           '/api/fci/types.json',
+          '/api/entidades.json',
         ]
       }
       nitroConfig.prerender.routes = [...new Set([...existing, ...routes])]

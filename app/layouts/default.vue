@@ -47,6 +47,7 @@ const isWideLayout = computed(() => {
     'lecaps',
     'cauciones',
     'bonos-cer',
+    'entidades',
   ].includes(route.name as string)
 })
 

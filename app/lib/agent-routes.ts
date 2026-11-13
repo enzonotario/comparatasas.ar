@@ -1,5 +1,6 @@
 import { ACCOUNT_HISTORY_PROVIDER_SLUGS } from '../composables/useAccountHistory'
 import { comisionesBrokersPrerenderRoutes } from './comisiones-brokers-nav'
+import { ENTITIES } from './entities'
 import { comparatasasFondos } from './mappings/funds'
 import { metodologiaNavTabs } from './metodologia-nav'
 import { sumarseNavTabs } from './sumarse-nav'
@@ -40,6 +41,7 @@ const CATALOG_ROUTES = [
   '/lecaps',
   '/cauciones',
   '/bonos-cer',
+  '/entidades',
 ] as const
 
 const PUBLIC_ROUTES = new Set<string>([
@@ -49,6 +51,7 @@ const PUBLIC_ROUTES = new Set<string>([
   ...sumarseNavTabs.map((tab) => tab.to),
   ...ACCOUNT_HISTORY_PROVIDER_SLUGS.map((provider) => `/cuentas-billeteras/${provider}`),
   ...comparatasasFondos.flatMap((slug) => [`/fondos/${slug}`, `/fondos/${slug}/historico`]),
+  ...ENTITIES.map((entity) => `/entidades/${entity.slug}`),
 ])
 
 export function getPublicRoutes(): string[] {
