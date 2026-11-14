@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { h, resolveComponent } from 'vue'
+import type { TableColumn } from '@nuxt/ui'
 import { useRouteQuery } from '@vueuse/router'
 import {
   ENTITY_TYPE_LABELS,
@@ -7,7 +9,16 @@ import {
   normalizeEntityName,
   type EntityType,
 } from '~/lib/entities'
-import { ENTITY_CATEGORIES, type EntitiesResponse } from '~/lib/entities-products'
+import {
+  ENTITY_CATEGORIES,
+  formatCategoryBest,
+  getCategoryBest,
+  type CategoryBest,
+  type EntitiesResponse,
+  type EntityCategoryKey,
+  type EntitySummary,
+} from '~/lib/entities-products'
+import { withHeaderTooltip } from '~/lib/table-header-tooltip'
 
 definePageMeta({
   pageTitle: 'Entidades',
@@ -15,12 +26,39 @@ definePageMeta({
     'Bancos, billeteras, brokers y remesadoras: todo lo que compara Compara Tasas de cada entidad en un solo lugar.',
 })
 
+const UAvatar = resolveComponent('UAvatar')
+const UButton = resolveComponent('UButton')
+const NuxtLink = resolveComponent('NuxtLink')
+
 const { data, status, error, refresh } = await useFetch<EntitiesResponse>('/api/entidades.json', {
   key: 'entidades',
 })
 
+interface EntityRow extends EntitySummary {
+  logo?: string
+  typeLabel: string
+  best: Partial<Record<EntityCategoryKey, CategoryBest>>
+}
+
 const searchQuery = useRouteQuery('q', '')
 const typeFilter = useRouteQuery('tipo', 'all')
+const sortQuery = useRouteQuery('sort', '[{"id":"name","desc":false}]')
+
+const sorting = computed({
+  get: () => {
+    try {
+      const parsed = JSON.parse(sortQuery.value || '[]')
+      return Array.isArray(parsed) && parsed.length ? parsed : [{ id: 'name', desc: false }]
+    } catch {
+      return [{ id: 'name', desc: false }]
+    }
+  },
+  set: (value) => {
+    sortQuery.value = JSON.stringify(value)
+  },
+})
+
+const columnPinning = ref({ left: ['name'], right: [] })
 
 const typeOptions: Array<{ value: EntityType | 'all'; label: string }> = [
   { value: 'all', label: 'Todas' },
@@ -31,14 +69,19 @@ const typeOptions: Array<{ value: EntityType | 'all'; label: string }> = [
   { value: 'otro', label: 'Otras' },
 ]
 
-const rows = computed(() =>
+const rows = computed<EntityRow[]>(() =>
   (data.value?.entities ?? []).map((entity) => {
     const registryEntity = getEntityBySlug(entity.slug)
     return {
       ...entity,
       logo: registryEntity ? getEntityLogo(registryEntity) : undefined,
       typeLabel: ENTITY_TYPE_LABELS[entity.type],
-      categories: new Set(entity.products.map((product) => product.category)),
+      best: Object.fromEntries(
+        ENTITY_CATEGORIES.flatMap((category) => {
+          const best = getCategoryBest(entity.products, category.key)
+          return best ? [[category.key, best] as const] : []
+        }),
+      ),
     }
   }),
 )
@@ -53,12 +96,97 @@ const filteredRows = computed(() => {
   })
 })
 
-// Only categories that at least one listed entity has.
-const visibleCategories = computed(() =>
-  ENTITY_CATEGORIES.filter((category) =>
-    filteredRows.value.some((row) => row.categories.has(category.key)),
-  ),
+// Categories with at least one entity. Based on all rows (not the filtered
+// ones) so columns stay stable and a sorted column never disappears.
+const tableCategories = computed(() =>
+  ENTITY_CATEGORIES.filter((category) => rows.value.some((row) => row.best[category.key])),
 )
+
+/**
+ * Sortable header (same pattern as fal.vue). The first click sorts "best
+ * first": descending for `higher` columns, ascending otherwise.
+ */
+function sortableHeader(label: string, fullLabel?: string, bestFirstDesc = false) {
+  return ({
+    column,
+  }: {
+    column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (desc?: boolean) => void }
+  }) => {
+    const isSorted = column.getIsSorted()
+    const button = h(UButton, {
+      color: 'neutral',
+      variant: 'ghost',
+      label,
+      icon: isSorted
+        ? isSorted === 'asc'
+          ? 'i-lucide-arrow-up-narrow-wide'
+          : 'i-lucide-arrow-down-wide-narrow'
+        : 'i-lucide-arrow-up-down',
+      class: '-mx-2.5 h-auto min-w-0 items-start whitespace-normal text-left font-semibold',
+      ui: { label: 'min-w-0 !whitespace-normal !overflow-visible !text-clip' },
+      onClick: () => column.toggleSorting(isSorted ? isSorted === 'asc' : bestFirstDesc),
+    })
+    return withHeaderTooltip(button, fullLabel)
+  }
+}
+
+function renderEntityCell(row: EntityRow) {
+  return h(
+    NuxtLink,
+    { to: `/entidades/${row.slug}`, class: 'group flex min-w-0 items-center gap-2' },
+    () => [
+      h(UAvatar, {
+        src: row.logo,
+        alt: row.name,
+        size: 'sm',
+        referrerpolicy: 'no-referrer',
+        ui: { image: 'object-contain' },
+      }),
+      h('div', { class: 'min-w-0' }, [
+        h('p', { class: 'truncate font-medium group-hover:text-primary' }, row.name),
+        h('p', { class: 'text-xs text-muted' }, row.typeLabel),
+      ]),
+    ],
+  )
+}
+
+function renderValueCell(best: CategoryBest | undefined) {
+  if (!best) return h('span', { class: 'text-muted' }, '—')
+  const others = best.count - 1
+  return h('span', { class: 'inline-flex items-baseline gap-1 whitespace-nowrap' }, [
+    h(
+      'span',
+      { class: best.value == null ? 'text-muted' : 'font-medium text-highlighted' },
+      formatCategoryBest(best),
+    ),
+    others > 0
+      ? h('span', { class: 'text-xs text-muted', title: `${best.count} productos` }, `+${others}`)
+      : null,
+  ])
+}
+
+const columns = computed<TableColumn<EntityRow>[]>(() => [
+  {
+    id: 'name',
+    accessorKey: 'name',
+    header: sortableHeader('Entidad'),
+    sortingFn: (a, b) => a.original.name.localeCompare(b.original.name, 'es'),
+    cell: ({ row }) => renderEntityCell(row.original),
+  },
+  ...tableCategories.value.map((category): TableColumn<EntityRow> => ({
+    id: category.key,
+    accessorFn: (row) => row.best[category.key]?.value,
+    header: sortableHeader(
+      `${category.shortLabel} · ${category.metricLabel}`,
+      `${category.label} (${category.direction === 'higher' ? 'mayor' : 'menor'} es mejor)`,
+      category.direction === 'higher',
+    ),
+    sortingFn: 'basic',
+    // No product or no numeric value: always last, in both directions.
+    sortUndefined: 'last',
+    cell: ({ row }) => renderValueCell(row.original.best[category.key]),
+  })),
+])
 
 const seoDescription =
   'Bancos, billeteras, brokers y remesadoras de Argentina: cuentas remuneradas, plazos fijos, FCI, comisiones, préstamos y más de cada entidad.'
@@ -116,7 +244,10 @@ useHead({
           </div>
         </div>
 
-        <p class="text-xs text-muted">{{ filteredRows.length }} entidades</p>
+        <p class="text-xs text-muted">
+          {{ filteredRows.length }} entidades. Cada celda muestra el mejor valor de la entidad en
+          esa categoría.
+        </p>
       </div>
 
       <p v-if="filteredRows.length === 0" class="py-12 text-center text-neutral-500">
@@ -124,63 +255,22 @@ useHead({
       </p>
 
       <template v-else>
-        <!-- Desktop: entity × category coverage -->
-        <div class="hidden overflow-x-auto rounded-lg border border-default bg-default lg:block">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-default text-left">
-                <th class="sticky left-0 bg-default px-3 py-2 font-medium">Entidad</th>
-                <th
-                  v-for="category in visibleCategories"
-                  :key="category.key"
-                  class="px-2 py-2 text-center font-medium whitespace-nowrap"
-                  :title="category.label"
-                >
-                  {{ category.shortLabel }}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="row in filteredRows"
-                :key="row.slug"
-                class="border-b border-default last:border-0 hover:bg-elevated"
-              >
-                <td class="sticky left-0 bg-default px-3 py-2">
-                  <NuxtLink
-                    :to="`/entidades/${row.slug}`"
-                    class="flex items-center gap-2 font-medium hover:text-primary"
-                  >
-                    <UAvatar
-                      :src="row.logo"
-                      :alt="row.name"
-                      size="xs"
-                      referrerpolicy="no-referrer"
-                      :ui="{ image: 'object-contain' }"
-                    />
-                    <span>{{ row.name }}</span>
-                    <span class="text-xs font-normal text-muted">{{ row.typeLabel }}</span>
-                  </NuxtLink>
-                </td>
-                <td
-                  v-for="category in visibleCategories"
-                  :key="category.key"
-                  class="px-2 py-2 text-center"
-                >
-                  <UIcon
-                    v-if="row.categories.has(category.key)"
-                    name="i-lucide-check"
-                    class="size-4 text-primary"
-                    :aria-label="category.label"
-                  />
-                  <span v-else class="text-muted" aria-hidden="true">·</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Desktop: entity × category best values -->
+        <div class="hidden rounded-lg border border-default bg-default lg:block">
+          <UTable
+            v-model:sorting="sorting"
+            v-model:column-pinning="columnPinning"
+            :data="filteredRows"
+            :columns="columns"
+            :get-row-id="(row: EntityRow) => row.slug"
+            :ui="{
+              th: '!whitespace-normal align-bottom',
+              td: 'whitespace-nowrap',
+            }"
+          />
         </div>
 
-        <!-- Mobile: cards with category badges -->
+        <!-- Mobile: cards with category badges and values -->
         <div class="grid gap-3 lg:hidden">
           <NuxtLink
             v-for="row in filteredRows"
@@ -204,13 +294,16 @@ useHead({
               </div>
               <div class="mt-3 flex flex-wrap gap-1.5">
                 <UBadge
-                  v-for="category in ENTITY_CATEGORIES.filter((c) => row.categories.has(c.key))"
+                  v-for="category in ENTITY_CATEGORIES.filter((c) => row.best[c.key])"
                   :key="category.key"
                   color="neutral"
                   variant="soft"
                   size="sm"
                 >
-                  {{ category.label }}
+                  {{ category.shortLabel }}
+                  <span class="font-semibold">{{
+                    formatCategoryBest(row.best[category.key])
+                  }}</span>
                 </UBadge>
               </div>
             </UCard>

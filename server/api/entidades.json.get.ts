@@ -38,6 +38,7 @@ export default defineCachedEventHandler(
     name: 'entidades',
     maxAge: 5 * 60,
     swr: true,
-    getKey: () => 'v1',
+    // Bump when the response shape changes so persisted caches are not reused.
+    getKey: () => 'v2',
   },
 )

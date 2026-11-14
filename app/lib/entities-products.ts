@@ -20,46 +20,119 @@ import {
 } from './mappings/funds'
 import { getInstitutionShortName } from './mappings/institutions'
 
-/** `shortLabel` is used where space is tight (coverage table headers). */
+/**
+ * `shortLabel` and `metricLabel` are used where space is tight (coverage table).
+ * `direction` says which value is best: rates earned are `higher`, costs and
+ * borrowing rates are `lower`.
+ */
 export const ENTITY_CATEGORIES = [
   {
     key: 'cuentas-remuneradas',
     label: 'Cuentas remuneradas',
     shortLabel: 'Cuentas',
+    metricLabel: 'TNA',
+    direction: 'higher',
     to: '/cuentas-billeteras',
   },
-  { key: 'plazos-fijos', label: 'Plazos fijos', shortLabel: 'Plazo fijo', to: '/plazos-fijos' },
-  { key: 'fondos', label: 'Fondos comunes de inversión', shortLabel: 'FCI', to: '/fondos' },
-  { key: 'usd', label: 'Inversiones en USD', shortLabel: 'USD', to: '/usd' },
-  { key: 'criptopesos', label: 'Criptopesos', shortLabel: 'Criptopesos', to: '/criptopesos' },
-  { key: 'criptomonedas', label: 'Criptomonedas', shortLabel: 'Cripto', to: '/criptomonedas' },
+  {
+    key: 'plazos-fijos',
+    label: 'Plazos fijos',
+    shortLabel: 'Plazo fijo',
+    metricLabel: 'TNA',
+    direction: 'higher',
+    to: '/plazos-fijos',
+  },
+  {
+    key: 'fondos',
+    label: 'Fondos comunes de inversión',
+    shortLabel: 'FCI',
+    metricLabel: 'TNA',
+    direction: 'higher',
+    to: '/fondos',
+  },
+  {
+    key: 'usd',
+    label: 'Inversiones en USD',
+    shortLabel: 'USD',
+    metricLabel: 'TNA',
+    direction: 'higher',
+    to: '/usd',
+  },
+  {
+    key: 'criptopesos',
+    label: 'Criptopesos',
+    shortLabel: 'Criptopesos',
+    metricLabel: 'TNA',
+    direction: 'higher',
+    to: '/criptopesos',
+  },
+  {
+    key: 'criptomonedas',
+    label: 'Criptomonedas',
+    shortLabel: 'Cripto',
+    metricLabel: 'APY',
+    direction: 'higher',
+    to: '/criptomonedas',
+  },
   {
     key: 'comisiones-cobro',
     label: 'Comisiones de cobro',
     shortLabel: 'Cobros',
+    metricLabel: 'comisión',
+    direction: 'lower',
     to: '/comisiones-cobro',
   },
   {
     key: 'comisiones-brokers',
     label: 'Comisiones de brokers',
     shortLabel: 'Brokers',
+    metricLabel: 'comisión',
+    direction: 'lower',
     to: '/comisiones-brokers',
   },
-  { key: 'fal', label: 'Fondo de Asistencia Laboral', shortLabel: 'FAL', to: '/fal' },
+  {
+    key: 'fal',
+    label: 'Fondo de Asistencia Laboral',
+    shortLabel: 'FAL',
+    metricLabel: 'comisión',
+    direction: 'lower',
+    to: '/fal',
+  },
   {
     key: 'creditos-hipotecarios-uva',
     label: 'Créditos hipotecarios UVA',
     shortLabel: 'Hipotecario',
+    metricLabel: 'TNA',
+    direction: 'lower',
     to: '/creditos-hipotecarios-uva',
   },
   {
     key: 'prestamos-personales',
     label: 'Préstamos personales',
     shortLabel: 'Préstamos',
+    metricLabel: 'TNA',
+    direction: 'lower',
     to: '/prestamos-personales',
   },
-  { key: 'remesas', label: 'Remesas', shortLabel: 'Remesas', to: '/remesas' },
-] as const
+  // Remesas: the metric is the cost of receiving a payment from abroad, so
+  // lower is better. Only percentage (or zero) costs get a numeric value; fixed
+  // fees like "3 USD" are not comparable with a percentage and stay text-only.
+  {
+    key: 'remesas',
+    label: 'Remesas',
+    shortLabel: 'Remesas',
+    metricLabel: 'costo',
+    direction: 'lower',
+    to: '/remesas',
+  },
+] as const satisfies ReadonlyArray<{
+  key: string
+  label: string
+  shortLabel: string
+  metricLabel: string
+  direction: 'higher' | 'lower'
+  to: string
+}>
 
 export type EntityCategoryKey = (typeof ENTITY_CATEGORIES)[number]['key']
 
@@ -71,6 +144,8 @@ export interface EntityProduct {
   product: string
   /** Already formatted main metric, e.g. `TNA 32,5%`. */
   metric?: string
+  /** Numeric main metric as a decimal rate (0.325 = 32,5%), when comparable. */
+  value?: number
   /** Internal page for this product (category page or a more specific one). */
   to: string
 }
@@ -128,6 +203,19 @@ export function formatRate(value: number): string {
   return `${(value * 100).toLocaleString('es-AR', { maximumFractionDigits: 2 })}%`
 }
 
+/**
+ * Numeric value plus its formatted metric (`TNA 32,5%`), so every mapper
+ * formats the same way. Missing/non-finite values yield neither.
+ */
+function rated(
+  label: string,
+  value: number | null | undefined,
+  prefix = '',
+): Pick<EntityProduct, 'metric' | 'value'> {
+  if (value == null || !Number.isFinite(value)) return {}
+  return { value, metric: `${label} ${prefix}${formatRate(value)}` }
+}
+
 function isPositive(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0
 }
@@ -138,10 +226,9 @@ function rowsOf<T>(raw: unknown, key?: string): T[] {
 }
 
 type MappedProduct = Omit<EntityProduct, 'entitySlug' | 'categoryLabel'>
-type RatedProduct = EntityProduct & { value: number | null }
 
 /** Collects products for rows whose names resolve; keeps the rest as unmatched. */
-function collect<T, P extends Omit<MappedProduct, 'metric'> & { metric?: string }>(
+function collect<T, P extends MappedProduct>(
   rows: T[],
   names: (row: T) => Array<string | null | undefined>,
   toProduct: (row: T) => P,
@@ -174,8 +261,8 @@ function collect<T, P extends Omit<MappedProduct, 'metric'> & { metric?: string 
  * Many upstream rows per (entity, product) (plans, channels, terms): keep one
  * product with the lowest value, prefixed with "desde" when values vary.
  */
-function lowestPerProduct(products: RatedProduct[], label: string): EntityProduct[] {
-  const groups = new Map<string, RatedProduct[]>()
+function lowestPerProduct(products: EntityProduct[], label: string): EntityProduct[] {
+  const groups = new Map<string, EntityProduct[]>()
   for (const product of products) {
     const key = `${product.entitySlug}|${product.product}`
     groups.set(key, [...(groups.get(key) ?? []), product])
@@ -186,14 +273,14 @@ function lowestPerProduct(products: RatedProduct[], label: string): EntityProduc
     const values = group
       .map((item) => item.value)
       .filter((value): value is number => value != null && Number.isFinite(value))
-    const min = Math.min(...values)
+    const min = values.length ? Math.min(...values) : undefined
     const varies = values.some((value) => value !== min)
     return {
       entitySlug: first.entitySlug,
       category: first.category,
       categoryLabel: first.categoryLabel,
       product: first.product,
-      metric: values.length ? `${label} ${varies ? 'desde ' : ''}${formatRate(min)}` : undefined,
+      ...rated(label, min, varies ? 'desde ' : ''),
       to: first.to,
     }
   })
@@ -216,7 +303,7 @@ export function mapCuentas(raw: unknown): EntityProductsResult {
       return {
         category: 'cuentas-remuneradas',
         product: getInstitutionShortName(row.fondo),
-        metric: `TNA ${formatRate(row.tna)}`,
+        ...rated('TNA', row.tna),
         to: historySlugs.has(providerSlug)
           ? `/cuentas-billeteras/${providerSlug}`
           : '/cuentas-billeteras',
@@ -237,15 +324,12 @@ export function mapPlazosFijos(raw: unknown): EntityProductsResult {
     (row) => [row.entidad],
     (row) => {
       const best = Math.max(0, ...(row.tasas ?? []).map((tasa) => tasa.tna ?? 0))
-      const metric = isPositive(row.tnaClientes)
-        ? `TNA ${formatRate(row.tnaClientes)}`
-        : isPositive(best)
-          ? `TNA hasta ${formatRate(best)}`
-          : undefined
       return {
         category: 'plazos-fijos',
         product: 'Plazo fijo tradicional',
-        metric,
+        ...(isPositive(row.tnaClientes)
+          ? rated('TNA', row.tnaClientes)
+          : rated('TNA', isPositive(best) ? best : undefined, 'hasta ')),
         to: '/plazos-fijos',
       }
     },
@@ -264,7 +348,7 @@ export function mapPlazosFijosPrecancelables(raw: unknown): EntityProductsResult
     (row) => ({
       category: 'plazos-fijos',
       product: 'Plazo fijo UVA precancelable',
-      metric: isPositive(row.tna) ? `TNA ${formatRate(row.tna)}` : undefined,
+      ...rated('TNA', isPositive(row.tna) ? row.tna : undefined),
       to: '/plazos-fijos/uva-precancelable',
     }),
   )
@@ -284,7 +368,7 @@ export function mapPlazosFijosUvaPagoPeriodico(raw: unknown): EntityProductsResu
       return {
         category: 'plazos-fijos',
         product: 'Plazo fijo UVA con pago periódico',
-        metric: isPositive(best) ? `TNA hasta ${formatRate(best)}` : undefined,
+        ...rated('TNA', isPositive(best) ? best : undefined, 'hasta '),
         to: '/plazos-fijos/uva-pago-periodico',
       }
     },
@@ -328,7 +412,7 @@ export function mapFondos(raw: unknown): EntityProductsResult {
         return {
           category,
           product: fondo.nombre,
-          metric: showTna && isPositive(tna) ? `TNA ${formatRate(tna)}` : undefined,
+          ...rated('TNA', showTna && isPositive(tna) ? tna : undefined),
           to: getFundDetailPath(slug),
         }
       },
@@ -353,7 +437,7 @@ export function mapCriptopesos(raw: unknown): EntityProductsResult {
     (row) => ({
       category: 'criptopesos',
       product: row.token,
-      metric: isPositive(row.tna) ? `TNA ${formatRate(row.tna)}` : undefined,
+      ...rated('TNA', isPositive(row.tna) ? row.tna : undefined),
       to: '/criptopesos',
     }),
   )
@@ -374,13 +458,15 @@ export function mapCriptomonedas(raw: unknown): EntityProductsResult {
       )
       const coins = new Set(yields.map((item) => item.moneda)).size
       // `apy` comes in percent (6 = 6%).
-      const best = Math.max(0, ...yields.map((item) => item.apy))
+      const best = coins ? Math.max(...yields.map((item) => item.apy)) / 100 : undefined
       return {
         category: 'criptomonedas',
         product: 'Rendimientos en cripto',
-        metric: coins
-          ? `Hasta ${formatRate(best / 100)} APY · ${coins} ${coins === 1 ? 'moneda' : 'monedas'}`
-          : undefined,
+        value: best,
+        metric:
+          best != null
+            ? `Hasta ${formatRate(best)} APY · ${coins} ${coins === 1 ? 'moneda' : 'monedas'}`
+            : undefined,
         to: '/criptomonedas',
       }
     },
@@ -399,7 +485,7 @@ export function mapCuentasUsd(raw: unknown): EntityProductsResult {
     (row) => ({
       category: 'usd',
       product: 'Cuenta remunerada en dólares',
-      metric: isPositive(row.tasa) ? `TNA ${formatRate(row.tasa)}` : undefined,
+      ...rated('TNA', isPositive(row.tasa) ? row.tasa : undefined),
       to: '/usd',
     }),
   )
@@ -419,7 +505,7 @@ export function mapComisionesCobro(raw: unknown): EntityProductsResult {
     (row) => ({
       category: 'comisiones-cobro',
       product: row.producto,
-      value: row.arancel,
+      value: row.arancel ?? undefined,
       to: '/comisiones-cobro',
     }),
   )
@@ -443,7 +529,7 @@ export function mapComisionesBrokers(raw: unknown): EntityProductsResult {
     (row) => ({
       category: 'comisiones-brokers',
       product: formatProductoLabel(row.producto),
-      value: row.tasa,
+      value: row.tasa ?? undefined,
       to: isValidComisionesBrokersProducto(row.producto)
         ? getComisionesBrokersProductoPath(row.producto)
         : '/comisiones-brokers',
@@ -469,10 +555,7 @@ export function mapFal(raw: unknown): EntityProductsResult {
     (row) => ({
       category: 'fal',
       product: row.nombrePlan || 'FAL',
-      metric:
-        row.comisionAnual != null && Number.isFinite(row.comisionAnual)
-          ? `Comisión ${formatRate(row.comisionAnual)}`
-          : undefined,
+      ...rated('Comisión', row.comisionAnual),
       to: '/fal',
     }),
   )
@@ -491,7 +574,7 @@ export function mapHipotecarios(raw: unknown): EntityProductsResult {
     (row) => ({
       category: 'creditos-hipotecarios-uva',
       product: 'Crédito hipotecario UVA',
-      metric: isPositive(row.tna) ? `TNA ${formatRate(row.tna)}` : undefined,
+      ...rated('TNA', isPositive(row.tna) ? row.tna : undefined),
       to: '/creditos-hipotecarios-uva',
     }),
   )
@@ -511,7 +594,7 @@ export function mapPrestamos(raw: unknown): EntityProductsResult {
     (row) => ({
       category: 'prestamos-personales',
       product: row.producto,
-      value: row.tna,
+      value: row.tna ?? undefined,
       to: '/prestamos-personales',
     }),
   )
@@ -526,6 +609,15 @@ interface RemesaRow {
   costoRecibirPagos: string | null
 }
 
+/** `"0"` → 0, `"1.5%"` → 0.015; fixed fees (`"3 USD"`) and free text → undefined. */
+export function parseRemesaCost(cost: string | null | undefined): number | undefined {
+  const match = cost?.trim().match(/^(\d+(?:[.,]\d+)?)\s*(%?)$/)
+  if (!match) return undefined
+  const amount = Number(match[1]!.replace(',', '.'))
+  if (match[2]) return amount / 100
+  return amount === 0 ? 0 : undefined
+}
+
 export function mapRemesas(raw: unknown): EntityProductsResult {
   return collect(
     rowsOf<RemesaRow>(raw, 'remesas'),
@@ -535,6 +627,7 @@ export function mapRemesas(raw: unknown): EntityProductsResult {
       return {
         category: 'remesas',
         product: 'Recibir pagos del exterior',
+        value: parseRemesaCost(cost),
         metric: cost ? `Recibir pagos: ${cost === '0' ? 'sin costo' : cost}` : undefined,
         to: '/remesas',
       }
@@ -598,4 +691,38 @@ export function buildEntitiesFromSources(responses: Partial<Record<EntitySourceK
     .sort((a, b) => a.name.localeCompare(b.name, 'es'))
 
   return { entities, unmatched: [...unmatched].sort() }
+}
+
+export interface CategoryBest {
+  /** Best numeric value for the category direction; undefined if none is numeric. */
+  value?: number
+  /** Products the entity has in the category. */
+  count: number
+}
+
+/**
+ * Best value of one entity in one category (max for `higher`, min for
+ * `lower`). Undefined when the entity has no product in the category.
+ */
+export function getCategoryBest(
+  products: EntityProduct[],
+  category: EntityCategoryKey,
+): CategoryBest | undefined {
+  const inCategory = products.filter((product) => product.category === category)
+  if (!inCategory.length) return undefined
+  const values = inCategory
+    .map((product) => product.value)
+    .filter((value): value is number => value != null && Number.isFinite(value))
+  if (!values.length) return { count: inCategory.length }
+  const higher = getEntityCategory(category)?.direction === 'higher'
+  return {
+    value: higher ? Math.max(...values) : Math.min(...values),
+    count: inCategory.length,
+  }
+}
+
+/** Compact cell text: `—` (no product), `Sí` (no numeric value) or `32,5%`. */
+export function formatCategoryBest(best: CategoryBest | undefined): string {
+  if (!best) return '—'
+  return best.value == null ? 'Sí' : formatRate(best.value)
 }
