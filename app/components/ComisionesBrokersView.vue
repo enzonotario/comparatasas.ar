@@ -27,6 +27,7 @@ import {
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
 import { withOutboundUtm } from '~/lib/outbound-url'
+import { headerLabelWithTooltip, withHeaderTooltip } from '~/lib/table-header-tooltip'
 import { ogUpdatedAtDate } from '~/utils/og-data'
 
 const props = defineProps<{

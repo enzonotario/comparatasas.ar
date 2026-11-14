@@ -4,6 +4,7 @@ import type { TableColumn } from '@nuxt/ui'
 import { resolvePlazoFijoRateAtDays } from '~/composables/usePlazosFijos'
 import { useAnalytics } from '~/composables/useAnalytics'
 import { getPlazoColumnSortId, type PlazoFijoPlazoColumn } from '~/lib/plazo-fijo-rates'
+import { withHeaderTooltip } from '~/lib/table-header-tooltip'
 import type { PlazoFijoTableRow } from '~/types/investments'
 
 interface PlazoFijoTableRowWithSimulation extends PlazoFijoTableRow {
