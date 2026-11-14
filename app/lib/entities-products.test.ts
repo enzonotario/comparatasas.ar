@@ -156,12 +156,16 @@ describe('getCategoryBest', () => {
     categoryLabel: '',
     product: 'p',
     value,
-    to: '/',
+    to: `/${category}/${value ?? 'none'}`,
   })
 
-  it('takes the highest value for rates earned', () => {
+  it('takes the highest value for rates earned and links its product', () => {
     const products = [product('cuentas-remuneradas', 0.2), product('cuentas-remuneradas', 0.24)]
-    expect(getCategoryBest(products, 'cuentas-remuneradas')).toEqual({ value: 0.24, count: 2 })
+    expect(getCategoryBest(products, 'cuentas-remuneradas')).toEqual({
+      value: 0.24,
+      count: 2,
+      to: '/cuentas-remuneradas/0.24',
+    })
   })
 
   it('takes the lowest value for costs, including zero', () => {
@@ -171,21 +175,33 @@ describe('getCategoryBest', () => {
       product('fal', 0),
       product('fal', 0.01),
     ]
-    expect(getCategoryBest(products, 'comisiones-cobro')).toEqual({ value: 0.008, count: 2 })
-    expect(getCategoryBest(products, 'fal')).toEqual({ value: 0, count: 2 })
+    expect(getCategoryBest(products, 'comisiones-cobro')).toEqual({
+      value: 0.008,
+      count: 2,
+      to: '/comisiones-cobro/0.008',
+    })
+    expect(getCategoryBest(products, 'fal')).toEqual({ value: 0, count: 2, to: '/fal/0' })
   })
 
   it('ignores products without a value and distinguishes no product from no value', () => {
     const products = [product('fondos'), product('fondos', 0.18), product('remesas')]
-    expect(getCategoryBest(products, 'fondos')).toEqual({ value: 0.18, count: 2 })
-    expect(getCategoryBest(products, 'remesas')).toEqual({ count: 1 })
+    expect(getCategoryBest(products, 'fondos')).toEqual({
+      value: 0.18,
+      count: 2,
+      to: '/fondos/0.18',
+    })
+    expect(getCategoryBest(products, 'remesas')).toEqual({
+      value: undefined,
+      count: 1,
+      to: '/remesas/none',
+    })
     expect(getCategoryBest(products, 'usd')).toBeUndefined()
   })
 
   it('formats the cell compactly', () => {
-    expect(formatCategoryBest({ value: 0.325, count: 1 })).toBe('32,5%')
-    expect(formatCategoryBest({ value: 0, count: 1 })).toBe('0%')
-    expect(formatCategoryBest({ count: 2 })).toBe('Sí')
+    expect(formatCategoryBest({ value: 0.325, count: 1, to: '/' })).toBe('32,5%')
+    expect(formatCategoryBest({ value: 0, count: 1, to: '/' })).toBe('0%')
+    expect(formatCategoryBest({ count: 2, to: '/' })).toBe('Sí')
     expect(formatCategoryBest(undefined)).toBe('—')
   })
 })

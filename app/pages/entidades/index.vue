@@ -153,16 +153,25 @@ function renderEntityCell(row: EntityRow) {
 function renderValueCell(best: CategoryBest | undefined) {
   if (!best) return h('span', { class: 'text-muted' }, '—')
   const others = best.count - 1
-  return h('span', { class: 'inline-flex items-baseline gap-1 whitespace-nowrap' }, [
-    h(
-      'span',
-      { class: best.value == null ? 'text-muted' : 'font-medium text-highlighted' },
-      formatCategoryBest(best),
-    ),
-    others > 0
-      ? h('span', { class: 'text-xs text-muted', title: `${best.count} productos` }, `+${others}`)
-      : null,
-  ])
+  return h(
+    NuxtLink,
+    { to: best.to, class: 'group inline-flex items-baseline gap-1 whitespace-nowrap' },
+    () => [
+      h(
+        'span',
+        {
+          class: [
+            'group-hover:text-primary group-hover:underline',
+            best.value == null ? 'text-muted' : 'font-medium text-highlighted',
+          ],
+        },
+        formatCategoryBest(best),
+      ),
+      others > 0
+        ? h('span', { class: 'text-xs text-muted', title: `${best.count} productos` }, `+${others}`)
+        : null,
+    ],
+  )
 }
 
 const columns = computed<TableColumn<EntityRow>[]>(() => [

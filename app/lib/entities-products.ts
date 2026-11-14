@@ -698,6 +698,8 @@ export interface CategoryBest {
   value?: number
   /** Products the entity has in the category. */
   count: number
+  /** Page of the best product (first product when none is numeric). */
+  to: string
 }
 
 /**
@@ -710,14 +712,18 @@ export function getCategoryBest(
 ): CategoryBest | undefined {
   const inCategory = products.filter((product) => product.category === category)
   if (!inCategory.length) return undefined
-  const values = inCategory
-    .map((product) => product.value)
-    .filter((value): value is number => value != null && Number.isFinite(value))
-  if (!values.length) return { count: inCategory.length }
   const higher = getEntityCategory(category)?.direction === 'higher'
+  let best: EntityProduct | undefined
+  for (const product of inCategory) {
+    if (product.value == null || !Number.isFinite(product.value)) continue
+    if (!best || (higher ? product.value > best.value! : product.value < best.value!)) {
+      best = product
+    }
+  }
   return {
-    value: higher ? Math.max(...values) : Math.min(...values),
+    value: best?.value,
     count: inCategory.length,
+    to: (best ?? inCategory[0]!).to,
   }
 }
 
