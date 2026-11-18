@@ -22,10 +22,9 @@ const plazosFijosSearchPriority = Object.fromEntries(
   plazosFijosNavTabs.map((tab, index) => [plazosFijosSearchId(tab.to), index]),
 ) as Record<string, number>
 
-function postFilterSearchItems<T extends { id?: string; label?: string; suffix?: string; keywords?: string[] }>(
-  term: string,
-  items: T[],
-) {
+function postFilterSearchItems<
+  T extends { id?: string; label?: string; suffix?: string; keywords?: string[] },
+>(term: string, items: T[]) {
   return sortByPriorityMap(filterBySearchTokens(term, items), plazosFijosSearchPriority)
 }
 
@@ -221,6 +220,7 @@ function onSelect(val: any) {
         placeholder="Buscar página..."
         :autofocus="true"
         close
+        @update:open="open = $event"
         @update:model-value="onSelect"
       />
     </template>
