@@ -57,6 +57,7 @@ const GUARANTEED_FUNDS = [
   'BICA CUENTA POSITIVA 4',
   'VOII',
   'REBA',
+  'BRUBANK CUENTA MAX',
 ] as const
 
 const SPECIAL_FUNDS = [
@@ -67,6 +68,7 @@ const SPECIAL_FUNDS = [
   'UALA PLUS 2',
   'BNA',
   'SUPERVIELLE HIT IOL',
+  'BRUBANK CUENTA MAX SELECCIONADA',
 ] as const
 
 function buildFrascosAccountItem(frascosRaw: ApiAccount[]): AccountItem | null {

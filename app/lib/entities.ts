@@ -188,7 +188,12 @@ export const ENTITIES: Entity[] = [
   },
   { slug: 'bibank', name: 'Bibank', type: 'banco', aliases: ['BIBANK S.A.'] },
   { slug: 'banco-piano', name: 'Banco Piano', type: 'banco', aliases: ['Piano'] },
-  { slug: 'brubank', name: 'Brubank', type: 'banco', aliases: [] },
+  {
+    slug: 'brubank',
+    name: 'Brubank',
+    type: 'banco',
+    aliases: ['BRUBANK CUENTA MAX', 'BRUBANK CUENTA MAX SELECCIONADA'],
+  },
   {
     slug: 'supervielle',
     name: 'Supervielle',

@@ -29,6 +29,9 @@ export function getProviderApiName(displayName: string): string | null {
     'Banco Nación': 'BNA',
     Brubank: 'BRUBANK',
     'Montemar Pay': 'MONTEMAR PAY',
+    'Brubank Cuenta Max': 'BRUBANK CUENTA MAX',
+    'Brubank Cuenta Max (cartera seleccionada)': 'BRUBANK CUENTA MAX SELECCIONADA',
+    Reba: 'REBA',
   }
 
   return mapping[displayName] || null
@@ -70,6 +73,9 @@ export function getProviderSlug(providerName: string): string {
     BRUBANK: 'brubank',
     'MONTEMAR PAY': 'montemar-pay',
     MONTEMAR: 'montemar-pay',
+    'BRUBANK CUENTA MAX': 'brubank-cuenta-max',
+    'BRUBANK CUENTA MAX SELECCIONADA': 'brubank-cuenta-max-seleccionada',
+    REBA: 'reba',
   }
 
   return mapping[normalized] || normalized.toLowerCase()
@@ -94,6 +100,9 @@ export const ACCOUNT_HISTORY_PROVIDER_SLUGS = [
   'bna',
   'brubank',
   'montemar-pay',
+  'brubank-cuenta-max',
+  'brubank-cuenta-max-seleccionada',
+  'reba',
 ] as const
 
 export function useAccountHistory(providerSlug: MaybeRefOrGetter<string>) {

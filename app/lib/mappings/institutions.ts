@@ -507,6 +507,18 @@ export const institutions: Array<{
     url: 'https://www.brubank.com/?ref=comparatasas',
   },
   {
+    names: ['BRUBANK CUENTA MAX'],
+    logo: 'https://api.argentinadatos.com/static/logos/brubank.png',
+    shortName: 'Brubank Cuenta Max',
+    url: 'https://www.brubank.com/?ref=comparatasas',
+  },
+  {
+    names: ['BRUBANK CUENTA MAX SELECCIONADA'],
+    logo: 'https://api.argentinadatos.com/static/logos/brubank.png',
+    shortName: 'Brubank Cuenta Max (cartera seleccionada)',
+    url: 'https://www.brubank.com/?ref=comparatasas',
+  },
+  {
     names: ['satoshitango', 'SatoshiTango', 'SATOSHITANGO'],
     logo: 'https://api.argentinadatos.com/static/logos/satoshitango.jpg',
     shortName: 'SatoshiTango',

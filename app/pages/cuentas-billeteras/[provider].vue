@@ -47,6 +47,9 @@ const slugToApiName: Record<string, string> = {
   'supervielle-hit-iol': 'SUPERVIELLE HIT IOL',
   bna: 'BNA',
   capyfi: 'CAPYFI',
+  'brubank-cuenta-max': 'BRUBANK CUENTA MAX',
+  'brubank-cuenta-max-seleccionada': 'BRUBANK CUENTA MAX SELECCIONADA',
+  reba: 'REBA',
 }
 
 const providerApiName = computed(() => {
