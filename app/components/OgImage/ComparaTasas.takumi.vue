@@ -3,6 +3,8 @@ defineProps<{
   title: string
   items: Array<{ name: string; rate: string }>
   updatedAt?: string
+  /** Optional text below the title, for pages without a ranked list. */
+  subtitle?: string
 }>()
 
 // Light mode: fondos claros y texto oscuro
@@ -83,6 +85,21 @@ const BORDER_COLORS = [
       >
         {{ title }}
       </h1>
+
+      <div
+        v-if="subtitle"
+        :style="{
+          display: 'flex',
+          fontSize: '30px',
+          fontWeight: '500',
+          margin: '0',
+          color: '#475569',
+          lineHeight: '1.35',
+          maxWidth: '640px',
+        }"
+      >
+        {{ subtitle }}
+      </div>
 
       <div
         :style="{

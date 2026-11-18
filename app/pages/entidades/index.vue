@@ -279,6 +279,12 @@ const columns = computed<TableColumn<EntityRow>[]>(() => [
 const seoDescription =
   'Bancos, billeteras, brokers y remesadoras de Argentina: cuentas remuneradas, plazos fijos, FCI, comisiones, préstamos y más de cada entidad.'
 
+defineOgImage('ComparaTasas.takumi', {
+  title: 'Entidades',
+  subtitle: 'Bancos, billeteras, brokers y remesadoras: todos sus productos en un solo lugar.',
+  items: [],
+})
+
 useSeoMeta({
   title: 'Entidades',
   description: seoDescription,
