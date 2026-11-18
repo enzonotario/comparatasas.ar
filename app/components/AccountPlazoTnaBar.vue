@@ -95,10 +95,8 @@ function segmentSurface(tier: AccountPlazoTier): Record<string, string> {
       Simulando {{ formatPlazoLabel(activeTier) }} · {{ formatTna(activeTier.tna) }}
     </div>
 
-    <div class="relative w-full overflow-x-auto">
-      <div
-        class="relative flex w-full min-w-max gap-1 rounded-lg bg-neutral-100/80 p-1 dark:bg-neutral-800/50"
-      >
+    <div class="relative w-full">
+      <div class="relative flex w-full gap-1">
         <div
           v-for="(tier, index) in tiers"
           :key="`${tier.plazoMinDias}-${tier.plazoMaxDias}-${index}`"
@@ -122,7 +120,7 @@ function segmentSurface(tier: AccountPlazoTier): Record<string, string> {
 
         <div
           v-if="isSimulating && activeTier"
-          class="pointer-events-none absolute inset-y-1 z-10 w-px -translate-x-1/2"
+          class="pointer-events-none absolute inset-y-0 z-10 w-px -translate-x-1/2"
           :style="{ left: markerLeft(selectedDays!) }"
         >
           <div
