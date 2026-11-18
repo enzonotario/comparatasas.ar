@@ -47,7 +47,7 @@ export interface NavigationCategory {
   id: string
   label: string
   ariaLabel: string
-  icon: string | 'flag-ars' | 'flag-usd' | 'bitcoin'
+  icon: string | 'flag-ars' | 'flag-usd' | 'bitcoin' | 'bank'
   pages: NavigationPage[]
 }
 
@@ -288,7 +288,7 @@ export const useNavigationPages = () => {
       id: 'entidades',
       label: 'Entidades',
       ariaLabel: 'Entidades — bancos, billeteras y brokers con todos sus productos',
-      icon: 'i-lucide-landmark',
+      icon: 'bank',
       pages: [
         {
           to: '/entidades',

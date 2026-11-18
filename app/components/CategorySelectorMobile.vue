@@ -3,6 +3,7 @@ import { groupNavigationPages, type NavigationCategory } from '~/composables/use
 import FlagARS from '~/components/icons/FlagARS.vue'
 import FlagUSD from '~/components/icons/FlagUSD.vue'
 import BitcoinIcon from '~/components/icons/BitcoinIcon.vue'
+import BankIcon from '~/components/icons/BankIcon.vue'
 
 const route = useRoute()
 const { categories, getCategoryByRoute, isCategoryActive, isActive } = useNavigationPages()
@@ -15,6 +16,7 @@ const getIconComponent = (icon: string) => {
   if (icon === 'flag-ars') return FlagARS
   if (icon === 'flag-usd') return FlagUSD
   if (icon === 'bitcoin') return BitcoinIcon
+  if (icon === 'bank') return BankIcon
   return null
 }
 
