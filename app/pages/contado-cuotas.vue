@@ -277,6 +277,46 @@ function applyProductScenario(product: ProductScenario) {
   financedTotalInput.value = total
 }
 
+const toast = useToast()
+const { share, isSupported: isShareSupported } = useShare()
+const { copy } = useClipboard({ legacy: true })
+
+async function shareComparison() {
+  if (!import.meta.client) return
+
+  const url = window.location.href
+
+  if (isShareSupported.value) {
+    try {
+      await share({
+        title: 'Contado vs Cuotas - Compara Tasas',
+        text: 'Mirá esta comparación de contado vs cuotas',
+        url,
+      })
+      return
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return
+    }
+  }
+
+  try {
+    await copy(url)
+    toast.add({
+      title: 'Link copiado',
+      description: 'Compartilo para que vean esta misma comparación.',
+      icon: 'i-lucide-check',
+      color: 'success',
+    })
+  } catch {
+    toast.add({
+      title: 'No se pudo copiar el link',
+      description: url,
+      icon: 'i-lucide-circle-alert',
+      color: 'error',
+    })
+  }
+}
+
 function scrollSummaryIntoViewIfNeeded() {
   if (!import.meta.client || !summarySectionRef.value) return
 
@@ -904,6 +944,16 @@ const carrySectionLoading = computed(() => {
                     class="size-5 text-primary-600 dark:text-primary-400"
                   />
                   <h2 class="text-lg font-semibold">Configurá la simulación</h2>
+                  <UButton
+                    class="ml-auto"
+                    size="sm"
+                    color="neutral"
+                    variant="outline"
+                    icon="i-lucide-share-2"
+                    label="Compartir"
+                    aria-label="Compartir esta comparación"
+                    @click="shareComparison"
+                  />
                 </div>
                 <p class="text-sm text-neutral-500">
                   Ingresá el escenario paso a paso: primero el contado, después las cuotas y por
