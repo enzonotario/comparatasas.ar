@@ -19,7 +19,9 @@ const { categories } = useNavigationPages()
 
 const productColumns = computed<FooterColumn[]>(() => {
   const ars = categories.find((category) => category.id === 'ars')
-  const foreign = categories.filter((category) => category.id !== 'ars')
+  const foreign = categories.filter(
+    (category) => category.id !== 'ars' && category.id !== 'entidades',
+  )
 
   const arsColumns = groupNavigationPages(ars?.pages ?? []).map((group) => ({
     id: group.id,
@@ -94,8 +96,7 @@ function openOpinaFeedback() {
     if (w.Opina?.show) {
       window.clearInterval(timer)
       w.Opina.show()
-    }
-    else if (tries >= 20) {
+    } else if (tries >= 20) {
       window.clearInterval(timer)
     }
   }, 100)

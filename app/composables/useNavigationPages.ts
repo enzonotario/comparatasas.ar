@@ -95,6 +95,7 @@ function normalizeNavigationAlias(path: string): string {
   if (trimmed.startsWith('/prestamos-personales/')) return '/prestamos-personales'
   if (trimmed.startsWith('/comisiones-brokers/')) return '/comisiones-brokers'
   if (trimmed === '/fondos' || trimmed.startsWith('/fondos/')) return '/fondos'
+  if (trimmed.startsWith('/entidades/')) return '/entidades'
   return trimmed
 }
 
@@ -280,6 +281,20 @@ export const useNavigationPages = () => {
           label: 'Criptomonedas',
           icon: 'i-lucide-bitcoin',
           image: categoryIcon('bitcoin.png'),
+        },
+      ],
+    },
+    {
+      id: 'entidades',
+      label: 'Entidades',
+      ariaLabel: 'Entidades — bancos, billeteras y brokers con todos sus productos',
+      icon: 'i-lucide-landmark',
+      pages: [
+        {
+          to: '/entidades',
+          label: 'Entidades',
+          icon: 'i-lucide-landmark',
+          image: categoryIcon('ahorro.png'),
         },
       ],
     },
