@@ -56,6 +56,7 @@ const GUARANTEED_FUNDS = [
   'BICA CUENTA POSITIVA 3',
   'BICA CUENTA POSITIVA 4',
   'VOII',
+  'REBA',
 ] as const
 
 const SPECIAL_FUNDS = [

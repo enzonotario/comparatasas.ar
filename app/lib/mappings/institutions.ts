@@ -375,7 +375,7 @@ export const institutions: Array<{
     url: 'https://www.voii.com.ar/?ref=comparatasas',
   },
   {
-    names: ['REBA COMPAÑIA FINANCIERA S.A.'],
+    names: ['REBA COMPAÑIA FINANCIERA S.A.', 'REBA'],
     logo: 'https://api.argentinadatos.com/static/logos/reba.png',
     shortName: 'Reba',
     url: 'https://reba.com.ar/?ref=comparatasas',

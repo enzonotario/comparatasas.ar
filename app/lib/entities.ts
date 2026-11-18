@@ -214,7 +214,7 @@ export const ENTITIES: Entity[] = [
     type: 'otro',
     aliases: ['CRÉDITO REGIONAL COMPAÑÍA FINANCIERA S.A.U.'],
   },
-  { slug: 'reba', name: 'Reba', type: 'otro', aliases: ['REBA COMPAÑIA FINANCIERA S.A.'] },
+  { slug: 'reba', name: 'Reba', type: 'otro', aliases: ['REBA COMPAÑIA FINANCIERA S.A.', 'REBA'] },
 
   // Billeteras
   {
