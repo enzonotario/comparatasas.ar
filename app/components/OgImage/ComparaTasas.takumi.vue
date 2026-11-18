@@ -1,11 +1,33 @@
 <script setup lang="ts">
-defineProps<{
+import { getEntityBySlug, getEntityLogo } from '~/lib/entities'
+
+const props = defineProps<{
   title: string
   items: Array<{ name: string; rate: string }>
   updatedAt?: string
   /** Optional text below the title, for pages without a ranked list. */
   subtitle?: string
+  /**
+   * Entity slugs shown as a grid of round logos. Slugs (not logo URLs) keep the
+   * OG URL short: some logos are inline base64 SVGs.
+   */
+  entitySlugs?: string[]
 }>()
+
+const LOGOS_PER_ROW = 6
+
+const logoRows = computed(() => {
+  const logos = (props.entitySlugs ?? []).flatMap((slug) => {
+    const entity = getEntityBySlug(slug)
+    const src = entity ? getEntityLogo(entity) : undefined
+    return entity && src ? [{ slug, name: entity.name, src }] : []
+  })
+  const rows: (typeof logos)[] = []
+  for (let i = 0; i < logos.length; i += LOGOS_PER_ROW) {
+    rows.push(logos.slice(i, i + LOGOS_PER_ROW))
+  }
+  return rows
+})
 
 // Light mode: fondos claros y texto oscuro
 const COLORS = ['#5b21b6', '#6d28d9', '#7c3aed']
@@ -99,6 +121,47 @@ const BORDER_COLORS = [
         }"
       >
         {{ subtitle }}
+      </div>
+
+      <div
+        v-if="logoRows.length"
+        :style="{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '18px',
+          marginTop: '40px',
+        }"
+      >
+        <div
+          v-for="(row, rowIndex) in logoRows"
+          :key="rowIndex"
+          :style="{ display: 'flex', gap: '18px' }"
+        >
+          <div
+            v-for="logo in row"
+            :key="logo.slug"
+            :style="{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '80px',
+              height: '80px',
+              borderRadius: '9999px',
+              backgroundColor: '#ffffff',
+              border: '2px solid rgba(139, 92, 246, 0.25)',
+              boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)',
+              overflow: 'hidden',
+            }"
+          >
+            <img
+              :src="logo.src"
+              :alt="logo.name"
+              width="80"
+              height="80"
+              :style="{ width: '80px', height: '80px', objectFit: 'cover' }"
+            />
+          </div>
+        </div>
       </div>
 
       <div

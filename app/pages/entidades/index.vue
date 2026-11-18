@@ -283,6 +283,20 @@ defineOgImage('ComparaTasas.takumi', {
   title: 'Entidades',
   subtitle: 'Bancos, billeteras, brokers y remesadoras: todos sus productos en un solo lugar.',
   items: [],
+  entitySlugs: [
+    'mercado-pago',
+    'banco-nacion',
+    'banco-galicia',
+    'bbva',
+    'banco-santander',
+    'banco-macro',
+    'uala',
+    'naranja-x',
+    'brubank',
+    'personal-pay',
+    'cocos',
+    'lemon',
+  ],
 })
 
 useSeoMeta({
