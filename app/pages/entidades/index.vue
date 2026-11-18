@@ -11,6 +11,7 @@ import {
 } from '~/lib/entities'
 import {
   ENTITY_CATEGORIES,
+  ENTITY_CATEGORY_GROUPS,
   formatCategoryBest,
   getCategoryBest,
   type CategoryBest,
@@ -28,6 +29,7 @@ definePageMeta({
 
 const UAvatar = resolveComponent('UAvatar')
 const UButton = resolveComponent('UButton')
+const UIcon = resolveComponent('UIcon')
 const NuxtLink = resolveComponent('NuxtLink')
 
 const { data, status, error, refresh } = await useFetch<EntitiesResponse>('/api/entidades.json', {
@@ -42,6 +44,9 @@ interface EntityRow extends EntitySummary {
 
 const searchQuery = useRouteQuery('q', '')
 const typeFilter = useRouteQuery('tipo', 'all')
+// Checked products as a comma list. None checked (default) shows every entity.
+const productsQuery = useRouteQuery('productos', '')
+const productsFilterOpen = ref(Boolean(productsQuery.value))
 const sortQuery = useRouteQuery('sort', '[{"id":"name","desc":false}]')
 
 const sorting = computed({
@@ -90,6 +95,8 @@ const filteredRows = computed(() => {
   const query = normalizeEntityName(searchQuery.value || '')
   return rows.value.filter((row) => {
     if (typeFilter.value !== 'all' && row.type !== typeFilter.value) return false
+    // Entities offering every checked product.
+    if (!selectedCategoryKeys.value.every((key) => row.best[key])) return false
     if (!query) return true
     const aliases = getEntityBySlug(row.slug)?.aliases ?? []
     return [row.name, ...aliases].some((name) => normalizeEntityName(name).includes(query))
@@ -100,6 +107,34 @@ const filteredRows = computed(() => {
 // ones) so columns stay stable and a sorted column never disappears.
 const tableCategories = computed(() =>
   ENTITY_CATEGORIES.filter((category) => rows.value.some((row) => row.best[category.key])),
+)
+
+const selectedCategoryKeys = computed(() => {
+  const selected = new Set((productsQuery.value || '').split(',').filter(Boolean))
+  return ENTITY_CATEGORIES.map((category) => category.key).filter((key) => selected.has(key))
+})
+
+function setCategorySelected(key: EntityCategoryKey, selected: boolean) {
+  const keys = new Set(selectedCategoryKeys.value)
+  if (selected) keys.add(key)
+  else keys.delete(key)
+  productsQuery.value = ENTITY_CATEGORIES.map((category) => category.key)
+    .filter((categoryKey) => keys.has(categoryKey))
+    .join(',')
+}
+
+const tableGroups = computed(() =>
+  ENTITY_CATEGORY_GROUPS.map((group) => ({
+    ...group,
+    categories: tableCategories.value.filter((category) => category.group === group.key),
+  })).filter((group) => group.categories.length > 0),
+)
+
+const valueCategories = ENTITY_CATEGORIES.filter(
+  (category) => ENTITY_CATEGORY_GROUPS.find((group) => group.key === category.group)?.showValue,
+)
+const availabilityCategories = ENTITY_CATEGORIES.filter(
+  (category) => !valueCategories.includes(category),
 )
 
 /**
@@ -150,6 +185,20 @@ function renderEntityCell(row: EntityRow) {
   )
 }
 
+function renderAvailabilityCell(best: CategoryBest | undefined, label: string) {
+  if (!best) return h('span', { class: 'text-muted' }, '—')
+  return h(
+    NuxtLink,
+    {
+      to: best.to,
+      class: 'inline-flex text-success hover:text-primary',
+      title: `${label}: ${best.count} ${best.count === 1 ? 'producto' : 'productos'}`,
+      'aria-label': `Ofrece ${label}`,
+    },
+    () => h(UIcon, { name: 'i-lucide-check', class: 'size-5' }),
+  )
+}
+
 function renderValueCell(best: CategoryBest | undefined) {
   if (!best) return h('span', { class: 'text-muted' }, '—')
   const others = best.count - 1
@@ -174,6 +223,8 @@ function renderValueCell(best: CategoryBest | undefined) {
   )
 }
 
+const GROUP_BORDER = 'border-l border-default'
+
 const columns = computed<TableColumn<EntityRow>[]>(() => [
   {
     id: 'name',
@@ -182,18 +233,45 @@ const columns = computed<TableColumn<EntityRow>[]>(() => [
     sortingFn: (a, b) => a.original.name.localeCompare(b.original.name, 'es'),
     cell: ({ row }) => renderEntityCell(row.original),
   },
-  ...tableCategories.value.map((category): TableColumn<EntityRow> => ({
-    id: category.key,
-    accessorFn: (row) => row.best[category.key]?.value,
-    header: sortableHeader(
-      `${category.shortLabel} · ${category.metricLabel}`,
-      `${category.label} (${category.direction === 'higher' ? 'mayor' : 'menor'} es mejor)`,
-      category.direction === 'higher',
-    ),
-    sortingFn: 'basic',
-    // No product or no numeric value: always last, in both directions.
-    sortUndefined: 'last',
-    cell: ({ row }) => renderValueCell(row.original.best[category.key]),
+  ...tableGroups.value.map((group): TableColumn<EntityRow> => ({
+    id: `group-${group.key}`,
+    header: group.label,
+    meta: {
+      class: {
+        th: `text-center text-xs uppercase tracking-wide text-muted border-b ${GROUP_BORDER}`,
+      },
+    },
+    columns: group.categories.map((category, index): TableColumn<EntityRow> => {
+      // The first column of each group starts with a left border, aligned with
+      // the group header, so it's clear which columns the group spans.
+      const border = index === 0 ? GROUP_BORDER : ''
+      return group.showValue
+        ? {
+            id: category.key,
+            accessorFn: (row) => row.best[category.key]?.value,
+            header: sortableHeader(
+              `${category.shortLabel} · ${category.metricLabel}`,
+              `${category.label} (${category.direction === 'higher' ? 'mayor' : 'menor'} es mejor)`,
+              category.direction === 'higher',
+            ),
+            sortingFn: 'basic',
+            // No product or no numeric value: always last, in both directions.
+            sortUndefined: 'last',
+            meta: { class: { th: border, td: border } },
+            cell: ({ row }) => renderValueCell(row.original.best[category.key]),
+          }
+        : {
+            id: category.key,
+            // Availability only: entities offering it first.
+            accessorFn: (row) => (row.best[category.key] ? 1 : undefined),
+            header: sortableHeader(category.shortLabel, category.label, true),
+            sortingFn: 'basic',
+            sortUndefined: 'last',
+            meta: { class: { th: `text-center ${border}`, td: `text-center ${border}` } },
+            cell: ({ row }) =>
+              renderAvailabilityCell(row.original.best[category.key], category.label),
+          }
+    }),
   })),
 ])
 
@@ -239,23 +317,74 @@ useHead({
             />
           </UFormField>
 
-          <div class="flex flex-wrap gap-2">
-            <UButton
-              v-for="option in typeOptions"
-              :key="option.value"
-              size="sm"
-              :color="typeFilter === option.value ? 'primary' : 'neutral'"
-              :variant="typeFilter === option.value ? 'soft' : 'outline'"
-              @click="typeFilter = option.value"
-            >
-              {{ option.label }}
-            </UButton>
-          </div>
+          <UFormField label="Tipo de entidad">
+            <div class="flex flex-wrap gap-2">
+              <UButton
+                v-for="option in typeOptions"
+                :key="option.value"
+                size="sm"
+                :color="typeFilter === option.value ? 'primary' : 'neutral'"
+                :variant="typeFilter === option.value ? 'soft' : 'outline'"
+                @click="typeFilter = option.value"
+              >
+                {{ option.label }}
+              </UButton>
+            </div>
+          </UFormField>
         </div>
 
+        <UCollapsible v-model:open="productsFilterOpen">
+          <UButton
+            color="neutral"
+            variant="outline"
+            size="sm"
+            icon="i-lucide-list-filter"
+            :trailing-icon="productsFilterOpen ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+            :label="
+              selectedCategoryKeys.length
+                ? `Productos (${selectedCategoryKeys.length})`
+                : 'Filtrar por productos'
+            "
+          />
+
+          <template #content>
+            <div class="mt-3 space-y-2 rounded-lg border border-default p-3">
+              <div class="flex items-center justify-between gap-3">
+                <p class="text-xs text-muted">Mostrar entidades que ofrecen todos los tildados.</p>
+                <UButton
+                  v-if="selectedCategoryKeys.length"
+                  size="xs"
+                  variant="link"
+                  color="neutral"
+                  class="p-0"
+                  label="Limpiar"
+                  @click="productsQuery = ''"
+                />
+              </div>
+              <div
+                v-for="group in tableGroups"
+                :key="group.key"
+                class="flex flex-wrap items-center gap-x-4 gap-y-2"
+              >
+                <span class="w-24 text-xs font-medium uppercase tracking-wide text-muted">
+                  {{ group.label }}
+                </span>
+                <UCheckbox
+                  v-for="category in group.categories"
+                  :key="category.key"
+                  :model-value="selectedCategoryKeys.includes(category.key)"
+                  :label="category.shortLabel"
+                  :title="category.label"
+                  @update:model-value="setCategorySelected(category.key, $event === true)"
+                />
+              </div>
+            </div>
+          </template>
+        </UCollapsible>
+
         <p class="text-xs text-muted">
-          {{ filteredRows.length }} entidades. Cada celda muestra el mejor valor de la entidad en
-          esa categoría.
+          {{ filteredRows.length }} entidades. En inversiones y financiación se muestra la mejor
+          tasa de cada entidad; en servicios, si los ofrece.
         </p>
       </div>
 
@@ -301,9 +430,12 @@ useHead({
                   <p class="text-xs text-muted">{{ row.typeLabel }}</p>
                 </div>
               </div>
-              <div class="mt-3 flex flex-wrap gap-1.5">
+              <div
+                v-if="valueCategories.some((c) => row.best[c.key])"
+                class="mt-3 flex flex-wrap gap-1.5"
+              >
                 <UBadge
-                  v-for="category in ENTITY_CATEGORIES.filter((c) => row.best[c.key])"
+                  v-for="category in valueCategories.filter((c) => row.best[c.key])"
                   :key="category.key"
                   color="neutral"
                   variant="soft"
@@ -313,6 +445,21 @@ useHead({
                   <span class="font-semibold">{{
                     formatCategoryBest(row.best[category.key])
                   }}</span>
+                </UBadge>
+              </div>
+              <div
+                v-if="availabilityCategories.some((c) => row.best[c.key])"
+                class="mt-2 flex flex-wrap gap-1.5"
+              >
+                <UBadge
+                  v-for="category in availabilityCategories.filter((c) => row.best[c.key])"
+                  :key="category.key"
+                  color="neutral"
+                  variant="outline"
+                  size="sm"
+                  icon="i-lucide-check"
+                >
+                  {{ category.shortLabel }}
                 </UBadge>
               </div>
             </UCard>

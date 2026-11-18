@@ -5,6 +5,7 @@ import {
   getCategoryBest,
   mapComisionesBrokers,
   mapCuentas,
+  mapFondos,
   mapPlazosFijos,
   mapRemesas,
   parseRemesaCost,
@@ -41,6 +42,14 @@ describe('mapCuentas', () => {
       },
     ])
     expect(unmatched).toEqual(['CUENTA DESCONOCIDA'])
+  })
+})
+
+describe('mapFondos', () => {
+  it('lists funds shown as accounts (variable yield) under FCI, not cuentas', () => {
+    const { products } = mapFondos({ fondos: [{ nombre: 'Mercado Fondo - Clase A' }] })
+    expect(products).not.toHaveLength(0)
+    expect(products.every((product) => product.category === 'fondos')).toBe(true)
   })
 })
 

@@ -21,6 +21,19 @@ import {
 import { getInstitutionShortName } from './mappings/institutions'
 
 /**
+ * Column groups of the entities table. Investments and financing show the best
+ * rate of the entity; services only say whether the entity offers them, since
+ * their products (fees, remittances) don't fit a single comparable value.
+ */
+export const ENTITY_CATEGORY_GROUPS = [
+  { key: 'inversiones', label: 'Inversiones', showValue: true },
+  { key: 'financiacion', label: 'Financiación', showValue: true },
+  { key: 'servicios', label: 'Servicios', showValue: false },
+] as const
+
+export type EntityCategoryGroupKey = (typeof ENTITY_CATEGORY_GROUPS)[number]['key']
+
+/**
  * `shortLabel` and `metricLabel` are used where space is tight (coverage table).
  * `direction` says which value is best: rates earned are `higher`, costs and
  * borrowing rates are `lower`.
@@ -28,6 +41,7 @@ import { getInstitutionShortName } from './mappings/institutions'
 export const ENTITY_CATEGORIES = [
   {
     key: 'cuentas-remuneradas',
+    group: 'inversiones',
     label: 'Cuentas remuneradas',
     shortLabel: 'Cuentas',
     metricLabel: 'TNA',
@@ -36,6 +50,7 @@ export const ENTITY_CATEGORIES = [
   },
   {
     key: 'plazos-fijos',
+    group: 'inversiones',
     label: 'Plazos fijos',
     shortLabel: 'Plazo fijo',
     metricLabel: 'TNA',
@@ -44,6 +59,7 @@ export const ENTITY_CATEGORIES = [
   },
   {
     key: 'fondos',
+    group: 'inversiones',
     label: 'Fondos comunes de inversión',
     shortLabel: 'FCI',
     metricLabel: 'TNA',
@@ -52,6 +68,7 @@ export const ENTITY_CATEGORIES = [
   },
   {
     key: 'usd',
+    group: 'inversiones',
     label: 'Inversiones en USD',
     shortLabel: 'USD',
     metricLabel: 'TNA',
@@ -60,6 +77,7 @@ export const ENTITY_CATEGORIES = [
   },
   {
     key: 'criptopesos',
+    group: 'inversiones',
     label: 'Criptopesos',
     shortLabel: 'Criptopesos',
     metricLabel: 'TNA',
@@ -68,6 +86,7 @@ export const ENTITY_CATEGORIES = [
   },
   {
     key: 'criptomonedas',
+    group: 'inversiones',
     label: 'Criptomonedas',
     shortLabel: 'Cripto',
     metricLabel: 'APY',
@@ -76,6 +95,7 @@ export const ENTITY_CATEGORIES = [
   },
   {
     key: 'comisiones-cobro',
+    group: 'servicios',
     label: 'Comisiones de cobro',
     shortLabel: 'Cobros',
     metricLabel: 'comisión',
@@ -84,6 +104,7 @@ export const ENTITY_CATEGORIES = [
   },
   {
     key: 'comisiones-brokers',
+    group: 'servicios',
     label: 'Comisiones de brokers',
     shortLabel: 'Brokers',
     metricLabel: 'comisión',
@@ -92,6 +113,7 @@ export const ENTITY_CATEGORIES = [
   },
   {
     key: 'fal',
+    group: 'servicios',
     label: 'Fondo de Asistencia Laboral',
     shortLabel: 'FAL',
     metricLabel: 'comisión',
@@ -100,6 +122,7 @@ export const ENTITY_CATEGORIES = [
   },
   {
     key: 'creditos-hipotecarios-uva',
+    group: 'financiacion',
     label: 'Créditos hipotecarios UVA',
     shortLabel: 'Hipotecario',
     metricLabel: 'TNA',
@@ -108,6 +131,7 @@ export const ENTITY_CATEGORIES = [
   },
   {
     key: 'prestamos-personales',
+    group: 'financiacion',
     label: 'Préstamos personales',
     shortLabel: 'Préstamos',
     metricLabel: 'TNA',
@@ -119,6 +143,7 @@ export const ENTITY_CATEGORIES = [
   // fees like "3 USD" are not comparable with a percentage and stay text-only.
   {
     key: 'remesas',
+    group: 'servicios',
     label: 'Remesas',
     shortLabel: 'Remesas',
     metricLabel: 'costo',
@@ -131,6 +156,7 @@ export const ENTITY_CATEGORIES = [
   shortLabel: string
   metricLabel: string
   direction: 'higher' | 'lower'
+  group: EntityCategoryGroupKey
   to: string
 }>
 
@@ -384,7 +410,7 @@ interface FondoRow {
 /**
  * FCIs listed by comparatasas (`comparatasasFondos`), attributed to the
  * institutions in `mappings/funds.ts`. Only money market funds and funds shown
- * as accounts get a TNA: the 7-day annualized return of bond/equity funds is
+ * as accounts (variable yield) get a TNA: the 7-day annualized return of bond/equity funds is
  * too noisy for a summary.
  */
 export function mapFondos(raw: unknown): EntityProductsResult {
@@ -407,8 +433,11 @@ export function mapFondos(raw: unknown): EntityProductsResult {
       (inst) => [inst.institution, inst.displayName],
       (inst) => {
         const isUsd = inst.showInUsdFunds || inst.showInUsdMoneyMarket || inst.showInUsdHighRisk
-        const category = isUsd ? 'usd' : inst.showInAccounts ? 'cuentas-remuneradas' : 'fondos'
-        const showTna = isMoneyMarket || category === 'cuentas-remuneradas'
+        // Funds shown as accounts ("Rendimiento variable" in /cuentas-billeteras)
+        // are still FCIs: they go to `fondos`, keeping their TNA. Cuentas only
+        // holds guaranteed-yield accounts.
+        const category = isUsd ? 'usd' : 'fondos'
+        const showTna = isMoneyMarket || Boolean(inst.showInAccounts)
         return {
           category,
           product: fondo.nombre,
