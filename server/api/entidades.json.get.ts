@@ -39,6 +39,6 @@ export default defineCachedEventHandler(
     maxAge: 5 * 60,
     swr: true,
     // Bump when the response shape changes so persisted caches are not reused.
-    getKey: () => 'v3',
+    getKey: () => 'v4',
   },
 )

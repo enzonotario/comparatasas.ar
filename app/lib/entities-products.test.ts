@@ -51,6 +51,24 @@ describe('mapFondos', () => {
     expect(products).not.toHaveLength(0)
     expect(products.every((product) => product.category === 'fondos')).toBe(true)
   })
+
+  it('shows the TNA of every fund with returns, not only money market', () => {
+    const { products } = mapFondos({
+      fondos: [
+        {
+          nombre: 'Cocos Acciones - Clase A',
+          tipoRenta: 'Renta Variable',
+          rendimientos: { ultimos7Dias: 1, unMes: 3 },
+        },
+        { nombre: 'Cocos Ahorro Dólares - Clase A' },
+      ],
+    })
+    const acciones = products.find((product) => product.product === 'Cocos Acciones - Clase A')
+    const dolares = products.find((product) => product.product === 'Cocos Ahorro Dólares - Clase A')
+    expect(acciones?.value).toBeGreaterThan(0)
+    expect(dolares).toBeDefined()
+    expect(dolares?.value).toBeUndefined()
+  })
 })
 
 describe('mapPlazosFijos', () => {

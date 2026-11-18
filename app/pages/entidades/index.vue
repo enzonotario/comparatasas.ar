@@ -47,15 +47,16 @@ const typeFilter = useRouteQuery('tipo', 'all')
 // Checked products as a comma list. None checked (default) shows every entity.
 const productsQuery = useRouteQuery('productos', '')
 const productsFilterOpen = ref(Boolean(productsQuery.value))
-const sortQuery = useRouteQuery('sort', '[{"id":"name","desc":false}]')
+const DEFAULT_SORTING = [{ id: 'cuentas-remuneradas', desc: true }]
+const sortQuery = useRouteQuery('sort', JSON.stringify(DEFAULT_SORTING))
 
 const sorting = computed({
   get: () => {
     try {
       const parsed = JSON.parse(sortQuery.value || '[]')
-      return Array.isArray(parsed) && parsed.length ? parsed : [{ id: 'name', desc: false }]
+      return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_SORTING
     } catch {
-      return [{ id: 'name', desc: false }]
+      return DEFAULT_SORTING
     }
   },
   set: (value) => {

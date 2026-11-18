@@ -9,15 +9,11 @@ import { formatProductoLabel } from './finance/comision-caucion-broker'
 import {
   getComparatasasReturnPercent,
   getComparatasasTnaAndTea,
+  hasComparatasasRendimientos,
   type FciComparatasasRendimientos,
 } from './finance/fci-comparatasas-returns'
 import { getFundDetailPath, normalizeFundSlug } from './funds-detail'
-import {
-  comparatasasFondos,
-  getFundMapping,
-  getFundMappingBySlug,
-  getFundTypeInfo,
-} from './mappings/funds'
+import { comparatasasFondos, getFundMapping, getFundMappingBySlug } from './mappings/funds'
 import { getInstitutionShortName } from './mappings/institutions'
 
 /**
@@ -409,9 +405,9 @@ interface FondoRow {
 
 /**
  * FCIs listed by comparatasas (`comparatasasFondos`), attributed to the
- * institutions in `mappings/funds.ts`. Only money market funds and funds shown
- * as accounts (variable yield) get a TNA: the 7-day annualized return of bond/equity funds is
- * too noisy for a summary.
+ * institutions in `mappings/funds.ts`. Every fund gets the same estimated
+ * nominal TNA shown in /fondos (USD funds: TNA in USD); funds without returns
+ * data stay text-only.
  */
 export function mapFondos(raw: unknown): EntityProductsResult {
   const listed = new Set(comparatasasFondos)
@@ -424,10 +420,10 @@ export function mapFondos(raw: unknown): EntityProductsResult {
     const mapping = getFundMapping(fondo.nombre) ?? getFundMappingBySlug(slug)
     if (!mapping) continue
 
-    const isMoneyMarket = getFundTypeInfo(fondo.tipoRenta)?.type === 'mercadoDinero'
-    const { tna } = fondo.rendimientos
-      ? getComparatasasTnaAndTea(getComparatasasReturnPercent(fondo.rendimientos))
-      : { tna: 0 }
+    const tna =
+      fondo.rendimientos && hasComparatasasRendimientos(fondo.rendimientos)
+        ? getComparatasasTnaAndTea(getComparatasasReturnPercent(fondo.rendimientos)).tna
+        : undefined
     const result = collect(
       mapping.institutions,
       (inst) => [inst.institution, inst.displayName],
@@ -437,11 +433,10 @@ export function mapFondos(raw: unknown): EntityProductsResult {
         // are still FCIs: they go to `fondos`, keeping their TNA. Cuentas only
         // holds guaranteed-yield accounts.
         const category = isUsd ? 'usd' : 'fondos'
-        const showTna = isMoneyMarket || Boolean(inst.showInAccounts)
         return {
           category,
           product: fondo.nombre,
-          ...rated('TNA', showTna && isPositive(tna) ? tna : undefined),
+          ...rated('TNA', tna != null && Number.isFinite(tna) && tna !== 0 ? tna : undefined),
           to: getFundDetailPath(slug),
         }
       },
