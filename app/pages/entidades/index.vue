@@ -106,20 +106,26 @@ const filteredRows = computed(() => {
 
 // Categories with at least one entity. Based on all rows (not the filtered
 // ones) so columns stay stable and a sorted column never disappears.
+// Brokers is left out: it mirrors the "Broker" entity type filter. The entity
+// detail page still lists broker fees.
+const LISTED_CATEGORIES = ENTITY_CATEGORIES.filter(
+  (category) => category.key !== 'comisiones-brokers',
+)
+
 const tableCategories = computed(() =>
-  ENTITY_CATEGORIES.filter((category) => rows.value.some((row) => row.best[category.key])),
+  LISTED_CATEGORIES.filter((category) => rows.value.some((row) => row.best[category.key])),
 )
 
 const selectedCategoryKeys = computed(() => {
   const selected = new Set((productsQuery.value || '').split(',').filter(Boolean))
-  return ENTITY_CATEGORIES.map((category) => category.key).filter((key) => selected.has(key))
+  return LISTED_CATEGORIES.map((category) => category.key).filter((key) => selected.has(key))
 })
 
 function setCategorySelected(key: EntityCategoryKey, selected: boolean) {
   const keys = new Set(selectedCategoryKeys.value)
   if (selected) keys.add(key)
   else keys.delete(key)
-  productsQuery.value = ENTITY_CATEGORIES.map((category) => category.key)
+  productsQuery.value = LISTED_CATEGORIES.map((category) => category.key)
     .filter((categoryKey) => keys.has(categoryKey))
     .join(',')
 }
@@ -131,10 +137,10 @@ const tableGroups = computed(() =>
   })).filter((group) => group.categories.length > 0),
 )
 
-const valueCategories = ENTITY_CATEGORIES.filter(
+const valueCategories = LISTED_CATEGORIES.filter(
   (category) => ENTITY_CATEGORY_GROUPS.find((group) => group.key === category.group)?.showValue,
 )
-const availabilityCategories = ENTITY_CATEGORIES.filter(
+const availabilityCategories = LISTED_CATEGORIES.filter(
   (category) => !valueCategories.includes(category),
 )
 
