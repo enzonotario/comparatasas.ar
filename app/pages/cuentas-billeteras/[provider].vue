@@ -11,6 +11,7 @@ import {
   getInstitutionShortName,
   getInstitutionUrl,
 } from '~/lib/mappings/institutions'
+import { getEntityBySlug, resolveEntitySlug } from '~/lib/entities'
 import { fitPageTitle } from '~/lib/seo-title'
 
 interface AccountSummary {
@@ -60,6 +61,15 @@ const displayName = computed(() => getInstitutionShortName(providerApiName.value
 const logo = computed(() => getInstitutionLogo(providerApiName.value))
 const providerUrl = computed(() => getInstitutionUrl(providerApiName.value, 'cuentas-billeteras'))
 const providerSlug = computed(() => providerParam.toLowerCase())
+
+// Entity behind this account, for the link to its /entidades detail page.
+const entity = computed(() => {
+  const slug =
+    resolveEntitySlug(providerApiName.value) ??
+    resolveEntitySlug(displayName.value) ??
+    resolveEntitySlug(providerSlug.value)
+  return slug ? getEntityBySlug(slug) : undefined
+})
 
 const { data: history, loading, error } = useAccountHistory(providerSlug)
 const { accounts, specialAccounts } = useAccounts()
@@ -300,5 +310,26 @@ useSeoMeta({
     <div v-else-if="!loading" class="text-center py-12">
       <p class="text-neutral-500">No hay datos históricos disponibles para este proveedor.</p>
     </div>
+
+    <UCard v-if="entity">
+      <div class="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
+        <UIcon
+          name="i-lucide-landmark"
+          class="size-8 shrink-0 text-primary-600 dark:text-primary-400"
+        />
+        <div class="flex-1 space-y-1">
+          <p class="font-semibold">Todo lo que ofrece {{ entity.name }}</p>
+          <p class="text-sm text-muted">
+            Plazos fijos, fondos, préstamos, comisiones y más productos de la entidad en un solo
+            lugar.
+          </p>
+        </div>
+        <UButton
+          :to="`/entidades/${entity.slug}`"
+          label="Ver entidad"
+          trailing-icon="i-lucide-arrow-right"
+        />
+      </div>
+    </UCard>
   </div>
 </template>
