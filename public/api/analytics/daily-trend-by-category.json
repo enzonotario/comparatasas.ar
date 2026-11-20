@@ -1,23 +1,43 @@
 [
   {
+    "date": "20261119",
+    "categories": {
+      "Money Market": 2,
+      "Billetera": 15,
+      "Plazo Fijo": 17,
+      "Cuenta Remunerada": 20,
+      "Otro": 23,
+      "Página Amiga": 19,
+      "ARGt": 1,
+      "Billetera USD": 11,
+      "Frascos": 7,
+      "PF UVA pago periódico": 5,
+      "General": 6,
+      "Criptomonedas": 5,
+      "plazo fijo tradicional": 9,
+      "wARS": 1
+    },
+    "total": 141
+  },
+  {
     "date": "20261118",
     "categories": {
-      "Otro": 20,
-      "Página Amiga": 22,
-      "Billetera": 22,
-      "Money Market": 7,
-      "Plazo Fijo": 25,
-      "Cuenta Remunerada": 25,
+      "Otro": 43,
+      "Página Amiga": 44,
+      "Billetera": 46,
+      "Money Market": 15,
+      "Plazo Fijo": 54,
+      "Cuenta Remunerada": 57,
       "ARGt": 1,
-      "Billetera USD": 12,
+      "Billetera USD": 15,
       "Frascos": 10,
-      "PF UVA pago periódico": 4,
-      "General": 10,
-      "Criptomonedas": 6,
-      "plazo fijo tradicional": 11,
+      "PF UVA pago periódico": 6,
+      "General": 13,
+      "Criptomonedas": 10,
+      "plazo fijo tradicional": 13,
       "wARS": 6
     },
-    "total": 181
+    "total": 333
   },
   {
     "date": "20261117",
@@ -63,50 +83,13 @@
   {
     "date": "20261115",
     "categories": {
-      "Money Market": 12,
-      "Billetera": 22,
-      "Plazo Fijo": 15,
-      "Cuenta Remunerada": 29,
-      "Otro": 24,
-      "Página Amiga": 6,
-      "Billetera USD": 9,
-      "Frascos": 5,
-      "PF UVA pago periódico": 2,
-      "PF UVA precancelable": 2,
-      "General": 3,
-      "Criptomonedas": 3,
-      "plazo fijo tradicional": 5,
-      "wARS": 5
+      "Money Market": 10,
+      "Billetera": 11,
+      "Plazo Fijo": 10,
+      "Cuenta Remunerada": 20,
+      "Otro": 15,
+      "Página Amiga": 6
     },
-    "total": 142
-  },
-  {
-    "date": "20261114",
-    "categories": {
-      "Billetera": 14,
-      "Money Market": 11,
-      "Plazo Fijo": 17,
-      "Cuenta Remunerada": 19,
-      "Otro": 37,
-      "Página Amiga": 13,
-      "ARGt": 1,
-      "Billetera USD": 5,
-      "Frascos": 5,
-      "General": 4,
-      "Criptomonedas": 9,
-      "plazo fijo tradicional": 4,
-      "wARS": 4
-    },
-    "total": 143
-  },
-  {
-    "date": "20261113",
-    "categories": {
-      "Página Amiga": 4,
-      "Otro": 3,
-      "Billetera": 1,
-      "Money Market": 1
-    },
-    "total": 9
+    "total": 72
   }
 ]
