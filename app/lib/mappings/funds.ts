@@ -1,6 +1,7 @@
 import { normalizeFundSlug } from '../funds-detail'
 
 export const LEMON_VINCI_COMPASS_LIQUIDEZ_CLASE_F_TOPE = 2_000_000
+export const LEMON_VINCI_COMPASS_LIQUIDEZ_CLASE_G_TOPE = 4_000_000
 
 export interface FundInstitution {
   institution: string
@@ -222,6 +223,21 @@ const fundMappings: FundMapping[] = [
         showInStockFunds: false,
         showInUsdMoneyMarket: false,
         tope: LEMON_VINCI_COMPASS_LIQUIDEZ_CLASE_F_TOPE,
+      },
+    ],
+  },
+  {
+    fundName: 'Vinci Compass Liquidez - Clase G',
+    institutions: [
+      {
+        institution: 'Lemon',
+        displayName: 'Lemon',
+        showInAccounts: true,
+        showInFunds: true,
+        showInUsdFunds: false,
+        showInStockFunds: false,
+        showInUsdMoneyMarket: false,
+        tope: LEMON_VINCI_COMPASS_LIQUIDEZ_CLASE_G_TOPE,
       },
     ],
   },
@@ -939,6 +955,7 @@ export const comparatasasFondosArs = [
   'fima-premium-clase-a',
   'vinci-compass-liquidez-clase-d',
   'vinci-compass-liquidez-clase-f',
+  'vinci-compass-liquidez-clase-g',
   'ciclo-nova-ahorro-clase-a',
   'ciclo-nova-value-clase-a',
   'iol-cash-management-clase-a',
