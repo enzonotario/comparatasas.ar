@@ -1,137 +1,497 @@
 [
   {
-    "date": "20261119",
+    "date": "20261120",
     "provider": "AstroPay",
-    "clicks": 18
+    "clicks": 22
   },
   {
-    "date": "20261119",
-    "provider": "Naranja X",
-    "clicks": 14
-  },
-  {
-    "date": "20261119",
-    "provider": "comparadolar.ar",
-    "clicks": 10
-  },
-  {
-    "date": "20261119",
-    "provider": "Banco Nación",
-    "clicks": 10
-  },
-  {
-    "date": "20261119",
-    "provider": "Reba",
-    "clicks": 8
-  },
-  {
-    "date": "20261119",
-    "provider": "Banco Voii",
-    "clicks": 6
-  },
-  {
-    "date": "20261119",
-    "provider": "Brubank",
-    "clicks": 6
-  },
-  {
-    "date": "20261119",
+    "date": "20261120",
     "provider": "Arqfinance",
+    "clicks": 15
+  },
+  {
+    "date": "20261120",
+    "provider": "comparadolar.ar",
+    "clicks": 12
+  },
+  {
+    "date": "20261120",
+    "provider": "Naranja X",
+    "clicks": 7
+  },
+  {
+    "date": "20261120",
+    "provider": "dolarito.ar",
+    "clicks": 7
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco BICA Cuenta Positiva 1",
     "clicks": 6
   },
   {
-    "date": "20261119",
-    "provider": "dolarito.ar",
+    "date": "20261120",
+    "provider": "enqueinvierto.ar",
     "clicks": 5
   },
   {
-    "date": "20261119",
-    "provider": "X Salinas",
+    "date": "20261120",
+    "provider": "Ualá",
     "clicks": 4
   },
   {
-    "date": "20261119",
+    "date": "20261120",
     "provider": "Prex",
     "clicks": 4
   },
   {
+    "date": "20261120",
+    "provider": "Brubank",
+    "clicks": 4
+  },
+  {
+    "date": "20261120",
+    "provider": "Bancocmf",
+    "clicks": 4
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco BICA",
+    "clicks": 4
+  },
+  {
+    "date": "20261120",
+    "provider": "Cocos",
+    "clicks": 4
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Nación",
+    "clicks": 4
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Galicia",
+    "clicks": 3
+  },
+  {
+    "date": "20261120",
+    "provider": "Lune.fi",
+    "clicks": 3
+  },
+  {
+    "date": "20261120",
+    "provider": "icons.com.ar",
+    "clicks": 3
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Nación",
+    "clicks": 3
+  },
+  {
+    "date": "20261120",
+    "provider": "betece.app",
+    "clicks": 3
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco de Comercio",
+    "clicks": 3
+  },
+  {
+    "date": "20261120",
+    "provider": "Supervielle",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Santander",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Macro",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "IEB+",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Fiwind",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "dolarya.info",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "comparatiendas.com.ar",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "BBVA",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Provincia",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Bancomeridian",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Nación",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Ciudad",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Ciudad",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Ripio",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Ripio",
+    "clicks": 2
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Santander",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "Reba",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Macro",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "impuestito.org",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "ICBC",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "Getnet",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "dolarito.ar",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "Bna",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "BBVA",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "BBVA",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "Bancor",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Patagonia",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "Bancochubut",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "comparapix.ar",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "comparadolar.ar",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "comparadolar.ar",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "Banco Nación",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "argentinadatos.com",
+    "clicks": 1
+  },
+  {
+    "date": "20261120",
+    "provider": "argentinadatos.com",
+    "clicks": 1
+  },
+  {
+    "date": "20261119",
+    "provider": "AstroPay",
+    "clicks": 29
+  },
+  {
+    "date": "20261119",
+    "provider": "Naranja X",
+    "clicks": 21
+  },
+  {
+    "date": "20261119",
+    "provider": "comparadolar.ar",
+    "clicks": 20
+  },
+  {
+    "date": "20261119",
+    "provider": "Banco Nación",
+    "clicks": 15
+  },
+  {
+    "date": "20261119",
+    "provider": "Arqfinance",
+    "clicks": 14
+  },
+  {
+    "date": "20261119",
+    "provider": "Reba",
+    "clicks": 12
+  },
+  {
+    "date": "20261119",
+    "provider": "dolarito.ar",
+    "clicks": 10
+  },
+  {
+    "date": "20261119",
+    "provider": "Banco Voii",
+    "clicks": 9
+  },
+  {
+    "date": "20261119",
+    "provider": "Brubank",
+    "clicks": 9
+  },
+  {
+    "date": "20261119",
+    "provider": "X Salinas",
+    "clicks": 8
+  },
+  {
+    "date": "20261119",
+    "provider": "Prex",
+    "clicks": 8
+  },
+  {
     "date": "20261119",
     "provider": "Banco Galicia",
-    "clicks": 4
+    "clicks": 8
+  },
+  {
+    "date": "20261119",
+    "provider": "Banco Nación",
+    "clicks": 6
+  },
+  {
+    "date": "20261119",
+    "provider": "Banco Ciudad",
+    "clicks": 6
   },
   {
     "date": "20261119",
     "provider": "Nexo",
+    "clicks": 5
+  },
+  {
+    "date": "20261119",
+    "provider": "BBVA",
     "clicks": 4
   },
   {
     "date": "20261119",
     "provider": "Lune.fi",
-    "clicks": 3
+    "clicks": 4
   },
   {
     "date": "20261119",
-    "provider": "Banco Nación",
-    "clicks": 3
-  },
-  {
-    "date": "20261119",
-    "provider": "Banco Ciudad",
-    "clicks": 3
+    "provider": "CapyFi",
+    "clicks": 4
   },
   {
     "date": "20261119",
     "provider": "Fiwind",
-    "clicks": 2
-  },
-  {
-    "date": "20261119",
-    "provider": "BBVA",
-    "clicks": 2
+    "clicks": 3
   },
   {
     "date": "20261119",
     "provider": "Belo",
-    "clicks": 2
+    "clicks": 3
   },
   {
     "date": "20261119",
     "provider": "Banco BICA",
-    "clicks": 2
+    "clicks": 3
   },
   {
     "date": "20261119",
     "provider": "Cocos",
-    "clicks": 2
+    "clicks": 3
   },
   {
     "date": "20261119",
     "provider": "Adcap",
-    "clicks": 2
+    "clicks": 3
   },
   {
     "date": "20261119",
     "provider": "Payway",
-    "clicks": 1
+    "clicks": 2
   },
   {
     "date": "20261119",
     "provider": "Mercado Pago",
-    "clicks": 1
+    "clicks": 2
   },
   {
     "date": "20261119",
     "provider": "Banco Macro",
-    "clicks": 1
+    "clicks": 2
   },
   {
     "date": "20261119",
     "provider": "impuestito.org",
-    "clicks": 1
+    "clicks": 2
   },
   {
     "date": "20261119",
     "provider": "dolarya.info",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Estadisticas.cafci.org",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "comparapix.ar",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "comparadolar.ar",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Bull Market",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Banco Nación",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "Ripio",
+    "clicks": 2
+  },
+  {
+    "date": "20261119",
+    "provider": "IEB+",
     "clicks": 1
   },
   {
@@ -141,72 +501,7 @@
   },
   {
     "date": "20261119",
-    "provider": "Estadisticas.cafci.org",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Estadisticas.cafci.org",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Estadisticas.cafci.org",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Estadisticas.cafci.org",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Estadisticas.cafci.org",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Estadisticas.cafci.org",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Estadisticas.cafci.org",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Estadisticas.cafci.org",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Estadisticas.cafci.org",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "comparapix.ar",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "comparadolar.ar",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Bull Market",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Banco Nación",
-    "clicks": 1
-  },
-  {
-    "date": "20261119",
-    "provider": "Ripio",
+    "provider": "Cafecito",
     "clicks": 1
   },
   {
