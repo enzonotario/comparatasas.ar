@@ -7,7 +7,13 @@ import { useRouteQuery } from '@vueuse/router'
 import type { ComparaDolarAsset } from '~/composables/useComparaDolarQuotes'
 import { getInstitutionLogo, getInstitutionUrl } from '~/lib/mappings/institutions'
 import { ogUpdatedAtDate } from '~/utils/og-data'
-import type { RemesaDetalles, RemesaOption } from '~/composables/useRemesas'
+import type {
+  RemesaDetalles,
+  RemesaMetodoRecepcion,
+  RemesaOption,
+} from '~/composables/useRemesas'
+
+const METODOS_RECEPCION_OPCIONES: RemesaMetodoRecepcion[] = ['ACH', 'Wire', 'SWIFT']
 
 definePageMeta({
   pageTitle: 'Remesas y pagos del exterior',
@@ -522,7 +528,32 @@ const monedaFilter = useRouteQuery<string>('moneda', 'all')
 const cuentaPropiaFilter = useRouteQuery<string>('propia', 'all')
 const inversionesFilter = useRouteQuery<string>('inv', 'all')
 const tarjetaFilter = useRouteQuery<string>('tarjeta', 'all')
+const metodosFilterQuery = useRouteQuery('metodos', '')
 const sortQuery = useRouteQuery<string>('sort', '[{"id":"retiroArsSort","desc":false}]')
+
+const metodosFilter = computed({
+  get(): RemesaMetodoRecepcion[] {
+    const selected = new Set(
+      metodosFilterQuery.value
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean),
+    )
+    return METODOS_RECEPCION_OPCIONES.filter((metodo) => selected.has(metodo))
+  },
+  set(values: RemesaMetodoRecepcion[]) {
+    metodosFilterQuery.value = METODOS_RECEPCION_OPCIONES.filter((metodo) =>
+      values.includes(metodo),
+    ).join(',')
+  },
+})
+
+function toggleMetodoFilter(metodo: RemesaMetodoRecepcion) {
+  const next = new Set(metodosFilter.value)
+  if (next.has(metodo)) next.delete(metodo)
+  else next.add(metodo)
+  metodosFilter.value = METODOS_RECEPCION_OPCIONES.filter((item) => next.has(item))
+}
 
 type SortingState = Array<{ id: string; desc: boolean }>
 
@@ -628,6 +659,10 @@ const filteredRows = computed(() => {
     if (!matchBooleanFilter(cuentaPropiaFilter.value, row.cuentaPropia)) return false
     if (!matchBooleanFilter(inversionesFilter.value, row.inversiones)) return false
     if (!matchBooleanFilter(tarjetaFilter.value, row.tarjetaUsa)) return false
+    if (metodosFilter.value.length > 0) {
+      const rowMetodos = row.metodosRecepcion ?? []
+      if (!metodosFilter.value.every((metodo) => rowMetodos.includes(metodo))) return false
+    }
 
     if (!query) return true
 
@@ -638,6 +673,7 @@ const filteredRows = computed(() => {
       row.costoMantenimientoTarjeta,
       row.costoTarjeta,
       row.retiroArs,
+      ...(row.metodosRecepcion ?? []),
       ...Object.values(row.detalles ?? {}),
     ]
       .map((value) => normalizeText(value))
@@ -799,6 +835,38 @@ const columns: TableColumn<RemesaRow>[] = [
     header: createSortableHeader('Tarjeta EEUU'),
     cell: ({ row }) =>
       renderBooleanCell(row.original.tarjetaUsa, getDetail(row.original.detalles, 'tarjetaUsa')),
+  },
+  {
+    accessorKey: 'metodosRecepcion',
+    header: () =>
+      withHeaderTooltip(
+        h('span', { class: 'text-xs font-semibold' }, 'Recibe por'),
+        'Métodos de recepción: ACH, Wire, SWIFT',
+      ),
+    cell: ({ row }) => {
+      const metodos = row.original.metodosRecepcion
+      const detail = getDetail(row.original.detalles, 'metodosRecepcion')
+      if (!metodos?.length) {
+        return h('div', { class: 'flex items-center gap-1' }, [
+          h('span', { class: 'text-neutral-400' }, '—'),
+          detail ? renderDetailPopover(detail) : null,
+        ])
+      }
+      return h(
+        'div',
+        { class: 'flex flex-wrap items-center gap-1' },
+        [
+          ...metodos.map((metodo) =>
+            h(
+              UBadge,
+              { color: 'neutral', variant: 'soft', size: 'sm', class: 'font-medium' },
+              { default: () => metodo },
+            ),
+          ),
+          detail ? renderDetailPopover(detail) : null,
+        ],
+      )
+    },
   },
   {
     accessorKey: 'costoRecibirPagosSort',
@@ -967,6 +1035,27 @@ const columns: TableColumn<RemesaRow>[] = [
               </div>
             </div>
           </div>
+
+          <div class="space-y-2">
+            <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
+              Recibe por
+              <span class="ml-1 font-normal normal-case tracking-normal text-neutral-400">
+                (todas las seleccionadas)
+              </span>
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <UButton
+                v-for="metodo in METODOS_RECEPCION_OPCIONES"
+                :key="`metodo-${metodo}`"
+                size="sm"
+                :color="metodosFilter.includes(metodo) ? 'primary' : 'neutral'"
+                :variant="metodosFilter.includes(metodo) ? 'soft' : 'outline'"
+                @click="toggleMetodoFilter(metodo)"
+              >
+                {{ metodo }}
+              </UButton>
+            </div>
+          </div>
           <p class="text-xs text-muted">
             Si una plataforma tiene aclaraciones, aparecen como <strong>Detalle</strong> dentro de
             la celda.
@@ -1126,6 +1215,30 @@ const columns: TableColumn<RemesaRow>[] = [
                   </UBadge>
                   <component
                     :is="renderDetailPopover(getDetail(row.detalles, 'tarjetaUsa'))"
+                    class="ml-1"
+                  />
+                </div>
+                <div
+                  class="flex items-center rounded-lg bg-neutral-50 px-2.5 py-1.5 dark:bg-neutral-800"
+                >
+                  <span class="text-neutral-500">Recibe por</span>
+                  <span class="ml-auto" />
+                  <div class="flex flex-wrap justify-end gap-1">
+                    <template v-if="row.metodosRecepcion?.length">
+                      <UBadge
+                        v-for="metodo in row.metodosRecepcion"
+                        :key="metodo"
+                        color="neutral"
+                        variant="soft"
+                        size="sm"
+                      >
+                        {{ metodo }}
+                      </UBadge>
+                    </template>
+                    <span v-else class="text-neutral-400">—</span>
+                  </div>
+                  <component
+                    :is="renderDetailPopover(getDetail(row.detalles, 'metodosRecepcion'))"
                     class="ml-1"
                   />
                 </div>

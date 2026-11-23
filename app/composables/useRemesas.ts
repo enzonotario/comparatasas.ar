@@ -1,3 +1,5 @@
+export type RemesaMetodoRecepcion = 'ACH' | 'Wire' | 'SWIFT'
+
 export interface RemesaDetalles {
   cuentaPropia?: string
   inversiones?: string
@@ -6,6 +8,7 @@ export interface RemesaDetalles {
   costoMantenimientoTarjeta?: string
   costoTarjeta?: string
   retiroArs?: string
+  metodosRecepcion?: string
 }
 
 export interface RemesaOption {
@@ -18,6 +21,7 @@ export interface RemesaOption {
   costoMantenimientoTarjeta: string | null
   costoTarjeta: string | null
   retiroArs: string | null
+  metodosRecepcion?: RemesaMetodoRecepcion[] | null
   detalles?: RemesaDetalles | null
   calificacionAndroid: number | null
   calificacionIos: number | null
