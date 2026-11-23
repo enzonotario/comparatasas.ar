@@ -1,22 +1,22 @@
 {
-  "total_records": 36283,
-  "total_clicks": 146515,
-  "unique_providers": 596,
-  "days_tracked": 297,
+  "total_records": 36367,
+  "total_clicks": 146679,
+  "unique_providers": 597,
+  "days_tracked": 298,
   "first_date": "20260129",
-  "last_date": "20261121",
+  "last_date": "20261122",
   "by_event_type": [
     {
       "event_type": "click",
-      "total_clicks": 98772
+      "total_clicks": 98885
     },
     {
       "event_type": "provider_click",
-      "total_clicks": 43833
+      "total_clicks": 43871
     },
     {
       "event_type": "sponsor_click",
-      "total_clicks": 3910
+      "total_clicks": 3923
     }
   ],
   "top_providers": [
@@ -27,24 +27,24 @@
     },
     {
       "provider": "AstroPay",
-      "total_clicks": 10595,
+      "total_clicks": 10604,
       "days_active": 186
     },
     {
       "provider": "Banco Nación",
-      "total_clicks": 10452,
+      "total_clicks": 10457,
       "days_active": 187
     },
     {
       "provider": "Banco Voii",
-      "total_clicks": 6968,
+      "total_clicks": 6970,
       "days_active": 160
     },
     {
       "provider": "Arqfinance",
-      "total_clicks": 6514,
+      "total_clicks": 6539,
       "days_active": 175
     }
   ],
-  "generated_at": "2026-11-22T01:43:32.401Z"
+  "generated_at": "2026-11-23T02:01:54.429Z"
 }
