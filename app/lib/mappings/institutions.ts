@@ -237,9 +237,16 @@ export const institutions: Array<{
     url: 'https://www.fiwind.io/?ref=comparatasas',
   },
   {
-    names: ['Letsbit', 'LETSBIT'],
+    names: [
+      'Letsbit',
+      'LETSBIT',
+      'letsbit',
+      'LB Finanzas',
+      'lbfinanzas',
+      'Lbfinanzas',
+    ],
     logo: 'https://api.argentinadatos.com/static/logos/letsbit.png',
-    shortName: 'LB',
+    shortName: 'LB Finanzas',
     url: 'https://lbfinanzas.com/?ref=comparatasas',
   },
   {

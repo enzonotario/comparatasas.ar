@@ -34,6 +34,8 @@ const companyDisplayNames: Record<string, string> = {
   global66: 'Global66',
   belo: 'Belo',
   ripio: 'Ripio',
+  lbfinanzas: 'LB Finanzas',
+  letsbit: 'LB Finanzas',
 }
 
 interface RemesaComparaDolarMapping {
@@ -55,6 +57,8 @@ const remesaComparaDolarProviderMap: Record<string, RemesaComparaDolarMapping | 
   grabrfi: null,
   payoneer: null,
   wise: null,
+  lbfinanzas: { asset: 'usdc', slug: 'letsbit' },
+  letsbit: { asset: 'usdc', slug: 'letsbit' },
 }
 
 const { trackProviderClick } = useAnalytics()
