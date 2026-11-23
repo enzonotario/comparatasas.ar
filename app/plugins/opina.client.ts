@@ -2,6 +2,10 @@ type OpinaApi = {
   show: (surveyId?: string) => void
   prompt: (surveyId?: string) => void
   hide: () => void
+  on: (
+    event: string,
+    handler: (payload?: { surveyId?: string, reason?: string }) => void,
+  ) => void
 }
 
 const SITE = 'comparatasas'
@@ -108,13 +112,18 @@ export default defineNuxtPlugin(() => {
     const opina = await waitForOpina()
     if (!opina?.prompt) return
 
+    // Avoid re-entry this session; only mark 30d host cooldown if Opina actually shows
+    // (suppressed by widget frequency must not burn the host gate).
     promptedThisSession = true
-    try {
-      localStorage.setItem(lastKey, String(Date.now()))
-    }
-    catch {
-      /* ignore */
-    }
+    opina.on('shown', (payload) => {
+      if (payload?.surveyId && payload.surveyId !== csatId) return
+      try {
+        localStorage.setItem(lastKey, String(Date.now()))
+      }
+      catch {
+        /* ignore */
+      }
+    })
     opina.prompt(csatId)
   }
 
