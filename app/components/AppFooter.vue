@@ -79,6 +79,7 @@ const socialLinks = [
 ]
 
 const currentYear = new Date().getFullYear()
+const opinaCsatId = String(useRuntimeConfig().public.opinaCsatSurveyId || '').trim() || undefined
 
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -87,7 +88,7 @@ function scrollToTop() {
 function openOpinaFeedback() {
   const w = window as Window & { Opina?: { show: (id?: string) => void } }
   if (w.Opina?.show) {
-    w.Opina.show()
+    w.Opina.show(opinaCsatId)
     return
   }
   let tries = 0
@@ -95,7 +96,7 @@ function openOpinaFeedback() {
     tries += 1
     if (w.Opina?.show) {
       window.clearInterval(timer)
-      w.Opina.show()
+      w.Opina.show(opinaCsatId)
     } else if (tries >= 20) {
       window.clearInterval(timer)
     }
