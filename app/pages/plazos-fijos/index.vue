@@ -79,33 +79,18 @@ const plazosFijosChartItems = computed(() => chartItemsForDays(days.value))
       days-field-description="Elegí un plazo para resaltar la columna correspondiente y simular la ganancia con interés simple."
     />
 
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
-      <h2
-        id="plazos-fijos"
-        class="text-lg font-medium scroll-mt-16 text-neutral-900 dark:text-white"
-      >
-        Plazos Fijos
-      </h2>
-      <div class="text-xs text-muted">
-        Fuente:
-        <a
-          href="https://argentinadatos.com/?utm_source=comparatasas&utm_medium=plazos-fijos&ref=comparatasas"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="font-medium text-primary-800 dark:text-primary-200"
-        >
-          ArgentinaDatos
-        </a>
-      </div>
-    </div>
-
     <PlazosFijosNavTabs />
 
     <div class="space-y-6">
-      <p class="text-xs text-muted">
-        Tasas nominales anuales (TNA) por plazo informadas por cada entidad. Algunas entidades
-        publican tramos por monto o rango de días distintos dentro de la misma columna.
-      </p>
+      <div
+        class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6 max-w-3xl mx-auto sm:px-6 lg:px-8"
+      >
+        <p class="text-sm text-neutral-600 dark:text-neutral-400">
+          Tasas nominales anuales (TNA) por plazo informadas por cada entidad. Algunas entidades
+          publican tramos por monto o rango de días distintos dentro de la misma columna.
+        </p>
+        <PlazosFijosSource medium="plazos-fijos" />
+      </div>
 
       <UAlert v-if="error" color="error" variant="soft" title="Error cargando plazos fijos" />
 

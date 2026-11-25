@@ -90,7 +90,7 @@ const showProductScenariosRail = computed(() => {
 <template>
   <UApp>
     <GlobalSearch />
-    <div class="bg-neutral-50 dark:bg-neutral-950">
+    <div class="bg-neutral-50 dark:bg-neutral-950 overflow-x-clip">
       <LayoutBackground />
 
       <UHeader

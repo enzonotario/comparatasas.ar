@@ -174,20 +174,17 @@ function formatCurrency(value: number | null): string {
       days-field-description="La simulación usa el plazo contractual de la colocación; no calcula rescates anticipados."
     />
 
-    <div class="flex items-center justify-between mb-2">
-      <h2 id="plazos-fijos-uva-precancelable" class="text-lg font-medium scroll-mt-16">
-        Plazos Fijos
-      </h2>
-    </div>
-
     <PlazosFijosNavTabs />
 
     <div class="space-y-4 mt-6">
-      <p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-3xl">
-        Plazos fijos en UVA con opción de precancelación. La TNA principal es la tasa adicional
-        sobre UVA si mantenés la colocación hasta el plazo pactado; la tasa de precancelación se
-        muestra aparte.
-      </p>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-3xl">
+          Plazos fijos en UVA con opción de precancelación. La TNA principal es la tasa adicional
+          sobre UVA si mantenés la colocación hasta el plazo pactado; la tasa de precancelación se
+          muestra aparte.
+        </p>
+        <PlazosFijosSource medium="plazos-fijos-uva-precancelable" />
+      </div>
 
       <UAlert
         v-if="errorPrecancelables"

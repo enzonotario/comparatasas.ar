@@ -320,9 +320,18 @@ const actualizarInflacion = (index: number, valor: number) => {
     }"
   >
     <template #header>
-      <div class="flex flex-col gap-1">
-        <h2 class="text-xl font-bold">Evolución de cuotas hipotecarias UVA</h2>
-        <p class="text-sm text-muted mt-1">Proyección de cuotas a pagar en pesos por mes</p>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div class="flex flex-col gap-1">
+          <h2 class="text-xl font-bold">Evolución de cuotas hipotecarias UVA</h2>
+          <p class="text-sm text-muted mt-1">Proyección de cuotas a pagar en pesos por mes</p>
+        </div>
+        <TwitterAttribution
+          usuario="SalinasAndres"
+          nombre="Andrés Salinas"
+          avatar="https://pbs.twimg.com/profile_images/1802830575759224832/vKHC7OK1_400x400.jpg"
+          url="https://x.com/SalinasAndres"
+          medium="creditos-hipotecarios-uva"
+        />
       </div>
     </template>
 

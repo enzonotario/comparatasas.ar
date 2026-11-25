@@ -116,18 +116,17 @@ onMounted(() => {
       days-field-description="Presets alineados a tramos habituales (90–1080 días). Ajustá el valor para que coincida con el rango de cada fila."
     />
 
-    <div class="flex items-center justify-between mb-2">
-      <h2 id="plazos-fijos-uva" class="text-lg font-medium scroll-mt-16">Plazos Fijos</h2>
-    </div>
-
     <PlazosFijosNavTabs />
 
     <div class="space-y-4 mt-6">
-      <p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-3xl">
-        Tasas nominales y efectivas anuales (TNA / TEA) informadas para plazos fijos en UVA con
-        cobro periódico de intereses (subperíodos de 30 días). La simulación usa solo la TNA
-        adicional sobre UVA (no incluye la actualización por índice UVA).
-      </p>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+        <p class="text-sm text-neutral-600 dark:text-neutral-400 max-w-3xl">
+          Tasas nominales y efectivas anuales (TNA / TEA) informadas para plazos fijos en UVA con
+          cobro periódico de intereses (subperíodos de 30 días). La simulación usa solo la TNA
+          adicional sobre UVA (no incluye la actualización por índice UVA).
+        </p>
+        <PlazosFijosSource medium="plazos-fijos-uva-pago-periodico" />
+      </div>
 
       <UAlert
         v-if="errorUva"
