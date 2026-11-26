@@ -116,7 +116,8 @@ const closeSimulator = () => {
 </script>
 
 <template>
-  <div>
+  <!-- Todo su contenido es fixed/drawer: `contents` evita que el wrapper vacío reciba el margen de un space-y del padre. -->
+  <div class="contents">
     <ClientOnly>
       <!-- Botón flotante para abrir/reabrir en desktop -->
       <div v-if="isDesktop && !isOpen" class="fixed bottom-4 left-4 z-50">
